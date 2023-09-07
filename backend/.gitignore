@@ -1,0 +1,27 @@
+#auto generated
+venv
+__pycache__
+node_modules
+package-lock.json
+*tsbuildinfo
+dist
+samsteelsina/server_static_files/databases
+ts-out
+
+# local configs
+.env*
+
+# TMP FILES
+uploads
+
+# Jetbrains 
+.idea
+
+# VisualStudioCode
+.vscode/**/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+test.db
