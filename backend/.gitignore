@@ -24,4 +24,4 @@ uploads
 !.vscode/launch.json
 !.vscode/extensions.json
 
-test.db
+todos.db
