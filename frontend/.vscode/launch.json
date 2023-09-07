@@ -1,0 +1,39 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"command": "npm run dev",
+			"name": "npm:dev",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"command": "npm run open-api:generate",
+			"name": "npm:open-api:generate",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"command": "npm run open-api:zod",
+			"name": "npm:open-api:zod",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"command": "npm run check:watch",
+			"name": "npm:check:watch",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "chrome:dev",
+			"url": "http://localhost:5173",
+			"webRoot": "${workspaceFolder}"
+		}
+	]
+}
