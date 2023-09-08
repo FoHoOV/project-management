@@ -11,24 +11,24 @@ class SearchTodoStatus(Enum):
     PENDING = "pending"
 
 
-class TodoBase(BaseModel):
+class TodoItemBase(BaseModel):
     title: str
     description: str
     is_done: bool
+    category_id: int
 
 
-class TodoCreate(TodoBase):
+class TodoItemCreate(TodoItemBase):
     pass
 
 
 @dataclass
-class SearchTodoParams:
+class SearchTodoItemParams:
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
-class Todo(TodoBase):
+class TodoItem(TodoItemBase):
     id: int
-    user_id: int
-
+    
     class Config:
         from_attributes = True

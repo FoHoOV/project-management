@@ -20,12 +20,6 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return user_crud.create_user(db=db, user=user)
 
 
-@router.get("/list-all", response_model=list[User])
-def list_all(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = user_crud.get_users(db, skip=skip, limit=limit)
-    return users
-
-
 @router.get("/info", response_model=User)
 def info(
     current_user: Annotated[User, Depends(get_current_user)],

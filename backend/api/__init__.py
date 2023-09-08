@@ -5,7 +5,7 @@ from api.routes import oath
 from db import init_db
 from fastapi.openapi.utils import get_openapi
 
-from .routes import todo, user
+from .routes import todo_item, todo_category, user
 
 def create_app():
     def custom_generate_unique_id(route: APIRoute):
@@ -15,7 +15,8 @@ def create_app():
 
     app.include_router(oath.router)
     app.include_router(user.router)
-    app.include_router(todo.router)
+    app.include_router(todo_category.router)
+    app.include_router(todo_item.router)
 
     app.openapi_version = "3.0.0" # TODO: bump to 3.1.0 when openapi-tools code generator supports it
     
