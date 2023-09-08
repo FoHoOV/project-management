@@ -235,10 +235,10 @@ export async function callService<
 			const response = await e.response.clone().json();
 
 			if (e.response.status === 401) {
-				await _defaultUnAuthenticatedUserHandler(errorCallback, {
+				return await _defaultUnAuthenticatedUserHandler(errorCallback, {
 					type: ErrorType.UNAUTHORIZED,
 					status: e.response.status,
-					message: e.message,
+					message: 'Invalid credentials!',
 					data: response,
 					preventDefaultHandler: false,
 					originalError: e
