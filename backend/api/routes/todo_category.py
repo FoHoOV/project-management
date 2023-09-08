@@ -45,7 +45,7 @@ def remove(
         raise HTTPException(status_code=404, detail="todo category not found")
 
 
-@router.get("/list", response_model=List[TodoCategory])
+@router.get("/list", response_model=list[TodoCategory])
 def get_for_user(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),

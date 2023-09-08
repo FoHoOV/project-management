@@ -14,7 +14,7 @@ class TodoCategoryCreate(TodoCategoryBase):
 
 class TodoCategory(TodoCategoryBase):
     id: int
-    todos: List[TodoItem]
+    todos: list[TodoItem]
 
     class Config:
         from_attributes = True
