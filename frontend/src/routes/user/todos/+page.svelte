@@ -28,75 +28,78 @@
 <svelte:head>
 	<title>todos</title>
 </svelte:head>
-<form
-	action="?/createCategory"
-	use:superEnhance={{ validator: { schema: createTodoCategorySchema }, form: form }}
-	on:submitclienterror={(e) => {
-		createTodoFormErrors = {
-			errors: e.detail,
-			message: 'Invalid form, please review your inputs'
-		};
-	}}
-	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = true;
-	}}
-	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = false;
-	}}
-	on:submitsucceeded={(e) => {
-		todoCategories.addCategory(e.detail.response);
-	}}
-	bind:this={formElement}
-	method="post"
-	class="flex items-start justify-center card bg-base-300 w-full flex-row"
->
-	<div class="card-body items-center text-center md:flex-grow-0 md:flex-shrink-0 md:w-1/2">
-		<Error message={createTodoFormErrors?.message} />
-		<FormInput className="hidden" type="checkbox" name="is_done" value={false} errors={''} />
-		<FormInput
-			name="title"
-			className="w-full"
-			hideLabel={true}
-			errors={createTodoFormErrors?.errors?.title}
-		/>
-		<FormInput
-			name="description"
-			className="w-full"
-			hideLabel={true}
-			errors={createTodoFormErrors?.errors?.description}
-		/>
-		<div class="card-actions justify-end w-full">
-			<LoadingButton
-				text="add"
-				className="flex-auto"
-				type="submit"
-				loading={isCreateTodoCategorySubmitting}
-			/>
-			<LoadingButton
-				text="reset"
-				className="btn-warning"
-				type="button"
-				on:click={() => {
-					formElement.reset();
-					createTodoFormErrors = { errors: undefined, message: undefined };
-				}}
-			/>
-		</div>
-	</div>
-</form>
 
-<div class="divider" />
 
 <!-- or stream the data from load function !-->
 {#await resolveTodoCategories()}
 	<span class="loading loading-ring m-auto block" />
 {:then}
-	<div class="flex gap-5 grow overflow-auto min-h-16">
+	<div class="flex gap-5 overflow-auto min-h-16">
 		{#each $todoCategories as category (category.id)}
-			<div class="min-w-[20rem] mb-5" animate:flip={{ duration: 200 }}>
+			<div class="min-w-[20rem] mb-20 grow" animate:flip={{ duration: 200 }}>
 				<TodoList {category} />
 			</div>
 		{/each}
+		<div
+			class="relative min-w-[20rem] grow border rounded-xl border-success-content p-5 flex items-center flex-col h-full"
+		>
+			<form
+				action="?/createCategory"
+				use:superEnhance={{ validator: { schema: createTodoCategorySchema }, form: form }}
+				on:submitclienterror={(e) => {
+					createTodoFormErrors = {
+						errors: e.detail,
+						message: 'Invalid form, please review your inputs'
+					};
+				}}
+				on:submitstarted={() => {
+					isCreateTodoCategorySubmitting = true;
+				}}
+				on:submitstarted={() => {
+					isCreateTodoCategorySubmitting = false;
+				}}
+				on:submitsucceeded={(e) => {
+					todoCategories.addCategory(e.detail.response);
+				}}
+				bind:this={formElement}
+				method="post"
+				class="flex w-full items-start justify-center card bg-base-300 flex-row"
+			>
+				<div class="card-body items-center text-center">
+					<Error message={createTodoFormErrors?.message} />
+					<FormInput className="hidden" type="checkbox" name="is_done" value={false} errors={''} />
+					<FormInput
+						name="title"
+						className="w-full"
+						hideLabel={true}
+						errors={createTodoFormErrors?.errors?.title}
+					/>
+					<FormInput
+						name="description"
+						className="w-full"
+						hideLabel={true}
+						errors={createTodoFormErrors?.errors?.description}
+					/>
+					<div class="card-actions justify-end w-full">
+						<LoadingButton
+							text="add"
+							className="flex-auto"
+							type="submit"
+							loading={isCreateTodoCategorySubmitting}
+						/>
+						<LoadingButton
+							text="reset"
+							className="btn-warning"
+							type="button"
+							on:click={() => {
+								formElement.reset();
+								createTodoFormErrors = { errors: undefined, message: undefined };
+							}}
+						/>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 {:catch error}
 	<Error message={error.message} />

@@ -77,7 +77,7 @@
 		</div>
 	</div>
 	<form action="user/todos/?/addTodo" class="w-full">
-		<button class="btn btn-neutral w-full"><Fa icon={faCirclePlus} /> add todo </button>
+		<button class="btn btn-success w-full"><Fa icon={faCirclePlus} /> add todo </button>
 	</form>
 	{#if category.items.length > 0}
 		{#each sortTodos(category.items) as todo (todo.id)}
