@@ -11,7 +11,7 @@
 				"additionalProperties": {
 					"modelPropertyNaming": "original",
 					"supportsES6": true,
-          "useSingleRequestParameter": false
+					"useSingleRequestParameter": false
 				}
 			}
 		}

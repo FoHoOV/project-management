@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
-from db.schemas.todo_category import TodoCategory, TodoCategoryCreate
+from db.schemas.todo_category import TodoCategory, TodoCategoryCreate, TodoCategoryUpdate, TodoCategoryDelete
 from db.utils import todo_category_crud
 
 
-router = APIRouter(prefix="/todo-category", tags=["todo"])
+router = APIRouter(prefix="/todo-category", tags=["todo-category"])
 
 
 @router.post("/create", response_model=TodoCategory)
@@ -24,7 +24,7 @@ def create_for_user(
 @router.patch(path="/update", response_model=TodoCategory)
 def update(
     current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategory,
+    category: TodoCategoryUpdate,
     db: Session = Depends(get_db),
 ):
     db_items = todo_category_crud.update(db=db, category=category, user_id=current_user.id)
@@ -36,7 +36,7 @@ def update(
 @router.delete(path="/remove")
 def remove(
     current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategory,
+    category: TodoCategoryDelete,
     db: Session = Depends(get_db),
 ):
     deleted_rows = todo_category_crud.remove(db=db, category=category, user_id=current_user.id)

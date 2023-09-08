@@ -5,11 +5,17 @@ from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
-from db.schemas.todo_item import SearchTodoItemParams, TodoItem, TodoItemCreate
+from db.schemas.todo_item import (
+    SearchTodoItemParams,
+    TodoItem,
+    TodoItemCreate,
+    TodoItemUpdate,
+    TodoItemDelete,
+)
 from db.utils import todo_item_crud
 
 
-router = APIRouter(prefix="/todo-item", tags=["todo"])
+router = APIRouter(prefix="/todo-item", tags=["todo-item"])
 
 
 @router.post("/create", response_model=TodoItem)
@@ -24,7 +30,7 @@ def create_for_user(
 @router.patch(path="/update", response_model=TodoItem)
 def update(
     current_user: Annotated[User, Depends(get_current_user)],
-    todo: TodoItem,
+    todo: TodoItemUpdate,
     db: Session = Depends(get_db),
 ):
     db_items = todo_item_crud.update(db=db, todo=todo, user_id=current_user.id)
@@ -36,7 +42,7 @@ def update(
 @router.delete(path="/remove")
 def remove(
     current_user: Annotated[User, Depends(get_current_user)],
-    todo: TodoItem,
+    todo: TodoItemDelete,
     db: Session = Depends(get_db),
 ):
     deleted_rows = todo_item_crud.remove(db=db, todo=todo, user_id=current_user.id)

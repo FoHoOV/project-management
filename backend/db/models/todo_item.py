@@ -12,10 +12,8 @@ class TodoItem(Base):
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     is_done: Mapped[bool] = mapped_column(Boolean(), default=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     category_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
-    user: Mapped["User"] = relationship()
-    category: Mapped["TodoCategory"] = relationship()
+    category: Mapped["TodoCategory"] = relationship(back_populates="items")
 
     def __repr__(self) -> str:
         return f"TodoItem(id={self.id!r}, title={self.title!r}, description={self.description!r}, is_done={self.is_done}, user_id={self.user_id!r})"

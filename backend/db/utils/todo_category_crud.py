@@ -4,10 +4,12 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from db.models.todo_category import TodoCategory
 
-
-from db.models.todo_item import TodoItem
 from db.models.user import User
-from db.schemas.todo_category import TodoCategoryCreate, TodoCategory as TodoCategorySchema
+from db.schemas.todo_category import (
+    TodoCategoryCreate,
+    TodoCategoryUpdate,
+    TodoCategoryDelete,
+)
 
 
 def get_categories_for_user(db: Session, user_id: int):
@@ -22,7 +24,7 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     return db_item
 
 
-def update(db: Session, category: TodoCategorySchema, user_id: int):
+def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     db_item = (
         db.query(TodoCategory)
         .filter(TodoCategory.id == category.id, TodoCategory.user_id == user_id)
@@ -39,7 +41,7 @@ def update(db: Session, category: TodoCategorySchema, user_id: int):
     return db_item
 
 
-def remove(db: Session, category: TodoCategorySchema, user_id: int):
+def remove(db: Session, category: TodoCategoryDelete, user_id: int):
     row_count = (
         db.query(TodoCategory)
         .filter(TodoCategory.id == category.id, TodoCategory.user_id == user_id)

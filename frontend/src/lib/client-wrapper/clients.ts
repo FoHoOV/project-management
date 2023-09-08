@@ -1,6 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { decodeJwt, type JWTPayload } from 'jose';
-import { OAuthApi, TodoApi, UserApi } from '../client/apis';
+import { OAuthApi, TodoItemApi, TodoCategoryApi, UserApi } from '../client/apis';
 
 import {
 	BaseAPI,
@@ -74,9 +74,14 @@ export const OAuthClient = (config: ConfigurationOptions = { isTokenRequired: tr
 	return generateClient(OAuthApi, config);
 };
 
-export const TodoClient = (config?: ConfigurationOptions) => {
-	return generateClient(TodoApi, config);
+export const TodoItemClient = (config?: ConfigurationOptions) => {
+	return generateClient(TodoItemApi, config);
 };
+
+export const TodoCategoryClient = (config?: ConfigurationOptions) => {
+	return generateClient(TodoCategoryApi, config);
+};
+
 
 export const UserClient = (config?: ConfigurationOptions) => {
 	return generateClient(UserApi, config);

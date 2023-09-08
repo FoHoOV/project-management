@@ -11,6 +11,12 @@ class TodoCategoryBase(BaseModel):
 class TodoCategoryCreate(TodoCategoryBase):
     pass
 
+class TodoCategoryUpdate(TodoCategoryBase):
+    id: int
+
+class TodoCategoryDelete(BaseModel):
+    id: int
+
 
 class TodoCategory(TodoCategoryBase):
     id: int

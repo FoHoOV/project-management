@@ -21,6 +21,11 @@ class TodoItemBase(BaseModel):
 class TodoItemCreate(TodoItemBase):
     pass
 
+class TodoItemUpdate(TodoItemBase):
+    id: int
+
+class TodoItemDelete(BaseModel):
+    id: int
 
 @dataclass
 class SearchTodoItemParams:
@@ -29,6 +34,6 @@ class SearchTodoItemParams:
 
 class TodoItem(TodoItemBase):
     id: int
-    
+
     class Config:
         from_attributes = True

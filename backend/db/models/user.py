@@ -13,7 +13,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String())
     todo_categories: Mapped[List["TodoCategory"]] = relationship(
-        cascade="all, delete-orphan"
+        back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from api.routes import oath
 from db import init_db
-from fastapi.openapi.utils import get_openapi
 
 from .routes import todo_item, todo_category, user
 
+
 def create_app():
     def custom_generate_unique_id(route: APIRoute):
-        return f"{route.name}"
+        return f"{route.tags[0].replace('-','_')}_{route.name}"
 
     app = FastAPI(generate_unique_id_function=custom_generate_unique_id)
 
@@ -18,8 +18,10 @@ def create_app():
     app.include_router(todo_category.router)
     app.include_router(todo_item.router)
 
-    app.openapi_version = "3.0.0" # TODO: bump to 3.1.0 when openapi-tools code generator supports it
-    
+    app.openapi_version = (
+        "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it
+    )
+
     origins = [
         "http://localhost",
         "http://localhost:4173",

@@ -1,7 +1,5 @@
-from re import I
-import stat
-from sqlalchemy import delete
 from sqlalchemy.orm import Session
+from db.models.todo_category import TodoCategory
 
 
 from db.models.todo_item import TodoItem
@@ -9,7 +7,8 @@ from db.models.user import User
 from db.schemas.todo_item import (
     SearchTodoStatus,
     TodoItemCreate,
-    TodoItem as TodoItemSchema,
+    TodoItemDelete,
+    TodoItemUpdate,
     SearchTodoItemParams,
 )
 
@@ -35,10 +34,12 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
     return db_item
 
 
-def update(db: Session, todo: TodoItemSchema, user_id: int):
+def update(db: Session, todo: TodoItemUpdate, user_id: int):
     db_item = (
         db.query(TodoItem)
-        .filter(TodoItem.id == todo.id, TodoItem.user_id == user_id)
+        .filter(TodoItem.id == todo.id)
+        .join(TodoCategory)
+        .filter(TodoCategory.user_id == user_id)
         .first()
     )
     if not db_item:
@@ -53,7 +54,7 @@ def update(db: Session, todo: TodoItemSchema, user_id: int):
     return db_item
 
 
-def remove(db: Session, todo: TodoItemSchema, user_id: int):
+def remove(db: Session, todo: TodoItemDelete, user_id: int):
     row_count = (
         db.query(TodoItem)
         .filter(TodoItem.id == todo.id, TodoItem.user_id == user_id)
