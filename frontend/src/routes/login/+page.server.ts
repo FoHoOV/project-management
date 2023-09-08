@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import KEYS from '$lib/constants/cookie';
 import { convertFormDataToObject, superFail } from '$lib/enhance/form';
 import { schema } from './validators';
-import { Body_login_for_access_token } from '$lib/client/zod/schemas';
+import { Body_login_for_access_token_OAuth } from '$lib/client/zod/schemas';
 import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper';
 import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 import { OAuthClient } from '$lib/client-wrapper/clients';
@@ -28,7 +28,7 @@ export const actions: Actions = {
 				const token = await OAuthClient({
 					isTokenRequired: false,
 					fetchApi: fetch,
-				}).loginForAccessToken(validationsResult.data.username, validationsResult.data.password);
+				}).loginForAccessTokenOAuth(validationsResult.data.username, validationsResult.data.password);
 				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
 				throw redirect(303, '/user/todos');
 			},
@@ -40,9 +40,9 @@ export const actions: Actions = {
 					});
 				}
 				// TODO: ts couldn't infer the e type here! and I have no idea why? >_<
-				return await superApplyAction<typeof Body_login_for_access_token>(e);
+				return await superApplyAction<typeof Body_login_for_access_token_OAuth>(e);
 			},
-			errorSchema: Body_login_for_access_token
+			errorSchema: Body_login_for_access_token_OAuth
 		});
 	}
 } satisfies Actions;

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import type { Todo } from '$lib/client';
+	import type { TodoItem, TodoCategory } from '$lib/client';
 	import { flip } from 'svelte/animate';
-	import TodoItem from './TodoItem.svelte';
+	import TodoItemComponent from './TodoItem.svelte';
 	import { receive, send } from './transitions';
 
-	export let todos: Todo[];
+	export let category: TodoCategory;
 	export let done: boolean = false;
 
-	function filterAndSortTodos(todos: Todo[], done: boolean) {
+	function filterAndSortTodos(todos: TodoItem[], done: boolean) {
 		const filteredTodos = todos.filter((todo) => todo.is_done == done);
 		if (done) {
 			return filteredTodos.reverse();
@@ -16,15 +16,15 @@
 	}
 </script>
 
-{#if todos.length > 0}
-	{#each filterAndSortTodos(todos, done) as todo (todo.id)}
+{#if category.todos.length > 0}
+	{#each filterAndSortTodos(category.todos, done) as todo (todo.id)}
 		<div
-			class="card bg-base-200 hover:bg-base-100 shadow-xl mt-4"
+			class="border"
 			in:receive={{ key: todo.id }}
 			out:send={{ key: todo.id }}
 			animate:flip={{ duration: 200 }}
 		>
-			<TodoItem {todo} />
+			<TodoItemComponent {todo} />
 		</div>
 	{/each}
 {:else}

@@ -27,7 +27,7 @@ export const actions: Actions = {
 				await UserClient({
 					isTokenRequired: false,
 					fetchApi: fetch
-				}).signup(validationsResult.data);
+				}).signupUser(validationsResult.data);
 				throw redirect(303, '/login');
 			},
 			errorSchema: UserCreate
