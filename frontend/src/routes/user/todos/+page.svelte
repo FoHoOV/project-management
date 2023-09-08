@@ -1,26 +1,20 @@
 <script lang="ts">
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import TodoList from '$lib/components/todo/TodoList.svelte';
 	import Error from '$components/Error.svelte';
-	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import type { ActionData, PageData } from './$types';
 	import todoCategories from '$lib/stores/todo-categories';
-	import { createTodoCategorySchema } from './validator';
 	import { flip } from 'svelte/animate';
+	import CreateTodoCategory from './CreateTodoCategory.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
-	export let formElement: HTMLFormElement;
-	$: createTodoFormErrors = getFormErrors(form);
-	let isCreateTodoCategorySubmitting = false;
 
 	async function resolveTodoCategories() {
 		const fetchedTodos = await data.streamed.todos;
 		if (fetchedTodos.success) {
 			todoCategories.setTodoCategories(fetchedTodos.result);
 		} else {
-			createTodoFormErrors.message = fetchedTodos.error.body.message;
+			Promise.reject(fetchedTodos.error.body.message);
 		}
 	}
 </script>
@@ -28,7 +22,6 @@
 <svelte:head>
 	<title>todos</title>
 </svelte:head>
-
 
 <!-- or stream the data from load function !-->
 {#await resolveTodoCategories()}
@@ -43,62 +36,7 @@
 		<div
 			class="relative min-w-[20rem] grow border rounded-xl border-success-content p-5 flex items-center flex-col h-full"
 		>
-			<form
-				action="?/createCategory"
-				use:superEnhance={{ validator: { schema: createTodoCategorySchema }, form: form }}
-				on:submitclienterror={(e) => {
-					createTodoFormErrors = {
-						errors: e.detail,
-						message: 'Invalid form, please review your inputs'
-					};
-				}}
-				on:submitstarted={() => {
-					isCreateTodoCategorySubmitting = true;
-				}}
-				on:submitstarted={() => {
-					isCreateTodoCategorySubmitting = false;
-				}}
-				on:submitsucceeded={(e) => {
-					todoCategories.addCategory(e.detail.response);
-				}}
-				bind:this={formElement}
-				method="post"
-				class="flex w-full items-start justify-center card bg-base-300 flex-row"
-			>
-				<div class="card-body items-center text-center">
-					<Error message={createTodoFormErrors?.message} />
-					<FormInput className="hidden" type="checkbox" name="is_done" value={false} errors={''} />
-					<FormInput
-						name="title"
-						className="w-full"
-						hideLabel={true}
-						errors={createTodoFormErrors?.errors?.title}
-					/>
-					<FormInput
-						name="description"
-						className="w-full"
-						hideLabel={true}
-						errors={createTodoFormErrors?.errors?.description}
-					/>
-					<div class="card-actions justify-end w-full">
-						<LoadingButton
-							text="add"
-							className="flex-auto"
-							type="submit"
-							loading={isCreateTodoCategorySubmitting}
-						/>
-						<LoadingButton
-							text="reset"
-							className="btn-warning"
-							type="button"
-							on:click={() => {
-								formElement.reset();
-								createTodoFormErrors = { errors: undefined, message: undefined };
-							}}
-						/>
-					</div>
-				</div>
-			</form>
+			<CreateTodoCategory actionData={form} />
 		</div>
 	</div>
 {:catch error}

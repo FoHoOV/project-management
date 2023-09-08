@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Error from '../Error.svelte';
+	import type { HTMLInputAttributes } from 'svelte/elements';
 
 	export let className: string = '';
 	export let name: string;
 	export let label: string = name;
 	export let errors: string | string[] | null | undefined;
 	export let hideLabel: boolean = false;
-	export let type: 'text' | 'password' | 'hidden' | 'checkbox' = 'text'; // TODO: use the build-in html input type attribute
+	
+	export let type: HTMLInputAttributes["type"] = 'text'; 
 	export let value: string | number | boolean | undefined = '';
 </script>
 

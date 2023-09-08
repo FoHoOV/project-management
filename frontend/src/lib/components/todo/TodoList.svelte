@@ -76,7 +76,7 @@
 			<span class="font-bold text-lg">{category.title}</span>
 		</div>
 	</div>
-	<form action="user/todos/?/addTodo" class="w-full">
+	<form action="/user/todos/?/addTodo" class="w-full">
 		<button class="btn btn-success w-full"><Fa icon={faCirclePlus} /> add todo </button>
 	</form>
 	{#if category.items.length > 0}
