@@ -1,5 +1,4 @@
-from typing import List
-from typing import Optional
+from typing import List, Optional
 from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -14,7 +13,8 @@ class TodoCategory(Base):
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    user: Mapped["User"] = relationship(back_populates="todos")
+    user: Mapped["User"] = relationship()
+    todos: Mapped[List["TodoItem"]] = relationship(cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"TodoCategory(id={self.id!r}, title={self.title!r}, description={self.description!r}, user_id={self.user_id!r})"
