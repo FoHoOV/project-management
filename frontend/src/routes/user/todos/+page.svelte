@@ -6,7 +6,8 @@
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import type { ActionData, PageData } from './$types';
 	import todoCategories from '$lib/stores/todo-categories';
-	import { schema } from './validator';
+	import { createTodoCategorySchema } from './validator';
+	import { flip } from 'svelte/animate';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -29,7 +30,7 @@
 </svelte:head>
 <form
 	action="?/createCategory"
-	use:superEnhance={{ validator: { schema }, form: form }}
+	use:superEnhance={{ validator: { schema: createTodoCategorySchema }, form: form }}
 	on:submitclienterror={(e) => {
 		createTodoFormErrors = {
 			errors: e.detail,
@@ -90,10 +91,10 @@
 {#await resolveTodoCategories()}
 	<span class="loading loading-ring m-auto block" />
 {:then}
-	<div class="grid grid-cols-2 center gap-2">
-		{#each $todoCategories as category}
-			<div>
-				<TodoList {category} done={false} />
+	<div class="flex gap-5 grow overflow-auto min-h-16">
+		{#each $todoCategories as category (category.id)}
+			<div class="min-w-[20rem] mb-5" animate:flip={{ duration: 200 }}>
+				<TodoList {category} />
 			</div>
 		{/each}
 	</div>

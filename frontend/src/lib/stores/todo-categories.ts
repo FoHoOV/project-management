@@ -9,7 +9,7 @@ const addTodo = (todo: TodoItem): void => {
 			if (category.id !== todo.id) {
 				return category;
 			}
-			category.todos.push(todo);
+			category.items.push(todo);
 			return category;
 		});
 	});
@@ -21,7 +21,7 @@ const removeTodo = (todo: TodoItem) => {
 			if (category.id !== todo.id) {
 				return category;
 			}
-			category.todos = category.todos.filter((value) => value.id !== todo.id);
+			category.items = category.items.filter((value) => value.id !== todo.id);
 			return category;
 		});
 	});
@@ -33,7 +33,7 @@ const updateTodo = (todo: TodoItem, isDone: boolean) => {
 			if (category.id !== todo.id) {
 				return category;
 			}
-			category.todos.map((value) => {
+			category.items.map((value) => {
 				if (value.id !== todo.id) {
 					return value;
 				}
@@ -49,6 +49,12 @@ const addCategory = (category: TodoCategory) => {
 	_update((categories) => [...categories, category]);
 };
 
+const removeCategory = (category: TodoCategory) => {
+	_update((categories) => {
+		return categories.filter((value) => value.id !== category.id);
+	});
+};
+
 const setTodoCategories = (categories: TodoCategory[]) => {
 	_set(categories);
 };
@@ -58,9 +64,10 @@ const clearTodoCategories = () => {
 };
 
 export default {
+	setTodoCategories,
 	addTodo,
 	addCategory,
-	setTodoCategories,
+	removeCategory,
 	removeTodo,
 	updateTodo,
 	clearTodoCategories,

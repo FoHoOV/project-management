@@ -1,8 +1,8 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { convertFormDataToObject, superFail } from '$lib/enhance/form';
-import { schema } from './validator';
-import { TodoItemCreate,TodoCategoryCreate} from '$lib/client/zod/schemas';
+import { createTodoCategorySchema, createTodoItemSchema } from './validator';
+import { TodoItemCreate, TodoCategoryCreate } from '$lib/client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
 
@@ -13,8 +13,12 @@ export const load = (async ({ locals, fetch }) => {
 	return {
 		streamed: {
 			todos: callService({
-				serviceCall: async () =>
-					await TodoCategoryClient({ token: locals.token, fetchApi: fetch }).getForUserTodoCategory(),
+				serviceCall: async () => {
+					return await TodoCategoryClient({
+						token: locals.token,
+						fetchApi: fetch
+					}).getForUserTodoCategory();
+				},
 				errorCallback: async (e) => {
 					if (e.type === ErrorType.UNAUTHORIZED) {
 						e.preventDefaultHandler = true;
@@ -30,7 +34,9 @@ export const actions: Actions = {
 	addTodo: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
 
-		const validationsResult = await schema.safeParseAsync(convertFormDataToObject(formData));
+		const validationsResult = await createTodoItemSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
 		if (!validationsResult.success) {
 			return superFail(400, {
 				message: 'Invalid form, please review your inputs',
@@ -40,9 +46,11 @@ export const actions: Actions = {
 
 		return await callServiceInFormActions({
 			serviceCall: async () => {
-				return await TodoItemClient({ token: locals.token, fetchApi: fetch }).createForUserTodoItem({
-					...validationsResult.data
-				});
+				return await TodoItemClient({ token: locals.token, fetchApi: fetch }).createForUserTodoItem(
+					{
+						...validationsResult.data
+					}
+				);
 			},
 			errorSchema: TodoItemCreate
 		});
@@ -50,7 +58,9 @@ export const actions: Actions = {
 	createCategory: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
 
-		const validationsResult = await schema.safeParseAsync(convertFormDataToObject(formData));
+		const validationsResult = await createTodoCategorySchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
 		if (!validationsResult.success) {
 			return superFail(400, {
 				message: 'Invalid form, please review your inputs',
@@ -60,7 +70,10 @@ export const actions: Actions = {
 
 		return await callServiceInFormActions({
 			serviceCall: async () => {
-				return await TodoCategoryClient({ token: locals.token, fetchApi: fetch }).createForUserTodoCategory({
+				return await TodoCategoryClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).createForUserTodoCategory({
 					...validationsResult.data
 				});
 			},
