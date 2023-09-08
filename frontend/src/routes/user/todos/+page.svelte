@@ -7,39 +7,35 @@
 	import type { ActionData, PageData } from './$types';
 	import todos from '$lib/stores/todos';
 	import { schema } from './validator';
-	import { TodoClient } from '$lib/client-wrapper/clients';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import { page } from '$app/stores';
-	import { browser } from '$app/environment';
 
+	export let data: PageData;
 	export let form: ActionData;
 	export let formElement: HTMLFormElement;
 	$: createTodoFormErrors = getFormErrors(form);
 	let isCreateTodosSubmitting = false;
 
-	// this doesn't work see page.server function comments on this
-	// async function resolveTodos() {
-	// 	const fetchedTodos = await data.streamed.todos;
-	// 	if (fetchedTodos.success) {
-	// 		todos.setTodos(fetchedTodos.result);
-	// 	} else {
-	// 		createTodoFormErrors.message = fetchedTodos.error.message;
-	// 	}
-	// }
-
-	async function fetchTodos() {
-		const fetchedTodos = await callServiceInClient({
-			serviceCall: async () => {
-				return await TodoClient({ token: $page.data.token }).getForUser('all');
-			}
-		});
-
+	async function resolveTodos() {
+		const fetchedTodos = await data.streamed.todos;
 		if (fetchedTodos.success) {
 			todos.setTodos(fetchedTodos.result);
 		} else {
-			Promise.reject({ message: fetchedTodos.error.message });
+			createTodoFormErrors.message = fetchedTodos.error.body.message;
 		}
 	}
+
+	// async function fetchTodos() {
+	// 	const fetchedTodos = await callServiceInClient({
+	// 		serviceCall: async () => {
+	// 			return await TodoClient({ token: $page.data.token }).getForUser('all');
+	// 		}
+	// 	});
+
+	// 	if (fetchedTodos.success) {
+	// 		todos.setTodos(fetchedTodos.result);
+	// 	} else {
+	// 		Promise.reject({ message: fetchedTodos.error.message });
+	// 	}
+	// }
 </script>
 
 <svelte:head>
@@ -124,20 +120,18 @@
 	{/await}
 {/if} -->
 
-<!-- or stream  the data from load function, which cannot be done if the request throws an error (see this  page's server load function for more info)-->
-{#if browser}
-	{#await fetchTodos()}
-		<span class="loading loading-ring m-auto block" />
-	{:then}
-		<div class="grid grid-cols-2 center gap-2">
-			<div>
-				<TodoList todos={$todos} done={false} />
-			</div>
-			<div>
-				<TodoList todos={$todos} done={true} />
-			</div>
+<!-- or stream the data from load function !-->
+{#await resolveTodos()}
+	<span class="loading loading-ring m-auto block" />
+{:then}
+	<div class="grid grid-cols-2 center gap-2">
+		<div>
+			<TodoList todos={$todos} done={false} />
 		</div>
-	{:catch error}
-		<Error message={error.message} />
-	{/await}
-{/if}
+		<div>
+			<TodoList todos={$todos} done={true} />
+		</div>
+	</div>
+{:catch error}
+	<Error message={error.message} />
+{/await}

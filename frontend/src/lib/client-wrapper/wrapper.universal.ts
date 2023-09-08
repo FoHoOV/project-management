@@ -238,7 +238,7 @@ export async function callService<
 				return await _defaultUnAuthenticatedUserHandler(errorCallback, {
 					type: ErrorType.UNAUTHORIZED,
 					status: e.response.status,
-					message: 'Invalid credentials!',
+					message: "Invalid credentials!",
 					data: response,
 					preventDefaultHandler: false,
 					originalError: e

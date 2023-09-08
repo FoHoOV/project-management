@@ -12,7 +12,7 @@ export const load = (async () => {
 	return {};
 }) satisfies PageServerLoad;
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
+	default: async ({ request, cookies, fetch }) => {
 		const formData = await request.formData();
 
 		const validationsResult = await schema.safeParseAsync(convertFormDataToObject(formData));
@@ -26,7 +26,8 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			serviceCall: async () => {
 				const token = await OAuthClient({
-					isTokenRequired: false
+					isTokenRequired: false,
+					fetchApi: fetch,
 				}).loginForAccessToken(validationsResult.data.username, validationsResult.data.password);
 				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
 				throw redirect(303, '/user/todos');
