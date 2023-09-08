@@ -20,7 +20,7 @@ class TodoCategoryDelete(BaseModel):
 
 class TodoCategory(TodoCategoryBase):
     id: int
-    todos: list[TodoItem]
+    items: list[TodoItem]
 
     class Config:
         from_attributes = True
