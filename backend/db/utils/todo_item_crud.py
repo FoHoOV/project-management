@@ -27,7 +27,13 @@ def get_todos_for_user(
 
 
 def create(db: Session, todo: TodoItemCreate, user_id: int):
-    db_item = TodoItem(**todo.model_dump(), user_id=user_id)
+    if (
+        not db.query(TodoCategory)
+        .filter(TodoCategory.user_id == user_id, TodoCategory.id == todo.category_id)
+        .first()
+    ):
+        return None
+    db_item = TodoItem(**todo.model_dump())
     db.add(db_item)
     db.commit()
     db.refresh(db_item)

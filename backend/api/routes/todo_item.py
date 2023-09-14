@@ -1,4 +1,5 @@
 from typing import Annotated
+from unittest import result
 from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.orm import Session
@@ -24,7 +25,12 @@ def create_for_user(
     todo: TodoItemCreate,
     db: Session = Depends(get_db),
 ):
-    return todo_item_crud.create(db=db, todo=todo, user_id=current_user.id)
+    result = todo_item_crud.create(db=db, todo=todo, user_id=current_user.id)
+    if result is None:
+        raise HTTPException(
+            status_code=404, detail="todo category does not belong to user"
+        )
+    return result
 
 
 @router.patch(path="/update", response_model=TodoItem)

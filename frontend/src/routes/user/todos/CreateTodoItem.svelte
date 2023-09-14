@@ -5,14 +5,15 @@
 	import Error from '$components/Error.svelte';
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import todos from '$lib/stores/todos';
-	import { createTodoCategorySchema } from './validator';
+	import { createTodoItemSchema } from './validator';
 
 	export let form: ActionData;
+	export let categoryId: number;
 
 	let formElement: HTMLFormElement;
 
 	$: formErrors = getFormErrors(form);
-	let isCreateTodoCategorySubmitting = false;
+	let isAddTodoItemSubmitting = false;
 
 	function resetForm() {
 		formElement.reset();
@@ -21,8 +22,8 @@
 </script>
 
 <form
-	action="/user/todos?/createCategory"
-	use:superEnhance={{ validator: { schema: createTodoCategorySchema }, form: form }}
+	action="/user/todos?/addTodo"
+	use:superEnhance={{ validator: { schema: createTodoItemSchema }, form: form }}
 	on:submitclienterror={(e) => {
 		formErrors = {
 			errors: e.detail,
@@ -30,13 +31,13 @@
 		};
 	}}
 	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = true;
+		isAddTodoItemSubmitting = true;
 	}}
 	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = false;
+		isAddTodoItemSubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {
-		todos.addCategory(e.detail.response);
+		todos.addTodo(e.detail.response);
 		resetForm();
 	}}
 	bind:this={formElement}
@@ -45,6 +46,14 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
+		<FormInput className="hidden" type="checkbox" name="is_done" value={false} errors={''} />
+		<FormInput
+			className="hidden"
+			type="number"
+			name="category_id"
+			value={categoryId}
+			errors={''}
+		/>
 		<FormInput
 			name="title"
 			className="w-full"
@@ -62,7 +71,7 @@
 				text="add"
 				className="flex-auto"
 				type="submit"
-				loading={isCreateTodoCategorySubmitting}
+				loading={isAddTodoItemSubmitting}
 			/>
 			<LoadingButton text="reset" className="btn-warning" type="button" on:click={resetForm} />
 		</div>

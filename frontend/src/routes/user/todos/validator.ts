@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { coerce, z } from 'zod';
 import type { TodoItemCreate, TodoCategoryCreate } from '$lib/client';
 
 export const createTodoItemSchema = z.object({
-	category_id: z.number().min(0),
+	category_id: z.number({ coerce: true }).min(0),
 	title: z.string().nonempty().min(1),
 	description: z.string().nonempty().min(1),
 	is_done: z.boolean().default(false)

@@ -2,7 +2,9 @@ import type { ActionReturn } from 'svelte/action';
 import type { z } from 'zod';
 import { convertFormDataToObject } from './utils';
 
-export type ValidatorErrorsType<T extends z.ZodTypeAny> = z.typeToFlattenedError<z.infer<T>>['fieldErrors'];
+export type ValidatorErrorsType<T extends z.ZodTypeAny> = z.typeToFlattenedError<
+	z.infer<T>
+>['fieldErrors'];
 
 export type ValidatorOptions<TSchema extends z.ZodTypeAny> = {
 	schema: TSchema;
@@ -25,7 +27,7 @@ export function validate<TSchema extends z.ZodTypeAny>(
 		if (Object.keys(errors).length === 0) {
 			return;
 		}
-
+		console.log(errors);
 		event.preventDefault();
 		event.stopPropagation();
 		event.stopImmediatePropagation();
@@ -41,7 +43,6 @@ export function validate<TSchema extends z.ZodTypeAny>(
 	};
 }
 
-
 export async function getClientSideFormErrors<TSchema extends z.ZodTypeAny>(
 	formData: FormData,
 	zodObject: z.ZodTypeAny
@@ -53,4 +54,3 @@ export async function getClientSideFormErrors<TSchema extends z.ZodTypeAny>(
 		return validationsResult.error.flatten().fieldErrors;
 	}
 }
-

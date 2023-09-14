@@ -13,13 +13,14 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
-	import todoCategories from '$lib/stores/todo-categories';
+	import todoCategories from '$lib/stores/todos';
 	import Error from '$components/Error.svelte';
 
 	export let category: TodoCategory;
 
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
+	let createTodoModal: HTMLDialogElement;
 
 	async function handleRemoveCategory() {
 		isCallingService = true;
@@ -47,6 +48,10 @@
 			return -1;
 		});
 		return filteredTodos;
+	}
+
+	function handleCreateTodo(event: MouseEvent) {
+		createTodoModal.showModal();
 	}
 </script>
 
@@ -76,12 +81,15 @@
 			<span class="font-bold text-lg">{category.title}</span>
 		</div>
 	</div>
-	<form action="/user/todos/?/addTodo" class="w-full">
-		<button class="btn btn-success w-full"><Fa icon={faCirclePlus} /> add todo </button>
-	</form>
+	<div class="w-full">
+		<button class="btn btn-success w-full" on:click={handleCreateTodo}
+			><Fa icon={faCirclePlus} /> add todo
+		</button>
+	</div>
 	{#if category.items.length > 0}
 		{#each sortTodos(category.items) as todo (todo.id)}
 			<div
+				class="w-full"
 				in:receive={{ key: todo.id }}
 				out:send={{ key: todo.id }}
 				animate:flip={{ duration: 200 }}
@@ -93,3 +101,20 @@
 		<h1 class="text-center p-5">no todos yet!</h1>
 	{/if}
 </div>
+
+<dialog
+	id="todo-item-create-modal"
+	class="modal modal-bottom sm:modal-middle"
+	bind:this={createTodoModal}
+>
+	<div class="modal-box">
+		<h3 class="font-bold text-lg mb-3">Create a new todo here!!</h3>
+		<slot name="create-todo-item" />
+		<div class="modal-action">
+			<form method="dialog">
+				<!-- if there is a button in form, it will close the modal -->
+				<button class="btn">Close</button>
+			</form>
+		</div>
+	</div>
+</dialog>

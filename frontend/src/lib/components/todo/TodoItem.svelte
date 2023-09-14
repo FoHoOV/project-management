@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { faCheckCircle, faTrashCan, faUndo } from '@fortawesome/free-solid-svg-icons';
-	import todos from '$lib/stores/todo-categories';
+	import todos from '$lib/stores/todos';
 	import type { TodoItem } from '$lib/client/models';
 	import Error from '$components/Error.svelte';
 	import Fa from 'svelte-fa/src/fa.svelte';
