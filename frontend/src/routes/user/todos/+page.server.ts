@@ -8,7 +8,7 @@ import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients'
 
 export const load = (async ({ locals, fetch }) => {
 	// https://github.com/sveltejs/kit/issues/9785
-	// if we reject or throw a redirect in streamed promises it doesn't work for now
+	// if we reject or throw a redirect in streamed promises it doesn't work for now and crashes the server
 	// we have to wait for a fix or handle the error and make it an expected error :(
 	return {
 		streamed: {
@@ -23,7 +23,7 @@ export const load = (async ({ locals, fetch }) => {
 					if (e.type === ErrorType.UNAUTHORIZED) {
 						e.preventDefaultHandler = true;
 					}
-					return error(e.status, { message: 'Error fetching your todos!' });
+					return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
 				}
 			})
 		}

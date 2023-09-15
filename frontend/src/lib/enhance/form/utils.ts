@@ -1,8 +1,5 @@
 import { fail } from '@sveltejs/kit';
 import type { NumberRange, ErrorMessage } from '$lib/utils/types';
-import type { z } from 'zod';
-import type { ValidatorErrorsType } from './validator';
-import type { TscErrorInfo } from 'vitest';
 
 export function convertFormDataToObject(formData: FormData): Record<string, FormDataEntryValue> {
 	const result: Record<string, FormDataEntryValue> = {};

@@ -16,6 +16,6 @@
 	<label class="label" class:hidden={hideLabel} for={name}>
 		<span class="label-text">{label}</span>
 	</label>
-	<input {type} id={name} {name} placeholder={label} class="input input-bordered w-full" {value} />
+	<input {type} id={name} {name} placeholder={label} class="input input-bordered w-full" value={value} />
 	<Error message={typeof errors === 'string' ? errors : errors?.at(0)} className="mt-2" />
 </div>

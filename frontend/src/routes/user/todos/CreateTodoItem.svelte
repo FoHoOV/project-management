@@ -46,14 +46,8 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
-		<FormInput className="hidden" type="checkbox" name="is_done" value={false} errors={''} />
-		<FormInput
-			className="hidden"
-			type="number"
-			name="category_id"
-			value={categoryId}
-			errors={''}
-		/>
+		<FormInput className="hidden" type="hidden" name="is_done" value={false} errors={''} />
+		<FormInput className="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
 		<FormInput
 			name="title"
 			className="w-full"

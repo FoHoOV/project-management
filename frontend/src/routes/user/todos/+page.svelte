@@ -24,7 +24,7 @@
 	<title>todos</title>
 </svelte:head>
 
-<!-- or stream the data from load function !-->
+<!-- stream the data from load function !-->
 {#await resolveTodoCategories()}
 	<span class="loading loading-ring m-auto block" />
 {:then}
@@ -33,7 +33,7 @@
 			<div class="min-w-[20rem] mb-20 grow" animate:flip={{ duration: 200 }}>
 				<TodoList {category}>
 					<svelte:fragment slot="create-todo-item">
-						<CreateTodoItem form={form} categoryId={category.id}/>
+						<CreateTodoItem {form} categoryId={category.id} />
 					</svelte:fragment>
 				</TodoList>
 			</div>
@@ -41,7 +41,7 @@
 		<div
 			class="relative min-w-[20rem] grow border rounded-xl border-success-content p-5 flex items-center flex-col h-full"
 		>
-			<CreateTodoCategory form={form}/>
+			<CreateTodoCategory {form} />
 		</div>
 	</div>
 {:catch error}

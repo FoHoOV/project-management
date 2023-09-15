@@ -5,7 +5,7 @@ export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),
 	title: z.string().nonempty().min(1),
 	description: z.string().nonempty().min(1),
-	is_done: z.boolean().default(false)
+	is_done: z.boolean({coerce: true}).default(false)
 });
 
 ({}) as z.infer<typeof createTodoItemSchema> satisfies TodoItemCreate;

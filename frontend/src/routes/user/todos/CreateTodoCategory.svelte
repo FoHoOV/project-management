@@ -36,7 +36,7 @@
 		isCreateTodoCategorySubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {
-		todos.addCategory(e.detail.response);
+		todos.addCategory(form);
 		resetForm();
 	}}
 	bind:this={formElement}

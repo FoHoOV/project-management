@@ -13,6 +13,6 @@
         </p>
     </div>
     <p class="text-lg">
-        Please try again! {$page.error?.message}
+        {$page.error?.message}, Please try again! 
     </p>
 </div>
