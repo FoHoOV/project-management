@@ -6,7 +6,7 @@ const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
 const addTodo = (todo: TodoItem): void => {
 	_update((categories) => {
 		return categories.map((category) => {
-			if (category.id !== todo.id) {
+			if (category.id !== todo.category_id) {
 				return category;
 			}
 			category.items.push(todo);
@@ -18,7 +18,7 @@ const addTodo = (todo: TodoItem): void => {
 const removeTodo = (todo: TodoItem) => {
 	_update((categories) => {
 		return categories.map((category) => {
-			if (category.id !== todo.id) {
+			if (category.id !== todo.category_id) {
 				return category;
 			}
 			category.items = category.items.filter((value) => value.id !== todo.id);
