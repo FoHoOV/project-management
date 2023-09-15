@@ -1,3 +1,4 @@
+from unicodedata import category
 from sqlalchemy.orm import Session
 from db.models.todo_category import TodoCategory
 
@@ -28,9 +29,9 @@ def get_todos_for_user(
 
 def create(db: Session, todo: TodoItemCreate, user_id: int):
     if (
-        not db.query(TodoCategory)
+         db.query(TodoCategory)
         .filter(TodoCategory.user_id == user_id, TodoCategory.id == todo.category_id)
-        .first()
+        .first() is None
     ):
         return None
     db_item = TodoItem(**todo.model_dump())
@@ -61,10 +62,16 @@ def update(db: Session, todo: TodoItemUpdate, user_id: int):
 
 
 def remove(db: Session, todo: TodoItemDelete, user_id: int):
-    row_count = (
+    if (
         db.query(TodoItem)
-        .filter(TodoItem.id == todo.id, TodoItem.user_id == user_id)
-        .delete()
-    )
+        .filter(TodoItem.id == todo.id)
+        .join(TodoCategory)
+        .filter(TodoCategory.user_id == user_id)
+        .first()
+        is None
+    ):
+        return 0
+
+    row_count = db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
     db.commit()
     return row_count
