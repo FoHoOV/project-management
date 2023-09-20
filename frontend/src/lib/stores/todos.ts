@@ -30,7 +30,7 @@ const removeTodo = (todo: TodoItem) => {
 const updateTodo = (todo: TodoItem, isDone: boolean) => {
 	_update((categories) => {
 		return categories.map((category) => {
-			if (category.id !== todo.id) {
+			if (category.id !== todo.category_id) {
 				return category;
 			}
 			category.items.map((value) => {

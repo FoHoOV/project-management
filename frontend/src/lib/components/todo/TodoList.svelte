@@ -82,8 +82,9 @@
 		</div>
 	</div>
 	<div class="w-full">
-		<button class="btn btn-success w-full" on:click={handleCreateTodo}
-			><Fa icon={faCirclePlus} /> add todo
+		<button class="btn btn-success w-full" on:click={handleCreateTodo}>
+			<Fa icon={faCirclePlus} />
+			add todo
 		</button>
 	</div>
 	{#if category.items.length > 0}
