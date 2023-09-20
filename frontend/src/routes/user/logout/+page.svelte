@@ -21,7 +21,7 @@
 		on:submitended={() => (isSubmitting = false)}
 	>
 		<LoadingButton
-			className="btn-warning mt-2"
+			class="btn-warning mt-2"
 			text="Yes, I'm a piece of shit"
 			loading={isSubmitting}
 			type="submit"

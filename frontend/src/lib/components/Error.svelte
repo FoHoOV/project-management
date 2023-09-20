@@ -1,8 +1,11 @@
 <script lang="ts">
 	import Fa from 'svelte-fa/src/fa.svelte';
 	import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+
 	export let message: string | undefined | null = null;
-	export let className: string = '';
+	export { className as class };
+
+	let className: string = '';
 </script>
 
 {#if message}

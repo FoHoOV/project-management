@@ -36,7 +36,7 @@
 		isCreateTodoCategorySubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {
-		todos.addCategory(form);
+		todos.addCategory(e.detail.response);
 		resetForm();
 	}}
 	bind:this={formElement}
@@ -45,26 +45,21 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
-		<FormInput
-			name="title"
-			className="w-full"
-			hideLabel={true}
-			errors={formErrors?.errors?.title}
-		/>
+		<FormInput name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"
-			className="w-full"
+			class="w-full"
 			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>
 		<div class="card-actions justify-end w-full">
 			<LoadingButton
 				text="add"
-				className="flex-auto"
+				class="flex-auto"
 				type="submit"
 				loading={isCreateTodoCategorySubmitting}
 			/>
-			<LoadingButton text="reset" className="btn-warning" type="button" on:click={resetForm} />
+			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>

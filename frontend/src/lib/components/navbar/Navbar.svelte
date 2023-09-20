@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Fa from 'svelte-fa/src/fa.svelte';
-	import { faBarsStaggered, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+	import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 	import { themeChange } from 'theme-change';
 	import { onMount } from 'svelte';
 	import Drawer from './Drawer.svelte';
+
 	export let appName: string;
 	export let href: string;
 

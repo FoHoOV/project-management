@@ -35,16 +35,16 @@
 	<div class="card-body items-center text-center md:flex-grow-0 md:flex-shrink-0 md:w-1/2">
 		<Error message={validationErrors?.message} />
 
-		<FormInput name="username" className="w-full" errors={validationErrors?.errors?.username} />
+		<FormInput name="username" class="w-full" errors={validationErrors?.errors?.username} />
 		<FormInput
 			name="password"
-			className="w-full"
+			class="w-full"
 			type="password"
 			errors={validationErrors?.errors?.password}
 		/>
 		<div class="card-actions justify-start w-full">
 			<LoadingButton
-				className="btn-primary mt-4 flex-grow"
+				class="btn-primary mt-4 flex-grow"
 				text="login"
 				loading={isFormSubmitting}
 				type="submit"

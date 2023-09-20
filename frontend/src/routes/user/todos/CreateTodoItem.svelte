@@ -46,28 +46,18 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
-		<FormInput className="hidden" type="hidden" name="is_done" value={false} errors={''} />
-		<FormInput className="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
-		<FormInput
-			name="title"
-			className="w-full"
-			hideLabel={true}
-			errors={formErrors?.errors?.title}
-		/>
+		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
+		<FormInput class="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
+		<FormInput name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"
-			className="w-full"
+			class="w-full"
 			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>
 		<div class="card-actions justify-end w-full">
-			<LoadingButton
-				text="add"
-				className="flex-auto"
-				type="submit"
-				loading={isAddTodoItemSubmitting}
-			/>
-			<LoadingButton text="reset" className="btn-warning" type="button" on:click={resetForm} />
+			<LoadingButton text="add" class="flex-auto" type="submit" loading={isAddTodoItemSubmitting} />
+			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>

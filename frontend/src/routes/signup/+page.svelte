@@ -6,7 +6,7 @@
 	import { superEnhance, getFormErrors } from '$lib/enhance/form';
 	import { schema } from './validators';
 
-	export let form: ActionData;	
+	export let form: ActionData;
 	let isFormSubmitting: boolean = false;
 	$: validationErrors = getFormErrors(form);
 </script>
@@ -30,23 +30,23 @@
 >
 	<div class="card-body items-center text-center md:flex-grow-0 md:flex-shrink-0 md:w-1/2">
 		<Error message={validationErrors?.message} />
-		<FormInput name="username" className="w-full" errors={validationErrors?.errors?.username} />
+		<FormInput name="username" class="w-full" errors={validationErrors?.errors?.username} />
 		<FormInput
 			name="password"
-			className="w-full"
+			class="w-full"
 			type="password"
 			errors={validationErrors?.errors?.password}
 		/>
 		<FormInput
 			name="confirm_password"
 			label="confirm password"
-			className="w-full"
+			class="w-full"
 			type="password"
 			errors={validationErrors?.errors?.confirm_password}
 		/>
 		<div class="card-actions justify-start w-full">
 			<LoadingButton
-				className="btn-primary mt-4 flex-grow"
+				class="btn-primary mt-4 flex-grow"
 				text="signup"
 				loading={isFormSubmitting}
 				type="submit"
