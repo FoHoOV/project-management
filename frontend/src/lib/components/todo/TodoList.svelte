@@ -37,7 +37,7 @@
 		});
 	}
 
-	function sortTodos(todos: TodoItem[]) {
+	function moveDoneTodosToBottom(todos: TodoItem[]) {
 		const filteredTodos = todos.sort((a, b) => {
 			if (a.is_done && b.is_done) {
 				return 0;
@@ -88,7 +88,7 @@
 		</button>
 	</div>
 	{#if category.items.length > 0}
-		{#each sortTodos(category.items) as todo (todo.id)}
+		{#each moveDoneTodosToBottom(category.items) as todo (todo.id)}
 			<div
 				class="w-full"
 				in:receive={{ key: todo.id }}
