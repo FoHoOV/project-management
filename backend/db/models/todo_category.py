@@ -15,7 +15,7 @@ class TodoCategory(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates="todo_categories")
     items: Mapped[List["TodoItem"]] = relationship(
-        back_populates="category", cascade="all, delete-orphan"
+        back_populates="category", cascade="all, delete-orphan", order_by="desc(TodoItem.id)"
     )
 
     def __repr__(self) -> str:

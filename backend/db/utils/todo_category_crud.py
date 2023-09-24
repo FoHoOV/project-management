@@ -13,7 +13,7 @@ from db.schemas.todo_category import (
 
 
 def get_categories_for_user(db: Session, user_id: int):
-    return db.query(TodoCategory).filter(User.id == user_id).all()
+    return db.query(TodoCategory).filter(User.id == user_id).order_by(TodoCategory.id.desc()).all()
 
 
 def create(db: Session, category: TodoCategoryCreate, user_id: int):

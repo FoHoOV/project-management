@@ -24,7 +24,7 @@ def get_todos_for_user(
     elif search_todo_params.status == SearchTodoStatus.PENDING:
         query = query.filter(TodoItem.is_done == False)
 
-    return query.join(User).filter(User.id == user_id).all()
+    return query.join(User).filter(User.id == user_id).order_by(TodoItem.id.desc()).all()
 
 
 def create(db: Session, todo: TodoItemCreate, user_id: int):
