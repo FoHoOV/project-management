@@ -9,7 +9,7 @@ const addTodo = (todo: TodoItem): void => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
-			category.items.push(todo);
+			category.items.unshift(todo);
 			return category;
 		});
 	});
@@ -33,12 +33,11 @@ const updateTodo = (todo: TodoItem, isDone: boolean) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
-			category.items.map<TodoItem>((value) => {
+			category.items.forEach((value) => {
 				if (value.id !== todo.id) {
-					return value;
+					return;
 				}
 				value.is_done = isDone;
-				return value;
 			});
 			return category;
 		});
@@ -46,7 +45,10 @@ const updateTodo = (todo: TodoItem, isDone: boolean) => {
 };
 
 const addCategory = (category: TodoCategory) => {
-	_update((categories) => [...categories, category]);
+	_update((categories) => {
+		categories.unshift(category);
+		return categories;
+	});
 };
 
 const removeCategory = (category: TodoCategory) => {

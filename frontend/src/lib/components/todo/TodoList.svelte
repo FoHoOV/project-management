@@ -38,16 +38,17 @@
 	}
 
 	function moveDoneTodosToBottom(todos: TodoItem[]) {
-		const filteredTodos = todos.sort((a, b) => {
-			if (a.is_done && b.is_done) {
-				return 0;
+		const sortedTodos = todos.sort((a, b) => {
+			if (a.is_done == b.is_done) {	
+				return a.id < b.id ? -1 : 1;
 			}
+
 			if (a.is_done) {
 				return 1;
 			}
 			return -1;
 		});
-		return filteredTodos;
+		return sortedTodos;
 	}
 
 	function handleCreateTodo(event: MouseEvent) {
