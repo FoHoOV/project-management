@@ -40,7 +40,7 @@
 	function moveDoneTodosToBottom(todos: TodoItem[]) {
 		const sortedTodos = todos.sort((a, b) => {
 			if (a.is_done == b.is_done) {	
-				return a.id < b.id ? -1 : 1;
+				return a.id < b.id ? 1 : -1;
 			}
 
 			if (a.is_done) {
