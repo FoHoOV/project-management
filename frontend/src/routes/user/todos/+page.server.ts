@@ -34,7 +34,6 @@ export const load = (async ({ locals, fetch }) => {
 export const actions: Actions = {
 	addTodo: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
-
 		const validationsResult = await createTodoItemSchema.safeParseAsync(
 			convertFormDataToObject(formData)
 		);
