@@ -10,6 +10,7 @@ export const load = (async ({ locals, fetch }) => {
 	// https://github.com/sveltejs/kit/issues/9785
 	// if we reject or throw a redirect in streamed promises it doesn't work for now and crashes the server
 	// we have to wait for a fix or handle the error and make it an expected error :(
+	// even returning an error (which is an expected error) still results in a server crash :(
 	return {
 		streamed: {
 			todos: callService({
