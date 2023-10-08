@@ -7,9 +7,13 @@
 	import CreateTodoItem from './CreateTodoItem.svelte';
 	import CircleButton from '$components/buttons/CircleButton.svelte';
 	import { faCross, faPlus } from '@fortawesome/free-solid-svg-icons';
+	import Modal from '$components/popups/Modal.svelte';
+	import CreateTodoCategory from './CreateTodoCategory.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
+
+	let createTodoCategory: Modal;
 
 	async function resolveTodoCategories() {
 		const fetchedTodos = await data.streamed.todos;
@@ -40,7 +44,16 @@
 			</div>
 		{/each}
 	</div>
-	<CircleButton icon={faPlus} class="w-16 h-16 btn-primary fixed bottom-8 right-8" />
+	<CircleButton
+		icon={faPlus}
+		class="w-16 h-16 btn-primary fixed bottom-8 right-8"
+		on:click={createTodoCategory.show}
+	/>
+	<Modal title="Create todo categories here!" bind:this={createTodoCategory}>
+		<svelte:fragment slot="body" let:close let:show>
+			<CreateTodoCategory {form} />
+		</svelte:fragment>
+	</Modal>
 {:catch error}
 	<Error message={error.message} />
 {/await}
