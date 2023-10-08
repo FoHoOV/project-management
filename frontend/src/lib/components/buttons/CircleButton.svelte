@@ -8,6 +8,6 @@
 	let className: string = 'h-6 w-6';
 </script>
 
-<button class="btn btn-circle">
-	<Fa {icon} {className} />
+<button class="btn btn-circle {className}" on:click on:dblclick on:blur>
+	<Fa {icon} />
 </button>

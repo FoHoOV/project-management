@@ -15,12 +15,13 @@
 	import { page } from '$app/stores';
 	import todoCategories from '$lib/stores/todos';
 	import Error from '$components/Error.svelte';
+	import Modal from '$components/popups/Modal.svelte';
 
 	export let category: TodoCategory;
 
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
-	let createTodoModal: HTMLDialogElement;
+	let createTodoModal: Modal;
 
 	async function handleRemoveCategory() {
 		isCallingService = true;
@@ -39,7 +40,7 @@
 
 	function moveDoneTodosToBottom(todos: TodoItem[]) {
 		const sortedTodos = todos.sort((a, b) => {
-			if (a.is_done == b.is_done) {	
+			if (a.is_done == b.is_done) {
 				return a.id < b.id ? 1 : -1;
 			}
 
@@ -52,7 +53,7 @@
 	}
 
 	function handleCreateTodo(event: MouseEvent) {
-		createTodoModal.showModal();
+		createTodoModal.show();
 	}
 </script>
 
@@ -104,19 +105,8 @@
 	{/if}
 </div>
 
-<dialog
-	id="todo-item-create-modal"
-	class="modal modal-bottom sm:modal-middle"
-	bind:this={createTodoModal}
->
-	<div class="modal-box">
-		<h3 class="font-bold text-lg mb-3">Create a new todo here!!</h3>
+<Modal title="Create a new todo here!" bind:this={createTodoModal}>
+	<svelte:fragment slot="body">
 		<slot name="create-todo-item" />
-		<div class="modal-action">
-			<form method="dialog">
-				<!-- if there is a button in form, it will close the modal -->
-				<button class="btn">Close</button>
-			</form>
-		</div>
-	</div>
-</dialog>
+	</svelte:fragment>
+</Modal>

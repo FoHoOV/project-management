@@ -4,8 +4,9 @@
 	import type { ActionData, PageData } from './$types';
 	import todoCategories from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
-	import CreateTodoCategory from './CreateTodoCategory.svelte';
 	import CreateTodoItem from './CreateTodoItem.svelte';
+	import CircleButton from '$components/buttons/CircleButton.svelte';
+	import { faCross, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -38,12 +39,8 @@
 				</TodoList>
 			</div>
 		{/each}
-		<div
-			class="relative min-w-[20rem] grow border rounded-xl border-success-content p-5 flex items-center flex-col h-full"
-		>
-			<CreateTodoCategory {form} />
-		</div>
 	</div>
+	<CircleButton icon={faPlus} class="w-16 h-16 btn-primary fixed bottom-8 right-8" />
 {:catch error}
 	<Error message={error.message} />
 {/await}
