@@ -33,13 +33,14 @@
 {#await resolveTodoCategories()}
 	<span class="loading loading-ring m-auto block" />
 {:then}
-	<div class="min-h-16 flex gap-5 overflow-auto">
+	<div class="h-full flex gap-5 overflow-auto">
 		{#each $todoCategories as category (category.id)}
-			<div class="mb-20 grow shrink-0 basis-[20rem] md:basis-[25rem]" animate:flip={{ duration: 200 }}>
+			<div
+				class="mb-20 shrink-0 grow basis-[20rem] md:basis-[25rem]"
+				animate:flip={{ duration: 200 }}
+			>
 				<TodoList {category}>
-					<svelte:fragment slot="create-todo-item">
-						<CreateTodoItem {form} categoryId={category.id} />
-					</svelte:fragment>
+					<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 				</TodoList>
 			</div>
 		{/each}

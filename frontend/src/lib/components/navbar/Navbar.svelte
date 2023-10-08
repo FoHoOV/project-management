@@ -7,20 +7,23 @@
 
 	export let appName: string;
 	export let href: string;
+	export { className as class };
+
+	let className: string = '';
 
 	onMount(() => {
 		themeChange(false);
 	});
 </script>
 
-<div class="navbar shadow-2xl bg-base-100">
+<div class="navbar bg-base-100 shadow-2xl {className}">
 	<div class="navbar-start">
 		<Drawer>
 			<svelte:fragment slot="drawer-items" let:closeDrawer>
 				<slot name="start" {closeDrawer} />
 			</svelte:fragment>
 		</Drawer>
-		<a class="btn btn-ghost normal-case text-xl" {href}>{appName}</a>
+		<a class="btn btn-ghost text-xl normal-case" {href}>{appName}</a>
 	</div>
 	<div class="navbar-center hidden lg:flex">
 		<ul class="menu menu-horizontal px-1">
@@ -33,11 +36,11 @@
 			<input type="checkbox" />
 
 			<span class="swap-on" data-key="theme" data-set-theme="dark">
-				<Fa icon={faSun} class="fill-current w-10 h-5" />
+				<Fa icon={faSun} class="h-5 w-10 fill-current" />
 			</span>
 
 			<span class="swap-off fill-current" data-key="theme" data-set-theme="light">
-				<Fa icon={faMoon} class="fill-current w-10 h-5" />
+				<Fa icon={faMoon} class="h-5 w-10 fill-current" />
 			</span>
 		</label>
 		<ul class="menu px-1">
