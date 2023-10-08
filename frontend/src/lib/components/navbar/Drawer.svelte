@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa/src/fa.svelte';;
+	import Fa from 'svelte-fa/src/fa.svelte';
 
 	let showDrawer = false;
 
