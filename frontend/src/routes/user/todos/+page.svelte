@@ -33,9 +33,9 @@
 {#await resolveTodoCategories()}
 	<span class="loading loading-ring m-auto block" />
 {:then}
-	<div class="flex gap-5 overflow-auto min-h-16">
+	<div class="min-h-16 flex gap-5 overflow-auto">
 		{#each $todoCategories as category (category.id)}
-			<div class="min-w-[20rem] mb-20 grow" animate:flip={{ duration: 200 }}>
+			<div class="mb-20 grow shrink-0 basis-[20rem] md:basis-[25rem]" animate:flip={{ duration: 200 }}>
 				<TodoList {category}>
 					<svelte:fragment slot="create-todo-item">
 						<CreateTodoItem {form} categoryId={category.id} />
@@ -46,7 +46,7 @@
 	</div>
 	<CircleButton
 		icon={faPlus}
-		class="w-16 h-16 btn-primary fixed bottom-8 right-8"
+		class="btn-primary fixed bottom-8 right-8 h-16 w-16"
 		on:click={createTodoCategory.show}
 	/>
 	<Modal title="Create todo categories here!" bind:this={createTodoCategory}>
