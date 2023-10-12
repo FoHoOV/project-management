@@ -30,9 +30,9 @@
 	on:submitended={() => {
 		isFormSubmitting = false;
 	}}
-	class="flex items-start justify-center card bg-base-300 w-full flex-row"
+	class="flex items-start justify-center card bg-base-300 w-full flex-row shadow-md"
 >
-	<div class="card-body items-center text-center md:flex-grow-0 md:flex-shrink-0 md:w-1/2">
+	<div class="card-body items-center text-center md:flex-grow-0 md:flex-shrink-0 w-full">
 		<Error message={validationErrors?.message} />
 
 		<FormInput name="username" class="w-full" errors={validationErrors?.errors?.username} />
