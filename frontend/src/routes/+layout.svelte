@@ -20,24 +20,28 @@
 	// });
 </script>
 
-<Navbar appName="Todos" href="/user/todos">
-	<svelte:fragment slot="start" let:closeDrawer>
-		<NavbarItem href="/" name="home" on:click={()=> closeDrawer()} />
-	</svelte:fragment>
-	<svelte:fragment slot="end">
-		{#if data.token}
-			<NavbarItem href="/user/logout" name="logout" />
+<div class="flex h-[100vh] flex-col">
+	<Navbar appName="Todos" href="/user/todos">
+		<svelte:fragment slot="start" let:closeDrawer>
+			<NavbarItem href="/" name="home" on:click={() => closeDrawer()} />
+		</svelte:fragment>
+		<svelte:fragment slot="end">
+			{#if data.token}
+				<NavbarItem href="/user/logout" name="logout" />
+			{:else}
+				<NavbarItem href="/login" name="login" />
+			{/if}
+		</svelte:fragment>
+	</Navbar>
+	<div class="flex-1 overflow-auto pt-6">
+		{#if $navigating}
+			<span
+				class="loading loading-ball loading-lg absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
+			/>
 		{:else}
-			<NavbarItem href="/login" name="login" />
+			<div class="mx-auto px-6">
+				<slot />
+			</div>
 		{/if}
-	</svelte:fragment>
-</Navbar>
-<div class="mx-auto px-6 pt-6">
-	{#if $navigating}
-		<span
-			class="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 loading loading-ball loading-lg"
-		/>
-	{:else}
-		<slot />
-	{/if}
+	</div>
 </div>
