@@ -11,12 +11,26 @@
 	export { className as class };
 
 	let className: string = '';
+
+	let input: HTMLInputElement;
+
+	export function focus() {
+		input.focus();
+	}
 </script>
 
 <div class="flex flex-col {className}">
 	<label class="label" class:hidden={hideLabel} for={name}>
 		<span class="label-text">{label}</span>
 	</label>
-	<input {type} id={name} {name} placeholder={label} class="input input-bordered w-full" {value} />
+	<input
+		bind:this={input}
+		{type}
+		id={name}
+		{name}
+		placeholder={label}
+		class="input input-bordered w-full"
+		{value}
+	/>
 	<Error message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
 </div>

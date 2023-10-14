@@ -10,6 +10,7 @@
 	export let form: ActionData;
 
 	let formElement: HTMLFormElement;
+	let firstInputElement: FormInput;
 
 	$: formErrors = getFormErrors(form);
 	let isCreateTodoCategorySubmitting = false;
@@ -17,6 +18,7 @@
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
+		firstInputElement.focus();
 	}
 </script>
 
@@ -45,7 +47,7 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
-		<FormInput name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
+		<FormInput bind:this={firstInputElement} name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"
 			class="w-full"
