@@ -9,7 +9,7 @@ from db.models.base import Base
 class TodoCategory(Base):
     __tablename__ = "todo_category"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))

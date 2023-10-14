@@ -8,7 +8,7 @@ from db.models.base import Base
 class TodoItem(Base):
     __tablename__ = "todo_item"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     is_done: Mapped[bool] = mapped_column(Boolean(), default=False)

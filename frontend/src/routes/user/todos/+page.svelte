@@ -39,7 +39,7 @@
 				class="mb-5 shrink-0 grow basis-[20rem] md:basis-[25rem]"
 				animate:flip={{ duration: 200 }}
 			>
-				<TodoList class="" {category}>
+				<TodoList {category}>
 					<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 				</TodoList>
 			</div>
