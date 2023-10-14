@@ -18,7 +18,9 @@
 	import Modal from '$components/popups/Modal.svelte';
 
 	export let category: TodoCategory;
+	export { className as class };
 
+	let className: string = '';
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
 	let createTodoModal: Modal;
@@ -58,29 +60,29 @@
 </script>
 
 <div
-	class="relative w-full border rounded-xl border-success-content p-5 flex items-center flex-col h-full"
+	class="relative flex h-full w-full flex-col items-center rounded-xl border border-success-content p-5 {className}"
 >
 	<Error message={apiErrorTitle} />
 	{#if isCallingService}
 		<div
-			class="absolute flex align-center justify-center top-0.5 left-0.5 w-full h-full z-10 bg-base-300 rounded-lg"
+			class="align-center absolute left-0.5 top-0.5 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
 		>
 			<span class="loading loading-spinner loading-md dark:text-black" />
 		</div>
 	{/if}
-	<div class="flex flex-col self-start w-full mb-5">
-		<div class="flex justify-between w-full">
+	<div class="mb-5 flex w-full flex-col self-start">
+		<div class="flex w-full justify-between">
 			<div>
-				<Fa icon={faInfoCircle} class="inline mx-2" />
-				<span class="font-bold text-lg">{category.title}</span>
+				<Fa icon={faInfoCircle} class="mx-2 inline" />
+				<span class="text-lg font-bold">{category.title}</span>
 			</div>
 			<button on:click={handleRemoveCategory}>
 				<Fa icon={faTrashCan} class="text-red-400" />
 			</button>
 		</div>
 		<div>
-			<Fa icon={faArrowCircleRight} class="inline mx-2" />
-			<span class="font-bold text-lg">{category.title}</span>
+			<Fa icon={faArrowCircleRight} class="mx-2 inline" />
+			<span class="text-lg font-bold">{category.title}</span>
 		</div>
 	</div>
 	<div class="w-full">
@@ -101,7 +103,7 @@
 			</div>
 		{/each}
 	{:else}
-		<h1 class="text-center p-5">no todos yet!</h1>
+		<h1 class="p-5 text-center">no todos yet!</h1>
 	{/if}
 </div>
 

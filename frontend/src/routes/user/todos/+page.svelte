@@ -36,10 +36,10 @@
 	<div class="h-full flex gap-5 overflow-auto">
 		{#each $todoCategories as category (category.id)}
 			<div
-				class="mb-20 shrink-0 grow basis-[20rem] md:basis-[25rem]"
+				class="mb-5 shrink-0 grow basis-[20rem] md:basis-[25rem]"
 				animate:flip={{ duration: 200 }}
 			>
-				<TodoList {category}>
+				<TodoList class="" {category}>
 					<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 				</TodoList>
 			</div>
