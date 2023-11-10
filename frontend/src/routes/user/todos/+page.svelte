@@ -4,11 +4,11 @@
 	import type { ActionData, PageData } from './$types';
 	import todoCategories from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
-	import CreateTodoItem from '$components/todo/CreateTodoItem.svelte';
+	import CreateTodoItem from './CreateTodoItem.svelte';
 	import CircleButton from '$components/buttons/CircleButton.svelte';
 	import { faCross, faPlus } from '@fortawesome/free-solid-svg-icons';
 	import Modal from '$components/popups/Modal.svelte';
-	import CreateTodoCategory from '$components/todo/CreateTodoCategory.svelte';
+	import CreateTodoCategory from '$routes/user/todos/CreateTodoCategory.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
