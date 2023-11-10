@@ -5,50 +5,34 @@ import { enhance } from '$app/forms';
 import type { z } from 'zod';
 import { validate, type ValidatorErrorEvent, type ValidatorOptions } from './validator';
 
-export type EnhanceOptions<TActionData = unknown> = {
+export type EnhanceOptions<TActionData> = {
 	submit?: SubmitFunction;
-	form?: TActionData;
+	action?: TActionData;
 };
 
-export type SubmitEvents<
-	TSchema extends z.ZodTypeAny,
-	TActionData extends { result?: TResult } | undefined | null = any,
-	TResult = unknown
-> = {
+export type SubmitEvents<TSchema extends z.ZodTypeAny, TActionData> = {
 	'on:submitstarted'?: (e: CustomEvent<void>) => void;
 	'on:submitended'?: (e: CustomEvent<void>) => void;
 	'on:submitsucceeded'?: (
 		e: CustomEvent<{
-			response: NonNullable<NonNullable<TActionData>['result']>;
+			response: NonNullable<NonNullable<Extract<TActionData, { result: any }>['result']>>;
 			formData: z.infer<TSchema>;
 		}>
 	) => void;
 };
 
-export function superEnhance<
-	TSchema extends z.ZodTypeAny,
-	TActionData extends { result?: TResult } | undefined | null = any,
-	TResult = unknown
->(
+export function superEnhance<TSchema extends z.ZodTypeAny, TActionData = any>(
 	node: HTMLFormElement,
 	options?: Partial<EnhanceOptions<TActionData>>
 ): ActionReturn<ValidatorOptions<TSchema>, SubmitEvents<TSchema, TActionData>>;
-export function superEnhance<
-	TSchema extends z.ZodTypeAny,
-	TActionData extends { result?: TResult } | undefined | null = any,
-	TResult = unknown
->(
+export function superEnhance<TSchema extends z.ZodTypeAny, TActionData>(
 	node: HTMLFormElement,
 	options: { validator: ValidatorOptions<TSchema> } & Partial<EnhanceOptions<TActionData>>
 ): ActionReturn<
 	ValidatorOptions<TSchema>,
 	ValidatorErrorEvent<TSchema> & SubmitEvents<TSchema, TActionData>
 >;
-export function superEnhance<
-	TSchema extends z.ZodTypeAny,
-	TActionData extends { result?: TResult } | undefined | null = any,
-	TResult = unknown
->(
+export function superEnhance<TSchema extends z.ZodTypeAny, TActionData>(
 	node: HTMLFormElement,
 	options?: { validator?: ValidatorOptions<TSchema> } & Partial<EnhanceOptions<TActionData>>
 ): ActionReturn<ValidatorOptions<TSchema>, SubmitEvents<TSchema, TActionData>> {
@@ -65,7 +49,7 @@ export function superEnhance<
 					node.dispatchEvent(
 						new CustomEvent('submitsucceeded', {
 							detail: {
-								response: result.data?.result,
+								response: result.data?.result as Extract<TActionData, { result: any }>['result'],
 								formData: Object.fromEntries(formData)
 							}
 						})

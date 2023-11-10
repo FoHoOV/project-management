@@ -37,6 +37,7 @@ export const actions: Actions = {
 		const validationsResult = await createTodoItemSchema.safeParseAsync(
 			convertFormDataToObject(formData)
 		);
+
 		if (!validationsResult.success) {
 			return superFail(400, {
 				message: 'Invalid form, please review your inputs',
@@ -44,16 +45,19 @@ export const actions: Actions = {
 			});
 		}
 
-		return await callServiceInFormActions({
-			serviceCall: async () => {
-				return await TodoItemClient({ token: locals.token, fetchApi: fetch }).createForUserTodoItem(
-					{
+		return {
+			addTodoResult: await callServiceInFormActions({
+				serviceCall: async () => {
+					return await TodoItemClient({
+						token: locals.token,
+						fetchApi: fetch
+					}).createForUserTodoItem({
 						...validationsResult.data
-					}
-				);
-			},
-			errorSchema: TodoItemCreate
-		});
+					});
+				},
+				errorSchema: TodoItemCreate
+			})
+		};
 	},
 	createCategory: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -61,6 +65,7 @@ export const actions: Actions = {
 		const validationsResult = await createTodoCategorySchema.safeParseAsync(
 			convertFormDataToObject(formData)
 		);
+
 		if (!validationsResult.success) {
 			return superFail(400, {
 				message: 'Invalid form, please review your inputs',
@@ -68,16 +73,18 @@ export const actions: Actions = {
 			});
 		}
 
-		return await callServiceInFormActions({
-			serviceCall: async () => {
-				return await TodoCategoryClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).createForUserTodoCategory({
-					...validationsResult.data
-				});
-			},
-			errorSchema: TodoCategoryCreate
-		});
+		return {
+			createCategoryResult: await callServiceInFormActions({
+				serviceCall: async () => {
+					return await TodoCategoryClient({
+						token: locals.token,
+						fetchApi: fetch
+					}).createForUserTodoCategory({
+						...validationsResult.data
+					});
+				},
+				errorSchema: TodoCategoryCreate
+			})
+		};
 	}
 } satisfies Actions;

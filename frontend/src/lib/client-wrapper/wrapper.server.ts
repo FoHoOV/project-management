@@ -76,9 +76,9 @@ export async function callServiceInFormActions<
 		errorCallback: errorCallback
 	});
 
-	if (!result.success) {
-		return result.error;
-	} else {
+	if (result.success) {
 		return result;
+	} else {
+		return result.error;
 	}
 }
