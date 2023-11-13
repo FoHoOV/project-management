@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa/src/fa.svelte';
+	import Fa from 'svelte-fa';
 
 	let showDrawer = false;
 
@@ -17,7 +17,7 @@
 				<Fa icon={faBarsStaggered} />
 			</label>
 		</div>
-		<div class="flex-none hidden lg:inline-flex">
+		<div class="hidden flex-none lg:inline-flex">
 			<ul class="menu menu-horizontal">
 				<slot name="drawer-items" {closeDrawer} />
 			</ul>
@@ -25,7 +25,7 @@
 	</div>
 	<div class="drawer-side z-10">
 		<label for="navbar-drawer" class="drawer-overlay" />
-		<ul class="menu p-4 w-80 h-full bg-base-200">
+		<ul class="menu h-full w-80 bg-base-200 p-4">
 			<slot name="drawer-items" {closeDrawer} />
 		</ul>
 	</div>

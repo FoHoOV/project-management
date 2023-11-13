@@ -9,7 +9,7 @@
 		faInfoCircle,
 		faTrashCan
 	} from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa/src/fa.svelte';
+	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';

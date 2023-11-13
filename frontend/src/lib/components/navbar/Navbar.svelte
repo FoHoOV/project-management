@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Fa from 'svelte-fa/src/fa.svelte';
+	import Fa from 'svelte-fa';
 	import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 	import { themeChange } from 'theme-change';
 	import { onMount } from 'svelte';
@@ -31,7 +31,7 @@
 		</ul>
 	</div>
 	<div class="navbar-end">
-		<label class="swap swap-rotate">
+		<label class="swap-rotate swap">
 			<!-- this hidden checkbox controls the state -->
 			<input type="checkbox" />
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { faClose, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa/src/fa.svelte';
+	import Fa from 'svelte-fa';
 
 	export let icon: IconDefinition = faClose;
 	export { className as class };

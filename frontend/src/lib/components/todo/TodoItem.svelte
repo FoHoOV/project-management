@@ -3,7 +3,7 @@
 	import todos from '$lib/stores/todos';
 	import type { TodoItem } from '$lib/client/models';
 	import Error from '$components/Error.svelte';
-	import Fa from 'svelte-fa/src/fa.svelte';
+	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
@@ -46,17 +46,17 @@
 	}
 </script>
 
-<div class="card bg-base-200 hover:bg-base-100 shadow-xl mt-4">
+<div class="card mt-4 bg-base-200 shadow-xl hover:bg-base-100">
 	<div class="card-body">
 		<Error message={apiErrorTitle} />
 		{#if isCallingService}
 			<div
-				class="absolute flex align-center justify-center top-0.5 left-0.5 w-full h-full z-10 bg-base-300 rounded-lg"
+				class="align-center absolute left-0.5 top-0.5 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
 			>
 				<span class="loading loading-spinner loading-md dark:text-black" />
 			</div>
 		{/if}
-		<div class="card-title flex justify-between w-full">
+		<div class="card-title flex w-full justify-between">
 			<h1>
 				{todo.title}
 			</h1>
