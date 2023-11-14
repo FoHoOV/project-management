@@ -123,9 +123,9 @@ function _getResultFromFormAction<
 >(
 	data: Record<string, any> | undefined,
 	options: Partial<EnhanceOptions<TSchema, TFormAction, TKey>> | undefined
-) {
+): FormActionResultType<TFormAction, TKey> {
 	if (!data) {
-		return null;
+		throw new Error("form action didn't return anything which is an unexpected behavior");
 	}
 
 	if (!options || !options.action) {
