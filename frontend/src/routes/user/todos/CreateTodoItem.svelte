@@ -27,7 +27,8 @@
 	action="/user/todos?/addTodo"
 	use:superEnhance={{
 		validator: { schema: createTodoItemSchema },
-		action: form?.addTodoResult
+		form: form,
+		action: 'addTodoResult'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {

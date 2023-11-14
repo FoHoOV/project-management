@@ -30,9 +30,9 @@
 	on:submitended={() => {
 		isFormSubmitting = false;
 	}}
-	class="flex items-start justify-center card bg-base-300 w-full flex-row shadow-md"
+	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 >
-	<div class="card-body items-center text-center md:flex-grow-0 md:flex-shrink-0 w-full">
+	<div class="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0">
 		<Error message={validationErrors?.message} />
 
 		<FormInput name="username" class="w-full" errors={validationErrors?.errors?.username} />
@@ -42,7 +42,7 @@
 			type="password"
 			errors={validationErrors?.errors?.password}
 		/>
-		<div class="card-actions justify-start w-full">
+		<div class="card-actions w-full justify-start">
 			<LoadingButton
 				class="btn-primary mt-4 flex-grow"
 				text="login"

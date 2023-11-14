@@ -21,7 +21,7 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 		case ErrorType.VALIDATION_ERROR:
 			return superFail(400, { message: e.message, error: e.validationError });
 		case ErrorType.UNAUTHORIZED:
-			return await handleUnauthenticatedUser();
+			return (await handleUnauthenticatedUser()) as never;
 		default:
 			throw e.originalError;
 	}

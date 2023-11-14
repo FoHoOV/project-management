@@ -8,7 +8,6 @@
 	import { createTodoCategorySchema } from '$routes/user/todos/validator';
 
 	export let form: ActionData;
-
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 
@@ -26,7 +25,8 @@
 	action="/user/todos?/createCategory"
 	use:superEnhance={{
 		validator: { schema: createTodoCategorySchema },
-		action: form?.createCategoryResult
+		form: form,
+		action: 'createCategoryResult'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {
