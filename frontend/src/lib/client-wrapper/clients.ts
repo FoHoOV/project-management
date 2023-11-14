@@ -23,7 +23,7 @@ export async function isTokenExpirationDateValidAsync(token?: string) {
 	try {
 		const parsedToken: JWTPayload = decodeJwt(token);
 		if (!parsedToken.exp) {
-			throw new TokenError('expiration token not found in jwt');
+			throw new TokenError('expiration date not found in jwt');
 		}
 		if (parsedToken.exp * 1000 < Date.now()) {
 			return false;
@@ -50,7 +50,10 @@ const checkAccessToken = async (context: RequestContext, config?: ConfigurationO
 		throw new TokenError('token has expired');
 	}
 
-	headers.set('Authorization', `${config.token?.token_type ?? 'bearer'} ${config.token.access_token}`);
+	headers.set(
+		'Authorization',
+		`${config.token?.token_type ?? 'bearer'} ${config.token.access_token}`
+	);
 
 	context.init.headers = headers;
 };
@@ -60,10 +63,14 @@ type ConfigurationOptions = Partial<Omit<ConfigurationParameters, 'accessToken'>
 	isTokenRequired?: boolean;
 };
 
-export const generateClient = <T extends typeof BaseAPI>(ApiClass: T, config?: ConfigurationOptions): InstanceType<T> => {
+export const generateClient = <T extends typeof BaseAPI>(
+	ApiClass: T,
+	config?: ConfigurationOptions
+): InstanceType<T> => {
 	return new ApiClass(
 		new Configuration({
-			basePath: PUBLIC_API_URL
+			basePath: PUBLIC_API_URL,
+			...(config ?? {})
 		})
 	).withPreMiddleware(async (context) => {
 		return await checkAccessToken(context, config);
@@ -81,7 +88,6 @@ export const TodoItemClient = (config?: ConfigurationOptions) => {
 export const TodoCategoryClient = (config?: ConfigurationOptions) => {
 	return generateClient(TodoCategoryApi, config);
 };
-
 
 export const UserClient = (config?: ConfigurationOptions) => {
 	return generateClient(UserApi, config);
