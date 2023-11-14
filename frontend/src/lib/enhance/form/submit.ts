@@ -16,10 +16,12 @@ export type EnhanceOptions<
 	validator: ValidatorOptions<TSchema>;
 };
 
-type FormResultType<TFormAction, TKey extends keyof NonNullable<TFormAction>> = Extract<
-	Pick<NonNullable<TFormAction>, TKey>[TKey],
-	{ result: any }
->['result'];
+export type FormActionResultType<
+	TFormAction,
+	TKey extends keyof NonNullable<TFormAction> = never
+> = TFormAction extends { result: infer TResult }
+	? Extract<TFormAction, { result: TResult }>['result']
+	: Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { result: any }>['result'];
 
 export type SubmitEvents<
 	TSchema extends z.ZodTypeAny,
@@ -30,9 +32,7 @@ export type SubmitEvents<
 	'on:submitended'?: (e: CustomEvent<void>) => void;
 	'on:submitsucceeded'?: (
 		e: CustomEvent<{
-			response: TKey extends { result: infer TResult }
-				? Extract<TFormAction, { result: TResult }>
-				: FormResultType<TFormAction, TKey>;
+			response: FormActionResultType<TFormAction, TKey>;
 			formData: z.infer<TSchema>;
 		}>
 	) => void;
@@ -55,12 +55,12 @@ export function superEnhance<TSchema extends z.ZodTypeAny>(
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction>
+	TKey extends keyof NonNullable<TFormAction> = never
 >(
 	node: HTMLFormElement,
 	options: EnhanceOptions<TSchema, TFormAction, TKey>
 ): ActionReturn<
-	EnhanceOptions<TSchema, never>,
+	EnhanceOptions<TSchema, TFormAction, TKey>,
 	ValidatorErrorEvent<TSchema> & SubmitEvents<TSchema, TFormAction, TKey>
 >;
 export function superEnhance<
@@ -69,7 +69,7 @@ export function superEnhance<
 	TKey extends keyof NonNullable<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
 	const handleSubmit =
-		options?.submit ?? defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
+		options?.submit ?? _defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
 
 	const validatorReturn = options?.validator && validate(node, options.validator);
 	const enhanceReturn = enhance(node, handleSubmit);
@@ -82,7 +82,7 @@ export function superEnhance<
 	};
 }
 
-function defaultSubmitHandler<
+function _defaultSubmitHandler<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
 	TKey extends keyof NonNullable<TFormAction> = never
@@ -100,11 +100,14 @@ function defaultSubmitHandler<
 			if (result.type != 'success') {
 				return;
 			}
-			console.log(getResultFromFormAction(result.data, options));
+			console.debug('s-form-result');
+			console.debug(_getResultFromFormAction(result.data, options));
+			console.debug('e-form-result');
+
 			node.dispatchEvent(
 				new CustomEvent('submitsucceeded', {
 					detail: {
-						response: getResultFromFormAction(result.data, options),
+						response: _getResultFromFormAction(result.data, options),
 						formData: Object.fromEntries(formData)
 					}
 				})
@@ -113,7 +116,7 @@ function defaultSubmitHandler<
 	};
 }
 
-function getResultFromFormAction<
+function _getResultFromFormAction<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
 	TKey extends keyof NonNullable<TFormAction> = never
