@@ -9,6 +9,7 @@
 	import { faCross, faPlus } from '@fortawesome/free-solid-svg-icons';
 	import Modal from '$components/popups/Modal.svelte';
 	import CreateTodoCategory from '$routes/user/todos/CreateTodoCategory.svelte';
+	import Empty from '$components/Empty.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -34,16 +35,20 @@
 	<span class="loading loading-ring m-auto block" />
 {:then}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#each $todoCategories as category (category.id)}
-			<div
-				class="mb-5 shrink-0 grow basis-[20rem] md:basis-[25rem]"
-				animate:flip={{ duration: 200 }}
-			>
-				<TodoList {category}>
-					<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
-				</TodoList>
-			</div>
-		{/each}
+		{#if $todoCategories.length == 0}
+			<Empty text="Create your first todo list!" />
+		{:else}
+			{#each $todoCategories as category (category.id)}
+				<div
+					class="mb-5 shrink-0 grow basis-[20rem] md:basis-[25rem]"
+					animate:flip={{ duration: 200 }}
+				>
+					<TodoList {category}>
+						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
+					</TodoList>
+				</div>
+			{/each}
+		{/if}
 	</div>
 	<CircleButton
 		icon={faPlus}

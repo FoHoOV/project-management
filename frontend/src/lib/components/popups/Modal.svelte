@@ -14,7 +14,7 @@
 
 <dialog class="modal modal-bottom sm:modal-middle" bind:this={modalElement}>
 	<div class="modal-box">
-		<h3 class="font-bold text-lg mb-3">{title}</h3>
+		<h3 class="mb-3 text-lg font-bold">{title}</h3>
 		<slot name="body" {show} {close} />
 		<div class="modal-action">
 			<form method="dialog">

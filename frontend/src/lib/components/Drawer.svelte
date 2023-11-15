@@ -16,7 +16,7 @@
 </script>
 
 <div class="drawer {startDrawerOpened ? 'lg:drawer-open' : ''}">
-	<input {id} type="checkbox" class="drawer-toggle" />
+	<input {id} type="checkbox" bind:checked={showDrawer} class="drawer-toggle" />
 	<div class="drawer-content z-40 flex h-[100vh] flex-col">
 		<Navbar title={navbarTitle} titleHref={navbarTitleHref}>
 			<svelte:fragment slot="start">
@@ -25,13 +25,13 @@
 						<Fa icon={faBarsStaggered} />
 					</label>
 				</div>
-				<slot name="drawer-navbar-start" />
+				<slot name="drawer-navbar-start" {closeDrawer} />
 			</svelte:fragment>
 			<svelte:fragment slot="center">
-				<slot name="drawer-navbar-center" />
+				<slot name="drawer-navbar-center" {closeDrawer} />
 			</svelte:fragment>
 			<svelte:fragment slot="end">
-				<slot name="drawer-navbar-end" />
+				<slot name="drawer-navbar-end" {closeDrawer} />
 			</svelte:fragment>
 		</Navbar>
 		<slot name="drawer-content" {closeDrawer} />
