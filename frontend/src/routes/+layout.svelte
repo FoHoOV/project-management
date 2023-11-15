@@ -1,9 +1,10 @@
 <script lang="ts">
 	import '../app.css';
-	import Navbar from '$lib/components/navbar/Navbar.svelte';
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import { navigating, page } from '$app/stores';
+	import { navigating } from '$app/stores';
 	import type { PageData } from './$types';
+	import Drawer from '$components/Drawer.svelte';
+	import { faHome, faProjectDiagram, faTasks } from '@fortawesome/free-solid-svg-icons';
 
 	export let data: PageData;
 
@@ -20,28 +21,34 @@
 	// });
 </script>
 
-<div class="flex h-[100vh] flex-col">
-	<Navbar appName="Todos" href="/user/todos">
-		<svelte:fragment slot="start" let:closeDrawer>
-			<NavbarItem href="/" name="home" on:click={() => closeDrawer()} />
-		</svelte:fragment>
-		<svelte:fragment slot="end">
-			{#if data.token}
-				<NavbarItem href="/user/logout" name="logout" />
-			{:else}
-				<NavbarItem href="/login" name="login" />
-			{/if}
-		</svelte:fragment>
-	</Navbar>
-	<div class="flex-1 overflow-auto pt-6">
-		{#if $navigating}
-			<span
-				class="loading loading-ball loading-lg absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
-			/>
-		{:else}
-			<div class="mx-auto px-6 h-full">
-				<slot />
-			</div>
+<Drawer id="app-drawer" startDrawerOpened={true} navbarTitle="Todos" navbarTitleHref="/user/todos">
+	<div slot="drawer-side">
+		<NavbarItem icon={faHome} href="/" name="Home" />
+		<NavbarItem icon={faTasks} href="/user/todos" name="Todos" />
+		{#if data.token}
+			<NavbarItem icon={faProjectDiagram} href="#" name="Projects"></NavbarItem>
 		{/if}
 	</div>
-</div>
+
+	<svelte:fragment slot="drawer-navbar-end">
+		{#if data.token}
+			<NavbarItem href="/user/logout" name="logout" />
+		{:else}
+			<NavbarItem href="/login" name="login" />
+		{/if}
+	</svelte:fragment>
+
+	<div class="flex flex-col overflow-hidden" slot="drawer-content" let:closeDrawer>
+		<div class="flex-1 overflow-auto pt-6">
+			{#if $navigating}
+				<span
+					class="loading loading-ball loading-lg absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
+				/>
+			{:else}
+				<div class="mx-auto h-full overflow-y-auto px-6">
+					<slot />
+				</div>
+			{/if}
+		</div>
+	</div>
+</Drawer>
