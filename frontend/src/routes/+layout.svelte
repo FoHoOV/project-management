@@ -38,7 +38,7 @@
 		{/if}
 	</svelte:fragment>
 
-	<div class="flex flex-col overflow-hidden" slot="drawer-content" let:closeDrawer>
+	<div class="grid overflow-hidden" slot="drawer-content" let:closeDrawer>
 		<div class="flex-1 overflow-auto pt-6">
 			{#if $navigating}
 				<span

@@ -17,7 +17,7 @@
 
 <div class="drawer {startDrawerOpened ? 'lg:drawer-open' : ''}">
 	<input {id} type="checkbox" class="drawer-toggle" />
-	<div class="drawer-content flex h-[100vh] flex-col">
+	<div class="drawer-content z-40 flex h-[100vh] flex-col">
 		<Navbar title={navbarTitle} titleHref={navbarTitleHref}>
 			<svelte:fragment slot="start">
 				<div class="flex-none lg:hidden">
@@ -36,7 +36,7 @@
 		</Navbar>
 		<slot name="drawer-content" {closeDrawer} />
 	</div>
-	<div class="drawer-side">
+	<div class="drawer-side z-40">
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul class="menu min-h-full w-80 bg-base-200 p-4">
 			<slot name="drawer-side" {closeDrawer} />
