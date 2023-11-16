@@ -45,19 +45,19 @@ export const actions: Actions = {
 			});
 		}
 
-		return {
-			addTodo: await callServiceInFormActions({
-				serviceCall: async () => {
-					return await TodoItemClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).createForUserTodoItem({
-						...validationsResult.data
-					});
-				},
-				errorSchema: TodoItemCreate
-			})
-		};
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoItemClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).createForUserTodoItem({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoItemCreate
+		});
+
+		return Object.hasOwn(result, 'success') ? { addTodo: result } : result;
 	},
 	createCategory: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -72,19 +72,18 @@ export const actions: Actions = {
 				error: validationsResult.error.flatten().fieldErrors
 			});
 		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoCategoryClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).createForUserTodoCategory({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoCategoryCreate
+		});
 
-		return {
-			createCategory: await callServiceInFormActions({
-				serviceCall: async () => {
-					return await TodoCategoryClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).createForUserTodoCategory({
-						...validationsResult.data
-					});
-				},
-				errorSchema: TodoCategoryCreate
-			})
-		};
+		return Object.hasOwn(result, 'success') ? { createCategory: result } : result;
 	}
 } satisfies Actions;

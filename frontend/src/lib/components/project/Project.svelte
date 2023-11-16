@@ -12,7 +12,7 @@
 	export let project: Project;
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{ attachToUser: { project: Project } }>();
 
 	async function handleDetachProjectFromUser() {
 		isCallingService = true;

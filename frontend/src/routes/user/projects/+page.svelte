@@ -15,7 +15,7 @@
 	let selectedProject: Project | undefined;
 	let modalComponent: ComponentType;
 
-	function handleAttachToUser(event: { detail: { project: Project } }) {
+	function handleAttachToUser(event: CustomEvent<{project: Project}>) {
 		modal.show();
 		modalComponent = AttachToUser;
 		selectedProject = event.detail.project;
@@ -40,7 +40,11 @@
 />
 
 <Modal title="Create your projects here!" bind:this={modal}>
-	<svelte:fragment slot="body" let:close let:show>
-		<svelte:component this={modalComponent} projectId={selectedProject?.id}></svelte:component>
-	</svelte:fragment>
+	<svelte:component
+		this={modalComponent}
+		slot="body"
+		let:close
+		let:show
+		projectId={selectedProject?.id}
+	></svelte:component>
 </Modal>

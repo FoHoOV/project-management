@@ -35,19 +35,19 @@ export const actions = {
 			});
 		}
 
-		return {
-			create: await callServiceInFormActions({
-				serviceCall: async () => {
-					return await ProjectClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).createForUserProject({
-						...validationsResult.data
-					});
-				},
-				errorSchema: ProjectCreate
-			})
-		};
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await ProjectClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).createForUserProject({
+					...validationsResult.data
+				});
+			},
+			errorSchema: ProjectCreate
+		});
+
+		return Object.hasOwn(result, 'success') ? { create: result } : result;
 	},
 	attach: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -62,19 +62,18 @@ export const actions = {
 				error: validationsResult.error.flatten().fieldErrors
 			});
 		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await ProjectClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).attachToUserProject({
+					...validationsResult.data
+				});
+			},
+			errorSchema: ProjectAttachAssociation
+		});
 
-		return {
-			attach: await callServiceInFormActions({
-				serviceCall: async () => {
-					return await ProjectClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).attachToUserProject({
-						...validationsResult.data
-					});
-				},
-				errorSchema: ProjectAttachAssociation
-			})
-		};
+		return Object.hasOwn(result, 'success') ? { attach: result } : result;
 	}
 } satisfies Actions;
