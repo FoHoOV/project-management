@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Error from '$components/Error.svelte';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -21,7 +21,8 @@
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
-				await invalidate('/user/projects'); // TODO: remove from projects store/ruins
+				// based on docs invalidate("/user/projects") doesn't work
+				await invalidateAll(); // TODO: remove from projects store/ruins
 				isCallingService = false;
 			},
 			errorCallback: async (e) => {

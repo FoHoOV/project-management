@@ -42,6 +42,7 @@
 		isCreateProjectSubmitting = false;
 	}}
 	on:submitsucceeded={async (e) => {
+		// based on docs and on how invalidate works this doesn't do shit
 		await invalidate('/user/projects'); // TODO: use stores/ruins later
 		resetForm();
 	}}
