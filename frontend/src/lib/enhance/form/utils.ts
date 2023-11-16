@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
-import type { NumberRange, UnionToIntersection, ErrorMessage } from '$lib/utils/types';
+import type { NumberRange, UnionToIntersection, ErrorMessage, StrictUnion } from '$lib/utils/types';
+import type * as Kit from '@sveltejs/kit';
 
 export function convertFormDataToObject(formData: FormData): Record<string, FormDataEntryValue> {
 	const result: Record<string, FormDataEntryValue> = {};
@@ -19,7 +20,7 @@ export function getFormErrors<
 	TError = NonNullable<Form>['error']
 >(form: Form) {
 	return {
-		errors: form?.error,
+		errors: form?.error as StrictUnion<TError> | undefined,
 		message: form?.message
 	};
 }
