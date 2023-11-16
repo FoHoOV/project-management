@@ -16,8 +16,8 @@ from db.utils.user_crud import get_user
 
 
 def create(db: Session, project: ProjectCreate, user_id: int):
-    if get_user(db, user_id) is None:
-        raise Exception("user not found")
+    if db.query(User).filter(User.id == user_id).count() == 0:
+        raise UserFriendlyError("requested user doesn't exist")
 
     db_item = Project(**project.model_dump())
     db.add(db_item)
