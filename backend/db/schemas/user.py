@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, constr, model_validator
-from .todo_item import TodoItem
+
+from db.schemas.project import Project
 
 
 class UserBase(BaseModel):
@@ -25,7 +26,7 @@ class UserAuthenticate(UserBase):
 
 class User(UserBase):
     id: int
-    todos: list[TodoItem] = []
+    projects: list[Project] = []
 
     class Config:
         from_attributes = True
