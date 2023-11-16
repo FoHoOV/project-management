@@ -1,10 +1,19 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from api.routes import oath
 from db import init_db
+from db.utils.exceptions import UserFriendlyError
 
 from .routes import todo_item, todo_category, user, project
+
+
+def db_excepted_exception_handler(request: Request, ex: UserFriendlyError):
+    return JSONResponse(
+        status_code=400,
+        content={"message": str(ex)},
+    )
 
 
 def create_app():
@@ -12,6 +21,7 @@ def create_app():
         return f"{route.name}_{str(route.tags[0]).replace('-','_')}"
 
     app = FastAPI(generate_unique_id_function=custom_generate_unique_id)
+    app.add_exception_handler(UserFriendlyError, db_excepted_exception_handler)
 
     app.include_router(oath.router)
     app.include_router(user.router)

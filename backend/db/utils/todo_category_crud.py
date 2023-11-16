@@ -1,5 +1,3 @@
-from fastapi.exceptions import ValidationException
-
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from db.models.project_user_association import ProjectUserAssociation
@@ -13,6 +11,7 @@ from db.schemas.todo_category import (
     TodoCategoryUpdate,
     TodoCategoryDelete,
 )
+from db.utils.exceptions import UserFriendlyError
 from db.utils.project_crud import validate_project_belong_to_user
 
 
@@ -51,9 +50,7 @@ def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     db_item = db.query(TodoCategory).filter(TodoCategory.id == category.id).first()
 
     if db_item is None:
-        raise ValidationException(
-            "todo category doesn't exist or doesn't belong to user"
-        )
+        raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
 
     db_item.description = category.description
     db_item.title = category.title
@@ -75,11 +72,13 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
         db.query(TodoCategory)
         .filter(TodoCategory.id == category_id)
         .join(TodoCategoryProjectAssociation)
-        .join(ProjectUserAssociation)
+        .join(
+            ProjectUserAssociation,
+            TodoCategoryProjectAssociation.project_id
+            == ProjectUserAssociation.project_id,
+        )
         .filter(ProjectUserAssociation.user_id == user_id)
         .first()
         is None
     ):
-        raise ValidationException(
-            "todo category doesn't exist or doesn't belong to user"
-        )
+        raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")

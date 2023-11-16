@@ -1,0 +1,2 @@
+class UserFriendlyError(Exception):
+    pass

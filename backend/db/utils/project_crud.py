@@ -1,5 +1,4 @@
-from fastapi.exceptions import ValidationException
-
+from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.schemas.project import (
@@ -9,6 +8,7 @@ from db.schemas.project import (
     ProjectUserAssociationValidation,
 )
 from sqlalchemy.orm import Session
+from db.utils.exceptions import UserFriendlyError
 
 from db.utils.user_crud import get_user
 
@@ -43,8 +43,13 @@ def add_association_to_user(db: Session, project: ProjectAddUser, user_id: int):
         user_id=project.user_id, project_id=project.project_id
     )
 
-    db.add(association)
-    db.commit()
+    try:
+        db.add(association)
+        db.commit()
+    except IntegrityError:
+        raise UserFriendlyError(
+            "this user already exists in this project's associations"
+        )
 
 
 def get_project(db: Session, project: ProjectRead, user_id: int):
@@ -57,7 +62,7 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
     )
 
     if result is None:
-        raise ValidationException(
+        raise UserFriendlyError(
             "project doesn't exist or doesn't belong to current user"
         )
 
@@ -91,7 +96,7 @@ def validate_project_belong_to_user(
         .first()
         is None
     ):
-        raise ValidationException(
+        raise UserFriendlyError(
             "project doesn't exist or doesn't belong to current user"
         )
 
@@ -104,4 +109,4 @@ def validate_project_belong_to_user(
         .first()
         is None
     ):
-        raise ValidationException("project doesn't exist or doesn't belong to user")
+        raise UserFriendlyError("project doesn't exist or doesn't belong to user")
