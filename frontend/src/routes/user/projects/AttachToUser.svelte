@@ -7,9 +7,9 @@
 	import { attachProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
 
+	export let form: ActionData;
 	export let projectId: number;
 
-	let form: ActionData;
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 

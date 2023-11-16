@@ -8,9 +8,9 @@
 	import { createTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 
+	export let form: ActionData;
 	export let categoryId: number;
 
-	let form: ActionData;
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 

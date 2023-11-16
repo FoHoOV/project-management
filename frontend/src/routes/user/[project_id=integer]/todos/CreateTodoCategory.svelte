@@ -8,7 +8,8 @@
 	import { createTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
 
-	let form: ActionData;
+	export let form: ActionData;
+
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 

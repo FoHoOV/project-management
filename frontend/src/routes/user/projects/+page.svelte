@@ -4,18 +4,20 @@
 	import ProjectList from '$components/project/ProjectList.svelte';
 	import CreateProject from '$routes/user/projects/CreateProject.svelte';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import Empty from '$components/Empty.svelte';
 	import type { ComponentType } from 'svelte';
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
 	import type { Project } from '$lib';
 
 	export let data: PageData;
+	export let form: ActionData;
+
 	let modal: Modal;
 	let selectedProject: Project | undefined;
 	let modalComponent: ComponentType;
 
-	function handleAttachToUser(event: CustomEvent<{project: Project}>) {
+	function handleAttachToUser(event: CustomEvent<{ project: Project }>) {
 		modal.show();
 		modalComponent = AttachToUser;
 		selectedProject = event.detail.project;
@@ -46,5 +48,6 @@
 		let:close
 		let:show
 		projectId={selectedProject?.id}
+		{form}
 	></svelte:component>
 </Modal>

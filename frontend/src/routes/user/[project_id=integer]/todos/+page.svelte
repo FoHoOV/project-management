@@ -1,7 +1,7 @@
 <script lang="ts">
 	import TodoList from '$lib/components/todo/TodoList.svelte';
 	import Error from '$components/Error.svelte';
-	import type { PageData } from './$types';
+	import type { ActionData, PageData } from './$types';
 	import todoCategories from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
 	import CreateTodoItem from './CreateTodoItem.svelte';
@@ -13,6 +13,7 @@
 	import { page } from '$app/stores';
 
 	export let data: PageData;
+	export let form: ActionData;
 
 	let createTodoCategory: Modal;
 
@@ -44,7 +45,7 @@
 					animate:flip={{ duration: 200 }}
 				>
 					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
-						<CreateTodoItem slot="create-todo-item" categoryId={category.id} />
+						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 					</TodoList>
 				</div>
 			{/each}
@@ -57,7 +58,7 @@
 	/>
 	<Modal title="Create todo categories here!" bind:this={createTodoCategory}>
 		<svelte:fragment slot="body" let:close let:show>
-			<CreateTodoCategory />
+			<CreateTodoCategory {form} />
 		</svelte:fragment>
 	</Modal>
 {:catch error}
