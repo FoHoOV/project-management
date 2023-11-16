@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CircleButton from '$components/buttons/CircleButton.svelte';
 	import Modal from '$components/popups/Modal.svelte';
-	import ProjectList from '$components/todo/ProjectList.svelte';
+	import ProjectList from '$components/project/ProjectList.svelte';
 	import CreateProject from '$routes/user/projects/CreateProject.svelte';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { PageData } from './$types';
@@ -23,7 +23,7 @@
 	on:click={createProject.show}
 />
 
-<Modal title="Create todo categories here!" bind:this={createProject}>
+<Modal title="Create your projects here!" bind:this={createProject}>
 	<svelte:fragment slot="body" let:close let:show>
 		<CreateProject />
 	</svelte:fragment>

@@ -1,0 +1,77 @@
+<script lang="ts">
+	import { invalidate } from '$app/navigation';
+	import { page } from '$app/stores';
+	import Error from '$components/Error.svelte';
+	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { ProjectClient } from '$lib/client-wrapper/clients';
+	import type { Project } from '$lib/client/models';
+	import { faBusinessTime, faUser } from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa';
+
+	export let project: Project;
+	let isCallingService: boolean = false;
+	let apiErrorTitle: string | null;
+
+	async function handleDetachProjectFromUser() {
+		isCallingService = true;
+		await callServiceInClient({
+			serviceCall: async () => {
+				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
+					project_id: project.id
+				});
+				await invalidate('user/projects'); // TODO: remove from projects store/ruins
+				isCallingService = false;
+			},
+			errorCallback: async (e) => {
+				isCallingService = false;
+				apiErrorTitle = e.message;
+			}
+		});
+	}
+</script>
+
+<div class="card bg-primary text-primary-content">
+	<div class="card-body">
+		<Error message={apiErrorTitle} />
+
+		{#if isCallingService}
+			<div
+				class="align-center absolute left-0.5 top-0.5 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
+			>
+				<span class="loading loading-spinner loading-md dark:text-black" />
+			</div>
+		{/if}
+
+		<h2 class="card-title">{project.title}</h2>
+		<p>{project.description}</p>
+
+		<div class="stats shadow">
+			<div class="stat">
+				<div class="stat-figure text-secondary">
+					<Fa icon={faUser}></Fa>
+				</div>
+				<div class="stat-title">Accessed By</div>
+				<div class="stat-value">{project.users.length}</div>
+				<div class="stat-desc">
+					{#each project.users as user}
+						{user.username}
+					{/each}
+				</div>
+			</div>
+
+			<div class="stat">
+				<div class="stat-figure text-secondary">
+					<Fa icon={faBusinessTime} />
+				</div>
+				<div class="stat-title">Categories</div>
+				<div class="stat-value">{project.todo_categories.length}</div>
+				<div class="stat-desc"></div>
+			</div>
+		</div>
+
+		<div class="card-actions justify-end">
+			<button class="btn btn-error" on:click={handleDetachProjectFromUser}>detach</button>
+			<a class="btn" href="/user/{project.id}/todos">show todos</a>
+		</div>
+	</div>
+</div>

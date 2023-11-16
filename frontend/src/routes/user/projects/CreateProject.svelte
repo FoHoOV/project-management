@@ -40,8 +40,8 @@
 	on:submitstarted={() => {
 		isCreateProjectSubmitting = false;
 	}}
-	on:submitsucceeded={(e) => {
-		invalidate('/user/projects'); // TODO: use stores/ruins later
+	on:submitsucceeded={async (e) => {
+		await invalidate('/user/projects'); // TODO: use stores/ruins later
 		resetForm();
 	}}
 	bind:this={formElement}

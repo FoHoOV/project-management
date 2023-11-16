@@ -27,26 +27,26 @@ def create_for_user(
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.patch(path="/add-user-association")
-def update(
+@router.patch(path="/add-to-user")
+def attach_to_user(
     current_user: Annotated[User, Depends(get_current_user)],
     association: ProjectAddUser,
     db: Session = Depends(get_db),
 ):
-    project_crud.add_association_to_user(db, association, current_user.id)
+    project_crud.attach_to_user(db, association, current_user.id)
 
 
-@router.delete(path="/remove-user-association")
-def remove_project_to_user_association(
+@router.delete(path="/detach-from-user")
+def detach_from_user(
     current_user: Annotated[User, Depends(get_current_user)],
     association: ProjectAssociationDelete,
     db: Session = Depends(get_db),
 ):
-    project_crud.remove_project_to_user_association(db, association, current_user.id)
+    project_crud.detach_from_user(db, association, current_user.id)
 
 
 @router.get("/search", response_model=Project)
-def get_project(
+def search(
     current_user: Annotated[User, Depends(get_current_user)],
     filter: ProjectRead = Depends(dependency=ProjectRead),
     db: Session = Depends(get_db),

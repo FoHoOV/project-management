@@ -31,7 +31,7 @@ def create(db: Session, project: ProjectCreate, user_id: int):
     return db_item
 
 
-def add_association_to_user(db: Session, project: ProjectAddUser, user_id: int):
+def attach_to_user(db: Session, project: ProjectAddUser, user_id: int):
     if db.query(User).filter(User.id == project.user_id):
         raise UserFriendlyError("requested user doesn't exist")
 
@@ -85,9 +85,7 @@ def get_projects(db: Session, user_id: int):
     return result
 
 
-def remove_project_to_user_association(
-    db: Session, project: ProjectAssociationDelete, user_id: int
-):
+def detach_from_user(db: Session, project: ProjectAssociationDelete, user_id: int):
     validate_project_belong_to_user(
         db,
         ProjectUserAssociationValidation(

@@ -17,8 +17,8 @@ class ProjectUserAssociationValidation(BaseModel):
 
 
 class ProjectCreate(ProjectBase):
-    title: constr(min_length=5, max_length=20)  # type: ignore
-    description: constr(min_length=5, max_length=20)  # type: ignore
+    title: constr(max_length=20)  # type: ignore
+    description: constr(max_length=20)  # type: ignore
 
 
 class ProjectAssociationDelete(ProjectBase):
