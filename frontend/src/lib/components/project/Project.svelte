@@ -53,9 +53,7 @@
 				<div class="stat-title">Accessed By</div>
 				<div class="stat-value">{project.users.length}</div>
 				<div class="stat-desc">
-					{#each project.users as user}
-						{user.username}
-					{/each}
+					{project.users.map((user) => user.username).join(', ')}
 				</div>
 			</div>
 
@@ -70,7 +68,13 @@
 		</div>
 
 		<div class="card-actions justify-end">
-			<button class="btn btn-error" on:click={handleDetachProjectFromUser}>detach</button>
+			<button class="btn btn-error" on:click={handleDetachProjectFromUser}>
+				{#if project.users.length == 1}
+					Delete
+				{:else}
+					Detach
+				{/if}
+			</button>
 			<a class="btn" href="/user/{project.id}/todos">show todos</a>
 		</div>
 	</div>
