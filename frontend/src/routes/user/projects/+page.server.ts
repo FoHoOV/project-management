@@ -47,7 +47,9 @@ export const actions = {
 			errorSchema: ProjectCreate
 		});
 
-		return Object.hasOwn(result, 'success') ? { create: result } : result;
+		return Object.hasOwn(result, 'success')
+			? { create: result as Extract<typeof result, { success: true }> }
+			: result;
 	},
 	attach: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -74,6 +76,8 @@ export const actions = {
 			errorSchema: ProjectAttachAssociation
 		});
 
-		return Object.hasOwn(result, 'success') ? { attach: result } : result;
+		return Object.hasOwn(result, 'success')
+			? { attach: result as Extract<typeof result, { success: true }> }
+			: result;
 	}
 } satisfies Actions;

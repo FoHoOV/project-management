@@ -57,7 +57,9 @@ export const actions: Actions = {
 			errorSchema: TodoItemCreate
 		});
 
-		return Object.hasOwn(result, 'success') ? { addTodo: result } : result;
+		return Object.hasOwn(result, 'success')
+			? { addTodo: result as Extract<typeof result, { success: true }> }
+			: result;
 	},
 	createCategory: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -84,6 +86,8 @@ export const actions: Actions = {
 			errorSchema: TodoCategoryCreate
 		});
 
-		return Object.hasOwn(result, 'success') ? { createCategory: result } : result;
+		return Object.hasOwn(result, 'success')
+			? { createCategory: result as Extract<typeof result, { success: true }> }
+			: result;
 	}
 } satisfies Actions;
