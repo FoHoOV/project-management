@@ -4,16 +4,15 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Error from '$components/Error.svelte';
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
-	import todos from '$lib/stores/todos';
-	import { createTodoCategorySchema } from './validator';
-	import { page } from '$app/stores';
+	import { createProjectSchema } from './validator';
+	import { invalidate } from '$app/navigation';
 
 	let form: ActionData;
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 
 	$: formErrors = getFormErrors(form);
-	let isCreateTodoCategorySubmitting = false;
+	let isCreateProjectSubmitting = false;
 
 	function resetForm() {
 		formElement.reset();
@@ -23,11 +22,11 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_id}/todos?/createCategory"
+	action="/user/projects?/create"
 	use:superEnhance={{
-		validator: { schema: createTodoCategorySchema },
+		validator: { schema: createProjectSchema },
 		form: form,
-		action: 'createCategoryResult'
+		action: 'create'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {
@@ -36,13 +35,13 @@
 		};
 	}}
 	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = true;
+		isCreateProjectSubmitting = true;
 	}}
 	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = false;
+		isCreateProjectSubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {
-		todos.addCategory(e.detail.response);
+		invalidate('/user/projects'); // TODO: use stores/ruins later
 		resetForm();
 	}}
 	bind:this={formElement}
@@ -51,13 +50,6 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
-		<FormInput
-			class="hidden"
-			type="hidden"
-			name="project_id"
-			value={$page.params.project_id}
-			errors={''}
-		/>
 		<FormInput
 			bind:this={firstInputElement}
 			name="title"
@@ -76,7 +68,7 @@
 				text="add"
 				class="flex-auto"
 				type="submit"
-				loading={isCreateTodoCategorySubmitting}
+				loading={isCreateProjectSubmitting}
 			/>
 			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
 		</div>

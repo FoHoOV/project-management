@@ -6,10 +6,11 @@
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import todos from '$lib/stores/todos';
 	import { createTodoItemSchema } from './validator';
+	import { page } from '$app/stores';
 
-	export let form: ActionData;
 	export let categoryId: number;
 
+	let form: ActionData;
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 
@@ -24,7 +25,7 @@
 </script>
 
 <form
-	action="/user/todos?/addTodo"
+	action="/user/{$page.params.project_id}/todos?/addTodo"
 	use:superEnhance={{
 		validator: { schema: createTodoItemSchema },
 		form: form,

@@ -13,7 +13,7 @@ export const createTodoItemSchema = z.object({
 ({}) as z.infer<typeof createTodoItemSchema> satisfies TodoItemCreate;
 
 export const createTodoCategorySchema = z.object({
-	project_id: z.number(),
+	project_id: z.number({ coerce: true }),
 	title: z.string().nonempty().min(1),
 	description: z.string().nonempty().min(1)
 });

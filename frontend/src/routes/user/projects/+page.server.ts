@@ -1,7 +1,10 @@
 import type { PageServerLoad } from './$types';
 import { ProjectClient } from '$lib/client-wrapper/clients';
-import { callService } from '$lib/client-wrapper';
-import { error } from '@sveltejs/kit';
+import { callService, callServiceInFormActions } from '$lib/client-wrapper';
+import { error, type Actions } from '@sveltejs/kit';
+import { createProjectSchema } from './validator';
+import { convertFormDataToObject, superFail } from '$lib';
+import { ProjectCreate } from '$lib/client/zod/schemas';
 
 export const load = (async ({ locals, fetch }) => {
 	const result = await callService({
@@ -16,3 +19,34 @@ export const load = (async ({ locals, fetch }) => {
 
 	return { projects: result.response };
 }) satisfies PageServerLoad;
+
+export const actions = {
+	create: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await createProjectSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+
+		return {
+			create: await callServiceInFormActions({
+				serviceCall: async () => {
+					return await ProjectClient({
+						token: locals.token,
+						fetchApi: fetch
+					}).createForUserProject({
+						...validationsResult.data
+					});
+				},
+				errorSchema: ProjectCreate
+			})
+		};
+	}
+} satisfies Actions;
