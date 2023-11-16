@@ -6,11 +6,13 @@
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/client/models';
 	import { faBusinessTime, faUser } from '@fortawesome/free-solid-svg-icons';
+	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';
 
 	export let project: Project;
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
+	const dispatch = createEventDispatcher();
 
 	async function handleDetachProjectFromUser() {
 		isCallingService = true;
@@ -27,6 +29,10 @@
 				apiErrorTitle = e.message;
 			}
 		});
+	}
+
+	function handleOnAttachToUserClicked(event: MouseEvent) {
+		dispatch('attachToUser', { project: project });
 	}
 </script>
 
@@ -68,6 +74,9 @@
 		</div>
 
 		<div class="card-actions justify-end">
+			<button class="btn btn-success" on:click={handleOnAttachToUserClicked}>
+				Attach to user
+			</button>
 			<button class="btn btn-error" on:click={handleDetachProjectFromUser}>
 				{#if project.users.length == 1}
 					Delete

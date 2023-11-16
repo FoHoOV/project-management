@@ -7,6 +7,6 @@
 
 <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
 	{#each projects as project}
-		<Project {project}></Project>
+		<Project {project} on:attachToUser></Project>
 	{/each}
 </div>
