@@ -16,9 +16,14 @@ class TodoCategoryUpdate(TodoCategoryBase):
     id: int
 
 
-class TodoCategoryAddToProject(BaseModel):
+class TodoCategoryAttachAssociation(BaseModel):
     project_id: int
     category_id: int
+
+
+class TodoCategoryDetachAssociation(BaseModel):
+    category_id: int
+    project_id: int
 
 
 @dataclass

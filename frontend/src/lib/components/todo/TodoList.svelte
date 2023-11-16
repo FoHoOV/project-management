@@ -18,6 +18,7 @@
 	import Modal from '$components/popups/Modal.svelte';
 
 	export let category: TodoCategory;
+	export let projectId: number;
 	export { className as class };
 
 	let className: string = '';
@@ -29,7 +30,10 @@
 		isCallingService = true;
 		await callServiceInClient({
 			serviceCall: async () => {
-				await TodoCategoryClient({ token: $page.data.token }).removeTodoCategory(category);
+				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
+					category_id: category.id,
+					project_id: projectId
+				});
 				todoCategories.removeCategory(category);
 				isCallingService = false;
 			},

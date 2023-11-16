@@ -6,11 +6,11 @@ from db.models.todo_category_project_association import TodoCategoryProjectAssoc
 
 from db.schemas.project import ProjectUserAssociationValidation
 from db.schemas.todo_category import (
-    TodoCategoryAddToProject,
+    TodoCategoryAttachAssociation,
+    TodoCategoryDetachAssociation,
     TodoCategoryRead,
     TodoCategoryCreate,
     TodoCategoryUpdate,
-    TodoCategoryDelete,
 )
 from db.utils.exceptions import UserFriendlyError
 from db.utils.project_crud import validate_project_belong_to_user
@@ -70,8 +70,8 @@ def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     return db_item
 
 
-def add_another_project(
-    db: Session, association: TodoCategoryAddToProject, user_id: int
+def attach_to_project(
+    db: Session, association: TodoCategoryAttachAssociation, user_id: int
 ):
     validate_todo_category_belongs_to_user(db, association.category_id, user_id)
     validate_project_belong_to_user(
@@ -94,11 +94,37 @@ def add_another_project(
         raise UserFriendlyError("this category already belongs to this project")
 
 
-def remove(db: Session, category: TodoCategoryDelete, user_id: int):
-    validate_todo_category_belongs_to_user(db, category.id, user_id)
-    row_count = db.query(TodoCategory).filter(TodoCategory.id == category.id).delete()
-    db.commit()
-    return row_count
+def detach_from_project(
+    db: Session, association: TodoCategoryDetachAssociation, user_id: int
+):
+    validate_todo_category_belongs_to_user(db, association.category_id, user_id)
+    validate_project_belong_to_user(
+        db,
+        ProjectUserAssociationValidation(
+            project_id=association.project_id, user_id=user_id
+        ),
+        user_id,
+        True,
+    )
+
+    db.query(TodoCategoryProjectAssociation).filter(
+        TodoCategoryProjectAssociation.project_id == association.project_id,
+        TodoCategoryProjectAssociation.todo_category_id == association.category_id,
+    ).delete()
+
+    if (
+        db.query(TodoCategoryProjectAssociation)
+        .filter(
+            TodoCategoryProjectAssociation.todo_category_id == association.category_id
+        )
+        .count()
+        == 0
+    ):
+        db.query(TodoCategory).filter(
+            TodoCategory.id == association.category_id
+        ).delete()
+
+        db.commit()
 
 
 def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_id: int):

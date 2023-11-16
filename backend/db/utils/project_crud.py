@@ -3,9 +3,9 @@ from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.user import User
 from db.schemas.project import (
-    ProjectAddUser,
+    ProjectAttachAssociation,
     ProjectCreate,
-    ProjectAssociationDelete,
+    ProjectDetachAssociation,
     ProjectRead,
     ProjectUserAssociationValidation,
 )
@@ -31,7 +31,7 @@ def create(db: Session, project: ProjectCreate, user_id: int):
     return db_item
 
 
-def attach_to_user(db: Session, project: ProjectAddUser, user_id: int):
+def attach_to_user(db: Session, project: ProjectAttachAssociation, user_id: int):
     if db.query(User).filter(User.id == project.user_id):
         raise UserFriendlyError("requested user doesn't exist")
 
@@ -55,6 +55,33 @@ def attach_to_user(db: Session, project: ProjectAddUser, user_id: int):
         raise UserFriendlyError(
             "this user already exists in this project's associations"
         )
+
+
+def detach_from_user(db: Session, project: ProjectDetachAssociation, user_id: int):
+    validate_project_belong_to_user(
+        db,
+        ProjectUserAssociationValidation(
+            project_id=project.project_id, user_id=user_id
+        ),
+        user_id,
+        True,
+    )
+
+    db.query(ProjectUserAssociation).filter(
+        ProjectUserAssociation.project_id == project.project_id,
+        ProjectUserAssociation.user_id == user_id,
+    ).delete()
+
+    db.commit()
+
+    if (
+        db.query(ProjectUserAssociation)
+        .filter(ProjectUserAssociation.project_id == project.project_id)
+        .count()
+        == 0
+    ):
+        db.query(Project).filter(Project.id == project.project_id).delete()
+        db.commit()
 
 
 def get_project(db: Session, project: ProjectRead, user_id: int):
@@ -83,28 +110,6 @@ def get_projects(db: Session, user_id: int):
     )
 
     return result
-
-
-def detach_from_user(db: Session, project: ProjectAssociationDelete, user_id: int):
-    validate_project_belong_to_user(
-        db,
-        ProjectUserAssociationValidation(
-            project_id=project.project_id, user_id=user_id
-        ),
-        user_id,
-        True,
-    )
-
-    row_count = (
-        db.query(ProjectUserAssociation)
-        .filter(
-            ProjectUserAssociation.project_id == project.project_id,
-            ProjectUserAssociation.user_id == user_id,
-        )
-        .delete()
-    )
-    db.commit()
-    return row_count
 
 
 def validate_project_belong_to_user(

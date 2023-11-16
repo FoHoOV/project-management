@@ -7,11 +7,11 @@ from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.todo_category import (
     TodoCategory,
-    TodoCategoryAddToProject,
+    TodoCategoryAttachAssociation,
     TodoCategoryCreate,
+    TodoCategoryDetachAssociation,
     TodoCategoryRead,
     TodoCategoryUpdate,
-    TodoCategoryDelete,
 )
 from db.utils import todo_category_crud
 
@@ -28,13 +28,24 @@ def create_for_user(
     return todo_category_crud.create(db=db, category=category, user_id=current_user.id)
 
 
-@router.post("/add-to-project")
-def add_to_project(
+@router.post("/attach-to-project")
+def attach_to_project(
     current_user: Annotated[User, Depends(get_current_user)],
-    association: TodoCategoryAddToProject,
+    association: TodoCategoryAttachAssociation,
     db: Session = Depends(get_db),
 ):
-    todo_category_crud.add_another_project(
+    todo_category_crud.attach_to_project(
+        db=db, association=association, user_id=current_user.id
+    )
+
+
+@router.delete(path="/detach-from-project")
+def detach_from_project(
+    current_user: Annotated[User, Depends(get_current_user)],
+    association: TodoCategoryDetachAssociation,
+    db: Session = Depends(get_db),
+):
+    todo_category_crud.detach_from_project(
         db=db, association=association, user_id=current_user.id
     )
 
@@ -50,19 +61,6 @@ def update(
     )
 
     return db_items
-
-
-@router.delete(path="/remove")
-def remove(
-    current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategoryDelete,
-    db: Session = Depends(get_db),
-):
-    deleted_rows = todo_category_crud.remove(
-        db=db, category=category, user_id=current_user.id
-    )
-    if deleted_rows == 0:
-        raise HTTPException(status_code=404, detail="todo category not found")
 
 
 @router.get("/list", response_model=list[TodoCategory])

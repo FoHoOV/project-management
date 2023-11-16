@@ -21,11 +21,11 @@ class ProjectCreate(ProjectBase):
     description: constr(max_length=20)  # type: ignore
 
 
-class ProjectAssociationDelete(ProjectBase):
+class ProjectDetachAssociation(ProjectBase):
     project_id: int
 
 
-class ProjectAddUser(ProjectBase):
+class ProjectAttachAssociation(ProjectBase):
     project_id: int
     user_id: int
 

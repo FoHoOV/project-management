@@ -10,6 +10,7 @@
 	import Modal from '$components/popups/Modal.svelte';
 	import CreateTodoCategory from './CreateTodoCategory.svelte';
 	import Empty from '$components/Empty.svelte';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
 
@@ -42,7 +43,7 @@
 					class="mb-5 shrink-0 grow basis-[20rem] md:basis-[25rem]"
 					animate:flip={{ duration: 200 }}
 				>
-					<TodoList {category}>
+					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
 						<CreateTodoItem slot="create-todo-item" categoryId={category.id} />
 					</TodoList>
 				</div>

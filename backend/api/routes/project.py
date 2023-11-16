@@ -8,9 +8,9 @@ from db.models.user import User
 from db.schemas.project import (
     Project,
     ProjectCreate,
-    ProjectAssociationDelete,
+    ProjectDetachAssociation,
     ProjectRead,
-    ProjectAddUser,
+    ProjectAttachAssociation,
 )
 from db.utils import project_crud
 
@@ -27,10 +27,10 @@ def create_for_user(
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.patch(path="/add-to-user")
+@router.patch(path="/attach-to-user")
 def attach_to_user(
     current_user: Annotated[User, Depends(get_current_user)],
-    association: ProjectAddUser,
+    association: ProjectAttachAssociation,
     db: Session = Depends(get_db),
 ):
     project_crud.attach_to_user(db, association, current_user.id)
@@ -39,7 +39,7 @@ def attach_to_user(
 @router.delete(path="/detach-from-user")
 def detach_from_user(
     current_user: Annotated[User, Depends(get_current_user)],
-    association: ProjectAssociationDelete,
+    association: ProjectDetachAssociation,
     db: Session = Depends(get_db),
 ):
     project_crud.detach_from_user(db, association, current_user.id)
