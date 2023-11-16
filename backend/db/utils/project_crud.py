@@ -5,6 +5,7 @@ from db.models.user import User
 from db.schemas.project import (
     ProjectAddUser,
     ProjectCreate,
+    ProjectAssociationDelete,
     ProjectRead,
     ProjectUserAssociationValidation,
 )
@@ -82,6 +83,30 @@ def get_projects(db: Session, user_id: int):
     )
 
     return result
+
+
+def remove_project_to_user_association(
+    db: Session, project: ProjectAssociationDelete, user_id: int
+):
+    validate_project_belong_to_user(
+        db,
+        ProjectUserAssociationValidation(
+            project_id=project.project_id, user_id=user_id
+        ),
+        user_id,
+        True,
+    )
+
+    row_count = (
+        db.query(ProjectUserAssociation)
+        .filter(
+            ProjectUserAssociation.project_id == project.project_id,
+            ProjectUserAssociation.user_id == user_id,
+        )
+        .delete()
+    )
+    db.commit()
+    return row_count
 
 
 def validate_project_belong_to_user(

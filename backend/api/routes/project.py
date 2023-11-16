@@ -5,7 +5,13 @@ from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
-from db.schemas.project import Project, ProjectCreate, ProjectRead, ProjectAddUser
+from db.schemas.project import (
+    Project,
+    ProjectCreate,
+    ProjectAssociationDelete,
+    ProjectRead,
+    ProjectAddUser,
+)
 from db.utils import project_crud
 
 
@@ -28,6 +34,15 @@ def update(
     db: Session = Depends(get_db),
 ):
     project_crud.add_association_to_user(db, association, current_user.id)
+
+
+@router.delete(path="/remove-user-association")
+def remove_project_to_user_association(
+    current_user: Annotated[User, Depends(get_current_user)],
+    association: ProjectAssociationDelete,
+    db: Session = Depends(get_db),
+):
+    project_crud.remove_project_to_user_association(db, association, current_user.id)
 
 
 @router.get("/search", response_model=Project)

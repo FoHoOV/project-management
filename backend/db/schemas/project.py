@@ -21,6 +21,10 @@ class ProjectCreate(ProjectBase):
     description: constr(min_length=5, max_length=20)  # type: ignore
 
 
+class ProjectAssociationDelete(ProjectBase):
+    project_id: int
+
+
 class ProjectAddUser(ProjectBase):
     project_id: int
     user_id: int
