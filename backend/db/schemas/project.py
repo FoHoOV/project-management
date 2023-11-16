@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Optional
 from pydantic import BaseModel, Field, constr
 from db.schemas.todo_category import TodoCategory
@@ -9,7 +10,8 @@ class ProjectBase(BaseModel):
     pass
 
 
-class ProjectRead(BaseModel):
+@dataclass
+class ProjectRead:
     project_id: int
 
 

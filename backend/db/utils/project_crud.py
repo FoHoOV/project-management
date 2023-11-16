@@ -45,6 +45,32 @@ def add_association_to_user(db: Session, project: ProjectAddUser, user_id: int):
     db.commit()
 
 
+def get_project(db: Session, project: ProjectRead, user_id: int):
+    result = (
+        db.query(Project)
+        .filter(Project.id == project.project_id)
+        .join(ProjectUserAssociation)
+        .filter(ProjectUserAssociation.user_id == user_id)
+        .first()
+    )
+
+    if result is None:
+        raise Exception("project doesn't exist or doesn't belong to current user")
+
+    return result
+
+
+def get_projects(db: Session, user_id: int):
+    result = (
+        db.query(Project)
+        .join(ProjectUserAssociation)
+        .filter(ProjectUserAssociation.user_id == user_id)
+        .all()
+    )
+
+    return result
+
+
 def validate_project_belong_to_user(
     db: Session,
     project_association: ProjectUserAssociationValidation,
@@ -73,18 +99,3 @@ def validate_project_belong_to_user(
         is None
     ):
         raise Exception("project doesn't exist or doesn't belong to user")
-
-
-def get_project(db: Session, project: ProjectRead, user_id: int):
-    result = (
-        db.query(Project)
-        .filter(Project.id == project.project_id)
-        .join(ProjectUserAssociation)
-        .filter(ProjectUserAssociation.user_id == user_id)
-        .first()
-    )
-
-    if result is None:
-        raise Exception("project doesn't exist or doesn't belong to current user")
-
-    return result

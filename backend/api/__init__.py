@@ -4,7 +4,7 @@ from fastapi.routing import APIRoute
 from api.routes import oath
 from db import init_db
 
-from .routes import todo_item, todo_category, user
+from .routes import todo_item, todo_category, user, project
 
 
 def create_app():
@@ -15,6 +15,7 @@ def create_app():
 
     app.include_router(oath.router)
     app.include_router(user.router)
+    app.include_router(project.router)
     app.include_router(todo_category.router)
     app.include_router(todo_item.router)
 
