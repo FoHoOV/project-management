@@ -46,7 +46,7 @@ export const actions: Actions = {
 		}
 
 		return {
-			addTodoResult: await callServiceInFormActions({
+			addTodo: await callServiceInFormActions({
 				serviceCall: async () => {
 					return await TodoItemClient({
 						token: locals.token,
@@ -74,7 +74,7 @@ export const actions: Actions = {
 		}
 
 		return {
-			createCategoryResult: await callServiceInFormActions({
+			createCategory: await callServiceInFormActions({
 				serviceCall: async () => {
 					return await TodoCategoryClient({
 						token: locals.token,

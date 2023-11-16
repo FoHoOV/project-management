@@ -29,7 +29,7 @@
 	use:superEnhance={{
 		validator: { schema: createTodoItemSchema },
 		form: form,
-		action: 'addTodoResult'
+		action: 'addTodo'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {

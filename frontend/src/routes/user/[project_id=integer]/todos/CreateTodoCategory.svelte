@@ -27,7 +27,7 @@
 	use:superEnhance={{
 		validator: { schema: createTodoCategorySchema },
 		form: form,
-		action: 'createCategoryResult'
+		action: 'createCategory'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {
