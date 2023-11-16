@@ -1,4 +1,4 @@
-from re import I
+from fastapi.exceptions import ValidationException
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
@@ -45,26 +45,15 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     return db_item
 
 
-def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_id: int):
-    if (
-        db.query(TodoCategory)
-        .filter(TodoCategory.id == category_id)
-        .join(TodoCategoryProjectAssociation)
-        .join(ProjectUserAssociation)
-        .filter(ProjectUserAssociation.user_id == user_id)
-        .first()
-        is None
-    ):
-        raise Exception("todo category doesn't exist or doesn't belong to user")
-
-
 def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     validate_todo_category_belongs_to_user(db, category.id, user_id)
 
     db_item = db.query(TodoCategory).filter(TodoCategory.id == category.id).first()
 
-    if not db_item:
-        return None
+    if db_item is None:
+        raise ValidationException(
+            "todo category doesn't exist or doesn't belong to user"
+        )
 
     db_item.description = category.description
     db_item.title = category.title
@@ -79,3 +68,18 @@ def remove(db: Session, category: TodoCategoryDelete, user_id: int):
     row_count = db.query(TodoCategory).filter(TodoCategory.id == category.id).delete()
     db.commit()
     return row_count
+
+
+def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_id: int):
+    if (
+        db.query(TodoCategory)
+        .filter(TodoCategory.id == category_id)
+        .join(TodoCategoryProjectAssociation)
+        .join(ProjectUserAssociation)
+        .filter(ProjectUserAssociation.user_id == user_id)
+        .first()
+        is None
+    ):
+        raise ValidationException(
+            "todo category doesn't exist or doesn't belong to user"
+        )

@@ -26,10 +26,6 @@ def create_for_user(
     db: Session = Depends(get_db),
 ):
     result = todo_item_crud.create(db=db, todo=todo, user_id=current_user.id)
-    if result is None:
-        raise HTTPException(
-            status_code=404, detail="todo category does not belong to user"
-        )
     return result
 
 
@@ -40,8 +36,6 @@ def update(
     db: Session = Depends(get_db),
 ):
     db_items = todo_item_crud.update(db=db, todo=todo, user_id=current_user.id)
-    if not db_items:
-        raise HTTPException(status_code=404, detail="todo item not found")
     return db_items
 
 

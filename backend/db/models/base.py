@@ -11,6 +11,8 @@ class Base(DeclarativeBase):
 
 
 class BasesWithCreatedDate(Base):
+    __abstract__ = True
+
     created_date: Mapped[DateTime] = mapped_column(
         DateTime(), default=datetime.datetime.utcnow()
     )

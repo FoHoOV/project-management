@@ -1,7 +1,5 @@
 from pydantic import BaseModel, Field, constr, model_validator
 
-from db.schemas.project import Project
-
 
 class UserBase(BaseModel):
     username: str
@@ -22,6 +20,12 @@ class UserCreate(UserBase):
 
 class UserAuthenticate(UserBase):
     password: str
+
+
+class Project(BaseModel):
+    id: int
+    title: str
+    description: str
 
 
 class User(UserBase):

@@ -36,8 +36,7 @@ def update(
     db_items = todo_category_crud.update(
         db=db, category=category, user_id=current_user.id
     )
-    if not db_items:
-        raise HTTPException(status_code=404, detail="todo category not found")
+
     return db_items
 
 

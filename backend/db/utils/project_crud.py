@@ -1,3 +1,5 @@
+from fastapi.exceptions import ValidationException
+
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.schemas.project import (
@@ -55,7 +57,9 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
     )
 
     if result is None:
-        raise Exception("project doesn't exist or doesn't belong to current user")
+        raise ValidationException(
+            "project doesn't exist or doesn't belong to current user"
+        )
 
     return result
 
@@ -87,7 +91,9 @@ def validate_project_belong_to_user(
         .first()
         is None
     ):
-        raise Exception("project doesn't exist or doesn't belong to current user")
+        raise ValidationException(
+            "project doesn't exist or doesn't belong to current user"
+        )
 
     if (
         db.query(ProjectUserAssociation)
@@ -98,4 +104,4 @@ def validate_project_belong_to_user(
         .first()
         is None
     ):
-        raise Exception("project doesn't exist or doesn't belong to user")
+        raise ValidationException("project doesn't exist or doesn't belong to user")

@@ -1,4 +1,5 @@
 from unicodedata import category
+from fastapi.exceptions import ValidationException
 from sqlalchemy.orm import Session
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
@@ -71,7 +72,7 @@ def update(db: Session, todo: TodoItemUpdate, user_id: int):
     )
 
     if not db_item:
-        return None
+        raise ValidationException("todo item doesn't exist or doesn't belong to user")
 
     db_item.is_done = todo.is_done
     db_item.description = todo.description
@@ -101,4 +102,4 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         .first()
         is None
     ):
-        raise Exception("todo item doesn't exist or doesn't belong to user")
+        raise ValidationException("todo item doesn't exist or doesn't belong to user")

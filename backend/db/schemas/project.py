@@ -1,9 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
-from pydantic import BaseModel, Field, constr
-from db.schemas.todo_category import TodoCategory
-
-from db.schemas.user import User
+from pydantic import BaseModel, constr
 
 
 class ProjectBase(BaseModel):
@@ -28,6 +24,20 @@ class ProjectCreate(ProjectBase):
 class ProjectAddUser(ProjectBase):
     project_id: int
     user_id: int
+
+
+class User(BaseModel):
+    id: int
+    username: str
+
+
+class TodoCategory(BaseModel):
+    id: int
+    title: str
+    description: str
+
+    class Config:
+        from_attributes = True
 
 
 class Project(ProjectBase):

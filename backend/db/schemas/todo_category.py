@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
-from db.schemas.project import Project
-
 from db.schemas.todo_item import TodoItem
 
 
@@ -25,6 +23,12 @@ class TodoCategoryRead:
 
 class TodoCategoryDelete(BaseModel):
     id: int
+
+
+class Project(BaseModel):
+    id: int
+    title: str
+    description: str
 
 
 class TodoCategory(TodoCategoryBase):
