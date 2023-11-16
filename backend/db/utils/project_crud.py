@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
+from db.models.user import User
 from db.schemas.project import (
     ProjectAddUser,
     ProjectCreate,
@@ -30,6 +31,9 @@ def create(db: Session, project: ProjectCreate, user_id: int):
 
 
 def add_association_to_user(db: Session, project: ProjectAddUser, user_id: int):
+    if db.query(User).filter(User.id == project.user_id):
+        raise UserFriendlyError("requested user doesn't exist")
+
     validate_project_belong_to_user(
         db,
         ProjectUserAssociationValidation(
