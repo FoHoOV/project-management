@@ -30,12 +30,12 @@ class ProjectAddUser(ProjectBase):
     user_id: int
 
 
-class User(BaseModel):
+class PartialUser(BaseModel):
     id: int
     username: str
 
 
-class TodoCategory(BaseModel):
+class PartialTodoCategory(BaseModel):
     id: int
     title: str
     description: str
@@ -45,5 +45,8 @@ class TodoCategory(BaseModel):
 
 
 class Project(ProjectBase):
-    users: list[User]
-    todo_categories: list[TodoCategory]
+    id: int
+    title: str
+    description: str
+    users: list[PartialUser]
+    todo_categories: list[PartialTodoCategory]

@@ -5,16 +5,15 @@
 	import Error from '$components/Error.svelte';
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import todos from '$lib/stores/todos';
-	import { createTodoItemSchema } from '$routes/user/todos/validator';
+	import { createTodoCategorySchema } from './validator';
+	import { page } from '$app/stores';
 
 	export let form: ActionData;
-	export let categoryId: number;
-
 	let formElement: HTMLFormElement;
 	let firstInputElement: FormInput;
 
 	$: formErrors = getFormErrors(form);
-	let isAddTodoItemSubmitting = false;
+	let isCreateTodoCategorySubmitting = false;
 
 	function resetForm() {
 		formElement.reset();
@@ -24,11 +23,11 @@
 </script>
 
 <form
-	action="/user/todos?/addTodo"
+	action="/user/todos?/createCategory"
 	use:superEnhance={{
-		validator: { schema: createTodoItemSchema },
+		validator: { schema: createTodoCategorySchema },
 		form: form,
-		action: 'addTodoResult'
+		action: 'createCategoryResult'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {
@@ -37,13 +36,13 @@
 		};
 	}}
 	on:submitstarted={() => {
-		isAddTodoItemSubmitting = true;
+		isCreateTodoCategorySubmitting = true;
 	}}
 	on:submitstarted={() => {
-		isAddTodoItemSubmitting = false;
+		isCreateTodoCategorySubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {
-		todos.addTodo(e.detail.response);
+		todos.addCategory(e.detail.response);
 		resetForm();
 	}}
 	bind:this={formElement}
@@ -52,8 +51,13 @@
 >
 	<div class="card-body items-center text-center">
 		<Error message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
-		<FormInput class="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
+		<FormInput
+			class="hidden"
+			type="hidden"
+			name="project_id"
+			value={$page.params.project_id}
+			errors={''}
+		/>
 		<FormInput
 			bind:this={firstInputElement}
 			name="title"
@@ -68,7 +72,12 @@
 			errors={formErrors?.errors?.description}
 		/>
 		<div class="card-actions w-full justify-end">
-			<LoadingButton text="add" class="flex-auto" type="submit" loading={isAddTodoItemSubmitting} />
+			<LoadingButton
+				text="add"
+				class="flex-auto"
+				type="submit"
+				loading={isCreateTodoCategorySubmitting}
+			/>
 			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
 		</div>
 	</div>

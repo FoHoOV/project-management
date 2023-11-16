@@ -68,8 +68,8 @@ def remove(
 @router.get("/list", response_model=list[TodoCategory])
 def get_for_user(
     current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategoryRead = Depends(TodoCategoryRead),
+    filter: TodoCategoryRead = Depends(TodoCategoryRead),
     db: Session = Depends(get_db),
 ):
-    items = todo_category_crud.get_categories_for_user(db, category, current_user.id)
+    items = todo_category_crud.get_categories_for_project(db, filter, current_user.id)
     return items

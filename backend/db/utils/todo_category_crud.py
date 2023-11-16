@@ -16,9 +16,18 @@ from db.utils.exceptions import UserFriendlyError
 from db.utils.project_crud import validate_project_belong_to_user
 
 
-def get_categories_for_user(db: Session, category: TodoCategoryRead, user_id: int):
-    validate_todo_category_belongs_to_user(db, category.id, user_id)
-    return db.query(TodoCategory).filter(TodoCategory.id == category.id)
+def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: int):
+    validate_project_belong_to_user(
+        db,
+        ProjectUserAssociationValidation(project_id=filter.project_id, user_id=user_id),
+        user_id,
+        True,
+    )
+    return (
+        db.query(TodoCategory)
+        .join(TodoCategoryProjectAssociation)
+        .filter(TodoCategoryProjectAssociation.project_id == filter.project_id)
+    )
 
 
 def create(db: Session, category: TodoCategoryCreate, user_id: int):

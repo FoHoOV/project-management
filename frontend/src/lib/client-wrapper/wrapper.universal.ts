@@ -196,13 +196,13 @@ export async function callService<
 	  }
 	| {
 			success: true;
-			result: Awaited<TServiceCallResult>;
+			response: Awaited<TServiceCallResult>;
 	  }
 > {
 	try {
 		return {
 			success: true,
-			result: await serviceCall()
+			response: await serviceCall()
 		};
 	} catch (e) {
 		if (e instanceof FetchError) {

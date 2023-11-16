@@ -23,14 +23,14 @@ class TodoCategoryAddToProject(BaseModel):
 
 @dataclass
 class TodoCategoryRead:
-    id: int
+    project_id: int
 
 
 class TodoCategoryDelete(BaseModel):
     id: int
 
 
-class Project(BaseModel):
+class PartialProject(BaseModel):
     id: int
     title: str
     description: str
@@ -39,7 +39,7 @@ class Project(BaseModel):
 class TodoCategory(TodoCategoryBase):
     id: int
     items: list[TodoItem]
-    projects: list[Project]
+    projects: list[PartialProject]
 
     class Config:
         from_attributes = True

@@ -6,7 +6,7 @@ import { TodoItemCreate, TodoCategoryCreate } from '$lib/client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
 
-export const load = (async ({ locals, fetch }) => {
+export const load = (async ({ locals, fetch, params }) => {
 	// https://github.com/sveltejs/kit/issues/9785
 	// if we reject or throw a redirect in streamed promises it doesn't work for now and crashes the server
 	// we have to wait for a fix or handle the error and make it an expected error :(
@@ -18,7 +18,7 @@ export const load = (async ({ locals, fetch }) => {
 					return await TodoCategoryClient({
 						token: locals.token,
 						fetchApi: fetch
-					}).getForUserTodoCategory();
+					}).getForUserTodoCategory(Number.parseInt(params.project_id));
 				},
 				errorCallback: async (e) => {
 					if (e.type === ErrorType.UNAUTHORIZED) {

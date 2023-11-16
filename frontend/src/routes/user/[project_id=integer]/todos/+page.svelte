@@ -8,7 +8,7 @@
 	import CircleButton from '$components/buttons/CircleButton.svelte';
 	import { faCross, faPlus } from '@fortawesome/free-solid-svg-icons';
 	import Modal from '$components/popups/Modal.svelte';
-	import CreateTodoCategory from '$routes/user/todos/CreateTodoCategory.svelte';
+	import CreateTodoCategory from './CreateTodoCategory.svelte';
 	import Empty from '$components/Empty.svelte';
 
 	export let data: PageData;
@@ -19,7 +19,7 @@
 	async function resolveTodoCategories() {
 		const fetchedTodos = await data.streamed.todos;
 		if (fetchedTodos.success) {
-			todoCategories.setTodoCategories(fetchedTodos.result);
+			todoCategories.setTodoCategories(fetchedTodos.response);
 		} else {
 			Promise.reject(fetchedTodos.error.body.message);
 		}

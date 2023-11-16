@@ -22,7 +22,7 @@ class UserAuthenticate(UserBase):
     password: str
 
 
-class Project(BaseModel):
+class PartialProject(BaseModel):
     id: int
     title: str
     description: str
@@ -30,7 +30,7 @@ class Project(BaseModel):
 
 class User(UserBase):
     id: int
-    projects: list[Project] = []
+    projects: list[PartialProject] = []
 
     class Config:
         from_attributes = True

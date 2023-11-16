@@ -21,12 +21,21 @@
 	// });
 </script>
 
-<Drawer id="app-drawer" startDrawerOpened={true} navbarTitle="Todos" navbarTitleHref="/user/todos">
+<Drawer
+	id="app-drawer"
+	startDrawerOpened={true}
+	navbarTitle="Todos"
+	navbarTitleHref="/user/projects"
+>
 	<div slot="drawer-side" let:closeDrawer>
 		<NavbarItem icon={faHome} href="/" name="Home" on:click={closeDrawer} />
-		<NavbarItem icon={faTasks} href="/user/todos" name="Todos" on:click={closeDrawer} />
 		{#if data.token}
-			<NavbarItem icon={faProjectDiagram} href="#" name="Projects" on:click={closeDrawer} />
+			<NavbarItem
+				icon={faProjectDiagram}
+				href="/user/projects"
+				name="Projects"
+				on:click={closeDrawer}
+			/>
 		{/if}
 	</div>
 

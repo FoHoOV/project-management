@@ -1,6 +1,6 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { decodeJwt, type JWTPayload } from 'jose';
-import { OAuthApi, TodoItemApi, TodoCategoryApi, UserApi } from '../client/apis';
+import { OAuthApi, TodoItemApi, TodoCategoryApi, UserApi, ProjectApi } from '../client/apis';
 
 import {
 	BaseAPI,
@@ -87,6 +87,10 @@ export const TodoItemClient = (config?: ConfigurationOptions) => {
 
 export const TodoCategoryClient = (config?: ConfigurationOptions) => {
 	return generateClient(TodoCategoryApi, config);
+};
+
+export const ProjectClient = (config?: ConfigurationOptions) => {
+	return generateClient(ProjectApi, config);
 };
 
 export const UserClient = (config?: ConfigurationOptions) => {
