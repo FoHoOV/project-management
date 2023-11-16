@@ -19,9 +19,9 @@ export type EnhanceOptions<
 export type FormActionResultType<
 	TFormAction,
 	TKey extends keyof NonNullable<TFormAction> = never
-> = TFormAction extends { result: infer TResult }
-	? Extract<TFormAction, { result: TResult }>['result']
-	: Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { result: any }>['result'];
+> = TFormAction extends { response: infer TResult }
+	? Extract<TFormAction, { response: TResult }>['response']
+	: Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { response: any }>['response'];
 
 export type SubmitEvents<
 	TSchema extends z.ZodTypeAny,
@@ -129,8 +129,8 @@ function _getResultFromFormAction<
 	}
 
 	if (!options || !options.action) {
-		return data['result'];
+		return data['response'];
 	}
 
-	return data[options.action as string]['result'];
+	return data[options.action as string]['response'];
 }
