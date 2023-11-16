@@ -40,10 +40,14 @@ def get_todos_for_user(
         query = query.filter(TodoItem.is_done == False)
 
     return (
-        query.join(User)
-        .filter(User.id == user_id)
-        .join(Project)
-        .filter(Project.id == search_todo_params.project_id)
+        query.join(TodoCategory)
+        .join(TodoCategoryProjectAssociation)
+        .join(
+            ProjectUserAssociation,
+            TodoCategoryProjectAssociation.project_id
+            == ProjectUserAssociation.project_id,
+        )
+        .filter(ProjectUserAssociation.user_id == user_id)
         .order_by(TodoItem.id.desc())
         .all()
     )

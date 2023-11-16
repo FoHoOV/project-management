@@ -16,6 +16,11 @@ class TodoCategoryUpdate(TodoCategoryBase):
     id: int
 
 
+class TodoCategoryAddToProject(BaseModel):
+    project_id: int
+    category_id: int
+
+
 @dataclass
 class TodoCategoryRead:
     id: int

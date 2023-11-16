@@ -1,4 +1,4 @@
-from sqlalchemy import delete
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category import TodoCategory
@@ -6,6 +6,7 @@ from db.models.todo_category_project_association import TodoCategoryProjectAssoc
 
 from db.schemas.project import ProjectUserAssociationValidation
 from db.schemas.todo_category import (
+    TodoCategoryAddToProject,
     TodoCategoryRead,
     TodoCategoryCreate,
     TodoCategoryUpdate,
@@ -36,7 +37,7 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     db.refresh(db_item)
 
     association = TodoCategoryProjectAssociation(
-        project_id=category.project_id, category_id=db_item.id
+        project_id=category.project_id, todo_category_id=db_item.id
     )
     db.add(association)
     db.commit()
@@ -58,6 +59,30 @@ def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def add_another_project(
+    db: Session, association: TodoCategoryAddToProject, user_id: int
+):
+    validate_todo_category_belongs_to_user(db, association.category_id, user_id)
+    validate_project_belong_to_user(
+        db,
+        ProjectUserAssociationValidation(
+            project_id=association.project_id, user_id=user_id
+        ),
+        user_id,
+        True,
+    )
+
+    association_db = TodoCategoryProjectAssociation(
+        todo_category_id=association.category_id, project_id=association.project_id
+    )
+
+    try:
+        db.add(association_db)
+        db.commit()
+    except IntegrityError:
+        raise UserFriendlyError("this category already belongs to this project")
 
 
 def remove(db: Session, category: TodoCategoryDelete, user_id: int):

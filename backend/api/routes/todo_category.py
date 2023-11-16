@@ -7,6 +7,7 @@ from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.todo_category import (
     TodoCategory,
+    TodoCategoryAddToProject,
     TodoCategoryCreate,
     TodoCategoryRead,
     TodoCategoryUpdate,
@@ -25,6 +26,17 @@ def create_for_user(
     db: Session = Depends(get_db),
 ):
     return todo_category_crud.create(db=db, category=category, user_id=current_user.id)
+
+
+@router.post("/add-to-project")
+def add_to_project(
+    current_user: Annotated[User, Depends(get_current_user)],
+    association: TodoCategoryAddToProject,
+    db: Session = Depends(get_db),
+):
+    todo_category_crud.add_another_project(
+        db=db, association=association, user_id=current_user.id
+    )
 
 
 @router.patch(path="/update", response_model=TodoCategory)
