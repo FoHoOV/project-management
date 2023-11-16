@@ -32,7 +32,7 @@ def create(db: Session, project: ProjectCreate, user_id: int):
 
 
 def attach_to_user(db: Session, project: ProjectAttachAssociation, user_id: int):
-    if db.query(User).filter(User.id == project.user_id):
+    if db.query(User).filter(User.id == project.user_id).count() == 0:
         raise UserFriendlyError("requested user doesn't exist")
 
     validate_project_belong_to_user(
