@@ -4,16 +4,16 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
-from db.models.base import Base
+from db.models.base import BasesWithCreatedDate
 
 
-class User(Base):
+class User(BasesWithCreatedDate):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String())
-    todo_categories: Mapped[List["TodoCategory"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+    projects: Mapped[List["Project"]] = relationship(
+        secondary="project_user_association", back_populates="users"
     )
 
     def __repr__(self) -> str:

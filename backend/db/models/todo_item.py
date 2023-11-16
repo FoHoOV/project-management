@@ -2,10 +2,10 @@ from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import Base
+from db.models.base import BasesWithCreatedDate
 
 
-class TodoItem(Base):
+class TodoItem(BasesWithCreatedDate):
     __tablename__ = "todo_item"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
