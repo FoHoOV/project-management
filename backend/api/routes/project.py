@@ -1,6 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
-
+from fastapi import APIRouter, Depends, HTTPException, Response
+from starlette.status import HTTP_200_OK
 from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
@@ -27,13 +27,14 @@ def create_for_user(
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.patch(path="/attach-to-user")
+@router.post(path="/attach-to-user")
 def attach_to_user(
     current_user: Annotated[User, Depends(get_current_user)],
     association: ProjectAttachAssociation,
     db: Session = Depends(get_db),
 ):
     project_crud.attach_to_user(db, association, current_user.id)
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.delete(path="/detach-from-user")
@@ -43,6 +44,7 @@ def detach_from_user(
     db: Session = Depends(get_db),
 ):
     project_crud.detach_from_user(db, association, current_user.id)
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.get("/search", response_model=Project)

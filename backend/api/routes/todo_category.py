@@ -1,6 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
-
+from fastapi import APIRouter, Depends, HTTPException, Response
+from starlette.status import HTTP_200_OK
 from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
@@ -37,6 +37,7 @@ def attach_to_project(
     todo_category_crud.attach_to_project(
         db=db, association=association, user_id=current_user.id
     )
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.delete(path="/detach-from-project")
@@ -48,6 +49,7 @@ def detach_from_project(
     todo_category_crud.detach_from_project(
         db=db, association=association, user_id=current_user.id
     )
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.patch(path="/update", response_model=TodoCategory)

@@ -89,9 +89,8 @@ def update(db: Session, todo: TodoItemUpdate, user_id: int):
 def remove(db: Session, todo: TodoItemDelete, user_id: int):
     validate_todo_item_belongs_to_user(db, todo.id, user_id=user_id)
 
-    row_count = db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
+    db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
     db.commit()
-    return row_count
 
 
 def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):

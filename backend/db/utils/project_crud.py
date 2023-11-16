@@ -31,25 +31,26 @@ def create(db: Session, project: ProjectCreate, user_id: int):
     return db_item
 
 
-def attach_to_user(db: Session, project: ProjectAttachAssociation, user_id: int):
-    if db.query(User).filter(User.id == project.user_id).count() == 0:
+def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: int):
+    user = db.query(User).filter(User.username == association.username).first()
+    if user is None:
         raise UserFriendlyError("requested user doesn't exist")
 
     validate_project_belong_to_user(
         db,
         ProjectUserAssociationValidation(
-            project_id=project.project_id, user_id=user_id
+            project_id=association.project_id, user_id=user_id
         ),
         user_id,
         True,
     )
 
-    association = ProjectUserAssociation(
-        user_id=project.user_id, project_id=project.project_id
+    association_db = ProjectUserAssociation(
+        user_id=user.id, project_id=association.project_id
     )
 
     try:
-        db.add(association)
+        db.add(association_db)
         db.commit()
     except IntegrityError:
         raise UserFriendlyError(
@@ -57,18 +58,18 @@ def attach_to_user(db: Session, project: ProjectAttachAssociation, user_id: int)
         )
 
 
-def detach_from_user(db: Session, project: ProjectDetachAssociation, user_id: int):
+def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id: int):
     validate_project_belong_to_user(
         db,
         ProjectUserAssociationValidation(
-            project_id=project.project_id, user_id=user_id
+            project_id=association.project_id, user_id=user_id
         ),
         user_id,
         True,
     )
 
     db.query(ProjectUserAssociation).filter(
-        ProjectUserAssociation.project_id == project.project_id,
+        ProjectUserAssociation.project_id == association.project_id,
         ProjectUserAssociation.user_id == user_id,
     ).delete()
 
@@ -76,11 +77,11 @@ def detach_from_user(db: Session, project: ProjectDetachAssociation, user_id: in
 
     if (
         db.query(ProjectUserAssociation)
-        .filter(ProjectUserAssociation.project_id == project.project_id)
+        .filter(ProjectUserAssociation.project_id == association.project_id)
         .count()
         == 0
     ):
-        db.query(Project).filter(Project.id == project.project_id).delete()
+        db.query(Project).filter(Project.id == association.project_id).delete()
         db.commit()
 
 

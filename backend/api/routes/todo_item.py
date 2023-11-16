@@ -1,6 +1,7 @@
 from typing import Annotated
 from unittest import result
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
+from starlette.status import HTTP_200_OK
 
 from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
@@ -45,9 +46,8 @@ def remove(
     todo: TodoItemDelete,
     db: Session = Depends(get_db),
 ):
-    deleted_rows = todo_item_crud.remove(db=db, todo=todo, user_id=current_user.id)
-    if deleted_rows == 0:
-        raise HTTPException(status_code=404, detail="todo item not found")
+    todo_item_crud.remove(db=db, todo=todo, user_id=current_user.id)
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.get("/list", response_model=list[TodoItem])
