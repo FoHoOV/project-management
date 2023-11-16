@@ -62,5 +62,5 @@ def get_for_user(
     search_todo_params: SearchTodoItemParams = Depends(SearchTodoItemParams),
     db: Session = Depends(get_db),
 ):
-    items = todo_item_crud.get_todos_for_user(db, current_user.id, search_todo_params)
+    items = todo_item_crud.get_todos_for_user(db, search_todo_params, current_user.id)
     return items

@@ -21,14 +21,18 @@ class TodoItemBase(BaseModel):
 class TodoItemCreate(TodoItemBase):
     pass
 
+
 class TodoItemUpdate(TodoItemBase):
     id: int
+
 
 class TodoItemDelete(BaseModel):
     id: int
 
+
 @dataclass
 class SearchTodoItemParams:
+    project_id: int
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 

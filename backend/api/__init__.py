@@ -9,7 +9,7 @@ from .routes import todo_item, todo_category, user
 
 def create_app():
     def custom_generate_unique_id(route: APIRoute):
-        return f"{route.name}_{route.tags[0].replace('-','_')}"
+        return f"{route.name}_{str(route.tags[0]).replace('-','_')}"
 
     app = FastAPI(generate_unique_id_function=custom_generate_unique_id)
 

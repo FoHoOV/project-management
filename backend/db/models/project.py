@@ -12,10 +12,10 @@ class Project(BasesWithCreatedDate):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
-    users: Mapped[List["User"]] = relationship(
+    users: Mapped[List["User"]] = relationship(  # type: ignore
         secondary="project_user_association", back_populates="projects"
     )
-    todo_categories: Mapped[List["TodoCategory"]] = relationship(
+    todo_categories: Mapped[List["TodoCategory"]] = relationship(  # type: ignore
         secondary="todo_category_project_association", back_populates="projects"
     )
 

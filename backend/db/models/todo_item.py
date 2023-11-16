@@ -13,7 +13,7 @@ class TodoItem(BasesWithCreatedDate):
     description: Mapped[str] = mapped_column(String())
     is_done: Mapped[bool] = mapped_column(Boolean(), default=False)
     category_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
-    category: Mapped["TodoCategory"] = relationship(back_populates="items")
+    category: Mapped["TodoCategory"] = relationship(back_populates="items")  # type: ignore
 
     def __repr__(self) -> str:
-        return f"TodoItem(id={self.id!r}, title={self.title!r}, description={self.description!r}, is_done={self.is_done}, user_id={self.user_id!r})"
+        return f"TodoItem(id={self.id!r}, title={self.title!r}, description={self.description!r}, is_done={self.is_done})"

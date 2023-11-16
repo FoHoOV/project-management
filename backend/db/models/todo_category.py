@@ -12,12 +12,12 @@ class TodoCategory(BasesWithCreatedDate):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
-    items: Mapped[List["TodoItem"]] = relationship(
+    items: Mapped[List["TodoItem"]] = relationship(  # type: ignore
         back_populates="category",
         cascade="all, delete-orphan",
         order_by="desc(TodoItem.id)",
     )
-    projects: Mapped[List["Project"]] = relationship(
+    projects: Mapped[List["Project"]] = relationship(  # type: ignore
         secondary="todo_category_project_association", back_populates="todo_categories"
     )
 

@@ -12,7 +12,7 @@ class User(BasesWithCreatedDate):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String())
-    projects: Mapped[List["Project"]] = relationship(
+    projects: Mapped[List["Project"]] = relationship(  # type: ignore
         secondary="project_user_association", back_populates="users"
     )
 

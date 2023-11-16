@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
+from pydantic import BaseModel, Field
 from db.schemas.project import Project
 
 from db.schemas.todo_item import TodoItem
@@ -10,10 +11,15 @@ class TodoCategoryBase(BaseModel):
 
 
 class TodoCategoryCreate(TodoCategoryBase):
-    pass
+    project_id: int = Field(exclude=True)
 
 
 class TodoCategoryUpdate(TodoCategoryBase):
+    id: int
+
+
+@dataclass
+class TodoCategoryRead:
     id: int
 
 

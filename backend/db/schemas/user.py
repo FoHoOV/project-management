@@ -8,8 +8,8 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: constr(min_length=5, max_length=20)
-    confirm_password: constr(min_length=5, max_length=20) = Field(exclude=True)
+    password: constr(min_length=5, max_length=20)  # type: ignore
+    confirm_password: constr(min_length=5, max_length=20) = Field(exclude=True)  # type: ignore
 
     @model_validator(mode="after")
     def check_passwords_match(self) -> "UserCreate":
