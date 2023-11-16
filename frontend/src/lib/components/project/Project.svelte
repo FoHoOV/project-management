@@ -19,7 +19,7 @@
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
-				await invalidate('user/projects'); // TODO: remove from projects store/ruins
+				await invalidate('/user/projects'); // TODO: remove from projects store/ruins
 				isCallingService = false;
 			},
 			errorCallback: async (e) => {
