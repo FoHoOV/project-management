@@ -30,7 +30,7 @@
 </script>
 
 {#if data.projects.length == 0}
-	<Empty class="!justify-start" text="Create your first project!" />
+	<Empty text="Create your first project!" />
 {:else}
 	<ProjectList projects={data.projects} on:attachToUser={handleAttachToUser}></ProjectList>
 {/if}
