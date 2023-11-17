@@ -211,7 +211,7 @@ export async function callService<
 				error: await errorCallback({
 					type: ErrorType.PRE_REQUEST_FAILURE,
 					status: -1,
-					message: 'An unknown error has occurred, please try again',
+					message: 'Server did not respond in time! try again later :(',
 					data: e,
 					originalError: e
 				})
