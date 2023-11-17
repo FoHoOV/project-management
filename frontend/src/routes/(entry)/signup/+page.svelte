@@ -8,7 +8,7 @@
 
 	export let form: ActionData;
 	let isFormSubmitting: boolean = false;
-	$: validationErrors = getFormErrors(form);
+	$: formErrors = getFormErrors(form);
 </script>
 
 <svelte:head>
@@ -19,7 +19,7 @@
 	method="post"
 	use:superEnhance={{ validator: { schema } }}
 	on:submitclienterror={(e) => {
-		validationErrors = {
+		formErrors = {
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
@@ -29,20 +29,20 @@
 	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 >
 	<div class="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0">
-		<Error message={validationErrors?.message} />
-		<FormInput name="username" class="w-full" errors={validationErrors?.errors?.username} />
+		<Error message={formErrors?.message} />
+		<FormInput name="username" class="w-full" errors={formErrors?.errors?.username} />
 		<FormInput
 			name="password"
 			class="w-full"
 			type="password"
-			errors={validationErrors?.errors?.password}
+			errors={formErrors?.errors?.password}
 		/>
 		<FormInput
 			name="confirm_password"
 			label="confirm password"
 			class="w-full"
 			type="password"
-			errors={validationErrors?.errors?.confirm_password}
+			errors={formErrors?.errors?.confirm_password}
 		/>
 		<div class="card-actions w-full justify-start">
 			<LoadingButton
