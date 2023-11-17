@@ -36,10 +36,10 @@
 		</Navbar>
 		<slot name="drawer-content" {closeDrawer} />
 	</div>
-	<div class="drawer-side z-40">
+	<div class="drawer-side z-40 lg:p-2">
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul
-			class="menu min-h-full w-80 bg-base-100 bg-opacity-90 p-4 text-base-content shadow-2xl backdrop-blur transition-shadow"
+			class="menu box-border min-h-full w-80 rounded-md bg-base-300 bg-opacity-90 p-4 text-base-content shadow-2xl backdrop-blur transition-shadow"
 		>
 			<slot name="drawer-side" {closeDrawer} />
 		</ul>
