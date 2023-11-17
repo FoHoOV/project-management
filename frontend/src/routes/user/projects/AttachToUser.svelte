@@ -11,7 +11,6 @@
 	export let projectId: number;
 
 	let formElement: HTMLFormElement;
-	let firstInputElement: FormInput;
 
 	$: formErrors = getFormErrors(form);
 	let isAttachProjectSubmitting = false;
@@ -19,7 +18,6 @@
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
-		firstInputElement.focus();
 	}
 </script>
 
@@ -62,7 +60,6 @@
 			type="hidden"
 		/>
 		<FormInput
-			bind:this={firstInputElement}
 			name="username"
 			class="w-full"
 			hideLabel={true}

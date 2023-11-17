@@ -73,11 +73,13 @@ export function superEnhance<
 
 	const validatorReturn = options?.validator && validate(node, options.validator);
 	const enhanceReturn = enhance(node, handleSubmit);
+	node.addEventListener('reset', _superResetHandler);
 
 	return {
 		destroy() {
 			validatorReturn?.destroy && validatorReturn.destroy();
 			enhanceReturn.destroy();
+			node.removeEventListener('reset', _superResetHandler);
 		}
 	};
 }
@@ -133,4 +135,10 @@ function _getResultFromFormAction<
 	}
 
 	return data[options.action as string]['response'];
+}
+
+function _superResetHandler(event: Event) {
+	const node = event.target as HTMLFormElement;
+	node.reset();
+	node.querySelector<HTMLInputElement>("input:not([type='hidden'])")?.focus();
 }

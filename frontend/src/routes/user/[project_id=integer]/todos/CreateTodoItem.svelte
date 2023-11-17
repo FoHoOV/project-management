@@ -12,7 +12,6 @@
 	export let categoryId: number;
 
 	let formElement: HTMLFormElement;
-	let firstInputElement: FormInput;
 
 	$: formErrors = getFormErrors(form);
 	let isAddTodoItemSubmitting = false;
@@ -20,7 +19,6 @@
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
-		firstInputElement.focus();
 	}
 </script>
 
@@ -55,13 +53,7 @@
 		<Error message={formErrors?.message} />
 		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
 		<FormInput class="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
-		<FormInput
-			bind:this={firstInputElement}
-			name="title"
-			class="w-full"
-			hideLabel={true}
-			errors={formErrors?.errors?.title}
-		/>
+		<FormInput name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"
 			class="w-full"
