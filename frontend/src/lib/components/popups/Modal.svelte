@@ -10,9 +10,22 @@
 	export function close() {
 		modalElement.close();
 	}
+
+	function handleKeyupEvent(e: KeyboardEvent) {
+		if (e.key !== 'Escape') {
+			return;
+		}
+
+		close();
+	}
 </script>
 
-<dialog class="modal modal-bottom sm:modal-middle" bind:this={modalElement}>
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<dialog
+	class="modal modal-bottom sm:modal-middle"
+	on:keyup={handleKeyupEvent}
+	bind:this={modalElement}
+>
 	<div class="modal-box">
 		<h3 class="mb-3 text-lg font-bold">{title}</h3>
 		<slot name="body" {show} {close} />
