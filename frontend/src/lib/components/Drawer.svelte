@@ -39,7 +39,7 @@
 	<div class="drawer-side z-40 lg:p-2">
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul
-			class="menu box-border min-h-full w-80 rounded-md bg-base-300 bg-opacity-90 p-4 text-base-content shadow-2xl backdrop-blur transition-shadow"
+			class="menu box-border min-h-full w-80 rounded-md bg-base-300 bg-opacity-90 p-4 text-base-content backdrop-blur transition-shadow lg:shadow-2xl"
 		>
 			<slot name="drawer-side" {closeDrawer} />
 		</ul>
