@@ -37,7 +37,7 @@
 	on:submitstarted={() => {
 		isAttachProjectSubmitting = true;
 	}}
-	on:submitstarted={() => {
+	on:submitended={() => {
 		isAttachProjectSubmitting = false;
 	}}
 	on:submitsucceeded={async (e) => {

@@ -36,7 +36,7 @@
 	on:submitstarted={() => {
 		isCreateProjectSubmitting = true;
 	}}
-	on:submitstarted={() => {
+	on:submitended={() => {
 		isCreateProjectSubmitting = false;
 	}}
 	on:submitsucceeded={async (e) => {

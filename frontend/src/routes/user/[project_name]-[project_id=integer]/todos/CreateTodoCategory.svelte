@@ -37,7 +37,7 @@
 	on:submitstarted={() => {
 		isCreateTodoCategorySubmitting = true;
 	}}
-	on:submitstarted={() => {
+	on:submitended={() => {
 		isCreateTodoCategorySubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {

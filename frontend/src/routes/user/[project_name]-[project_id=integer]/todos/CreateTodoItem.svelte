@@ -38,7 +38,7 @@
 	on:submitstarted={() => {
 		isAddTodoItemSubmitting = true;
 	}}
-	on:submitstarted={() => {
+	on:submitended={() => {
 		isAddTodoItemSubmitting = false;
 	}}
 	on:submitsucceeded={(e) => {
