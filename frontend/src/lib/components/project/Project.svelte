@@ -22,7 +22,7 @@
 					project_id: project.id
 				});
 				// based on docs invalidate("/user/projects") doesn't work
-				await invalidateAll(); // TODO: remove from projects store/ruins
+				await invalidateAll(); // TODO: remove from projects store/runes
 				isCallingService = false;
 			},
 			errorCallback: async (e) => {
