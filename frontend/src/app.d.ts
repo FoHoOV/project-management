@@ -1,8 +1,8 @@
 // See https://kit.svelte.dev/docs/types#app
+// for information about these interfaces
 
 import type { Token } from '$lib/client';
 
-// for information about these interfaces
 declare global {
 	namespace App {
 		interface Error {
