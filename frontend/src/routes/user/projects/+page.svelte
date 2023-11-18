@@ -15,17 +15,17 @@
 
 	let modal: Modal;
 	let selectedProject: Project | undefined;
-	let currentModal: { modal: ComponentType; title: string } | undefined;
+	let currentModal: { component: ComponentType; title: string } | undefined;
 
 	function handleAttachToUser(event: CustomEvent<{ project: Project }>) {
 		modal.show();
-		currentModal = { modal: AttachToUser, title: 'Give another user access to this project' };
+		currentModal = { component: AttachToUser, title: 'Give another user access to this project' };
 		selectedProject = event.detail.project;
 	}
 
 	function handleCreateProject() {
 		modal.show();
-		currentModal = { modal: CreateProject, title: 'Create a new project' };
+		currentModal = { component: CreateProject, title: 'Create a new project' };
 	}
 </script>
 
@@ -43,7 +43,7 @@
 
 <Modal title={currentModal?.title} bind:this={modal}>
 	<svelte:component
-		this={currentModal?.modal}
+		this={currentModal?.component}
 		slot="body"
 		let:close
 		let:show

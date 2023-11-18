@@ -85,7 +85,9 @@
 					Detach
 				{/if}
 			</button>
-			<a class="btn" href="/user/{project.id}/todos">show todos</a>
+			<a class="btn" href="/user/{project.title.replaceAll(' ', '')}-{project.id}/todos"
+				>show todos
+			</a>
 		</div>
 	</div>
 </div>
