@@ -22,7 +22,7 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_id}/todos?/createCategory"
+	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/createCategory"
 	use:superEnhance={{
 		validator: { schema: createTodoCategorySchema },
 		form: form,

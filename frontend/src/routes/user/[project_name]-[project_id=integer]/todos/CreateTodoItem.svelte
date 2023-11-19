@@ -23,7 +23,7 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_id}/todos?/addTodo"
+	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/addTodo"
 	use:superEnhance={{
 		validator: { schema: createTodoItemSchema },
 		form: form,
