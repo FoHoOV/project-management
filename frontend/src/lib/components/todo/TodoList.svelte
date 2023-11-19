@@ -64,7 +64,7 @@
 </script>
 
 <div
-	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-success-content p-5 {className}"
+	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-base-300 p-5 {className}"
 >
 	<Error message={apiErrorTitle} />
 	{#if isCallingService}

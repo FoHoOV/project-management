@@ -9,7 +9,9 @@
 	let className: string = '';
 </script>
 
-<div class="flex items-start gap-5 py-2 align-top {className}">
-	<Fa icon={faFolderBlank}></Fa>
-	<h1 class="text-lg">{text}</h1>
+<div class="flex items-start align-top {className}">
+	<div class="flex items-center gap-5 py-2">
+		<Fa icon={faFolderBlank}></Fa>
+		<h1 class="text-lg">{text}</h1>
+	</div>
 </div>

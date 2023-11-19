@@ -37,7 +37,7 @@
 	}
 </script>
 
-<div class="card bg-primary text-primary-content">
+<div class="card bg-base-300 text-base-content">
 	<div class="card-body">
 		<Error message={apiErrorTitle} />
 
