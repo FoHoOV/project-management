@@ -74,18 +74,20 @@
 			</div>
 		</div>
 
-		<div class="card-actions justify-end">
-			<button class="btn btn-success" on:click={handleOnAttachToUserClicked}>
+		<div class="card-actions justify-end pt-3">
+			<button class="btn btn-success flex-1" on:click={handleOnAttachToUserClicked}>
 				Attach to user
 			</button>
-			<button class="btn btn-error" on:click={handleDetachProjectFromUser}>
+			<button class="btn btn-error flex-1" on:click={handleDetachProjectFromUser}>
 				{#if project.users.length == 1}
 					Delete
 				{:else}
 					Detach
 				{/if}
 			</button>
-			<a class="btn" href="/user/{project.title.replaceAll(' ', '')}-{project.id}/todos"
+			<a
+				class="btn btn-info flex-1"
+				href="/user/{project.title.replaceAll(' ', '')}-{project.id}/todos"
 				>show todos
 			</a>
 		</div>
