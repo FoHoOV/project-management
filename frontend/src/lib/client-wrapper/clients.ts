@@ -1,39 +1,14 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { decodeJwt, type JWTPayload } from 'jose';
-import { OAuthApi, TodoItemApi, TodoCategoryApi, UserApi, ProjectApi } from '../client/apis';
+import { OAuthApi, TodoItemApi, TodoCategoryApi, UserApi, ProjectApi } from '$lib/client/apis';
 
 import {
 	BaseAPI,
 	Configuration,
 	type ConfigurationParameters,
 	type RequestContext
-} from '../client/runtime';
-import type { Token } from '../client/models';
-
-export class TokenError extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-}
-
-export async function isTokenExpirationDateValidAsync(token?: string) {
-	if (!token) {
-		return false;
-	}
-	try {
-		const parsedToken: JWTPayload = decodeJwt(token);
-		if (!parsedToken.exp) {
-			throw new TokenError('expiration date not found in jwt');
-		}
-		if (parsedToken.exp * 1000 < Date.now()) {
-			return false;
-		}
-	} catch {
-		return false;
-	}
-
-	return true;
-}
+} from '$lib/client/runtime';
+import type { Token } from '$lib/client/models';
+import { TokenError, isTokenExpirationDateValidAsync } from '$lib/utils/token';
 
 const checkAccessToken = async (context: RequestContext, config?: ConfigurationOptions) => {
 	if (config?.isTokenRequired === false) {
