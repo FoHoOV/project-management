@@ -7,5 +7,6 @@ export default {
 	plugins: [typography, daisyui],
 	daisyui: {
 		themes: ['light', 'dark']
-	}
+	},
+	safelist: ['alert-success', 'alert-info', 'alert-error', 'alert-warning']
 };

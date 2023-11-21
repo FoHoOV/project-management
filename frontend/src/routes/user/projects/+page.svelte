@@ -37,6 +37,6 @@
 	on:click={handleCreateProject}
 />
 
-<Modal title="Create a new project">
-	<CreateProject {form}></CreateProject>
+<Modal title="Create a new project" bind:this={modal}>
+	<CreateProject slot="body" {form}></CreateProject>
 </Modal>
