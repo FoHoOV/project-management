@@ -125,7 +125,7 @@ def detach_from_project(
             TodoCategory.id == association.category_id
         ).delete()
 
-        db.commit()
+    db.commit()
 
 
 def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_id: int):

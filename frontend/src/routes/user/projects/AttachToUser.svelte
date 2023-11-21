@@ -14,10 +14,12 @@
 
 	$: formErrors = getFormErrors(form);
 	let isAttachProjectSubmitting = false;
+	let isFormSubmitSuccessful = false;
 
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
+		isFormSubmitSuccessful = false;
 	}
 </script>
 
@@ -33,9 +35,11 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
+		isFormSubmitSuccessful = false;
 	}}
 	on:submitstarted={() => {
 		isAttachProjectSubmitting = true;
+		isFormSubmitSuccessful = false;
 	}}
 	on:submitended={() => {
 		isAttachProjectSubmitting = false;
@@ -44,13 +48,19 @@
 		// based on docs and on how invalidate works this doesn't do shit
 		await invalidate('/user/projects'); // TODO: use stores/runes later
 		resetForm();
+		isFormSubmitSuccessful = true;
 	}}
 	bind:this={formElement}
 	method="post"
 	class="card flex w-full flex-row items-start justify-center bg-base-300"
 >
 	<div class="card-body items-center text-center">
-		<Alert type="error" message={formErrors?.message} />
+		<Alert
+			class="mb-1"
+			type="success"
+			message={isFormSubmitSuccessful ? 'project has successfully attached to user!' : ''}
+		/>
+		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
 			name="project_id"
 			class="w-full"
