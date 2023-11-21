@@ -8,7 +8,7 @@
 	import { invalidate } from '$app/navigation';
 
 	export let form: ActionData;
-	export let projectId: number;
+	export let projectId: number | undefined;
 
 	let formElement: HTMLFormElement;
 
