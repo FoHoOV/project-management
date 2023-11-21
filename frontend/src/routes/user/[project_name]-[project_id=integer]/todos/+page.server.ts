@@ -1,6 +1,6 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { convertFormDataToObject, superFail } from '$lib/enhance/form';
+import { convertFormDataToObject, namedActionResult, superFail } from '$lib/enhance/form';
 import { attachToProjectSchema, createTodoCategorySchema, createTodoItemSchema } from './validator';
 import {
 	TodoItemCreate,
@@ -61,9 +61,7 @@ export const actions: Actions = {
 			errorSchema: TodoItemCreate
 		});
 
-		return Object.hasOwn(result, 'success')
-			? { addTodo: result as Extract<typeof result, { success: true }> }
-			: result;
+		return namedActionResult(result, 'addTodo');
 	},
 	createCategory: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -90,9 +88,7 @@ export const actions: Actions = {
 			errorSchema: TodoCategoryCreate
 		});
 
-		return Object.hasOwn(result, 'success')
-			? { createCategory: result as Extract<typeof result, { success: true }> }
-			: result;
+		return namedActionResult(result, 'createCategory');
 	},
 	attachToProject: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -119,8 +115,6 @@ export const actions: Actions = {
 			errorSchema: TodoCategoryAttachAssociation
 		});
 
-		return Object.hasOwn(result, 'success')
-			? { attachToProject: result as Extract<typeof result, { success: true }> }
-			: result;
+		return namedActionResult(result, 'attachToProject');
 	}
 } satisfies Actions;

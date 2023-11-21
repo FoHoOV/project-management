@@ -3,7 +3,7 @@ import { ProjectClient } from '$lib/client-wrapper/clients';
 import { callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { error, type Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema } from './validator';
-import { convertFormDataToObject, superFail } from '$lib';
+import { convertFormDataToObject, namedActionResult, superFail } from '$lib';
 import { ProjectAttachAssociation, ProjectCreate } from '$lib/client/zod/schemas';
 
 export const load = (async ({ locals, fetch }) => {
@@ -47,9 +47,7 @@ export const actions = {
 			errorSchema: ProjectCreate
 		});
 
-		return Object.hasOwn(result, 'success')
-			? { create: result as Extract<typeof result, { success: true }> }
-			: result;
+		return namedActionResult(result, 'create');
 	},
 	attach: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
@@ -76,8 +74,6 @@ export const actions = {
 			errorSchema: ProjectAttachAssociation
 		});
 
-		return Object.hasOwn(result, 'success')
-			? { attach: result as Extract<typeof result, { success: true }> }
-			: result;
+		return namedActionResult(result, 'attach');
 	}
 } satisfies Actions;

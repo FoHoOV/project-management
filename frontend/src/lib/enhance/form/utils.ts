@@ -37,6 +37,16 @@ export function failedActionData<T>({ message, error }: FailedActionProps<T>) {
 	return { message, error };
 }
 
+export function namedActionResult<T extends { success: true } | object, Key extends string>(
+	result: T,
+	key: Key
+): T extends { success: true } ? { [x in Key]: Extract<T, { success: true }> } : T {
+	if ('success' in result && Object.hasOwn(result, 'success') && result['success'] === true) {
+		return { [key]: result } as any;
+	}
+	return result as any;
+}
+
 export function superFail<T = never>(
 	status: NumberRange<400, 500>,
 	{ message, error }: FailedActionProps<T>
