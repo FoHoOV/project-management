@@ -22,7 +22,7 @@
 	>
 		<LoadingButton
 			class="btn-warning mt-2"
-			text="Yes, I'm a piece of shit"
+			text="Yes, I'm a nerd :|"
 			loading={isSubmitting}
 			type="submit"
 		/>
