@@ -50,7 +50,9 @@
 		{/if}
 
 		<div class="card-title">
-			<span>#{project.id}</span>
+			<div class="tooltip" data-tip="project id">
+				<span>#{project.id}</span>
+			</div>
 			<span>{project.title}</span>
 		</div>
 		<p>{project.description}</p>
@@ -91,7 +93,8 @@
 			<a
 				class="btn btn-info flex-1"
 				href="/user/{project.title.replaceAll(' ', '')}-{project.id}/todos"
-				>show todos
+			>
+				show todos
 			</a>
 		</div>
 	</div>
