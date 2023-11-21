@@ -2,7 +2,7 @@
 	import { faCheckCircle, faTrashCan, faUndo } from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
 	import type { TodoItem } from '$lib/client/models';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
@@ -48,7 +48,7 @@
 
 <div class="card mt-4 bg-base-200 shadow-xl hover:bg-base-100">
 	<div class="card-body">
-		<Error message={apiErrorTitle} />
+		<Alert type="error" message={apiErrorTitle} />
 		{#if isCallingService}
 			<div
 				class="align-center absolute left-0 top-0 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"

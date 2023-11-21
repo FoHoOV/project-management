@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/client/models';
@@ -39,7 +39,7 @@
 
 <div class="card bg-base-300 text-base-content">
 	<div class="card-body">
-		<Error message={apiErrorTitle} />
+		<Alert type="error" message={apiErrorTitle} />
 
 		{#if isCallingService}
 			<div

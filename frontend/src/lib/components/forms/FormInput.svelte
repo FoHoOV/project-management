@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Error from '../Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
 	export let name: string;
@@ -32,5 +32,5 @@
 		class="input input-bordered w-full"
 		{value}
 	/>
-	<Error message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
+	<Alert type="error" message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
 </div>

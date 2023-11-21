@@ -1,6 +1,6 @@
 <script lang="ts">
 	import TodoList from '$lib/components/todo/TodoList.svelte';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import type { ActionData, PageData } from './$types';
 	import todoCategories from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
@@ -64,5 +64,5 @@
 		</svelte:fragment>
 	</Modal>
 {:catch error}
-	<Error message={error.message} />
+	<Alert type="error" message={error.message} />
 {/await}

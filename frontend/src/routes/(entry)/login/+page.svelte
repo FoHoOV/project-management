@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import type { ActionData } from './$types';
 	import { schema } from './validators';
@@ -33,7 +33,7 @@
 	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 >
 	<div class="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0">
-		<Error message={formErrors?.message} />
+		<Alert type="error" message={formErrors?.message} />
 
 		<FormInput name="username" class="w-full" errors={formErrors?.errors?.username} />
 		<FormInput

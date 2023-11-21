@@ -2,7 +2,7 @@
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import { attachToProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
@@ -19,6 +19,12 @@
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
+	}
+
+	async function successHandler() {
+		// based on docs and on how invalidate works this doesn't do shit
+		await invalidate(`/user/{$page.params.project_name}-{$page.params.project_id}/todos`); // TODO: use stores/runes later
+		resetForm();
 	}
 </script>
 
@@ -41,17 +47,13 @@
 	on:submitended={() => {
 		isAttachProjectSubmitting = false;
 	}}
-	on:submitsucceeded={async (e) => {
-		// based on docs and on how invalidate works this doesn't do shit
-		await invalidate(`/user/{$page.params.project_name}-{$page.params.project_id}/todos`); // TODO: use stores/runes later
-		resetForm();
-	}}
+	on:submitsucceeded={successHandler}
 	bind:this={formElement}
 	method="post"
 	class="card flex w-full flex-row items-start justify-center bg-base-300"
 >
 	<div class="card-body items-center text-center">
-		<Error message={formErrors?.message} />
+		<Alert type="error" message={formErrors?.message} />
 		<FormInput
 			name="category_id"
 			class="w-full"
@@ -62,6 +64,7 @@
 		/>
 		<FormInput
 			name="project_id"
+			label="project id"
 			class="w-full"
 			hideLabel={true}
 			errors={typeof formErrors?.errors?.project_id === 'number'

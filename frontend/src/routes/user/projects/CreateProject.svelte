@@ -2,7 +2,7 @@
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/enhance/form';
 	import { createProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
@@ -49,7 +49,7 @@
 	class="card flex w-full flex-row items-start justify-center bg-base-300"
 >
 	<div class="card-body items-center text-center">
-		<Error message={formErrors?.message} />
+		<Alert type="error" message={formErrors?.message} />
 		<FormInput name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"

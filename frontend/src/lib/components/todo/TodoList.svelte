@@ -15,7 +15,7 @@
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
 	import todoCategories from '$lib/stores/todos';
-	import Error from '$components/Error.svelte';
+	import Alert from '$components/Alert.svelte';
 	import Modal from '$components/popups/Modal.svelte';
 
 	export let category: TodoCategory;
@@ -72,7 +72,7 @@
 <div
 	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-base-300 p-5 {className}"
 >
-	<Error message={apiErrorTitle} />
+	<Alert type="error" message={apiErrorTitle} />
 	{#if isCallingService}
 		<div
 			class="align-center absolute left-0.5 top-0.5 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
