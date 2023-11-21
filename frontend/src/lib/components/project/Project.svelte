@@ -49,7 +49,10 @@
 			</div>
 		{/if}
 
-		<h2 class="card-title">{project.title}</h2>
+		<div class="card-title">
+			<span>#{project.id}</span>
+			<span>{project.title}</span>
+		</div>
 		<p>{project.description}</p>
 
 		<div class="stats shadow">

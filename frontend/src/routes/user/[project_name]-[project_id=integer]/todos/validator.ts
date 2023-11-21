@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import type { TodoItemCreate, TodoCategoryCreate } from '$lib/client';
+import type {
+	TodoItemCreate,
+	TodoCategoryCreate,
+	TodoCategoryAttachAssociation
+} from '$lib/client';
 
 export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),
@@ -19,3 +23,10 @@ export const createTodoCategorySchema = z.object({
 });
 
 ({}) as z.infer<typeof createTodoCategorySchema> satisfies TodoCategoryCreate;
+
+export const attachToProjectSchema = z.object({
+	project_id: z.number({ coerce: true }),
+	category_id: z.number({ coerce: true })
+});
+
+({}) as z.infer<typeof attachToProjectSchema> satisfies TodoCategoryAttachAssociation;

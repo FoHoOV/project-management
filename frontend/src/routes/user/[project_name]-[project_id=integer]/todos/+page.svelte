@@ -11,6 +11,7 @@
 	import CreateTodoCategory from './CreateTodoCategory.svelte';
 	import Empty from '$components/Empty.svelte';
 	import { page } from '$app/stores';
+	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -46,6 +47,7 @@
 				>
 					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
 						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
+						<AttachToProject slot="attach-to-project" {form} categoryId={category.id} />
 					</TodoList>
 				</div>
 			{/each}

@@ -7,6 +7,7 @@
 		faArrowCircleRight,
 		faCirclePlus,
 		faInfoCircle,
+		faMapPin,
 		faTrashCan
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
@@ -25,6 +26,7 @@
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
 	let createTodoModal: Modal;
+	let attachToProjectModal: Modal;
 
 	async function handleRemoveCategory() {
 		isCallingService = true;
@@ -61,6 +63,10 @@
 	function handleCreateTodo(event: MouseEvent) {
 		createTodoModal.show();
 	}
+
+	function handleAttachToProject(event: MouseEvent) {
+		attachToProjectModal.show();
+	}
 </script>
 
 <div
@@ -89,10 +95,14 @@
 			<span class="text-lg font-bold">{category.title}</span>
 		</div>
 	</div>
-	<div class="w-full">
-		<button class="btn btn-success w-full" on:click={handleCreateTodo}>
+	<div class="flex w-full gap-2">
+		<button class="btn btn-success flex-1" on:click={handleCreateTodo}>
 			<Fa icon={faCirclePlus} />
 			add todo
+		</button>
+		<button class="btn btn-info flex-1" on:click={handleAttachToProject}>
+			<Fa icon={faMapPin} />
+			Add to project
 		</button>
 	</div>
 	{#if category.items.length > 0}
@@ -114,5 +124,11 @@
 <Modal title="Create a new todo here!" bind:this={createTodoModal}>
 	<svelte:fragment slot="body">
 		<slot name="create-todo-item" />
+	</svelte:fragment>
+</Modal>
+
+<Modal title="Attach to project!" bind:this={attachToProjectModal}>
+	<svelte:fragment slot="body">
+		<slot name="attach-to-project" />
 	</svelte:fragment>
 </Modal>

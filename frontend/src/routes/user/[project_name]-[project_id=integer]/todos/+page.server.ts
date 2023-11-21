@@ -1,8 +1,12 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { convertFormDataToObject, superFail } from '$lib/enhance/form';
-import { createTodoCategorySchema, createTodoItemSchema } from './validator';
-import { TodoItemCreate, TodoCategoryCreate } from '$lib/client/zod/schemas';
+import { attachToProjectSchema, createTodoCategorySchema, createTodoItemSchema } from './validator';
+import {
+	TodoItemCreate,
+	TodoCategoryCreate,
+	TodoCategoryAttachAssociation
+} from '$lib/client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
 
@@ -88,6 +92,35 @@ export const actions: Actions = {
 
 		return Object.hasOwn(result, 'success')
 			? { createCategory: result as Extract<typeof result, { success: true }> }
+			: result;
+	},
+	attachToProject: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await attachToProjectSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoCategoryClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).attachToProjectTodoCategory({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoCategoryAttachAssociation
+		});
+
+		return Object.hasOwn(result, 'success')
+			? { attachToProject: result as Extract<typeof result, { success: true }> }
 			: result;
 	}
 } satisfies Actions;
