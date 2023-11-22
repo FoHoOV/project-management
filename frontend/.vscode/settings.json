@@ -1,16 +1,17 @@
 {
 	"cSpell.words": [
-        "daisyui",
-        "felte",
-        "felteerror",
-        "feltesuccess",
-        "fortawesome",
-        "submitclienterror",
-        "submitended",
-        "submitstarted",
-        "submitsucceeded",
-        "Todos"
-    ],
+		"daisyui",
+		"felte",
+		"felteerror",
+		"feltesuccess",
+		"fortawesome",
+		"submitclienterror",
+		"submitended",
+		"submitredirected",
+		"submitstarted",
+		"submitsucceeded",
+		"Todos"
+	],
 	"typescript.preferences.importModuleSpecifier": "project-relative",
 	"javascript.preferences.importModuleSpecifier": "project-relative"
 }

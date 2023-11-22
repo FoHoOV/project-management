@@ -30,6 +30,12 @@ export type SubmitEvents<
 > = {
 	'on:submitstarted'?: (e: CustomEvent<void>) => void;
 	'on:submitended'?: (e: CustomEvent<void>) => void;
+	'on:submitredirected'?: (
+		e: CustomEvent<{
+			redirectUrl: URL;
+			formData: z.infer<TSchema>;
+		}>
+	) => void;
 	'on:submitsucceeded'?: (
 		e: CustomEvent<{
 			response: FormActionResultType<TFormAction, TKey>;
@@ -97,23 +103,33 @@ function _defaultSubmitHandler<
 
 		return async ({ update, result }) => {
 			node.dispatchEvent(new CustomEvent('submitended'));
-			await update();
 
-			if (result.type != 'success') {
-				return;
+			if (result.type == 'success') {
+				console.debug('s-form-result');
+				console.debug(_getResultFromFormAction(result.data, options));
+				console.debug('e-form-result');
+				node.dispatchEvent(
+					new CustomEvent('submitsucceeded', {
+						detail: {
+							response: _getResultFromFormAction(result.data, options),
+							formData: Object.fromEntries(formData)
+						}
+					})
+				);
+			} else if (result.type == 'redirect') {
+				node.dispatchEvent(
+					new CustomEvent('submitredirected', {
+						detail: {
+							redirectUrl: result.location.startsWith('/')
+								? new URL(location.origin + result.location)
+								: new URL(result.location),
+							formData: Object.fromEntries(formData)
+						}
+					})
+				);
 			}
-			console.debug('s-form-result');
-			console.debug(_getResultFromFormAction(result.data, options));
-			console.debug('e-form-result');
 
-			node.dispatchEvent(
-				new CustomEvent('submitsucceeded', {
-					detail: {
-						response: _getResultFromFormAction(result.data, options),
-						formData: Object.fromEntries(formData)
-					}
-				})
-			);
+			await update();
 		};
 	};
 }

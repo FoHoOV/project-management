@@ -15,7 +15,7 @@ const addToast = (toast: Omit<Toast, 'id'>): Toast => {
 	const toastWithId: Toast = { ...toast, id: crypto.randomUUID() };
 	_update((toasts) => {
 		setTimeout(() => {
-			//removeToast(toastWithId);
+			removeToast(toastWithId);
 		}, toastWithId.time);
 		return [...toasts, toastWithId];
 	});

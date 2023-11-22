@@ -27,7 +27,7 @@
 	}}
 	on:submitstarted={() => (isFormSubmitting = true)}
 	on:submitended={() => (isFormSubmitting = false)}
-	on:submitsucceeded={() => {
+	on:submitredirected={() => {
 		toasts.addToast({ time: 5000, text: 'account successfully created', type: 'success' });
 	}}
 	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"

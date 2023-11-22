@@ -1,23 +1,29 @@
 <script lang="ts">
 	import toasts, { type Toast } from '$lib/stores/toasts';
+	import { flip } from 'svelte/animate';
+	import { fade, slide } from 'svelte/transition';
 
 	function getToastTypeClass(toast: Toast): string {
 		switch (toast.type) {
 			case 'success':
-				return 'success';
+				return 'alert-success';
 			case 'error':
-				return 'error';
+				return 'alert-error';
 			case 'info':
-				return 'info';
+				return 'alert-info';
 			default:
-				return 'info';
+				return 'alert-info';
 		}
 	}
 </script>
 
 <div class="toast toast-end">
-	{#each $toasts as toast}
-		<div class="alert {getToastTypeClass(toast)}">
+	{#each $toasts as toast (toast.id)}
+		<div
+			class="alert {getToastTypeClass(toast)}"
+			in:fade={{ duration: 200 }}
+			out:slide={{ axis: 'x', duration: 200 }}
+		>
 			<span>{toast.text}</span>
 		</div>
 	{/each}

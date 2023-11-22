@@ -8,7 +8,6 @@
 	import Toasts from '$components/popups/Toasts.svelte';
 
 	export let data: PageData;
-
 	// beforeNavigate(async ({ to, cancel }) => {
 	// 	if (browser && isRouteProtected(to?.route.id!) && !$page.data.token) {
 	// 		// because if the client-side router kicks in and page does NOT
