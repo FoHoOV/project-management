@@ -7,7 +7,7 @@
 			"typescript-fetch": {
 				"generatorName": "typescript-fetch",
 				"inputSpec": "http://127.0.0.1:8080/openapi.json",
-				"output": "./src/lib/client",
+				"output": "./src/lib/generated-client",
 				"additionalProperties": {
 					"modelPropertyNaming": "original",
 					"supportsES6": true,

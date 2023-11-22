@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ProjectAttachAssociation, ProjectCreate } from '$lib/client';
+import type { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client';
 
 export const createProjectSchema = z.object({
 	title: z.string().nonempty().min(1),

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { TodoCategory, TodoItem } from '$lib/client/models';
+import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 
 const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
 

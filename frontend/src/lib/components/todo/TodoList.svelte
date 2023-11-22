@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TodoItem, TodoCategory } from '$lib/client';
+	import type { TodoItem, TodoCategory } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 	import TodoItemComponent from './TodoItem.svelte';
 	import { receive, send } from './transitions';

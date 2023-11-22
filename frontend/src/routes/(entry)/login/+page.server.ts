@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import KEYS from '$lib/constants/cookie';
 import { convertFormDataToObject, superFail } from '$lib/enhance/form';
 import { schema } from './validators';
-import { Body_login_for_access_token_OAuth } from '$lib/client/zod/schemas';
+import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
 import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper';
 import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 import { OAuthClient } from '$lib/client-wrapper/clients';

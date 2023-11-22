@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ProjectComponent from './Project.svelte';
-	import type { Project as ProjectType } from '$lib/client/models';
+	import type { Project as ProjectType } from '$lib/generated-client/models';
 	import Modal from '$components/popups/Modal.svelte';
 
 	export let projects: ProjectType[];

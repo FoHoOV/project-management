@@ -4,7 +4,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import { redirect } from '@sveltejs/kit';
 import type { z } from 'zod';
 import type { ErrorMessage } from '$lib/utils/types';
-import { RequiredError, FetchError, ResponseError } from '../client/runtime';
+import { RequiredError, FetchError, ResponseError } from '$lib/generated-client/runtime';
 import { TokenError } from '$lib/utils/token';
 
 export const createRequest = (url: string, token?: string): Request => {

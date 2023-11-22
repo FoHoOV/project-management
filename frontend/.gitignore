@@ -10,4 +10,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 package-lock.json
 
-/src/lib/client
+/src/lib/generated-client

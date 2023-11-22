@@ -4,7 +4,7 @@ import { callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { error, type Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema } from './validator';
 import { convertFormDataToObject, namedActionResult, superFail } from '$lib';
-import { ProjectAttachAssociation, ProjectCreate } from '$lib/client/zod/schemas';
+import { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client/zod/schemas';
 
 export const load = (async ({ locals, fetch }) => {
 	const result = await callService({

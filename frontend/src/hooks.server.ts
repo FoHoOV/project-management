@@ -1,5 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
-import type { Token } from '$lib/client';
+import type { Token } from '$lib/generated-client';
 import KEYS from '$lib/constants/cookie';
 import { sequence } from '@sveltejs/kit/hooks';
 import { isTokenExpirationDateValidAsync } from '$lib/utils/token';

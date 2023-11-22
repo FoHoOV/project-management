@@ -6,7 +6,7 @@ import {
 	TodoItemCreate,
 	TodoCategoryCreate,
 	TodoCategoryAttachAssociation
-} from '$lib/client/zod/schemas';
+} from '$lib/generated-client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
 

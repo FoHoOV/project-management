@@ -3,7 +3,7 @@ import type {
 	TodoItemCreate,
 	TodoCategoryCreate,
 	TodoCategoryAttachAssociation
-} from '$lib/client';
+} from '$lib/generated-client';
 
 export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),

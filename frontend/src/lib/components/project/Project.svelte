@@ -4,7 +4,7 @@
 	import Alert from '$components/Alert.svelte';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { ProjectClient } from '$lib/client-wrapper/clients';
-	import type { Project } from '$lib/client/models';
+	import type { Project } from '$lib/generated-client/models';
 	import { faBusinessTime, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';

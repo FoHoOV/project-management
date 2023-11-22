@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Body_login_for_access_token_OAuth } from '$lib/client/zod/schemas';
+import type { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
 
 export const schema = z.object({
 	username: z.string().nonempty().min(5).max(15),

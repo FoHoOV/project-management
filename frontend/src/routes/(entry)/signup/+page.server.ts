@@ -2,7 +2,7 @@ import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { convertFormDataToObject, superFail } from '$lib/enhance/form';
 import { schema } from './validators';
-import { UserCreate } from '$lib/client/zod/schemas';
+import { UserCreate } from '$lib/generated-client/zod/schemas';
 import { callServiceInFormActions } from '$lib/client-wrapper';
 import { UserClient } from '$lib/client-wrapper/clients';
 

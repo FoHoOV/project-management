@@ -13,8 +13,8 @@
 		"format": "prettier --plugin-search-dir . --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"open-api:generate": "rm -rf ./src/lib/client; openapi-generator-cli generate --generator-key typescript-fetch && npm run open-api:zod",
-		"open-api:zod": "mkdirp ./src/lib/client/zod && typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/client/zod/schemas.ts --runtime zod && node extract-zod.js"
+		"open-api:generate": "rm -rf ./src/lib/generated-client; openapi-generator-cli generate --generator-key typescript-fetch && npm run open-api:zod",
+		"open-api:zod": "mkdirp ./src/lib/generated-client/zod && typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js"
 	},
 	"devDependencies": {
 		"@openapitools/openapi-generator-cli": "^2.7.0",

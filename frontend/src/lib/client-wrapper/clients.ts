@@ -1,13 +1,19 @@
 import { PUBLIC_API_URL } from '$env/static/public';
-import { OAuthApi, TodoItemApi, TodoCategoryApi, UserApi, ProjectApi } from '$lib/client/apis';
+import {
+	OAuthApi,
+	TodoItemApi,
+	TodoCategoryApi,
+	UserApi,
+	ProjectApi
+} from '$lib/generated-client/apis';
 
 import {
 	BaseAPI,
 	Configuration,
 	type ConfigurationParameters,
 	type RequestContext
-} from '$lib/client/runtime';
-import type { Token } from '$lib/client/models';
+} from '$lib/generated-client/runtime';
+import type { Token } from '$lib/generated-client/models';
 import { TokenError, isTokenExpirationDateValidAsync } from '$lib/utils/token';
 
 const checkAccessToken = async (context: RequestContext, config?: ConfigurationOptions) => {
