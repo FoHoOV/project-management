@@ -5,6 +5,7 @@
 	import type { PageData } from './$types';
 	import Drawer from '$components/Drawer.svelte';
 	import { faHome, faProjectDiagram, faTasks } from '@fortawesome/free-solid-svg-icons';
+	import Toasts from '$components/popups/Toasts.svelte';
 
 	export let data: PageData;
 
@@ -56,6 +57,7 @@
 			{:else}
 				<div class="mx-auto h-full overflow-y-auto px-6">
 					<slot />
+					<Toasts></Toasts>
 				</div>
 			{/if}
 		</div>

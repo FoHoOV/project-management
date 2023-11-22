@@ -4,6 +4,7 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { superEnhance, getFormErrors } from '$lib/enhance/form';
+	import toasts from '$lib/stores/toasts';
 	import { schema } from './validators';
 
 	export let form: ActionData;
@@ -17,7 +18,7 @@
 
 <form
 	method="post"
-	use:superEnhance={{ validator: { schema } }}
+	use:superEnhance={{ validator: { schema }, form: form }}
 	on:submitclienterror={(e) => {
 		formErrors = {
 			errors: e.detail,
@@ -26,6 +27,9 @@
 	}}
 	on:submitstarted={() => (isFormSubmitting = true)}
 	on:submitended={() => (isFormSubmitting = false)}
+	on:submitsucceeded={() => {
+		toasts.addToast({ time: 5000, text: 'account successfully created', type: 'success' });
+	}}
 	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 >
 	<div class="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0">
