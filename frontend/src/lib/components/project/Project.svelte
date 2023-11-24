@@ -10,6 +10,8 @@
 	import Fa from 'svelte-fa';
 
 	export let project: Project;
+	export let showAttachToUserButton: boolean = false;
+
 	let isCallingService: boolean = false;
 	let apiErrorTitle: string | null;
 	const dispatch = createEventDispatcher<{ attachToUser: { project: Project } }>();
@@ -84,7 +86,10 @@
 		</div>
 
 		<div class="card-actions justify-end pt-3">
-			<button class="btn btn-success flex-1" on:click={handleOnAttachToUserClicked}>
+			<button
+				class="btn btn-success flex-1 {showAttachToUserButton ? '' : 'hidden'}"
+				on:click={handleOnAttachToUserClicked}
+			>
 				Attach to user
 			</button>
 			<button class="btn btn-error flex-1" on:click={handleDetachProjectFromUser}>

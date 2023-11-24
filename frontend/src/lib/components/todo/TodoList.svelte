@@ -97,11 +97,17 @@
 		</div>
 	</div>
 	<div class="flex w-full gap-2">
-		<button class="btn btn-success flex-1" on:click={handleCreateTodo}>
+		<button
+			class="btn btn-success flex-1 {$$slots['create-todo-item'] ? '' : 'hidden'}"
+			on:click={handleCreateTodo}
+		>
 			<Fa icon={faCirclePlus} />
 			Add todo
 		</button>
-		<button class="btn btn-info flex-1" on:click={handleAttachToProject}>
+		<button
+			class="btn btn-info flex-1 {$$slots['attach-to-project'] ? '' : 'hidden'}"
+			on:click={handleAttachToProject}
+		>
 			<Fa icon={faMapPin} />
 			Add to project
 		</button>

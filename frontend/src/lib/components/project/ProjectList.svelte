@@ -20,7 +20,11 @@
 {:else}
 	<div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
 		{#each projects as project}
-			<ProjectComponent {project} on:attachToUser={handleAttachToUser}></ProjectComponent>
+			<ProjectComponent
+				{project}
+				on:attachToUser={handleAttachToUser}
+				showAttachToUserButton={$$slots['attach-to-project']}
+			></ProjectComponent>
 		{/each}
 	</div>
 {/if}
