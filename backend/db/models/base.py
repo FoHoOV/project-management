@@ -6,6 +6,8 @@ from sqlalchemy.orm import mapped_column
 
 
 class Base(DeclarativeBase):
+    __abstract__ = True
+    __table_args__ = {"sqlite_autoincrement": True}
     pass
 
 
