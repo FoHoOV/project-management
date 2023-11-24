@@ -67,8 +67,13 @@
 			errors={formErrors?.errors?.description}
 		/>
 		<div class="card-actions w-full justify-end">
-			<LoadingButton text="add" class="flex-auto" type="submit" loading={isAddTodoItemSubmitting} />
-			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
+			<LoadingButton
+				text="add"
+				class="btn-success flex-1"
+				type="submit"
+				loading={isAddTodoItemSubmitting}
+			/>
+			<LoadingButton text="reset" class="btn-warning  flex-1" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>

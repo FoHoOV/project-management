@@ -64,7 +64,7 @@
 				<div class="stat-figure text-secondary">
 					<Fa icon={faUser}></Fa>
 				</div>
-				<div class="stat-title">Accessed By</div>
+				<div class="stat-title">Accessed by</div>
 				<div class="stat-value">{project.users.length}</div>
 				<div class="stat-desc">
 					{project.users.map((user) => user.username).join(', ')}

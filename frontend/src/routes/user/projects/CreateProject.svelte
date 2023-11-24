@@ -66,11 +66,11 @@
 		<div class="card-actions w-full justify-end">
 			<LoadingButton
 				text="add"
-				class="flex-auto"
+				class="btn-success flex-1"
 				type="submit"
 				loading={isCreateProjectSubmitting}
 			/>
-			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
+			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>
