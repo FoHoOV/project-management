@@ -87,7 +87,8 @@
 
 		<div class="card-actions justify-end pt-3">
 			<button
-				class="btn btn-success flex-1 {showAttachToUserButton ? '' : 'hidden'}"
+				class="btn btn-success flex-1"
+				class:hidden={!showAttachToUserButton}
 				on:click={handleOnAttachToUserClicked}
 			>
 				Attach to user

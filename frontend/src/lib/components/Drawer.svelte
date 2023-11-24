@@ -15,7 +15,7 @@
 	};
 </script>
 
-<div class="drawer {startDrawerOpened ? 'lg:drawer-open' : ''}">
+<div class="drawer" class:lg:drawer-open={startDrawerOpened}>
 	<input {id} type="checkbox" bind:checked={showDrawer} class="drawer-toggle" />
 	<div class="drawer-content z-40 flex h-[100vh] flex-col">
 		<Navbar title={navbarTitle} titleHref={navbarTitleHref}>
