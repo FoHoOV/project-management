@@ -38,9 +38,8 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
 
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(
-            project_id=association.project_id, user_id=user_id
-        ),
+        association.project_id,
+        user_id,
         user_id,
         True,
     )
@@ -61,9 +60,8 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
 def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id: int):
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(
-            project_id=association.project_id, user_id=user_id
-        ),
+        association.project_id,
+        user_id,
         user_id,
         True,
     )
@@ -110,16 +108,17 @@ def get_projects(db: Session, user_id: int):
 
 def validate_project_belongs_to_user(
     db: Session,
-    project_association: ProjectUserAssociationValidation,
-    user_id: int,
+    project_id: int,
+    inquired_user_id: int,
+    current_user_id: int,
     pass_current_user_validations: bool = False,
 ):
     if (
         not pass_current_user_validations
         and db.query(ProjectUserAssociation)
         .filter(
-            ProjectUserAssociation.user_id == user_id,
-            ProjectUserAssociation.project_id == project_association.project_id,
+            ProjectUserAssociation.user_id == current_user_id,
+            ProjectUserAssociation.project_id == project_id,
         )
         .first()
         is None
@@ -131,8 +130,8 @@ def validate_project_belongs_to_user(
     if (
         db.query(ProjectUserAssociation)
         .filter(
-            ProjectUserAssociation.user_id == project_association.user_id,
-            ProjectUserAssociation.project_id == project_association.project_id,
+            ProjectUserAssociation.user_id == inquired_user_id,
+            ProjectUserAssociation.project_id == project_id,
         )
         .first()
         is None

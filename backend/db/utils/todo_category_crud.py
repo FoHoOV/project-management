@@ -21,7 +21,8 @@ from db.utils.project_crud import validate_project_belongs_to_user
 def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: int):
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(project_id=filter.project_id, user_id=user_id),
+        filter.project_id,
+        user_id,
         user_id,
         True,
     )
@@ -36,9 +37,8 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
 def create(db: Session, category: TodoCategoryCreate, user_id: int):
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(
-            project_id=category.project_id, user_id=user_id
-        ),
+        category.project_id,
+        user_id,
         user_id,
         True,
     )
@@ -79,9 +79,8 @@ def attach_to_project(
     validate_todo_category_belongs_to_user(db, association.category_id, user_id)
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(
-            project_id=association.project_id, user_id=user_id
-        ),
+        association.project_id,
+        user_id,
         user_id,
         True,
     )
@@ -103,9 +102,8 @@ def detach_from_project(
     validate_todo_category_belongs_to_user(db, association.category_id, user_id)
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(
-            project_id=association.project_id, user_id=user_id
-        ),
+        association.project_id,
+        user_id,
         user_id,
         True,
     )

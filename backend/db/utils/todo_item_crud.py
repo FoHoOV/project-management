@@ -25,12 +25,13 @@ def get_todos_for_user(
 ):
     validate_project_belongs_to_user(
         db,
-        ProjectUserAssociationValidation(
-            project_id=search_todo_params.project_id, user_id=user_id
-        ),
+        search_todo_params.project_id,
+        user_id,
         user_id,
         True,
     )
+
+    validate_todo_category_belongs_to_user(db, search_todo_params.category_id, user_id)
 
     query = db.query(TodoItem)
 
