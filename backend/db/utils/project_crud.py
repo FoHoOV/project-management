@@ -12,8 +12,6 @@ from db.schemas.project import (
 from sqlalchemy.orm import Session
 from db.utils.exceptions import UserFriendlyError
 
-from db.utils.user_crud import get_user
-
 
 def create(db: Session, project: ProjectCreate, user_id: int):
     if db.query(User).filter(User.id == user_id).count() == 0:
@@ -89,8 +87,7 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
     result = (
         db.query(Project)
         .filter(Project.id == project.project_id)
-        .join(ProjectUserAssociation)
-        .filter(ProjectUserAssociation.user_id == user_id)
+        .join(ProjectUserAssociation, ProjectUserAssociation.user_id == user_id)
         .first()
     )
 
@@ -105,8 +102,7 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
 def get_projects(db: Session, user_id: int):
     result = (
         db.query(Project)
-        .join(ProjectUserAssociation)
-        .filter(ProjectUserAssociation.user_id == user_id)
+        .join(ProjectUserAssociation, ProjectUserAssociation.user_id == user_id)
         .all()
     )
 

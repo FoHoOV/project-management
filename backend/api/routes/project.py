@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 from starlette.status import HTTP_200_OK
 from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
