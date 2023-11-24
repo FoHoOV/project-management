@@ -5,7 +5,6 @@
 	import CreateProject from '$routes/user/projects/CreateProject.svelte';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { ActionData, PageData } from './$types';
-	import Empty from '$components/Empty.svelte';
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
 
 	export let data: PageData;
@@ -18,18 +17,10 @@
 	}
 </script>
 
-{#if data.projects.length == 0}
-	<Empty text="Create your first project!" />
-{:else}
-	<ProjectList projects={data.projects}>
-		<AttachToUser
-			slot="attach-to-project"
-			let:selectedProject
-			{form}
-			projectId={selectedProject?.id}
-		></AttachToUser>
-	</ProjectList>
-{/if}
+<ProjectList projects={data.projects}>
+	<AttachToUser slot="attach-to-project" let:selectedProject {form} projectId={selectedProject?.id}
+	></AttachToUser>
+</ProjectList>
 
 <CircleButton
 	icon={faPlus}

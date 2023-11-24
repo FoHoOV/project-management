@@ -103,6 +103,7 @@ function _defaultSubmitHandler<
 
 		return async ({ update, result }) => {
 			node.dispatchEvent(new CustomEvent('submitended'));
+			_focusOnFirstVisibleInput(node);
 
 			if (result.type == 'success') {
 				console.debug('s-form-result');
@@ -156,5 +157,9 @@ function _getResultFromFormAction<
 function _superResetHandler(event: Event) {
 	const node = event.target as HTMLFormElement;
 	node.reset();
+	_focusOnFirstVisibleInput(node);
+}
+
+function _focusOnFirstVisibleInput(node: HTMLFormElement) {
 	node.querySelector<HTMLInputElement>("input:not([type='hidden'])")?.focus();
 }

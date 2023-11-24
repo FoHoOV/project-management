@@ -94,7 +94,7 @@
 				class="btn btn-info flex-1"
 				href="/user/{project.title.replaceAll(' ', '')}-{project.id}/todos"
 			>
-				show todos
+				Show todos
 			</a>
 		</div>
 	</div>

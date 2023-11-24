@@ -17,6 +17,7 @@
 	import todoCategories from '$lib/stores/todos';
 	import Alert from '$components/Alert.svelte';
 	import Modal from '$components/popups/Modal.svelte';
+	import Empty from '$components/Empty.svelte';
 
 	export let category: TodoCategory;
 	export let projectId: number;
@@ -98,7 +99,7 @@
 	<div class="flex w-full gap-2">
 		<button class="btn btn-success flex-1" on:click={handleCreateTodo}>
 			<Fa icon={faCirclePlus} />
-			add todo
+			Add todo
 		</button>
 		<button class="btn btn-info flex-1" on:click={handleAttachToProject}>
 			<Fa icon={faMapPin} />
@@ -117,7 +118,7 @@
 			</div>
 		{/each}
 	{:else}
-		<h1 class="p-5 text-center">no todos yet!</h1>
+		<Empty class="mt-2 w-full justify-start" text="Add your first todo!" />
 	{/if}
 </div>
 
