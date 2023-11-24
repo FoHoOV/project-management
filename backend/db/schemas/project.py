@@ -45,3 +45,5 @@ class Project(ProjectBase):
     description: str
     users: list[PartialUser]
     todo_categories: list[PartialTodoCategory]
+    done_todos_count: int
+    pending_todos_count: int

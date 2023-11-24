@@ -53,8 +53,8 @@ def search(
     filter: ProjectRead = Depends(dependency=ProjectRead),
     db: Session = Depends(get_db),
 ):
-    items = project_crud.get_project(db, filter, current_user.id)
-    return items
+    project = project_crud.get_project(db, filter, current_user.id)
+    return project
 
 
 @router.get("/list", response_model=list[Project])

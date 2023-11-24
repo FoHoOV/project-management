@@ -1,12 +1,16 @@
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
+from db.models.todo_category import TodoCategory
+from db.models.todo_item import TodoItem
 from db.models.user import User
 from db.schemas.project import (
     ProjectAttachAssociation,
     ProjectCreate,
     ProjectDetachAssociation,
     ProjectRead,
+    Project as ProjectSchema,
 )
 from sqlalchemy.orm import Session
 from db.utils.exceptions import UserFriendlyError
