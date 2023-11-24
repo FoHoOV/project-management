@@ -11,11 +11,6 @@ class ProjectRead:
     project_id: int
 
 
-class ProjectUserAssociationValidation(BaseModel):
-    project_id: int
-    user_id: int
-
-
 class ProjectCreate(ProjectBase):
     title: constr(max_length=100)  # type: ignore
     description: constr(max_length=100)  # type: ignore

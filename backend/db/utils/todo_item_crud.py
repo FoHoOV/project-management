@@ -1,13 +1,10 @@
 from sqlalchemy.orm import Session
 from db.models.project import Project
-from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category import TodoCategory
-from db.models.todo_category_project_association import TodoCategoryProjectAssociation
 
 
 from db.models.todo_item import TodoItem
 from db.models.user import User
-from db.schemas.project import ProjectUserAssociationValidation
 from db.schemas.todo_item import (
     SearchTodoStatus,
     TodoItemCreate,

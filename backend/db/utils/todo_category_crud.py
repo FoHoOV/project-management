@@ -6,7 +6,6 @@ from db.models.todo_category import TodoCategory
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
 from db.models.user import User
 
-from db.schemas.project import ProjectUserAssociationValidation
 from db.schemas.todo_category import (
     TodoCategoryAttachAssociation,
     TodoCategoryDetachAssociation,
