@@ -135,7 +135,7 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
         .join(TodoCategory.projects)
         .join(Project.users)
         .filter(User.id == user_id)
-        .first()
-        is None
+        .count()
+        == 0
     ):
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")

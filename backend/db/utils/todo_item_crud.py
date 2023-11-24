@@ -97,14 +97,10 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         db.query(TodoItem)
         .filter(TodoItem.id == todo_id)
         .join(TodoCategory)
-        .join(TodoCategoryProjectAssociation)
-        .join(
-            ProjectUserAssociation,
-            TodoCategoryProjectAssociation.project_id
-            == ProjectUserAssociation.project_id,
-        )
-        .filter(ProjectUserAssociation.user_id == user_id)
-        .first()
-        is None
+        .join(TodoCategory.projects)
+        .join(Project.users)
+        .filter(User.id == user_id)
+        .count()
+        == 0
     ):
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")

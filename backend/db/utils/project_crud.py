@@ -120,8 +120,8 @@ def validate_project_belongs_to_user(
             ProjectUserAssociation.user_id == current_user_id,
             ProjectUserAssociation.project_id == project_id,
         )
-        .first()
-        is None
+        .count()
+        == 0
     ):
         raise UserFriendlyError(
             "project doesn't exist or doesn't belong to current user"
@@ -133,7 +133,7 @@ def validate_project_belongs_to_user(
             ProjectUserAssociation.user_id == inquired_user_id,
             ProjectUserAssociation.project_id == project_id,
         )
-        .first()
-        is None
+        .count()
+        == 0
     ):
         raise UserFriendlyError("project doesn't exist or doesn't belong to user")
