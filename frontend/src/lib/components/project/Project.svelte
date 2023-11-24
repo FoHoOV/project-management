@@ -37,8 +37,6 @@
 	function handleOnAttachToUserClicked(event: MouseEvent) {
 		dispatch('attachToUser', { project: project });
 	}
-
-	console.log(project);
 </script>
 
 <div class="card bg-base-300 text-base-content">
