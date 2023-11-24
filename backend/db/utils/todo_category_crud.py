@@ -1,7 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from db.models.project import Project
-from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category import TodoCategory
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
 from db.models.user import User
