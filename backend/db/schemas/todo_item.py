@@ -33,6 +33,7 @@ class TodoItemDelete(BaseModel):
 @dataclass
 class SearchTodoItemParams:
     project_id: int
+    category_id: int
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 

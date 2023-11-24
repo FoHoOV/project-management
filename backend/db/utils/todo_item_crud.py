@@ -16,14 +16,14 @@ from db.schemas.todo_item import (
     SearchTodoItemParams,
 )
 from db.utils.exceptions import UserFriendlyError
-from db.utils.project_crud import validate_project_belong_to_user
+from db.utils.project_crud import validate_project_belongs_to_user
 from db.utils.todo_category_crud import validate_todo_category_belongs_to_user
 
 
 def get_todos_for_user(
     db: Session, search_todo_params: SearchTodoItemParams, user_id: int
 ):
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(
             project_id=search_todo_params.project_id, user_id=user_id
@@ -41,13 +41,11 @@ def get_todos_for_user(
 
     return (
         query.join(TodoCategory)
-        .join(TodoCategoryProjectAssociation)
-        .join(
-            ProjectUserAssociation,
-            TodoCategoryProjectAssociation.project_id
-            == ProjectUserAssociation.project_id,
-        )
-        .filter(ProjectUserAssociation.user_id == user_id)
+        .filter(TodoCategory.id == search_todo_params.category_id)
+        .join(TodoCategory.projects)
+        .filter(Project.id == search_todo_params.project_id)
+        .join(Project.users)
+        .filter(User.id == user_id)
         .order_by(TodoItem.id.desc())
         .all()
     )

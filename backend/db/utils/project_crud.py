@@ -1,6 +1,8 @@
 from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
+from db.models.todo_category import TodoCategory
+from db.models.todo_item import TodoItem
 from db.models.user import User
 from db.schemas.project import (
     ProjectAttachAssociation,
@@ -9,7 +11,7 @@ from db.schemas.project import (
     ProjectRead,
     ProjectUserAssociationValidation,
 )
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from db.utils.exceptions import UserFriendlyError
 
 
@@ -34,7 +36,7 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
     if user is None:
         raise UserFriendlyError("requested user doesn't exist")
 
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(
             project_id=association.project_id, user_id=user_id
@@ -57,7 +59,7 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
 
 
 def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id: int):
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(
             project_id=association.project_id, user_id=user_id
@@ -87,7 +89,8 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
     result = (
         db.query(Project)
         .filter(Project.id == project.project_id)
-        .join(ProjectUserAssociation, ProjectUserAssociation.user_id == user_id)
+        .join(Project.users)
+        .filter(User.id == user_id)
         .first()
     )
 
@@ -100,16 +103,12 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
 
 
 def get_projects(db: Session, user_id: int):
-    result = (
-        db.query(Project)
-        .join(ProjectUserAssociation, ProjectUserAssociation.user_id == user_id)
-        .all()
-    )
+    result = db.query(Project).join(Project.users).filter(User.id == user_id).all()
 
     return result
 
 
-def validate_project_belong_to_user(
+def validate_project_belongs_to_user(
     db: Session,
     project_association: ProjectUserAssociationValidation,
     user_id: int,

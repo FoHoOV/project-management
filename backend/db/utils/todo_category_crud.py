@@ -1,8 +1,10 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category import TodoCategory
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
+from db.models.user import User
 
 from db.schemas.project import ProjectUserAssociationValidation
 from db.schemas.todo_category import (
@@ -13,11 +15,11 @@ from db.schemas.todo_category import (
     TodoCategoryUpdate,
 )
 from db.utils.exceptions import UserFriendlyError
-from db.utils.project_crud import validate_project_belong_to_user
+from db.utils.project_crud import validate_project_belongs_to_user
 
 
 def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: int):
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(project_id=filter.project_id, user_id=user_id),
         user_id,
@@ -25,16 +27,14 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
     )
     return (
         db.query(TodoCategory)
-        .join(
-            TodoCategoryProjectAssociation,
-            TodoCategoryProjectAssociation.project_id == filter.project_id,
-        )
+        .join(TodoCategory.projects)
+        .filter(Project.id == filter.project_id)
         .order_by(TodoCategory.id.desc())
     )
 
 
 def create(db: Session, category: TodoCategoryCreate, user_id: int):
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(
             project_id=category.project_id, user_id=user_id
@@ -77,7 +77,7 @@ def attach_to_project(
     db: Session, association: TodoCategoryAttachAssociation, user_id: int
 ):
     validate_todo_category_belongs_to_user(db, association.category_id, user_id)
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(
             project_id=association.project_id, user_id=user_id
@@ -101,7 +101,7 @@ def detach_from_project(
     db: Session, association: TodoCategoryDetachAssociation, user_id: int
 ):
     validate_todo_category_belongs_to_user(db, association.category_id, user_id)
-    validate_project_belong_to_user(
+    validate_project_belongs_to_user(
         db,
         ProjectUserAssociationValidation(
             project_id=association.project_id, user_id=user_id
@@ -134,13 +134,9 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
     if (
         db.query(TodoCategory)
         .filter(TodoCategory.id == category_id)
-        .join(TodoCategoryProjectAssociation)
-        .join(
-            ProjectUserAssociation,
-            TodoCategoryProjectAssociation.project_id
-            == ProjectUserAssociation.project_id,
-        )
-        .filter(ProjectUserAssociation.user_id == user_id)
+        .join(TodoCategory.projects)
+        .join(Project.users)
+        .filter(User.id == user_id)
         .first()
         is None
     ):
