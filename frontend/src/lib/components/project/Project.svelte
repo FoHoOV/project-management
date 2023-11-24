@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { invalidate, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Alert from '$components/Alert.svelte';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/generated-client/models';
-	import { faBusinessTime, faUser } from '@fortawesome/free-solid-svg-icons';
+	import { faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';
 
@@ -35,6 +35,8 @@
 	function handleOnAttachToUserClicked(event: MouseEvent) {
 		dispatch('attachToUser', { project: project });
 	}
+
+	console.log(project);
 </script>
 
 <div class="card bg-base-300 text-base-content">
@@ -71,10 +73,12 @@
 
 			<div class="stat">
 				<div class="stat-figure text-secondary">
-					<Fa icon={faBusinessTime} />
+					<Fa icon={faTasks} />
 				</div>
-				<div class="stat-title">Categories</div>
-				<div class="stat-value">{project.todo_categories.length}</div>
+				<div class="stat-title">Status</div>
+				<div class="stat-value">
+					{project.done_todos_count}/{project.done_todos_count + project.pending_todos_count} done
+				</div>
 				<div class="stat-desc"></div>
 			</div>
 		</div>
