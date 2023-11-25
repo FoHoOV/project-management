@@ -81,7 +81,7 @@
 			<span class="loading loading-spinner loading-md dark:text-black" />
 		</div>
 	{/if}
-	<div class="mb-5 flex w-full flex-col self-start">
+	<div class="flex w-full flex-col self-start">
 		<div class="flex w-full justify-between">
 			<div>
 				<Fa icon={faInfoCircle} class="mx-2 inline" />

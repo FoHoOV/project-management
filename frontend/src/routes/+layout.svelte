@@ -48,13 +48,13 @@
 	</svelte:fragment>
 
 	<div class="grid h-full overflow-hidden" slot="drawer-content" let:closeDrawer>
-		<div class="flex-1 overflow-auto pt-6">
+		<div class="flex-1 overflow-auto px-6 py-4 lg:px-2 lg:py-1.5">
 			{#if $navigating}
 				<span
 					class="loading loading-ball loading-lg absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
 				/>
 			{:else}
-				<div class="mx-auto h-full overflow-y-auto px-6 lg:px-2">
+				<div class="mx-auto h-full overflow-y-auto">
 					<slot />
 					<Toasts></Toasts>
 				</div>

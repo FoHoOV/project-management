@@ -18,7 +18,7 @@
 {#if projects.length == 0}
 	<Empty text="Create your first project!" />
 {:else}
-	<div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
+	<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 		{#each projects as project}
 			<ProjectComponent
 				{project}

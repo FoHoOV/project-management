@@ -59,7 +59,7 @@
 		</div>
 		<p>{project.description}</p>
 
-		<div class="stats shadow">
+		<div class="stats grid-flow-row shadow lg:grid-flow-col">
 			<div class="stat">
 				<div class="stat-figure text-secondary">
 					<Fa icon={faUser}></Fa>
