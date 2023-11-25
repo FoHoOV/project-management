@@ -96,7 +96,7 @@
 			<span class="text-lg font-bold">{category.title}</span>
 		</div>
 	</div>
-	<div class="flex w-full gap-2">
+	<div class="mt-2 flex w-full gap-2">
 		<button
 			class="btn btn-success flex-1"
 			class:hidden={!$$slots['create-todo-item']}
