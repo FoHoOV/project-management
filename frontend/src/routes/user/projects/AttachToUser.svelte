@@ -75,7 +75,7 @@
 			hideLabel={true}
 			errors={formErrors?.errors?.username}
 		/>
-		<div class="card-actions w-full justify-end">
+		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
 				text="add"
 				class="btn-success flex-1"

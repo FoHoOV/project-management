@@ -79,14 +79,14 @@
 				? formErrors.errors.project_id.toString()
 				: formErrors?.errors?.project_id}
 		/>
-		<div class="card-actions w-full justify-end">
+		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
 				text="add"
-				class="flex-auto"
+				class="btn-success flex-1"
 				type="submit"
 				loading={isAttachProjectSubmitting}
 			/>
-			<LoadingButton text="reset" class="btn-warning" type="button" on:click={resetForm} />
+			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>
