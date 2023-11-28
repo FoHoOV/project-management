@@ -3,7 +3,7 @@
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
-	import { getFormErrors, superEnhance } from '$lib/enhance/form';
+	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { attachProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
 

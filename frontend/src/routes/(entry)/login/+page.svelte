@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { getFormErrors, superEnhance } from '$lib/enhance/form';
+	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import Alert from '$components/Alert.svelte';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import type { ActionData } from './$types';

@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
-	import { superEnhance } from '$lib/enhance/form';
+	import { superEnhance } from '$lib/actions/form';
 
 	let isSubmitting = false;
 </script>
