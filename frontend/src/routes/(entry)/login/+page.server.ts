@@ -1,7 +1,7 @@
 import { type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import KEYS from '$lib/constants/cookie';
-import { convertFormDataToObject, superFail } from '$lib/enhance/form';
+import { convertFormDataToObject, superFail } from '$lib/actions/form';
 import { schema } from './validators';
 import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
 import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper';
