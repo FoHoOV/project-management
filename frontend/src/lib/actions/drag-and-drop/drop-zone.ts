@@ -1,5 +1,4 @@
 import type { ActionReturn } from 'svelte/action';
-import { generateDropZoneTargetName } from './draggable';
 
 export type DropEvent<Data extends object> = CustomEvent<{ data: Data }>;
 
@@ -116,10 +115,37 @@ function setOptionsDefaults<Data extends object>(options: DropZoneOptions<Data>)
 		options.disabled = false;
 	}
 }
-function checkIfIsInSameDropZoneName(node: HTMLElement, event: DragEvent, type: string) {
-	event.dataTransfer?.types.includes(generateDropZoneTargetName(type));
+
+const _dropZoneNamePrefixUUID =
+	`draggable_action_${crypto.randomUUID()}_DropZoneTargetSymbol_`.toLowerCase();
+
+export function generateDropZoneTargetNames(names: string[]) {
+	return `${_dropZoneNamePrefixUUID}:${JSON.stringify(names)}`.toLowerCase();
+}
+
+export function existInDropZoneTargetNames(types: readonly string[], name: string): boolean {
+	const targetType = types.find((value) => value.startsWith(_dropZoneNamePrefixUUID));
+	if (!targetType) {
+		return false;
+	}
+
+	const splitted = targetType.split(':');
+	if (splitted.length != 2) {
+		return false;
+	}
+
+	try {
+		const names: string[] = JSON.parse(splitted[1]);
+		return names.find((value) => value == name.toLowerCase()) !== undefined;
+	} catch (e) {
+		return false;
+	}
+}
+
+function checkIfIsInSameDropZoneName(node: HTMLElement, event: DragEvent, name: string) {
 	return (
-		node.dataset.dropZoneName === type &&
-		event.dataTransfer?.types.includes(generateDropZoneTargetName(type))
+		node.dataset.dropZoneName === name &&
+		event.dataTransfer?.types &&
+		existInDropZoneTargetNames(event.dataTransfer.types, name)
 	);
 }

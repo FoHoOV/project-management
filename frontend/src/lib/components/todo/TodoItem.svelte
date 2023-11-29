@@ -7,8 +7,11 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
-	import { draggable } from '$lib/actions';
-	import { TODO_ITEM_DROP_ZONE_NAME } from '$components/todo/constants';
+	import { draggable, dropzone, type DropEvent } from '$lib/actions';
+	import {
+		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
+		TODO_ITEM_ORDER_DROP_ZONE
+	} from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
 
 	export let todo: TodoItem;
@@ -47,11 +50,18 @@
 			}
 		});
 	}
+
+	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {}
 </script>
 
 <div
-	class="card mt-4 bg-base-200 shadow-xl hover:bg-base-100"
-	use:draggable={{ data: todo, targetDropZoneName: TODO_ITEM_DROP_ZONE_NAME }}
+	class="card mt-4 !bg-base-200 shadow-xl hover:bg-base-100"
+	use:dropzone={{ model: todo, name: TODO_ITEM_ORDER_DROP_ZONE }}
+	use:draggable={{
+		data: todo,
+		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE]
+	}}
+	on:dropped={handleUpdateTodoItemOrder}
 >
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />

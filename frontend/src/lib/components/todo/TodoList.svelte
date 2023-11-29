@@ -19,7 +19,7 @@
 	import Alert from '$components/Alert.svelte';
 	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
-	import { TODO_ITEM_DROP_ZONE_NAME } from '$components/todo/constants';
+	import { TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME } from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
 
 	export let category: TodoCategory;
@@ -53,7 +53,7 @@
 	function moveDoneTodosToBottom(todos: TodoItem[]) {
 		const sortedTodos = todos.sort((a, b) => {
 			if (a.is_done == b.is_done) {
-				return a.id < b.id ? 1 : -1;
+				return a.order < b.order ? 1 : a.id < b.id ? 1 : -1;
 			}
 
 			if (a.is_done) {
@@ -101,7 +101,7 @@
 <div
 	use:dropzone={{
 		model: category.items[0],
-		name: TODO_ITEM_DROP_ZONE_NAME,
+		name: TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		disabled: isCallingService
 	}}
 	on:dropped={handleTodoItemDropped}
