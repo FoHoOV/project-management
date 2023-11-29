@@ -83,7 +83,7 @@
 			}
 		});
 	}
-	function handleDragEnter(event: CustomDragEvent) {
+	function handleDragHover(event: CustomDragEvent) {
 		const position = cursorOnElementPositionY(event.detail.node, {
 			x: event.detail.originalEvent.clientX,
 			y: event.detail.originalEvent.clientY
@@ -105,7 +105,7 @@
 		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE]
 	}}
 	on:dropped={handleUpdateTodoItemOrder}
-	on:dragEntered={handleDragEnter}
+	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 >
 	<Spinner visible={state === 'calling-service'}></Spinner>

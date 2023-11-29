@@ -129,7 +129,7 @@
 		});
 	}
 
-	function handleDragEnter(event: CustomDragEvent) {
+	function handleDragHover(event: CustomDragEvent) {
 		if (event.detail.names.find((value) => value !== TODO_CATEGORY_ORDER_DROP_ZONE)) {
 			return;
 		}
@@ -156,7 +156,7 @@
 		data: category,
 		targetDropZoneNames: [TODO_CATEGORY_ORDER_DROP_ZONE]
 	}}
-	on:dragEntered={handleDragEnter}
+	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 	on:dropped={handleOnDrop}
 	class="relative flex max-h-full w-full rounded-xl border border-base-300"

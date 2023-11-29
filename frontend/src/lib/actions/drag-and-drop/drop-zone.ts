@@ -17,6 +17,7 @@ export type DropZoneEvents<Data extends object> = {
 	'on:dropped': (event: DropEvent<Data>) => void;
 	'on:dragEntered'?: (event: CustomDragEvent) => void;
 	'on:dragLeft'?: (event: CustomDragEvent) => void;
+	'on:dragHover'?: (event: CustomDragEvent) => void;
 };
 
 export function dropzone<Data extends object>(
@@ -84,6 +85,10 @@ export function dropzone<Data extends object>(
 		}
 
 		event.dataTransfer.dropEffect = options.dropEffect!;
+
+		if (node.contains(event.target as HTMLElement)) {
+			onDragHover(event);
+		}
 	}
 
 	function handleDrop(event: DragEvent) {
@@ -106,6 +111,18 @@ export function dropzone<Data extends object>(
 					names: _getMatchingDropZoneNames(event, options)
 				}
 			}) as DropEvent<Data>
+		);
+	}
+
+	function onDragHover(event: DragEvent) {
+		node.dispatchEvent(
+			new CustomEvent('dragHover', {
+				detail: {
+					originalEvent: event,
+					node: node,
+					names: _getMatchingDropZoneNames(event, options)
+				}
+			}) as CustomDragEvent
 		);
 	}
 
