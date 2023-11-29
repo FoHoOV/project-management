@@ -36,3 +36,6 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Known bugs
+1. Ordering doesn't work when TodoItem/TodoCategory order value is the same but ids are different
