@@ -72,7 +72,8 @@
 	}
 
 	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
-		console.info('dropped', event.detail.data);
+		todoCategories.removeTodo(event.detail.data);
+		todoCategories.addTodo({ ...event.detail.data, category_id: category.id });
 	}
 </script>
 
