@@ -13,6 +13,7 @@ export default {
 		'alert-info',
 		'alert-error',
 		'alert-warning',
+		'cursor-grab',
 		'pointer-events-none',
 		'border',
 		'rounded-2xl'
