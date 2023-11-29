@@ -107,10 +107,15 @@
 
 <div
 	class="card mt-4 !bg-base-200 shadow-xl hover:bg-base-100"
-	use:dropzone={{ model: todo, names: [TODO_ITEM_ORDER_DROP_ZONE] }}
+	use:dropzone={{
+		model: todo,
+		names: [TODO_ITEM_ORDER_DROP_ZONE],
+		disabled: state === 'calling-service'
+	}}
 	use:draggable={{
 		data: todo,
-		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE]
+		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE],
+		disabled: state === 'calling-service'
 	}}
 	on:dropped={handleUpdateTodoItemOrder}
 	on:dragHover={handleDragHover}

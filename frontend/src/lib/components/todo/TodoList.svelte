@@ -150,7 +150,8 @@
 	}}
 	use:draggable={{
 		data: category,
-		targetDropZoneNames: [TODO_CATEGORY_ORDER_DROP_ZONE]
+		targetDropZoneNames: [TODO_CATEGORY_ORDER_DROP_ZONE],
+		disabled: state === 'calling-service'
 	}}
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
