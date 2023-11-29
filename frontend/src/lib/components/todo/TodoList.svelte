@@ -96,8 +96,8 @@
 	class="relative flex max-h-full w-full rounded-xl border border-base-300"
 >
 	<Spinner visible={isCallingService}></Spinner>
-	<Alert type="error" message={apiErrorTitle}></Alert>
 	<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
+		<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
 		<div class="flex w-full flex-col self-start">
 			<div class="flex w-full justify-between">
 				<div>
