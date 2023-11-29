@@ -101,7 +101,7 @@
 	<Alert type="error" message={apiErrorTitle} />
 	{#if isCallingService}
 		<div
-			class="align-center absolute left-0.5 top-0.5 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
+			class="align-center absolute left-0 top-0 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
 		>
 			<span class="loading loading-spinner loading-md dark:text-black" />
 		</div>
