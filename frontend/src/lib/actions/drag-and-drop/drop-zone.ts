@@ -2,11 +2,14 @@ import type { ActionReturn } from 'svelte/action';
 import { generateDropZoneTargetName } from './draggable';
 
 export type DropEvent<Data extends object> = CustomEvent<{ data: Data }>;
+
 export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
 	model: Data; // I have to w8 for svelte5 for native ts support in markup
 	name: string;
+	disabled?: boolean;
 };
+
 export type DropZoneEvents<Data extends object> = {
 	'on:dropped': (event: DropEvent<Data>) => void;
 };
@@ -15,18 +18,12 @@ export function dropzone<Data extends object>(
 	node: HTMLElement,
 	options: DropZoneOptions<Data>
 ): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
-	if (options.highlighClasses === undefined) {
-		options.highlighClasses = ['!border', '!rounded-2xl', '!border-success'];
-	}
-
-	if (!options.dropEffect) {
-		options.dropEffect = 'move';
-	}
+	setConfigOptions(options);
 
 	node.dataset.dropZoneName = options.name;
 
 	function handleDragEnter(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
 			return;
 		}
 
@@ -38,7 +35,7 @@ export function dropzone<Data extends object>(
 	}
 
 	function handleDragLeave(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
 			return;
 		}
 
@@ -53,7 +50,7 @@ export function dropzone<Data extends object>(
 	}
 
 	function handleDragOver(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
 			return;
 		}
 
@@ -66,7 +63,7 @@ export function dropzone<Data extends object>(
 	}
 
 	function handleDrop(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
 			return;
 		}
 
@@ -93,6 +90,10 @@ export function dropzone<Data extends object>(
 	node.addEventListener('drop', handleDrop);
 
 	return {
+		update(newOptions) {
+			options = newOptions;
+			setConfigOptions(options);
+		},
 		destroy() {
 			node.removeEventListener('dragenter', handleDragEnter);
 			node.removeEventListener('dragleave', handleDragLeave);
@@ -102,6 +103,19 @@ export function dropzone<Data extends object>(
 	};
 }
 
+function setConfigOptions<Data extends object>(options: DropZoneOptions<Data>) {
+	if (options.highlighClasses === undefined) {
+		options.highlighClasses = ['!border', '!rounded-2xl', '!border-success'];
+	}
+
+	if (!options.dropEffect) {
+		options.dropEffect = 'move';
+	}
+
+	if (options.disabled === undefined) {
+		options.disabled = false;
+	}
+}
 function checkIfIsInSameDropZoneName(node: HTMLElement, event: DragEvent, type: string) {
 	event.dataTransfer?.types.includes(generateDropZoneTargetName(type));
 	return (

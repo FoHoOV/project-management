@@ -99,7 +99,11 @@
 </script>
 
 <div
-	use:dropzone={{ model: category.items[0], name: TODO_ITEM_DROP_ZONE_NAME }}
+	use:dropzone={{
+		model: category.items[0],
+		name: TODO_ITEM_DROP_ZONE_NAME,
+		disabled: isCallingService
+	}}
 	on:dropped={handleTodoItemDropped}
 	class="relative flex max-h-full w-full rounded-xl border border-base-300"
 >
