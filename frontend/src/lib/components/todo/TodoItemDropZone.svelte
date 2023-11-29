@@ -7,7 +7,7 @@
 </script>
 
 <div
-	class="glass absolute left-0 top-0 z-10 flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg bg-base-300 opacity-80"
+	class="glass absolute left-0 top-0 z-10 flex h-full w-full flex-col items-center justify-center gap-2 rounded-2xl bg-base-300 opacity-80"
 	class:hidden={!visible}
 	class:flex-col-reverse={direction == 'bottom'}
 >
