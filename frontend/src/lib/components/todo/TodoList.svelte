@@ -72,6 +72,8 @@
 	}
 
 	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
+		// I know the typings of model is a hack
+		// but I have to wait so that svelte natively supports ts in markup
 		isCallingService = true;
 		callServiceInClient({
 			serviceCall: async () => {
@@ -92,7 +94,7 @@
 </script>
 
 <div
-	use:dropzone={{ model: TodoItemSchema, type: 'TodoItemDropZone' }}
+	use:dropzone={{ model: category.items[0], type: 'TodoItemDropZone' }}
 	on:dropped={handleTodoItemDropped}
 	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-base-300 p-5 {className}"
 >

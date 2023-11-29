@@ -3,7 +3,7 @@ import type { ActionReturn } from 'svelte/action';
 export type DropEvent<Data extends object> = CustomEvent<{ data: Data }>;
 export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
-	model: Data;
+	model: Data; // I have to w8 for svelte5 for native ts support in markup
 	type: string;
 };
 export type DropZoneEvents<Data extends object> = {
