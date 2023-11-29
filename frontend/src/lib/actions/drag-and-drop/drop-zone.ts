@@ -1,10 +1,11 @@
 import type { ActionReturn } from 'svelte/action';
+import { generateDropZoneTargetName } from './draggable';
 
 export type DropEvent<Data extends object> = CustomEvent<{ data: Data }>;
 export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
 	model: Data; // I have to w8 for svelte5 for native ts support in markup
-	type: string;
+	name: string;
 };
 export type DropZoneEvents<Data extends object> = {
 	'on:dropped': (event: DropEvent<Data>) => void;
@@ -22,57 +23,60 @@ export function dropzone<Data extends object>(
 		options.dropEffect = 'move';
 	}
 
-	node.dataset.dropZoneCategory = options.type;
+	node.dataset.dropZoneName = options.name;
 
-	function handleDragEnter(e: DragEvent) {
-		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+	function handleDragEnter(event: DragEvent) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
 			return;
 		}
 
-		if (e.target !== node) {
+		if (event.target !== node) {
 			return;
 		}
 
 		node.classList.add(...(options.highlighClasses as string[]));
 	}
 
-	function handleDragLeave(e: DragEvent) {
-		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+	function handleDragLeave(event: DragEvent) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
 			return;
 		}
 
-		if (e.target !== node || (e.relatedTarget && node.contains(e.relatedTarget as HTMLElement))) {
+		if (
+			event.target !== node ||
+			(event.relatedTarget && node.contains(event.relatedTarget as HTMLElement))
+		) {
 			return;
 		}
 
 		node.classList.remove(...(options.highlighClasses as string[]));
 	}
 
-	function handleDragOver(e: DragEvent) {
-		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+	function handleDragOver(event: DragEvent) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
 			return;
 		}
 
-		e.preventDefault();
-		if (!e.dataTransfer) {
+		event.preventDefault();
+		if (!event.dataTransfer) {
 			return;
 		}
 
-		e.dataTransfer.dropEffect = options.dropEffect!;
+		event.dataTransfer.dropEffect = options.dropEffect!;
 	}
 
-	function handleDrop(e: DragEvent) {
-		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+	function handleDrop(event: DragEvent) {
+		if (!checkIfIsInSameDropZoneName(node, event, options.name)) {
 			return;
 		}
 
-		e.preventDefault();
+		event.preventDefault();
 
-		if (!e.dataTransfer) {
+		if (!event.dataTransfer) {
 			return;
 		}
 
-		const data = e.dataTransfer.getData('text/plain');
+		const data = event.dataTransfer.getData('text/plain');
 		node.classList.remove(...(options.highlighClasses as string[]));
 		node.dispatchEvent(
 			new CustomEvent('dropped', {
@@ -98,6 +102,10 @@ export function dropzone<Data extends object>(
 	};
 }
 
-function checkIfIsInSameDropZoneCategory(node: HTMLElement, type: string) {
-	return node.dataset.dropZoneCategory === type;
+function checkIfIsInSameDropZoneName(node: HTMLElement, event: DragEvent, type: string) {
+	event.dataTransfer?.types.includes(generateDropZoneTargetName(type));
+	return (
+		node.dataset.dropZoneName === type &&
+		event.dataTransfer?.types.includes(generateDropZoneTargetName(type))
+	);
 }

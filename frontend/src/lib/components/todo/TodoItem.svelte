@@ -8,6 +8,7 @@
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
 	import { draggable } from '$lib/actions';
+	import { TODO_ITEM_DROP_ZONE_NAME } from '$components/todo/constants';
 
 	export let todo: TodoItem;
 	let isCallingService: boolean = false;
@@ -47,7 +48,10 @@
 	}
 </script>
 
-<div class="card mt-4 bg-base-200 shadow-xl hover:bg-base-100" use:draggable={{ data: todo }}>
+<div
+	class="card mt-4 bg-base-200 shadow-xl hover:bg-base-100"
+	use:draggable={{ data: todo, targetDropZoneName: TODO_ITEM_DROP_ZONE_NAME }}
+>
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
 		{#if isCallingService}

@@ -19,7 +19,7 @@
 	import Alert from '$components/Alert.svelte';
 	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
-	import { TodoItem as TodoItemSchema } from '$lib/generated-client/zod/schemas';
+	import { TODO_ITEM_DROP_ZONE_NAME } from '$components/todo/constants';
 
 	export let category: TodoCategory;
 	export let projectId: number;
@@ -94,7 +94,7 @@
 </script>
 
 <div
-	use:dropzone={{ model: category.items[0], type: 'TodoItemDropZone' }}
+	use:dropzone={{ model: category.items[0], name: TODO_ITEM_DROP_ZONE_NAME }}
 	on:dropped={handleTodoItemDropped}
 	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-base-300 p-5 {className}"
 >
