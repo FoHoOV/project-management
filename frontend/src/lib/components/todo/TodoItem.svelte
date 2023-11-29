@@ -61,16 +61,15 @@
 			<h1>
 				{todo.title}
 			</h1>
-			<div>
-				{#if todo.is_done}
-					<button on:click={handleChangeDoneStatus}>
-						<Fa icon={faUndo} class="text-red-400" />
-					</button>
-				{:else}
-					<button on:click={handleChangeDoneStatus}>
-						<Fa icon={faCheckCircle} class="text-green-400" />
-					</button>
-				{/if}
+			<div class="flex items-center justify-center gap-2">
+				<input
+					type="checkbox"
+					class="checkbox"
+					class:checkbox-success={todo.is_done}
+					class:checkbox-error={!todo.is_done}
+					checked={todo.is_done}
+					on:click={handleChangeDoneStatus}
+				/>
 				<button on:click={handleRemoveTodo}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
