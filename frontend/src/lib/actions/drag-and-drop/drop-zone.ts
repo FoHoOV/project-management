@@ -54,8 +54,9 @@ export function dropzone<Data extends object>(
 		}
 
 		if (
-			event.target !== node ||
-			(event.relatedTarget && node.contains(event.relatedTarget as HTMLElement))
+			!(event.target as HTMLElement).contains(node) &&
+			event.relatedTarget &&
+			node.contains(event.relatedTarget as HTMLElement)
 		) {
 			return;
 		}
