@@ -14,9 +14,9 @@ class TodoCategoryCreate(TodoCategoryBase):
 
 class TodoCategoryUpdate(TodoCategoryBase):
     id: int
-    order: int | None
-    title: str | None
-    description: str | None
+    order: int | None = None
+    title: str | None = None
+    description: str | None = None
 
 
 class TodoCategoryAttachAssociation(BaseModel):

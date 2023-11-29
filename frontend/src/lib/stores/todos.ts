@@ -54,6 +54,20 @@ const addCategory = (category: TodoCategory) => {
 	});
 };
 
+const updateCategory = (category: TodoCategory) => {
+	_update((categories) => {
+		categories = categories.map<TodoCategory>((value) => {
+			if (value.id !== category.id) {
+				return value;
+			}
+			_sortTodos(category.items);
+			return category;
+		});
+		_sortCategories(categories);
+		return categories;
+	});
+};
+
 const removeCategory = (category: TodoCategory) => {
 	_update((categories) => {
 		return categories.filter((value) => value.id !== category.id);
@@ -102,10 +116,32 @@ function _sortTodos(todos: TodoItem[]) {
 	console.log('--------');
 }
 
+function _sortCategories(categories: TodoCategory[]) {
+	categories.sort((a, b) => {
+		let state: 'same-place' | 'go-up' | 'go-down' = 'same-place';
+
+		if (a.order != b.order) {
+			state = a.order > b.order ? 'go-up' : 'go-down';
+		}
+
+		if (state == 'same-place') {
+			state = a.id > b.id ? 'go-up' : 'go-down';
+		}
+
+		switch (state) {
+			case 'go-up':
+				return -1;
+			case 'go-down':
+				return 1;
+		}
+	});
+}
+
 export default {
 	setTodoCategories,
 	addTodo,
 	addCategory,
+	updateCategory,
 	removeCategory,
 	removeTodo,
 	updateTodo,

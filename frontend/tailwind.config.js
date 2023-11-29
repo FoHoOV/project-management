@@ -16,6 +16,10 @@ export default {
 		'cursor-grab',
 		'pointer-events-none',
 		'border',
-		'rounded-2xl'
+		'rounded-2xl',
+		'flex-row-reverse',
+		'flex-row',
+		'flex-col',
+		'flex-col-reverse'
 	]
 };

@@ -1,8 +1,7 @@
-export type CursorOnElementPosition = 'top' | 'bottom' | 'right' | 'left';
-export function cursorOnElementPosition(
+export function cursorOnElementPositionY(
 	element: HTMLElement,
 	position: { x: number; y: number }
-): CursorOnElementPosition {
+): 'top' | 'bottom' {
 	const bounds = element.getBoundingClientRect();
 
 	if (position.y <= bounds.top + bounds.height / 2) {
@@ -10,6 +9,17 @@ export function cursorOnElementPosition(
 	} else {
 		return 'bottom';
 	}
+}
 
-	// others ...
+export function cursorOnElementPositionX(
+	element: HTMLElement,
+	position: { x: number; y: number }
+): 'left' | 'right' {
+	const bounds = element.getBoundingClientRect();
+
+	if (position.x <= bounds.left + bounds.width / 2) {
+		return 'left';
+	} else {
+		return 'right';
+	}
 }

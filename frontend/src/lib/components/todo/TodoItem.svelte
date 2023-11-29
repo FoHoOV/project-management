@@ -13,8 +13,8 @@
 		TODO_ITEM_ORDER_DROP_ZONE
 	} from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
-	import TodoItemDropZone from '$components/todo/TodoItemDropZone.svelte';
-	import { cursorOnElementPosition } from '$lib/utils';
+	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
+	import { cursorOnElementPositionY } from '$lib/utils';
 
 	export let todo: TodoItem;
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
@@ -84,7 +84,7 @@
 		});
 	}
 	function handleDragEnter(event: CustomDragEvent) {
-		const position = cursorOnElementPosition(event.detail.node, {
+		const position = cursorOnElementPositionY(event.detail.node, {
 			x: event.detail.originalEvent.clientX,
 			y: event.detail.originalEvent.clientY
 		});
@@ -109,7 +109,7 @@
 	on:dragLeft={handleDragLeft}
 >
 	<Spinner visible={state === 'calling-service'}></Spinner>
-	<TodoItemDropZone
+	<DropZoneHelper
 		visible={state === 'drop-zone-top-activated' || state === 'drop-zone-bottom-activated'}
 		direction={state === 'drop-zone-top-activated' ? 'top' : 'bottom'}
 	/>

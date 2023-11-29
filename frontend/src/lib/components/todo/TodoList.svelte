@@ -14,38 +14,44 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient, TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
-	import todoCategories from '$lib/stores/todos';
-	import { dropzone, type DropEvent } from '$lib/actions';
+	import todos from '$lib/stores/todos';
+	import { dropzone, type DropEvent, draggable, type CustomDragEvent } from '$lib/actions';
 	import Alert from '$components/Alert.svelte';
 	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
-	import { TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME } from '$components/todo/constants';
+	import {
+		TODO_CATEGORY_ORDER_DROP_ZONE,
+		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME
+	} from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
+	import { cursorOnElementPositionX } from '$lib/utils';
+	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 
 	export let category: TodoCategory;
 	export let projectId: number;
 	export { className as class };
 
 	let className: string = '';
-	let isCallingService: boolean = false;
+	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
+		'none';
 	let apiErrorTitle: string | null;
 	let createTodoModal: Modal;
 	let attachToProjectModal: Modal;
 
 	async function handleRemoveCategory() {
-		isCallingService = true;
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
 					category_id: category.id,
 					project_id: projectId
 				});
-				todoCategories.removeCategory(category);
-				isCallingService = false;
+				todos.removeCategory(category);
+				state = 'none';
 			},
 			errorCallback: async (e) => {
-				isCallingService = false;
 				apiErrorTitle = e.message;
+				state = 'none';
 			}
 		});
 	}
@@ -58,44 +64,106 @@
 		attachToProjectModal.show();
 	}
 
+	async function handleOnDrop(event: DropEvent<{}>) {
+		// TODO: change, event should say which event it is
+		if (Object.hasOwn(event.detail.data, 'projects')) {
+			await handleUpdateCategoryOrder(event as DropEvent<TodoCategory>);
+			return;
+		} else {
+			handleTodoItemDropped(event as DropEvent<TodoItem>);
+			return;
+		}
+	}
+
+	async function handleUpdateCategoryOrder(event: DropEvent<TodoCategory>) {
+		if (event.detail.data.id == category.id) {
+			state = 'none';
+			return;
+		}
+
+		const moveLeft = state == 'drop-zone-left-activated';
+
+		state = 'calling-service';
+
+		console.log(event.detail.names);
+
+		await callServiceInClient({
+			serviceCall: async () => {
+				const newOrder = moveLeft ? category.order + 1 : category.order - 1;
+				await TodoCategoryClient({ token: $page.data.token }).updateTodoCategory({
+					id: event.detail.data.id,
+					order: newOrder
+				});
+				todos.updateCategory({ ...event.detail.data, order: newOrder });
+				console.log({ ...event.detail.data, order: newOrder });
+				state = 'none';
+			},
+			errorCallback: async (e) => {
+				apiErrorTitle = e.message;
+				state = 'none';
+			}
+		});
+	}
+
 	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
 		if (category.items.find((todo) => event.detail.data.id == todo.id)) {
 			// if dropped on itself then we don't need to do anything
 			return;
 		}
-		console.log(event.detail.names);
-		// I know the typings of model is a hack
-		// but I have to wait so that svelte natively supports ts in markup
-		isCallingService = true;
+
+		state = 'calling-service';
 		callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
 					...event.detail.data,
 					new_category_id: category.id
 				});
-				todoCategories.removeTodo(event.detail.data);
-				todoCategories.addTodo({ ...event.detail.data, category_id: category.id });
+				todos.removeTodo(event.detail.data);
+				todos.addTodo({ ...event.detail.data, category_id: category.id });
 				console.log({ ...event.detail.data, category_id: category.id });
-				isCallingService = false;
+				state = 'none';
 			},
 			errorCallback: async (e) => {
-				isCallingService = false;
 				apiErrorTitle = e.message;
+				state = 'none';
 			}
 		});
+	}
+
+	function handleDragEnter(event: CustomDragEvent) {
+		const position = cursorOnElementPositionX(event.detail.node, {
+			x: event.detail.originalEvent.clientX,
+			y: event.detail.originalEvent.clientY
+		});
+
+		state = position == 'right' ? 'drop-zone-right-activated' : 'drop-zone-left-activated';
+	}
+
+	function handleDragLeft() {
+		state = 'none';
 	}
 </script>
 
 <div
 	use:dropzone={{
-		model: category.items[0],
-		names: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME],
-		disabled: isCallingService
+		model: {},
+		names: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_CATEGORY_ORDER_DROP_ZONE],
+		disabled: state === 'calling-service'
 	}}
-	on:dropped={handleTodoItemDropped}
+	use:draggable={{
+		data: category,
+		targetDropZoneNames: [TODO_CATEGORY_ORDER_DROP_ZONE]
+	}}
+	on:dragEntered={handleDragEnter}
+	on:dragLeft={handleDragLeft}
+	on:dropped={handleOnDrop}
 	class="relative flex max-h-full w-full rounded-xl border border-base-300"
 >
-	<Spinner visible={isCallingService}></Spinner>
+	<Spinner visible={state === 'calling-service'}></Spinner>
+	<DropZoneHelper
+		visible={state === 'drop-zone-left-activated' || state === 'drop-zone-right-activated'}
+		direction={state === 'drop-zone-right-activated' ? 'right' : 'left'}
+	/>
 	<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
 		<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
 		<div class="flex w-full flex-col self-start">

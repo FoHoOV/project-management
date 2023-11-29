@@ -26,8 +26,8 @@ class TodoItemUpdate(TodoItemBase):
     new_category_id: int | None = None
     title: str | None
     description: str | None
-    is_done: bool
-    order: int | None = 0
+    is_done: bool | None = None
+    order: int | None = None
 
 
 class TodoItemDelete(BaseModel):

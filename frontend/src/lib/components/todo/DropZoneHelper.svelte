@@ -1,0 +1,51 @@
+<script lang="ts">
+	import {
+		faArrowDown,
+		faArrowLeft,
+		faArrowRight,
+		faArrowUp,
+		type IconDefinition
+	} from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa';
+
+	export let visible: boolean = false;
+	export let direction: 'top' | 'bottom' | 'right' | 'left';
+
+	let icon: IconDefinition;
+	let flexDirection: string;
+
+	$: switch (direction) {
+		case 'top':
+			icon = faArrowUp;
+			flexDirection = 'flex-col';
+			break;
+		case 'bottom':
+			icon = faArrowDown;
+			flexDirection = 'flex-col-reverse';
+			break;
+		case 'right':
+			icon = faArrowRight;
+			flexDirection = 'flex-row-reverse';
+			break;
+		case 'left':
+			icon = faArrowLeft;
+			flexDirection = 'flex-row';
+			break;
+	}
+</script>
+
+<div
+	class="glass absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center gap-2 rounded-2xl bg-base-300 opacity-80 {flexDirection}"
+	class:hidden={!visible}
+>
+	<Fa {icon} />
+	{#if direction == 'top'}
+		<span>Move to on top of this item</span>
+	{:else if direction == 'bottom'}
+		<span>Move under this item</span>
+	{:else if direction == 'right'}
+		<span>Move to right of this item</span>
+	{:else if direction == 'left'}
+		<span>Move to left of this item</span>
+	{/if}
+</div>
