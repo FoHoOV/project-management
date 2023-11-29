@@ -44,7 +44,7 @@ def get_todos_for_user(
         .filter(Project.id == search_todo_params.project_id)
         .join(Project.users)
         .filter(User.id == user_id)
-        .order_by(TodoItem.id.desc())
+        .order_by(TodoItem.order.desc(), TodoItem.id.desc())
         .all()
     )
 
