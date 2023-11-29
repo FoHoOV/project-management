@@ -26,7 +26,7 @@
 					...todo,
 					is_done: !todo.is_done
 				});
-				todos.updateTodo(todo, !todo.is_done);
+				todos.updateTodo({ ...todo, is_done: !todo.is_done });
 				isCallingService = false;
 			},
 			errorCallback: async (e) => {
@@ -51,7 +51,28 @@
 		});
 	}
 
-	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {}
+	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
+		isCallingService = true;
+
+		console.log(event.detail.names);
+
+		await callServiceInClient({
+			serviceCall: async () => {
+				const newOrder = todo.order + 1;
+				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
+					...todo,
+					order: newOrder
+				});
+				todos.updateTodo({ ...event.detail.data, order: newOrder });
+				console.log({ ...event.detail.data, order: newOrder });
+				isCallingService = false;
+			},
+			errorCallback: async (e) => {
+				isCallingService = false;
+				apiErrorTitle = e.message;
+			}
+		});
+	}
 </script>
 
 <div

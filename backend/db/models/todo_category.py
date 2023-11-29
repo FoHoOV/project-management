@@ -15,10 +15,12 @@ class TodoCategory(BasesWithCreatedDate, BaseCustomOrder):
     items: Mapped[List["TodoItem"]] = relationship(  # type: ignore
         back_populates="category",
         cascade="all, delete-orphan",
-        order_by="desc(TodoItem.id)",
+        order_by="desc(TodoItem.order), desc(TodoItem.id), desc(TodoItem.is_done)",
     )
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
-        secondary="todo_category_project_association", back_populates="todo_categories"
+        secondary="todo_category_project_association",
+        back_populates="todo_categories",
+        order_by="desc(Project.id)",
     )
 
     def __repr__(self) -> str:

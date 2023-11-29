@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase
 import datetime
-from sqlalchemy import DateTime, Integer
+from sqlalchemy import BigInteger, DateTime
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
@@ -22,4 +22,4 @@ class BasesWithCreatedDate(Base):
 class BaseCustomOrder(Base):
     __abstract__ = True
 
-    order: Mapped[int] = mapped_column(Integer(), default=0)
+    order: Mapped[int] = mapped_column(BigInteger(), default=0)

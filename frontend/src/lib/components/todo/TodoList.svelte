@@ -50,20 +50,6 @@
 		});
 	}
 
-	function moveDoneTodosToBottom(todos: TodoItem[]) {
-		const sortedTodos = todos.sort((a, b) => {
-			if (a.is_done == b.is_done) {
-				return a.order < b.order ? 1 : a.id < b.id ? 1 : -1;
-			}
-
-			if (a.is_done) {
-				return 1;
-			}
-			return -1;
-		});
-		return sortedTodos;
-	}
-
 	function handleCreateTodo(event: MouseEvent) {
 		createTodoModal.show();
 	}
@@ -77,6 +63,7 @@
 			// if dropped on itself then we don't need to do anything
 			return;
 		}
+		console.log(event.detail.names);
 		// I know the typings of model is a hack
 		// but I have to wait so that svelte natively supports ts in markup
 		isCallingService = true;
@@ -88,6 +75,7 @@
 				});
 				todoCategories.removeTodo(event.detail.data);
 				todoCategories.addTodo({ ...event.detail.data, category_id: category.id });
+				console.log({ ...event.detail.data, category_id: category.id });
 				isCallingService = false;
 			},
 			errorCallback: async (e) => {
@@ -143,7 +131,7 @@
 			</button>
 		</div>
 		{#if category.items.length > 0}
-			{#each moveDoneTodosToBottom(category.items) as todo (todo.id)}
+			{#each category.items as todo (todo.id)}
 				<div
 					class="w-full"
 					in:receive={{ key: todo.id }}

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
+from db.models.todo_item import TodoItem
 from db.models.user import User
 
 from db.schemas.todo_category import (
@@ -27,6 +28,7 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
     return (
         db.query(TodoCategory)
         .join(TodoCategory.projects)
+        .join(TodoCategory.items)
         .filter(Project.id == filter.project_id)
         .order_by(TodoCategory.order.desc(), TodoCategory.id.desc())
     )

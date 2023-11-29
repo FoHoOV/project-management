@@ -17,7 +17,9 @@ class Project(BasesWithCreatedDate):
         secondary="project_user_association", back_populates="projects"
     )
     todo_categories: Mapped[List["TodoCategory"]] = relationship(  # type: ignore
-        secondary="todo_category_project_association", back_populates="projects"
+        secondary="todo_category_project_association",
+        back_populates="projects",
+        order_by="desc(TodoCategory.order), desc(TodoCategory.id)",
     )
 
     # TODO: i dont know about the performance implications of these hybrid queries... like does sqlalchemy remove the need to query the db again if the object is already there?
