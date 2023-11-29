@@ -13,12 +13,13 @@
 	export let project: Project;
 	export let showAttachToUserButton: boolean = false;
 
-	let isCallingService: boolean = false;
+	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null;
+
 	const dispatch = createEventDispatcher<{ attachToUser: { project: Project } }>();
 
 	async function handleDetachProjectFromUser() {
-		isCallingService = true;
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
@@ -26,11 +27,11 @@
 				});
 				// based on docs invalidate("/user/projects") doesn't work
 				await invalidateAll(); // TODO: remove from projects store/runes
-				isCallingService = false;
+				state = 'none';
 			},
 			errorCallback: async (e) => {
-				isCallingService = false;
 				apiErrorTitle = e.message;
+				state = 'none';
 			}
 		});
 	}
@@ -43,7 +44,7 @@
 <div class="card bg-base-300 text-base-content">
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
-		<Spinner visible={isCallingService}></Spinner>
+		<Spinner visible={state === 'calling-service'}></Spinner>
 
 		<div class="card-title">
 			<div class="tooltip" data-tip="project id">

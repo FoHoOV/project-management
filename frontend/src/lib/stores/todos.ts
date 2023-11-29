@@ -9,7 +9,7 @@ const addTodo = (todo: TodoItem): void => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
-			category.items.unshift(todo);
+			category.items.push(todo);
 			_sortTodos(category.items);
 			return category;
 		});
@@ -49,7 +49,8 @@ const updateTodo = (todo: TodoItem) => {
 const addCategory = (category: TodoCategory) => {
 	_update((categories) => {
 		_sortTodos(category.items);
-		categories.unshift(category);
+		categories.push(category);
+		_sortCategories(categories);
 		return categories;
 	});
 };
