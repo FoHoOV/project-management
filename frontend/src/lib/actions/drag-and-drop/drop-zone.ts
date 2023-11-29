@@ -1,7 +1,7 @@
 import type { ActionReturn } from 'svelte/action';
 
 export type DropEvent<Data extends object> = CustomEvent<{ data: Data; names: string[] }>;
-
+export type CustomDragEvent = CustomEvent<{ names: string[]; originalEvent: DragEvent }>;
 export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
 	model: Data; // I have to w8 for svelte5 for native ts support in markup
@@ -11,13 +11,15 @@ export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 
 export type DropZoneEvents<Data extends object> = {
 	'on:dropped': (event: DropEvent<Data>) => void;
+	'on:dragEntered'?: (event: CustomDragEvent) => void;
+	'on:dragLeft'?: (event: CustomDragEvent) => void;
 };
 
 export function dropzone<Data extends object>(
 	node: HTMLElement,
 	options: DropZoneOptions<Data>
 ): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
-	setOptionsDefaults(options);
+	_setOptionsDefaults(options);
 
 	node.dataset.dropZoneNames = JSON.stringify(options.names);
 
@@ -26,11 +28,19 @@ export function dropzone<Data extends object>(
 			return;
 		}
 
-		if (event.target !== node) {
+		if (!node.contains(event.target as HTMLElement)) {
 			return;
 		}
 
 		node.classList.add(...(options.highlighClasses as string[]));
+		node.dispatchEvent(
+			new CustomEvent('dragEntered', {
+				detail: {
+					originalEvent: event,
+					names: _getMatchingDropZoneNames(event, options)
+				}
+			}) as CustomDragEvent
+		);
 	}
 
 	function handleDragLeave(event: DragEvent) {
@@ -46,6 +56,14 @@ export function dropzone<Data extends object>(
 		}
 
 		node.classList.remove(...(options.highlighClasses as string[]));
+		node.dispatchEvent(
+			new CustomEvent('dragLeft', {
+				detail: {
+					originalEvent: event,
+					names: _getMatchingDropZoneNames(event, options)
+				}
+			}) as CustomDragEvent
+		);
 	}
 
 	function handleDragOver(event: DragEvent) {
@@ -92,7 +110,7 @@ export function dropzone<Data extends object>(
 	return {
 		update(newOptions) {
 			options = newOptions;
-			setOptionsDefaults(options);
+			_setOptionsDefaults(options);
 		},
 		destroy() {
 			node.removeEventListener('dragenter', handleDragEnter);
@@ -103,7 +121,7 @@ export function dropzone<Data extends object>(
 	};
 }
 
-function setOptionsDefaults<Data extends object>(options: DropZoneOptions<Data>) {
+function _setOptionsDefaults<Data extends object>(options: DropZoneOptions<Data>) {
 	if (options.highlighClasses === undefined) {
 		options.highlighClasses = ['!border', '!rounded-2xl', '!border-success'];
 	}
@@ -177,7 +195,6 @@ function _checkIfIsInSameDropZoneName<Data extends object>(
 ) {
 	return (
 		node.dataset.dropZoneNames === JSON.stringify(options.names) &&
-		event.dataTransfer?.types &&
 		_existInDropZoneTargetNames(event, options)
 	);
 }

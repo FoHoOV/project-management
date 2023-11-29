@@ -13,13 +13,14 @@
 		TODO_ITEM_ORDER_DROP_ZONE
 	} from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
+	import TodoItemDropZone from '$components/todo/TodoItemDropZone.svelte';
 
 	export let todo: TodoItem;
-	let isCallingService: boolean = false;
+	let state: 'drop-zone-activated' | 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null;
 
 	async function handleChangeDoneStatus() {
-		isCallingService = true;
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
@@ -27,32 +28,36 @@
 					is_done: !todo.is_done
 				});
 				todos.updateTodo({ ...todo, is_done: !todo.is_done });
-				isCallingService = false;
+				state = 'none';
 			},
 			errorCallback: async (e) => {
-				isCallingService = false;
 				apiErrorTitle = e.message;
+				state = 'none';
 			}
 		});
 	}
 
 	async function handleRemoveTodo() {
-		isCallingService = true;
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItem(todo);
 				todos.removeTodo(todo);
-				isCallingService = false;
+				state = 'none';
 			},
 			errorCallback: async (e) => {
-				isCallingService = false;
 				apiErrorTitle = e.message;
+				state = 'none';
 			}
 		});
 	}
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
-		isCallingService = true;
+		if (event.detail.data.id == todo.id) {
+			return;
+		}
+
+		state = 'calling-service';
 
 		console.log(event.detail.names);
 
@@ -65,13 +70,20 @@
 				});
 				todos.updateTodo({ ...event.detail.data, order: newOrder });
 				console.log({ ...event.detail.data, order: newOrder });
-				isCallingService = false;
+				state = 'none';
 			},
 			errorCallback: async (e) => {
-				isCallingService = false;
 				apiErrorTitle = e.message;
+				state = 'none';
 			}
 		});
+	}
+	function handleDragEnter() {
+		state = 'drop-zone-activated';
+	}
+
+	function handleDragLeft() {
+		state = 'none';
 	}
 </script>
 
@@ -83,10 +95,13 @@
 		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE]
 	}}
 	on:dropped={handleUpdateTodoItemOrder}
+	on:dragEntered={handleDragEnter}
+	on:dragLeft={handleDragLeft}
 >
+	<Spinner visible={state === 'calling-service'}></Spinner>
+	<TodoItemDropZone visible={state === 'drop-zone-activated'} direction="top" />
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
-		<Spinner visible={isCallingService}></Spinner>
 
 		<div class="card-title flex w-full justify-between">
 			<h1>
