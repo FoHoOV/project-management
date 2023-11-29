@@ -101,57 +101,58 @@
 <div
 	use:dropzone={{ model: category.items[0], name: TODO_ITEM_DROP_ZONE_NAME }}
 	on:dropped={handleTodoItemDropped}
-	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-base-300 p-5 {className}"
+	class="relative flex max-h-full w-full rounded-xl border border-base-300"
 >
 	<Spinner visible={isCallingService}></Spinner>
-
-	<div class="flex w-full flex-col self-start">
-		<div class="flex w-full justify-between">
+	<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
+		<div class="flex w-full flex-col self-start">
+			<div class="flex w-full justify-between">
+				<div>
+					<Fa icon={faInfoCircle} class="mx-2 inline" />
+					<span class="text-lg font-bold">{category.title}</span>
+				</div>
+				<button on:click={handleRemoveCategory}>
+					<Fa icon={faTrashCan} class="text-red-400" />
+				</button>
+			</div>
 			<div>
-				<Fa icon={faInfoCircle} class="mx-2 inline" />
+				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
 				<span class="text-lg font-bold">{category.title}</span>
 			</div>
-			<button on:click={handleRemoveCategory}>
-				<Fa icon={faTrashCan} class="text-red-400" />
+		</div>
+		<div class="mt-2 flex w-full gap-2">
+			<button
+				class="btn btn-success flex-1"
+				class:hidden={!$$slots['create-todo-item']}
+				on:click={handleCreateTodo}
+			>
+				<Fa icon={faCirclePlus} />
+				Add todo
+			</button>
+			<button
+				class="btn btn-info flex-1"
+				class:hidden={!$$slots['attach-to-project']}
+				on:click={handleAttachToProject}
+			>
+				<Fa icon={faMapPin} />
+				Add to project
 			</button>
 		</div>
-		<div>
-			<Fa icon={faArrowCircleRight} class="mx-2 inline" />
-			<span class="text-lg font-bold">{category.title}</span>
-		</div>
+		{#if category.items.length > 0}
+			{#each moveDoneTodosToBottom(category.items) as todo (todo.id)}
+				<div
+					class="w-full"
+					in:receive={{ key: todo.id }}
+					out:send={{ key: todo.id }}
+					animate:flip={{ duration: 200 }}
+				>
+					<TodoItemComponent {todo} />
+				</div>
+			{/each}
+		{:else}
+			<Empty class="mt-2 w-full justify-start" text="Add your first todo!" />
+		{/if}
 	</div>
-	<div class="mt-2 flex w-full gap-2">
-		<button
-			class="btn btn-success flex-1"
-			class:hidden={!$$slots['create-todo-item']}
-			on:click={handleCreateTodo}
-		>
-			<Fa icon={faCirclePlus} />
-			Add todo
-		</button>
-		<button
-			class="btn btn-info flex-1"
-			class:hidden={!$$slots['attach-to-project']}
-			on:click={handleAttachToProject}
-		>
-			<Fa icon={faMapPin} />
-			Add to project
-		</button>
-	</div>
-	{#if category.items.length > 0}
-		{#each moveDoneTodosToBottom(category.items) as todo (todo.id)}
-			<div
-				class="w-full"
-				in:receive={{ key: todo.id }}
-				out:send={{ key: todo.id }}
-				animate:flip={{ duration: 200 }}
-			>
-				<TodoItemComponent {todo} />
-			</div>
-		{/each}
-	{:else}
-		<Empty class="mt-2 w-full justify-start" text="Add your first todo!" />
-	{/if}
 </div>
 
 <Modal title="Create a new todo here!" bind:this={createTodoModal}>
