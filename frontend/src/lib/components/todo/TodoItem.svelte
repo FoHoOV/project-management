@@ -7,16 +7,18 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
-	import { draggable, dropzone, type DropEvent } from '$lib/actions';
+	import { draggable, dropzone, type DropEvent, type CustomDragEvent } from '$lib/actions';
 	import {
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		TODO_ITEM_ORDER_DROP_ZONE
 	} from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
 	import TodoItemDropZone from '$components/todo/TodoItemDropZone.svelte';
+	import { cursorOnElementPosition } from '$lib/utils';
 
 	export let todo: TodoItem;
-	let state: 'drop-zone-activated' | 'calling-service' | 'none' = 'none';
+	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
+		'none';
 	let apiErrorTitle: string | null;
 
 	async function handleChangeDoneStatus() {
@@ -57,13 +59,15 @@
 			return;
 		}
 
+		const moveTop = state == 'drop-zone-top-activated';
+
 		state = 'calling-service';
 
 		console.log(event.detail.names);
 
 		await callServiceInClient({
 			serviceCall: async () => {
-				const newOrder = todo.order + 1;
+				const newOrder = moveTop ? todo.order + 1 : todo.order - 1;
 				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
 					...todo,
 					order: newOrder
@@ -78,8 +82,13 @@
 			}
 		});
 	}
-	function handleDragEnter() {
-		state = 'drop-zone-activated';
+	function handleDragEnter(event: CustomDragEvent) {
+		const position = cursorOnElementPosition(event.detail.node, {
+			x: event.detail.originalEvent.clientX,
+			y: event.detail.originalEvent.clientY
+		});
+
+		state = position == 'top' ? 'drop-zone-top-activated' : 'drop-zone-bottom-activated';
 	}
 
 	function handleDragLeft() {
@@ -99,7 +108,10 @@
 	on:dragLeft={handleDragLeft}
 >
 	<Spinner visible={state === 'calling-service'}></Spinner>
-	<TodoItemDropZone visible={state === 'drop-zone-activated'} direction="top" />
+	<TodoItemDropZone
+		visible={state === 'drop-zone-top-activated' || state === 'drop-zone-bottom-activated'}
+		direction={state === 'drop-zone-top-activated' ? 'top' : 'bottom'}
+	/>
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
 

@@ -1,7 +1,11 @@
 import type { ActionReturn } from 'svelte/action';
 
 export type DropEvent<Data extends object> = CustomEvent<{ data: Data; names: string[] }>;
-export type CustomDragEvent = CustomEvent<{ names: string[]; originalEvent: DragEvent }>;
+export type CustomDragEvent = CustomEvent<{
+	names: string[];
+	node: HTMLElement;
+	originalEvent: DragEvent;
+}>;
 export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
 	model: Data; // I have to w8 for svelte5 for native ts support in markup
@@ -37,6 +41,7 @@ export function dropzone<Data extends object>(
 			new CustomEvent('dragEntered', {
 				detail: {
 					originalEvent: event,
+					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
 			}) as CustomDragEvent
@@ -60,6 +65,7 @@ export function dropzone<Data extends object>(
 			new CustomEvent('dragLeft', {
 				detail: {
 					originalEvent: event,
+					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
 			}) as CustomDragEvent
