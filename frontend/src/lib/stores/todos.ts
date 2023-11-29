@@ -89,8 +89,6 @@ const clearTodoCategories = () => {
 };
 
 function _sortTodos(todos: TodoItem[]) {
-	console.log('--------');
-	console.log(todos);
 	todos.sort((a, b) => {
 		let state: 'same-place' | 'go-up' | 'go-down' = 'same-place';
 
@@ -113,8 +111,6 @@ function _sortTodos(todos: TodoItem[]) {
 				return 1;
 		}
 	});
-	console.log(todos);
-	console.log('--------');
 }
 
 function _sortCategories(categories: TodoCategory[]) {

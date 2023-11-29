@@ -75,8 +75,6 @@
 
 		state = 'calling-service';
 
-		console.log(event.detail.names);
-
 		await callServiceInClient({
 			serviceCall: async () => {
 				const newOrder = moveTop ? todo.order + 1 : todo.order - 1;
@@ -85,7 +83,6 @@
 					order: newOrder
 				});
 				todos.updateTodo({ ...event.detail.data, order: newOrder });
-				console.log({ ...event.detail.data, order: newOrder });
 				state = 'none';
 			},
 			errorCallback: async (e) => {

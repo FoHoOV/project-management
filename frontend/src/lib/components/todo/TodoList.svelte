@@ -84,8 +84,6 @@
 
 		state = 'calling-service';
 
-		console.log(event.detail.names);
-
 		await callServiceInClient({
 			serviceCall: async () => {
 				const newOrder = moveLeft ? category.order + 1 : category.order - 1;
@@ -94,7 +92,6 @@
 					order: newOrder
 				});
 				todos.updateCategory({ ...event.detail.data, order: newOrder });
-				console.log({ ...event.detail.data, order: newOrder });
 				state = 'none';
 			},
 			errorCallback: async (e) => {
@@ -119,7 +116,6 @@
 				});
 				todos.removeTodo(event.detail.data);
 				todos.addTodo({ ...event.detail.data, category_id: category.id });
-				console.log({ ...event.detail.data, category_id: category.id });
 				state = 'none';
 			},
 			errorCallback: async (e) => {

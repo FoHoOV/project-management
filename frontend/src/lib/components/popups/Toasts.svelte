@@ -1,6 +1,5 @@
 <script lang="ts">
 	import toasts, { type Toast } from '$lib/stores/toasts';
-	import { flip } from 'svelte/animate';
 	import { fade, slide } from 'svelte/transition';
 
 	function getToastTypeClass(toast: Toast): string {
