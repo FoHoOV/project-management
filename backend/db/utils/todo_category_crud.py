@@ -80,12 +80,13 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 
 def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
+    # this is a huge performance hit, first of all improve your queries and secondly come up with a new solution
+    # btw ik this is not clean code an a huge red flag
     validate_todo_category_belongs_to_user(db, category.id, user_id)
     validate_project_belongs_to_user(db, category.project_id, user_id, user_id, True)
 
     db_item = (
         db.query(TodoCategory)
-        .join(TodoCategory.orders)
         .join(TodoCategory.projects)
         .filter(TodoCategory.id == category.id, Project.id == category.project_id)
         .first()
@@ -94,10 +95,17 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
     if db_item is None:
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
 
-    if len(db_item.orders) > 0:
+    filtered_orders = list(
+        filter(lambda order: order.category_id == category.id, db_item.orders)
+    )
+    if len(filtered_orders) > 1:
         raise UserFriendlyError(
             "db error: TodoCategory has more than 1 order for this project"
         )
+
+    order: TodoCategoryOrder | None = (
+        filtered_orders[0] if len(filtered_orders) == 1 else None
+    )
 
     existing_right_link: List[TodoCategoryOrder] = []
     if category.order.right_id is not None:
@@ -132,7 +140,17 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
     if len(existing_left_link) == 1:
         existing_left_link[0].left_id = category.id
 
-    if len(db_item.orders) == 0:
+    db.query(TodoCategoryOrder).filter(
+        TodoCategoryOrder.project_id == category.project_id,
+        TodoCategoryOrder.right_id == category.id,
+    ).update({"right_id": order.right_id if order is not None else None})
+
+    db.query(TodoCategoryOrder).filter(
+        TodoCategoryOrder.project_id == category.project_id,
+        TodoCategoryOrder.left_id == category.id,
+    ).update({"left_id": order.left_id if order is not None else None})
+
+    if order is None:
         db.add(
             TodoCategoryOrder(
                 category_id=category.id,
@@ -142,8 +160,8 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
             )
         )
     else:
-        db_item.orders[0].right_id = category.order.right_id
-        db_item.orders[0].left_id = category.order.left_id
+        order.right_id = category.order.right_id
+        order.left_id = category.order.left_id
 
     db.commit()
     db.refresh(db_item)

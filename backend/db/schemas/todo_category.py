@@ -52,7 +52,7 @@ class PartialProject(BaseModel):
 
 class TodoCategory(TodoCategoryBase):
     id: int
-    order: OrderedItem | None = None
+    orders: list[OrderedItem]
     items: list[TodoItem]
     projects: list[PartialProject]
 

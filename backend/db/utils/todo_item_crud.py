@@ -95,11 +95,12 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
 
 def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
+    # this is a huge performance hit, first of all improve your queries and secondly come up with a new solution
+    # btw ik this is not clean code an a huge red flag
+
     validate_todo_item_belongs_to_user(db, todo.id, user_id)
 
-    db_item = (
-        db.query(TodoItem).join(TodoItem.order).filter(TodoItem.id == todo.id).first()
-    )
+    db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
 
     if db_item is None:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
@@ -140,6 +141,14 @@ def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
 
     if len(existing_left_link) == 1:
         existing_left_link[0].left_id = todo.id
+
+    db.query(TodoItemOrder).filter(
+        TodoItemOrder.right_id == todo.id,
+    ).update({"right_id": todo.order.right_id if todo.order is not None else None})
+
+    db.query(TodoItemOrder).filter(
+        TodoItemOrder.left_id == todo.id,
+    ).update({"left_id": todo.order.left_id if todo.order is not None else None})
 
     if db_item.order is None:
         db.add(
