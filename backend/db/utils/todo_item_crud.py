@@ -77,9 +77,17 @@ def update(db: Session, todo: TodoItemUpdate, user_id: int):
         validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
         db_item.category_id = todo.new_category_id
 
-    db_item.is_done = todo.is_done
-    db_item.description = todo.description
-    db_item.title = todo.title
+    if todo.order is not None:
+        db_item.order = todo.order
+
+    if todo.is_done is not None:
+        db_item.is_done = todo.is_done
+
+    if todo.description is not None:
+        db_item.description = todo.description
+
+    if todo.title is not None:
+        db_item.title = todo.title
 
     db.commit()
     db.refresh(db_item)

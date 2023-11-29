@@ -24,6 +24,10 @@ class TodoItemCreate(TodoItemBase):
 class TodoItemUpdate(TodoItemBase):
     id: int
     new_category_id: int | None = None
+    title: str | None
+    description: str | None
+    is_done: bool
+    order: int | None = 0
 
 
 class TodoItemDelete(BaseModel):
@@ -39,6 +43,7 @@ class SearchTodoItemParams:
 
 class TodoItem(TodoItemBase):
     id: int
+    order: int
 
     class Config:
         from_attributes = True

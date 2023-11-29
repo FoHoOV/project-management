@@ -14,6 +14,9 @@ class TodoCategoryCreate(TodoCategoryBase):
 
 class TodoCategoryUpdate(TodoCategoryBase):
     id: int
+    order: int | None
+    title: str | None
+    description: str | None
 
 
 class TodoCategoryAttachAssociation(BaseModel):
@@ -43,6 +46,7 @@ class PartialProject(BaseModel):
 
 class TodoCategory(TodoCategoryBase):
     id: int
+    order: int
     items: list[TodoItem]
     projects: list[PartialProject]
 

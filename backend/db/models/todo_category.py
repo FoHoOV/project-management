@@ -3,10 +3,10 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import BasesWithCreatedDate
+from db.models.base import BaseCustomOrder, BasesWithCreatedDate
 
 
-class TodoCategory(BasesWithCreatedDate):
+class TodoCategory(BasesWithCreatedDate, BaseCustomOrder):
     __tablename__ = "todo_category"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -22,4 +22,4 @@ class TodoCategory(BasesWithCreatedDate):
     )
 
     def __repr__(self) -> str:
-        return f"TodoCategory(id={self.id!r}, title={self.title!r}, description={self.description!r})"
+        return f"TodoCategory(id={self.id!r}, order={self.order}, title={self.title!r}, description={self.description!r})"

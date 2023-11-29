@@ -63,8 +63,14 @@ def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     if db_item is None:
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
 
-    db_item.description = category.description
-    db_item.title = category.title
+    if category.order is not None:
+        db_item.order = category.order
+
+    if category.description is not None:
+        db_item.description = category.description
+
+    if category.title is not None:
+        db_item.title = category.title
 
     db.commit()
     db.refresh(db_item)
