@@ -23,6 +23,7 @@ class TodoItemCreate(TodoItemBase):
 
 class TodoItemUpdate(TodoItemBase):
     id: int
+    new_category_id: int | None = None
 
 
 class TodoItemDelete(BaseModel):

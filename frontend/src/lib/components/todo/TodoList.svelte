@@ -12,7 +12,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
+	import { TodoCategoryClient, TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
 	import todoCategories from '$lib/stores/todos';
 	import { dropzone, type DropEvent } from '$lib/actions';
@@ -72,8 +72,22 @@
 	}
 
 	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
-		todoCategories.removeTodo(event.detail.data);
-		todoCategories.addTodo({ ...event.detail.data, category_id: category.id });
+		isCallingService = true;
+		callServiceInClient({
+			serviceCall: async () => {
+				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
+					...event.detail.data,
+					new_category_id: category.id
+				});
+				todoCategories.removeTodo(event.detail.data);
+				todoCategories.addTodo({ ...event.detail.data, category_id: category.id });
+				isCallingService = false;
+			},
+			errorCallback: async (e) => {
+				isCallingService = false;
+				apiErrorTitle = e.message;
+			}
+		});
 	}
 </script>
 

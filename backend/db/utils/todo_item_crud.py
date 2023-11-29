@@ -73,6 +73,10 @@ def update(db: Session, todo: TodoItemUpdate, user_id: int):
     if not db_item:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
+    if todo.new_category_id is not None:
+        validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
+        db_item.category_id = todo.new_category_id
+
     db_item.is_done = todo.is_done
     db_item.description = todo.description
     db_item.title = todo.title
