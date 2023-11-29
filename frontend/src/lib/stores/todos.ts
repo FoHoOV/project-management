@@ -115,20 +115,20 @@ function _sortTodos(todos: TodoItem[]) {
 
 function _sortCategories(categories: TodoCategory[]) {
 	categories.sort((a, b) => {
-		let state: 'same-place' | 'go-up' | 'go-down' = 'same-place';
+		let state: 'same-place' | 'go-left' | 'go-right' = 'same-place';
 
 		if (a.order != b.order) {
-			state = a.order > b.order ? 'go-up' : 'go-down';
+			state = a.order > b.order ? 'go-left' : 'go-right';
 		}
 
 		if (state == 'same-place') {
-			state = a.id > b.id ? 'go-up' : 'go-down';
+			state = a.id > b.id ? 'go-left' : 'go-right';
 		}
 
 		switch (state) {
-			case 'go-up':
+			case 'go-left':
 				return -1;
-			case 'go-down':
+			case 'go-right':
 				return 1;
 		}
 	});
