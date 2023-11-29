@@ -56,6 +56,7 @@
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
 		if (event.detail.data.id == todo.id) {
+			state = 'none';
 			return;
 		}
 
