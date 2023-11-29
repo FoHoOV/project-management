@@ -28,7 +28,6 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
     return (
         db.query(TodoCategory)
         .join(TodoCategory.projects)
-        .join(TodoCategory.items)
         .filter(Project.id == filter.project_id)
         .order_by(TodoCategory.order.desc(), TodoCategory.id.desc())
     )
