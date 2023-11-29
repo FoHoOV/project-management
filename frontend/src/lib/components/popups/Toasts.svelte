@@ -24,7 +24,7 @@
 			in:fade={{ duration: 200 }}
 			out:slide={{ axis: 'x', duration: 200 }}
 		>
-			<span>{toast.text}</span>
+			<span>{toast.message}</span>
 		</div>
 	{/each}
 </div>

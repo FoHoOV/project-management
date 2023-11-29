@@ -4,7 +4,7 @@ type MilliSeconds = number;
 
 export type Toast = {
 	time: MilliSeconds;
-	text: string;
+	message: string;
 	type: 'info' | 'warning' | 'success' | 'error';
 	id: string;
 };

@@ -15,6 +15,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { cursorOnElementPositionY } from '$lib/utils';
+	import toasts from '$lib/stores/toasts';
 
 	export let todo: TodoItem;
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
@@ -57,6 +58,16 @@
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
 		if (event.detail.data.id == todo.id) {
 			state = 'none';
+			return;
+		}
+
+		if (event.detail.data.is_done !== todo.is_done) {
+			state = 'none';
+			toasts.addToast({
+				message: 'todo status should be same for custom todo orders',
+				time: 5000,
+				type: 'error'
+			});
 			return;
 		}
 
