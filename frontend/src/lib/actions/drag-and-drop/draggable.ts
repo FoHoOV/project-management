@@ -10,7 +10,10 @@ export function draggable<Data extends object>(node: HTMLElement, options: Dragg
 	node.classList.add('cursor-grab');
 
 	function handleDragStart(e: DragEvent) {
-		if (!e.dataTransfer) return;
+		if (!e.dataTransfer || e.target !== node) {
+			return;
+		}
+
 		e.dataTransfer.setData('text/plain', JSON.stringify({ ...options.data }));
 		e.dataTransfer.setData(generateDropZoneTargetNames(options.targetDropZoneNames), '');
 	}
@@ -18,6 +21,9 @@ export function draggable<Data extends object>(node: HTMLElement, options: Dragg
 	node.addEventListener('dragstart', handleDragStart);
 
 	return {
+		update(newOptions: DraggableOptions<Data>) {
+			options = newOptions;
+		},
 		destroy() {
 			node.removeEventListener('dragstart', handleDragStart);
 		}

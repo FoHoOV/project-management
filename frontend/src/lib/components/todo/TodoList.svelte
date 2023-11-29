@@ -65,8 +65,7 @@
 	}
 
 	async function handleOnDrop(event: DropEvent<{}>) {
-		// TODO: change, event should say which event it is
-		if (Object.hasOwn(event.detail.data, 'projects')) {
+		if (event.detail.names.find((value) => value === TODO_CATEGORY_ORDER_DROP_ZONE)) {
 			await handleUpdateCategoryOrder(event as DropEvent<TodoCategory>);
 			return;
 		} else {
@@ -131,6 +130,9 @@
 	}
 
 	function handleDragEnter(event: CustomDragEvent) {
+		if (event.detail.names.find((value) => value !== TODO_CATEGORY_ORDER_DROP_ZONE)) {
+			return;
+		}
 		const position = cursorOnElementPositionX(event.detail.node, {
 			x: event.detail.originalEvent.clientX,
 			y: event.detail.originalEvent.clientY
