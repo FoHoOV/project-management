@@ -101,7 +101,7 @@
 <div
 	use:dropzone={{
 		model: category.items[0],
-		name: TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
+		names: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME],
 		disabled: isCallingService
 	}}
 	on:dropped={handleTodoItemDropped}

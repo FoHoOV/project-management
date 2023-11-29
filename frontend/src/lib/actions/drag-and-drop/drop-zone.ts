@@ -1,11 +1,11 @@
 import type { ActionReturn } from 'svelte/action';
 
-export type DropEvent<Data extends object> = CustomEvent<{ data: Data }>;
+export type DropEvent<Data extends object> = CustomEvent<{ data: Data; names: string[] }>;
 
 export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
 	model: Data; // I have to w8 for svelte5 for native ts support in markup
-	name: string;
+	names: string[];
 	disabled?: boolean;
 };
 
@@ -19,10 +19,10 @@ export function dropzone<Data extends object>(
 ): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
 	setOptionsDefaults(options);
 
-	node.dataset.dropZoneName = options.name;
+	node.dataset.dropZoneNames = JSON.stringify(options.names);
 
 	function handleDragEnter(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
+		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
 			return;
 		}
 
@@ -34,7 +34,7 @@ export function dropzone<Data extends object>(
 	}
 
 	function handleDragLeave(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
+		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
 			return;
 		}
 
@@ -49,7 +49,7 @@ export function dropzone<Data extends object>(
 	}
 
 	function handleDragOver(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
+		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
 			return;
 		}
 
@@ -62,7 +62,7 @@ export function dropzone<Data extends object>(
 	}
 
 	function handleDrop(event: DragEvent) {
-		if (!checkIfIsInSameDropZoneName(node, event, options.name) || options.disabled) {
+		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
 			return;
 		}
 
@@ -77,9 +77,10 @@ export function dropzone<Data extends object>(
 		node.dispatchEvent(
 			new CustomEvent('dropped', {
 				detail: {
-					data: JSON.parse(data)
+					data: JSON.parse(data),
+					names: _getMatchingDropZoneNames(event, options)
 				}
-			})
+			}) as DropEvent<Data>
 		);
 	}
 
@@ -123,29 +124,60 @@ export function generateDropZoneTargetNames(names: string[]) {
 	return `${_dropZoneNamePrefixUUID}:${JSON.stringify(names)}`.toLowerCase();
 }
 
-export function existInDropZoneTargetNames(types: readonly string[], name: string): boolean {
+export function getDropZoneNames(event: DragEvent) {
+	const types = event.dataTransfer?.types;
+
+	if (!types || types.length == 0) {
+		throw new Error('DragEvent.dataTransfer.types cannot be empty or null');
+	}
+
 	const targetType = types.find((value) => value.startsWith(_dropZoneNamePrefixUUID));
 	if (!targetType) {
-		return false;
+		throw new Error('this node is not a dropzone created by this action');
 	}
 
 	const splitted = targetType.split(':');
 	if (splitted.length != 2) {
-		return false;
+		throw new Error('types is not correctly set in dataTransfer');
 	}
 
+	const eventTargetDropZoneNames: string[] = JSON.parse(splitted[1]);
+	return eventTargetDropZoneNames;
+}
+
+function _getMatchingDropZoneNames<Data extends object>(
+	event: DragEvent,
+	options: DropZoneOptions<Data>
+): string[] {
+	const matchingTargetZones = options.names.filter((nodeTargetZoneName) => {
+		return (
+			getDropZoneNames(event).find(
+				(eventTargetName) => eventTargetName.toLowerCase() == nodeTargetZoneName.toLowerCase()
+			) !== undefined
+		);
+	});
+	return matchingTargetZones;
+}
+
+function _existInDropZoneTargetNames<Data extends object>(
+	event: DragEvent,
+	options: DropZoneOptions<Data>
+): boolean {
 	try {
-		const names: string[] = JSON.parse(splitted[1]);
-		return names.find((value) => value == name.toLowerCase()) !== undefined;
+		return _getMatchingDropZoneNames(event, options).length > 0;
 	} catch (e) {
 		return false;
 	}
 }
 
-function checkIfIsInSameDropZoneName(node: HTMLElement, event: DragEvent, name: string) {
+function _checkIfIsInSameDropZoneName<Data extends object>(
+	node: HTMLElement,
+	event: DragEvent,
+	options: DropZoneOptions<Data>
+) {
 	return (
-		node.dataset.dropZoneName === name &&
+		node.dataset.dropZoneNames === JSON.stringify(options.names) &&
 		event.dataTransfer?.types &&
-		existInDropZoneTargetNames(event.dataTransfer.types, name)
+		_existInDropZoneTargetNames(event, options)
 	);
 }
