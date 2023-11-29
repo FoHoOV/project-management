@@ -70,7 +70,7 @@
 			serviceCall: async () => {
 				const newOrder = moveTop ? todo.order + 1 : todo.order - 1;
 				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
-					...todo,
+					...event.detail.data,
 					order: newOrder
 				});
 				todos.updateTodo({ ...event.detail.data, order: newOrder });
