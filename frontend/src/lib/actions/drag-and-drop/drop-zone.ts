@@ -18,7 +18,7 @@ export function dropzone<Data extends object>(
 	node: HTMLElement,
 	options: DropZoneOptions<Data>
 ): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
-	setConfigOptions(options);
+	setOptionsDefaults(options);
 
 	node.dataset.dropZoneName = options.name;
 
@@ -92,7 +92,7 @@ export function dropzone<Data extends object>(
 	return {
 		update(newOptions) {
 			options = newOptions;
-			setConfigOptions(options);
+			setOptionsDefaults(options);
 		},
 		destroy() {
 			node.removeEventListener('dragenter', handleDragEnter);
@@ -103,7 +103,7 @@ export function dropzone<Data extends object>(
 	};
 }
 
-function setConfigOptions<Data extends object>(options: DropZoneOptions<Data>) {
+function setOptionsDefaults<Data extends object>(options: DropZoneOptions<Data>) {
 	if (options.highlighClasses === undefined) {
 		options.highlighClasses = ['!border', '!rounded-2xl', '!border-success'];
 	}
