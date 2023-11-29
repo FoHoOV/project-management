@@ -73,6 +73,10 @@
 	}
 
 	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
+		if (category.items.find((todo) => event.detail.data.id == todo.id)) {
+			// if dropped on itself then we don't need to do anything
+			return;
+		}
 		// I know the typings of model is a hack
 		// but I have to wait so that svelte natively supports ts in markup
 		isCallingService = true;
