@@ -1,11 +1,13 @@
 import type { ActionReturn } from 'svelte/action';
 
-export type DropZoneOptions<Data extends object> = DataTransfer & {
+export type DropEvent<Data extends object> = CustomEvent<{ data: Data }>;
+export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 	highlighClasses?: string[];
 	model: Data;
+	type: string;
 };
 export type DropZoneEvents<Data extends object> = {
-	'on:dropped': (event: CustomEvent<{ data: Data }>) => void;
+	'on:dropped': (event: DropEvent<Data>) => void;
 };
 
 export function dropzone<Data extends object>(
@@ -13,36 +15,65 @@ export function dropzone<Data extends object>(
 	options: DropZoneOptions<Data>
 ): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
 	if (options.highlighClasses === undefined) {
-		options.highlighClasses = [
-			'pointer-events-none',
-			'bordered',
-			'rounded-md',
-			'border-info-primary'
-		];
+		options.highlighClasses = ['!border', '!rounded-2xl', '!border-success'];
 	}
 
+	if (!options.dropEffect) {
+		options.dropEffect = 'move';
+	}
+
+	node.dataset.dropZoneCategory = options.type;
+
 	function handleDragEnter(e: DragEvent) {
-		if (!(e.target instanceof HTMLElement)) return;
-		e.target.classList.add(...(options.highlighClasses as string[]));
+		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+			return;
+		}
+
+		if (e.target !== node) {
+			return;
+		}
+
+		node.classList.add(...(options.highlighClasses as string[]));
 	}
 
 	function handleDragLeave(e: DragEvent) {
-		if (!(e.target instanceof HTMLElement)) return;
-		e.target.classList.remove(...(options.highlighClasses as string[]));
+		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+			return;
+		}
+
+		if (e.target !== node || (e.relatedTarget && node.contains(e.relatedTarget as HTMLElement))) {
+			return;
+		}
+
+		node.classList.remove(...(options.highlighClasses as string[]));
 	}
 
 	function handleDragOver(e: DragEvent) {
+		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+			return;
+		}
+
 		e.preventDefault();
-		if (!e.dataTransfer) return;
-		e.dataTransfer.dropEffect = options.dropEffect;
+		if (!e.dataTransfer) {
+			return;
+		}
+
+		e.dataTransfer.dropEffect = options.dropEffect!;
 	}
 
 	function handleDrop(e: DragEvent) {
+		if (!checkIfIsInSameDropZoneCategory(node, options.type)) {
+			return;
+		}
+
 		e.preventDefault();
-		if (!e.dataTransfer) return;
-		const data = e.dataTransfer.getData('application/javascript');
-		if (!(e.target instanceof HTMLElement)) return;
-		e.target.classList.remove(...(options.highlighClasses as string[]));
+
+		if (!e.dataTransfer) {
+			return;
+		}
+
+		const data = e.dataTransfer.getData('text/plain');
+		node.classList.remove(...(options.highlighClasses as string[]));
 		node.dispatchEvent(
 			new CustomEvent('dropped', {
 				detail: {
@@ -65,4 +96,8 @@ export function dropzone<Data extends object>(
 			node.removeEventListener('drop', handleDrop);
 		}
 	};
+}
+
+function checkIfIsInSameDropZoneCategory(node: HTMLElement, type: string) {
+	return node.dataset.dropZoneCategory === type;
 }

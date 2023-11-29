@@ -15,9 +15,11 @@
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
 	import todoCategories from '$lib/stores/todos';
+	import { dropzone, type DropEvent } from '$lib/actions';
 	import Alert from '$components/Alert.svelte';
 	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
+	import { TodoItem as TodoItemSchema } from '$lib/generated-client/zod/schemas';
 
 	export let category: TodoCategory;
 	export let projectId: number;
@@ -68,9 +70,15 @@
 	function handleAttachToProject(event: MouseEvent) {
 		attachToProjectModal.show();
 	}
+
+	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
+		console.info('dropped', event.detail.data);
+	}
 </script>
 
 <div
+	use:dropzone={{ model: TodoItemSchema, type: 'TodoItemDropZone' }}
+	on:dropped={handleTodoItemDropped}
 	class="relative flex max-h-full w-full flex-col items-center overflow-y-auto rounded-xl border border-base-300 p-5 {className}"
 >
 	<Alert type="error" message={apiErrorTitle} />
