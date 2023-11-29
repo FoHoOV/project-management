@@ -11,6 +11,3 @@ class TodoCategoryProjectAssociation(BasesWithCreatedDate):
         ForeignKey("todo_category.id"), primary_key=True
     )
     project_id: Mapped[int] = mapped_column(ForeignKey("project.id"), primary_key=True)
-
-    def __repr__(self) -> str:
-        return f"TodoCategoryProjectAssociation(todo_category_id={self.todo_category_id!r}, project_id={self.project_id!r})"

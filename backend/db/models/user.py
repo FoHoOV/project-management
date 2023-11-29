@@ -15,6 +15,3 @@ class User(BasesWithCreatedDate):
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
         secondary="project_user_association", back_populates="users"
     )
-
-    def __repr__(self) -> str:
-        return f"User(id={self.id!r}, username={self.username!r}, password={self.password!r})"

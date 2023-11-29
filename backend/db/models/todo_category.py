@@ -3,10 +3,10 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import BaseCustomOrder, BasesWithCreatedDate
+from db.models.base import BasesWithCreatedDate
 
 
-class TodoCategory(BasesWithCreatedDate, BaseCustomOrder):
+class TodoCategory(BasesWithCreatedDate):
     __tablename__ = "todo_category"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -15,13 +15,13 @@ class TodoCategory(BasesWithCreatedDate, BaseCustomOrder):
     items: Mapped[List["TodoItem"]] = relationship(  # type: ignore
         back_populates="category",
         cascade="all, delete-orphan",
-        order_by="desc(TodoItem.order), desc(TodoItem.id), desc(TodoItem.is_done)",
+        order_by="desc(TodoItem.id), desc(TodoItem.is_done)",
     )
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
         secondary="todo_category_project_association",
         back_populates="todo_categories",
         order_by="desc(Project.id)",
     )
-
-    def __repr__(self) -> str:
-        return f"TodoCategory(id={self.id!r}, order={self.order}, title={self.title!r}, description={self.description!r})"
+    orders: Mapped[List["TodoCategoryOrder"]] = relationship(  # type: ignore
+        back_populates="category"
+    )

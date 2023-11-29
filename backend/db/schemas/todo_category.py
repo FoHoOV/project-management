@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
+from db.schemas.base import OrderedItem
 from db.schemas.todo_item import TodoItem
 
 
@@ -12,11 +13,16 @@ class TodoCategoryCreate(TodoCategoryBase):
     project_id: int = Field(exclude=True)
 
 
-class TodoCategoryUpdate(TodoCategoryBase):
+class TodoCategoryUpdateItem(TodoCategoryBase):
     id: int
-    order: int | None = None
     title: str | None = None
     description: str | None = None
+
+
+class TodoCategoryUpdateOrder(BaseModel):
+    id: int
+    order: OrderedItem
+    project_id: int
 
 
 class TodoCategoryAttachAssociation(BaseModel):
@@ -46,7 +52,7 @@ class PartialProject(BaseModel):
 
 class TodoCategory(TodoCategoryBase):
     id: int
-    order: int
+    order: OrderedItem | None = None
     items: list[TodoItem]
     projects: list[PartialProject]
 

@@ -19,7 +19,7 @@ class Project(BasesWithCreatedDate):
     todo_categories: Mapped[List["TodoCategory"]] = relationship(  # type: ignore
         secondary="todo_category_project_association",
         back_populates="projects",
-        order_by="desc(TodoCategory.order), desc(TodoCategory.id)",
+        order_by="desc(TodoCategory.id)",
     )
 
     # TODO: i dont know about the performance implications of these hybrid queries... like does sqlalchemy remove the need to query the db again if the object is already there?
@@ -66,6 +66,3 @@ class Project(BasesWithCreatedDate):
             .join(TodoCategory.items)
             .where(TodoItem.is_done == False)
         ).label("pending_todos")
-
-    def __repr__(self) -> str:
-        return f"Project(id={self.id!r}, title={self.title!r}, description={self.description!r}, done_todos_count={self.done_todos_count!r}, pending_todos_count={self.pending_todos_count!r})"

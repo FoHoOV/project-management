@@ -3,6 +3,8 @@ from enum import Enum
 from fastapi import Query
 from pydantic import BaseModel
 
+from db.schemas.base import OrderedItem
+
 
 class SearchTodoStatus(Enum):
     ALL = "all"
@@ -21,13 +23,17 @@ class TodoItemCreate(TodoItemBase):
     pass
 
 
-class TodoItemUpdate(TodoItemBase):
+class TodoItemUpdateItem(TodoItemBase):
     id: int
     new_category_id: int | None = None
     title: str | None
     description: str | None
     is_done: bool | None = None
-    order: int | None = None
+
+
+class TodoItemUpdateOrder(BaseModel):
+    id: int
+    order: OrderedItem
 
 
 class TodoItemDelete(BaseModel):
@@ -43,7 +49,7 @@ class SearchTodoItemParams:
 
 class TodoItem(TodoItemBase):
     id: int
-    order: int
+    order: OrderedItem | None = None
 
     class Config:
         from_attributes = True

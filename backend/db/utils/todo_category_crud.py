@@ -1,7 +1,10 @@
+from typing import List
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from db.models import project
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
+from db.models.todo_category_order import TodoCategoryOrder
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
 from db.models.todo_item import TodoItem
 from db.models.user import User
@@ -11,7 +14,8 @@ from db.schemas.todo_category import (
     TodoCategoryDetachAssociation,
     TodoCategoryRead,
     TodoCategoryCreate,
-    TodoCategoryUpdate,
+    TodoCategoryUpdateItem,
+    TodoCategoryUpdateOrder,
 )
 from db.utils.exceptions import UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
@@ -29,7 +33,7 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
         db.query(TodoCategory)
         .join(TodoCategory.projects)
         .filter(Project.id == filter.project_id)
-        .order_by(TodoCategory.order.desc(), TodoCategory.id.desc())
+        .order_by(TodoCategory.id.desc())
     )
 
 
@@ -56,7 +60,7 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     return db_item
 
 
-def update(db: Session, category: TodoCategoryUpdate, user_id: int):
+def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     validate_todo_category_belongs_to_user(db, category.id, user_id)
 
     db_item = db.query(TodoCategory).filter(TodoCategory.id == category.id).first()
@@ -64,14 +68,82 @@ def update(db: Session, category: TodoCategoryUpdate, user_id: int):
     if db_item is None:
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
 
-    if category.order is not None:
-        db_item.order = category.order
-
     if category.description is not None:
         db_item.description = category.description
 
     if category.title is not None:
         db_item.title = category.title
+
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
+    validate_todo_category_belongs_to_user(db, category.id, user_id)
+    validate_project_belongs_to_user(db, category.project_id, user_id, user_id, True)
+
+    db_item = (
+        db.query(TodoCategory)
+        .join(TodoCategory.orders)
+        .join(TodoCategory.projects)
+        .filter(TodoCategory.id == category.id, Project.id == category.project_id)
+        .first()
+    )
+
+    if db_item is None:
+        raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
+
+    if len(db_item.orders) > 0:
+        raise UserFriendlyError(
+            "db error: TodoCategory has more than 1 order for this project"
+        )
+
+    existing_right_link: List[TodoCategoryOrder] = []
+    if category.order.right_id is not None:
+        existing_right_link = (
+            db.query(TodoCategoryOrder)
+            .filter(
+                TodoCategoryOrder.project_id == category.project_id,
+                TodoCategoryOrder.right_id == category.order.right_id,
+            )
+            .all()
+        )
+
+    existing_left_link: List[TodoCategoryOrder] = []
+    if category.order.right_id is not None:
+        existing_left_link = (
+            db.query(TodoCategoryOrder)
+            .filter(
+                TodoCategoryOrder.project_id == category.project_id,
+                TodoCategoryOrder.left_id == category.order.left_id,
+            )
+            .all()
+        )
+
+    if len(existing_right_link) > 1 or len(existing_left_link) > 1:
+        raise UserFriendlyError(
+            "db error: TodoCategory has more than 1 order for this project"
+        )
+
+    if len(existing_right_link) == 1:
+        existing_right_link[0].right_id = category.id
+
+    if len(existing_left_link) == 1:
+        existing_left_link[0].left_id = category.id
+
+    if len(db_item.orders) == 0:
+        db.add(
+            TodoCategoryOrder(
+                category_id=category.id,
+                project_id=category.project_id,
+                right_id=category.order.right_id,
+                left_id=category.order.left_id,
+            )
+        )
+    else:
+        db_item.orders[0].right_id = category.order.right_id
+        db_item.orders[0].left_id = category.order.left_id
 
     db.commit()
     db.refresh(db_item)

@@ -11,7 +11,8 @@ from db.schemas.todo_category import (
     TodoCategoryCreate,
     TodoCategoryDetachAssociation,
     TodoCategoryRead,
-    TodoCategoryUpdate,
+    TodoCategoryUpdateItem,
+    TodoCategoryUpdateOrder,
 )
 from db.utils import todo_category_crud
 
@@ -52,13 +53,26 @@ def detach_from_project(
     return Response(status_code=HTTP_200_OK)
 
 
-@router.patch(path="/update", response_model=TodoCategory)
-def update(
+@router.patch(path="/update-item", response_model=TodoCategory)
+def update_item(
     current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategoryUpdate,
+    category: TodoCategoryUpdateItem,
     db: Session = Depends(get_db),
 ):
-    db_items = todo_category_crud.update(
+    db_items = todo_category_crud.update_item(
+        db=db, category=category, user_id=current_user.id
+    )
+
+    return db_items
+
+
+@router.patch(path="/update-order", response_model=TodoCategory)
+def update_order(
+    current_user: Annotated[User, Depends(get_current_user)],
+    category: TodoCategoryUpdateOrder,
+    db: Session = Depends(get_db),
+):
+    db_items = todo_category_crud.update_order(
         db=db, category=category, user_id=current_user.id
     )
 

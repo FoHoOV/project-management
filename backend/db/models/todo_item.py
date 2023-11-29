@@ -2,10 +2,10 @@ from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import BasesWithCreatedDate, BaseCustomOrder
+from db.models.base import BasesWithCreatedDate
 
 
-class TodoItem(BasesWithCreatedDate, BaseCustomOrder):
+class TodoItem(BasesWithCreatedDate):
     __tablename__ = "todo_item"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -14,6 +14,4 @@ class TodoItem(BasesWithCreatedDate, BaseCustomOrder):
     is_done: Mapped[bool] = mapped_column(Boolean(), default=False)
     category_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
     category: Mapped["TodoCategory"] = relationship(back_populates="items")  # type: ignore
-
-    def __repr__(self) -> str:
-        return f"TodoItem(id={self.id!r}, title={self.title!r}, description={self.description!r}, is_done={self.is_done}, order={self.order})"
+    order: Mapped["TodoItemOrder"] = relationship(back_populates="todo")  # type: ignore

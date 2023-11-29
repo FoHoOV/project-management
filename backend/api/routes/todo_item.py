@@ -11,8 +11,9 @@ from db.schemas.todo_item import (
     SearchTodoItemParams,
     TodoItem,
     TodoItemCreate,
-    TodoItemUpdate,
+    TodoItemUpdateItem,
     TodoItemDelete,
+    TodoItemUpdateOrder,
 )
 from db.utils import todo_item_crud
 
@@ -30,13 +31,23 @@ def create_for_user(
     return result
 
 
-@router.patch(path="/update", response_model=TodoItem)
-def update(
+@router.patch(path="/update-item", response_model=TodoItem)
+def update_item(
     current_user: Annotated[User, Depends(get_current_user)],
-    todo: TodoItemUpdate,
+    todo: TodoItemUpdateItem,
     db: Session = Depends(get_db),
 ):
-    db_items = todo_item_crud.update(db=db, todo=todo, user_id=current_user.id)
+    db_items = todo_item_crud.update_item(db=db, todo=todo, user_id=current_user.id)
+    return db_items
+
+
+@router.patch(path="/update-order", response_model=TodoItem)
+def update(
+    current_user: Annotated[User, Depends(get_current_user)],
+    todo: TodoItemUpdateOrder,
+    db: Session = Depends(get_db),
+):
+    db_items = todo_item_crud.update_order(db=db, todo=todo, user_id=current_user.id)
     return db_items
 
 

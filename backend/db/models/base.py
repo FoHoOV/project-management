@@ -22,4 +22,5 @@ class BasesWithCreatedDate(Base):
 class BaseCustomOrder(Base):
     __abstract__ = True
 
-    order: Mapped[int] = mapped_column(BigInteger(), default=0)
+    right_id: Mapped[int] = mapped_column(BigInteger(), nullable=True, default=0)
+    left_id: Mapped[int] = mapped_column(BigInteger(), nullable=True, default=0)
