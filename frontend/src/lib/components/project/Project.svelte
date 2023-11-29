@@ -8,6 +8,7 @@
 	import { faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';
+	import Spinner from '$components/Spinner.svelte';
 
 	export let project: Project;
 	export let showAttachToUserButton: boolean = false;
@@ -42,14 +43,7 @@
 <div class="card bg-base-300 text-base-content">
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
-
-		{#if isCallingService}
-			<div
-				class="align-center absolute left-0 top-0 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
-			>
-				<span class="loading loading-spinner loading-md dark:text-black" />
-			</div>
-		{/if}
+		<Spinner visible={isCallingService}></Spinner>
 
 		<div class="card-title">
 			<div class="tooltip" data-tip="project id">

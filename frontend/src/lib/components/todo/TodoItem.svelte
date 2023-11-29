@@ -9,6 +9,7 @@
 	import { page } from '$app/stores';
 	import { draggable } from '$lib/actions';
 	import { TODO_ITEM_DROP_ZONE_NAME } from '$components/todo/constants';
+	import Spinner from '$components/Spinner.svelte';
 
 	export let todo: TodoItem;
 	let isCallingService: boolean = false;
@@ -54,13 +55,8 @@
 >
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
-		{#if isCallingService}
-			<div
-				class="align-center absolute left-0 top-0 z-10 flex h-full w-full justify-center rounded-lg bg-base-300"
-			>
-				<span class="loading loading-spinner loading-md dark:text-black" />
-			</div>
-		{/if}
+		<Spinner visible={isCallingService}></Spinner>
+
 		<div class="card-title flex w-full justify-between">
 			<h1>
 				{todo.title}
