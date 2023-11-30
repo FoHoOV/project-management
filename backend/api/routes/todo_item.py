@@ -42,7 +42,7 @@ def update_item(
 
 
 @router.patch(path="/update-order", response_model=TodoItem)
-def update(
+def update_order(
     current_user: Annotated[User, Depends(get_current_user)],
     todo: TodoItemUpdateOrder,
     db: Session = Depends(get_db),

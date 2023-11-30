@@ -26,7 +26,7 @@
 		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
-				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
+				await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					...todo,
 					is_done: !todo.is_done
 				});
@@ -56,6 +56,7 @@
 	}
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
+		// TODO: cleanup
 		if (event.detail.data.id == todo.id) {
 			state = 'none';
 			return;
@@ -73,16 +74,32 @@
 
 		const moveTop = state == 'drop-zone-top-activated';
 
+		let targetIndex: number | null = todo.id;
+		if (moveTop) {
+			let currentCategory = $todos.find((category) => category.id == todo.category_id);
+			let currentTodoIndex = currentCategory?.items.findIndex((value) => value.id == todo.id);
+			if (currentCategory?.items.length && currentTodoIndex == currentCategory.items.length - 1) {
+				targetIndex = null;
+			}
+			targetIndex = currentTodoIndex ? currentTodoIndex + 1 : null;
+		}
+
 		state = 'calling-service';
 
 		await callServiceInClient({
 			serviceCall: async () => {
-				const newOrder = moveTop ? todo.order + 1 : todo.order - 1;
-				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
-					...event.detail.data,
-					order: newOrder
+				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
+					id: targetIndex ? event.detail.data.id : todo.id,
+					order: {
+						next_id: targetIndex ? targetIndex : event.detail.data.id
+					}
 				});
-				todos.updateTodo({ ...event.detail.data, order: newOrder });
+				todos.updateTodo({
+					...event.detail.data,
+					order: {
+						next_id: targetIndex ? targetIndex : event.detail.data.id
+					}
+				});
 				state = 'none';
 			},
 			errorCallback: async (e) => {

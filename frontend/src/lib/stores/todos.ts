@@ -92,8 +92,8 @@ function _sortTodos(todos: TodoItem[]) {
 	todos.sort((a, b) => {
 		let state: 'same-place' | 'go-up' | 'go-down' = 'same-place';
 
-		if (a.order != b.order) {
-			state = a.order > b.order ? 'go-up' : 'go-down';
+		if (a.order?.next_id && a.order.next_id > b.id) {
+			state = 'go-up';
 		}
 
 		if (state == 'same-place') {
@@ -117,8 +117,11 @@ function _sortCategories(categories: TodoCategory[]) {
 	categories.sort((a, b) => {
 		let state: 'same-place' | 'go-left' | 'go-right' = 'same-place';
 
-		if (a.order != b.order) {
-			state = a.order > b.order ? 'go-left' : 'go-right';
+		const firstElementOrder = a.orders.length === 1 ? a.orders[0] : null;
+		//const secondElementOrder = a.orders.length === 1 ? b.orders[0] : null;
+
+		if (firstElementOrder && firstElementOrder.next_id && firstElementOrder.next_id > b.id) {
+			state = 'go-left';
 		}
 
 		if (state == 'same-place') {

@@ -75,6 +75,7 @@
 	}
 
 	async function handleUpdateCategoryOrder(event: DropEvent<TodoCategory>) {
+		// TODO: cleanup
 		if (event.detail.data.id == category.id) {
 			state = 'none';
 			return;
@@ -84,14 +85,32 @@
 
 		state = 'calling-service';
 
+		let targetIndex: number | null = category.id;
+		if (moveLeft) {
+			let currentCategoryIndex = $todos.findIndex((value) => value.id == category.id);
+			if (currentCategoryIndex == $todos.length - 1) {
+				targetIndex = null;
+			}
+			targetIndex = currentCategoryIndex + 1;
+		}
+
 		await callServiceInClient({
 			serviceCall: async () => {
-				const newOrder = moveLeft ? category.order + 1 : category.order - 1;
-				await TodoCategoryClient({ token: $page.data.token }).updateTodoCategory({
-					id: event.detail.data.id,
-					order: newOrder
+				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
+					id: targetIndex ? event.detail.data.id : category.id,
+					project_id: projectId,
+					order: {
+						next_id: targetIndex ? targetIndex : event.detail.data.id
+					}
 				});
-				todos.updateCategory({ ...event.detail.data, order: newOrder });
+				todos.updateCategory({
+					...event.detail.data,
+					orders: [
+						{
+							next_id: targetIndex ? targetIndex : event.detail.data.id
+						}
+					]
+				});
 				state = 'none';
 			},
 			errorCallback: async (e) => {
@@ -110,7 +129,7 @@
 		state = 'calling-service';
 		callServiceInClient({
 			serviceCall: async () => {
-				await TodoItemClient({ token: $page.data.token }).updateTodoItem({
+				await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					...event.detail.data,
 					new_category_id: category.id
 				});
