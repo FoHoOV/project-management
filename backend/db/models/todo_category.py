@@ -24,5 +24,7 @@ class TodoCategory(BasesWithCreatedDate):
         order_by="desc(Project.id)",
     )
     orders: Mapped[List[TodoCategoryOrder]] = relationship(  # type: ignore
-        foreign_keys=[TodoCategoryOrder.category_id], back_populates="category"
+        foreign_keys=[TodoCategoryOrder.category_id],
+        cascade="all, delete-orphan",
+        back_populates="category",
     )

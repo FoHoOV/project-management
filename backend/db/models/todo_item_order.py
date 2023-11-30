@@ -13,4 +13,4 @@ class TodoItemOrder(BasesWithCreatedDate):
     next_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_item.id"), nullable=True
     )
-    todo: Mapped["TodoItem"] = relationship(foreign_keys=[todo_id], back_populates="order")  # type: ignore
+    todo: Mapped["TodoItem"] = relationship(foreign_keys=[todo_id], single_parent=True, cascade="all, delete-orphan", back_populates="order")  # type: ignore
