@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
+from db.models.todo_category_order import TodoCategoryOrder
 
 
 class TodoCategory(BasesWithCreatedDate):
@@ -22,6 +23,6 @@ class TodoCategory(BasesWithCreatedDate):
         back_populates="todo_categories",
         order_by="desc(Project.id)",
     )
-    orders: Mapped[List["TodoCategoryOrder"]] = relationship(  # type: ignore
-        back_populates="category"
+    orders: Mapped[List[TodoCategoryOrder]] = relationship(  # type: ignore
+        foreign_keys=[TodoCategoryOrder.category_id], back_populates="category"
     )
