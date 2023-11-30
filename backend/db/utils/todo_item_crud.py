@@ -96,7 +96,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
 def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
     # this is a huge performance hit, first of all improve your queries and secondly come up with a new solution
-    # btw ik this is not clean code an a huge red flag
+    # TODO: refactor to share logic with todo_category_curd.update_order
 
     validate_todo_item_belongs_to_user(db, todo.id, user_id)
 
@@ -105,62 +105,35 @@ def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
     if db_item is None:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
-    existing_right_link: List[TodoItemOrder] = []
-    if todo.order.right_id is not None:
-        existing_right_link = (
+    existing_next_link: List[TodoItemOrder] = []
+    if todo.order is not None:
+        existing_next_link = (
             db.query(TodoItemOrder)
             .filter(
-                TodoItemOrder.right_id == todo.order.right_id,
+                TodoItemOrder.next_id == todo.order.next_id,
             )
             .join(TodoItemOrder.todo)
             .join(TodoCategory)
-            .filter(TodoCategory.id == TodoItem.id)
+            .filter(TodoCategory.id == TodoItem.category_id)
             .all()
         )
 
-    existing_left_link: List[TodoItemOrder] = []
-    if todo.order.right_id is not None:
-        existing_left_link: List[TodoItemOrder] = (
-            db.query(TodoItemOrder)
-            .filter(
-                TodoItemOrder.left_id == todo.order.left_id,
-            )
-            .join(TodoItemOrder.todo)
-            .join(TodoCategory)
-            .filter(TodoCategory.id == TodoItem.id)
-            .all()
-        )
-
-    if len(existing_right_link) > 1 or len(existing_left_link) > 1:
+    if len(existing_next_link) > 1:
         raise UserFriendlyError(
             "db error: TodoItem has more than 1 order for this category"
         )
 
-    if len(existing_right_link) == 1:
-        existing_right_link[0].right_id = todo.id
-
-    if len(existing_left_link) == 1:
-        existing_left_link[0].left_id = todo.id
+    if len(existing_next_link) == 1:
+        existing_next_link[0].next_id = todo.id
 
     db.query(TodoItemOrder).filter(
-        TodoItemOrder.right_id == todo.id,
-    ).update({"right_id": todo.order.right_id if todo.order is not None else None})
-
-    db.query(TodoItemOrder).filter(
-        TodoItemOrder.left_id == todo.id,
-    ).update({"left_id": todo.order.left_id if todo.order is not None else None})
+        TodoItemOrder.next_id == todo.id,
+    ).update({"next_id": todo.order.next_id if todo.order is not None else None})
 
     if db_item.order is None:
-        db.add(
-            TodoItemOrder(
-                todo_id=todo.id,
-                right_id=todo.order.right_id,
-                left_id=todo.order.left_id,
-            )
-        )
+        db.add(TodoItemOrder(todo_id=todo.id, next_id=todo.order.next_id))
     else:
-        db_item.order.right_id = todo.order.right_id
-        db_item.order.left_id = todo.order.left_id
+        db_item.order.next_id = todo.order.next_id
 
     db.commit()
     db.refresh(db_item)

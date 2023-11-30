@@ -17,10 +17,3 @@ class BasesWithCreatedDate(Base):
     created_date: Mapped[DateTime] = mapped_column(
         DateTime(), default=datetime.datetime.utcnow()
     )
-
-
-class BaseCustomOrder(Base):
-    __abstract__ = True
-
-    right_id: Mapped[int] = mapped_column(BigInteger(), nullable=True, default=0)
-    left_id: Mapped[int] = mapped_column(BigInteger(), nullable=True, default=0)

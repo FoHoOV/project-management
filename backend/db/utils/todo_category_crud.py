@@ -81,7 +81,7 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
     # this is a huge performance hit, first of all improve your queries and secondly come up with a new solution
-    # btw ik this is not clean code an a huge red flag
+
     validate_todo_category_belongs_to_user(db, category.id, user_id)
     validate_project_belongs_to_user(db, category.project_id, user_id, user_id, True)
 
@@ -107,61 +107,40 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
         filtered_orders[0] if len(filtered_orders) == 1 else None
     )
 
-    existing_right_link: List[TodoCategoryOrder] = []
-    if category.order.right_id is not None:
-        existing_right_link = (
+    existing_next_link: List[TodoCategoryOrder] = []
+    if category.order.next_id is not None:
+        existing_next_link = (
             db.query(TodoCategoryOrder)
             .filter(
                 TodoCategoryOrder.project_id == category.project_id,
-                TodoCategoryOrder.right_id == category.order.right_id,
+                TodoCategoryOrder.next_id == category.order.next_id,
             )
             .all()
         )
 
-    existing_left_link: List[TodoCategoryOrder] = []
-    if category.order.right_id is not None:
-        existing_left_link = (
-            db.query(TodoCategoryOrder)
-            .filter(
-                TodoCategoryOrder.project_id == category.project_id,
-                TodoCategoryOrder.left_id == category.order.left_id,
-            )
-            .all()
-        )
-
-    if len(existing_right_link) > 1 or len(existing_left_link) > 1:
+    if len(existing_next_link) > 1:
         raise UserFriendlyError(
-            "db error: TodoCategory has more than 1 order for this project"
+            "db error: a TodoCategory has more than 1 order for this project"
         )
 
-    if len(existing_right_link) == 1:
-        existing_right_link[0].right_id = category.id
-
-    if len(existing_left_link) == 1:
-        existing_left_link[0].left_id = category.id
+    if len(existing_next_link) == 1:
+        existing_next_link[0].next_id = category.id
 
     db.query(TodoCategoryOrder).filter(
         TodoCategoryOrder.project_id == category.project_id,
-        TodoCategoryOrder.right_id == category.id,
-    ).update({"right_id": order.right_id if order is not None else None})
-
-    db.query(TodoCategoryOrder).filter(
-        TodoCategoryOrder.project_id == category.project_id,
-        TodoCategoryOrder.left_id == category.id,
-    ).update({"left_id": order.left_id if order is not None else None})
+        TodoCategoryOrder.next_id == category.id,
+    ).update({"next_id": order.next_id if order is not None else None})
 
     if order is None:
         db.add(
             TodoCategoryOrder(
                 category_id=category.id,
                 project_id=category.project_id,
-                right_id=category.order.right_id,
-                left_id=category.order.left_id,
+                next_id=category.order.next_id,
             )
         )
     else:
-        order.right_id = category.order.right_id
-        order.left_id = category.order.left_id
+        order.next_id = category.order.next_id
 
     db.commit()
     db.refresh(db_item)
