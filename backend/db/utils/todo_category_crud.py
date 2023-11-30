@@ -107,24 +107,10 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
         filtered_orders[0] if len(filtered_orders) == 1 else None
     )
 
-    existing_next_link: List[TodoCategoryOrder] = []
-    if category.order.next_id is not None:
-        existing_next_link = (
-            db.query(TodoCategoryOrder)
-            .filter(
-                TodoCategoryOrder.project_id == category.project_id,
-                TodoCategoryOrder.next_id == category.order.next_id,
-            )
-            .all()
-        )
-
-    if len(existing_next_link) > 1:
-        raise UserFriendlyError(
-            "db error: a TodoCategory has more than 1 order for this project"
-        )
-
-    if len(existing_next_link) == 1:
-        existing_next_link[0].next_id = category.id
+    db.query(TodoCategoryOrder).filter(
+        TodoCategoryOrder.project_id == category.project_id,
+        TodoCategoryOrder.next_id == category.order.next_id,
+    ).update({"next_id": category.id})
 
     db.query(TodoCategoryOrder).filter(
         TodoCategoryOrder.project_id == category.project_id,

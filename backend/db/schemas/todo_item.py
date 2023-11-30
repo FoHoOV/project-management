@@ -3,7 +3,7 @@ from enum import Enum
 from fastapi import Query
 from pydantic import BaseModel
 
-from db.schemas.base import OrderedItem
+from db.schemas.base import NullableOrderedItem, OrderedItem
 
 
 class SearchTodoStatus(Enum):
@@ -49,7 +49,7 @@ class SearchTodoItemParams:
 
 class TodoItem(TodoItemBase):
     id: int
-    order: OrderedItem | None = None
+    order: NullableOrderedItem | None
 
     class Config:
         from_attributes = True

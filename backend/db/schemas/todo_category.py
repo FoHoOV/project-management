@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
-from db.schemas.base import OrderedItem
+from db.schemas.base import NullableOrderedItem, OrderedItem
 from db.schemas.todo_item import TodoItem
 
 
@@ -52,7 +52,7 @@ class PartialProject(BaseModel):
 
 class TodoCategory(TodoCategoryBase):
     id: int
-    orders: list[OrderedItem]
+    orders: list[NullableOrderedItem]
     items: list[TodoItem]
     projects: list[PartialProject]
 

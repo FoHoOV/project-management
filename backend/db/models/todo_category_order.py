@@ -11,5 +11,7 @@ class TodoCategoryOrder(BasesWithCreatedDate):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("project.id"))
     category_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
-    next_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
+    next_id: Mapped[int | None] = mapped_column(
+        ForeignKey("todo_category.id"), nullable=True
+    )
     category: Mapped["TodoCategory"] = relationship(foreign_keys=[category_id], back_populates="orders")  # type: ignore

@@ -10,5 +10,7 @@ class TodoItemOrder(BasesWithCreatedDate):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     todo_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id"))
-    next_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id"))
+    next_id: Mapped[int | None] = mapped_column(
+        ForeignKey("todo_item.id"), nullable=True
+    )
     todo: Mapped["TodoItem"] = relationship(foreign_keys=[todo_id], back_populates="order")  # type: ignore

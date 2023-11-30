@@ -47,7 +47,7 @@ def get_todos_for_user(
         .filter(Project.id == search_todo_params.project_id)
         .join(Project.users)
         .filter(User.id == user_id)
-        .order_by(TodoItem.order.desc(), TodoItem.id.desc())
+        .order_by(TodoItem.id.desc())
         .all()
     )
 
@@ -99,36 +99,20 @@ def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
     # TODO: refactor to share logic with todo_category_curd.update_order
 
     validate_todo_item_belongs_to_user(db, todo.id, user_id)
+    validate_todo_item_belongs_to_user(db, todo.order.next_id, user_id)
 
     db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
 
     if db_item is None:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
-    existing_next_link: List[TodoItemOrder] = []
-    if todo.order is not None:
-        existing_next_link = (
-            db.query(TodoItemOrder)
-            .filter(
-                TodoItemOrder.next_id == todo.order.next_id,
-            )
-            .join(TodoItemOrder.todo)
-            .join(TodoCategory)
-            .filter(TodoCategory.id == TodoItem.category_id)
-            .all()
-        )
-
-    if len(existing_next_link) > 1:
-        raise UserFriendlyError(
-            "db error: TodoItem has more than 1 order for this category"
-        )
-
-    if len(existing_next_link) == 1:
-        existing_next_link[0].next_id = todo.id
+    db.query(TodoItemOrder).filter(
+        TodoItemOrder.next_id == todo.order.next_id,
+    ).update({"next_id": todo.id})
 
     db.query(TodoItemOrder).filter(
         TodoItemOrder.next_id == todo.id,
-    ).update({"next_id": todo.order.next_id if todo.order is not None else None})
+    ).update({"next_id": db_item.order.next_id if db_item.order is not None else None})
 
     if db_item.order is None:
         db.add(TodoItemOrder(todo_id=todo.id, next_id=todo.order.next_id))
