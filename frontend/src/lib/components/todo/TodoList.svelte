@@ -75,7 +75,6 @@
 	}
 
 	async function handleUpdateCategoryOrder(event: DropEvent<TodoCategory>) {
-		// TODO: cleanup
 		if (event.detail.data.id == category.id) {
 			state = 'none';
 			return;
@@ -85,29 +84,22 @@
 
 		state = 'calling-service';
 
-		let targetIndex: number | null = category.id;
-		if (moveLeft) {
-			let currentCategoryIndex = $todos.findIndex((value) => value.id == category.id);
-			if (currentCategoryIndex == $todos.length - 1) {
-				targetIndex = null;
-			}
-			targetIndex = currentCategoryIndex + 1;
-		}
-
 		await callServiceInClient({
 			serviceCall: async () => {
+				const updatingCategory = moveLeft ? category : event.detail.data;
+				const nextId = moveLeft ? event.detail.data.id : category.id;
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
-					id: targetIndex ? event.detail.data.id : category.id,
+					id: updatingCategory.id,
 					project_id: projectId,
 					order: {
-						next_id: targetIndex ? targetIndex : event.detail.data.id
+						next_id: nextId
 					}
 				});
 				todos.updateCategory({
-					...event.detail.data,
+					...updatingCategory,
 					orders: [
 						{
-							next_id: targetIndex ? targetIndex : event.detail.data.id
+							next_id: nextId
 						}
 					]
 				});

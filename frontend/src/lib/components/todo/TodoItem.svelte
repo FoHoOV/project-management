@@ -56,7 +56,6 @@
 	}
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
-		// TODO: cleanup
 		if (event.detail.data.id == todo.id) {
 			state = 'none';
 			return;
@@ -74,30 +73,22 @@
 
 		const moveTop = state == 'drop-zone-top-activated';
 
-		let targetIndex: number | null = todo.id;
-		if (moveTop) {
-			let currentCategory = $todos.find((category) => category.id == todo.category_id);
-			let currentTodoIndex = currentCategory?.items.findIndex((value) => value.id == todo.id);
-			if (currentCategory?.items.length && currentTodoIndex == currentCategory.items.length - 1) {
-				targetIndex = null;
-			}
-			targetIndex = currentTodoIndex ? currentTodoIndex + 1 : null;
-		}
-
 		state = 'calling-service';
 
 		await callServiceInClient({
 			serviceCall: async () => {
+				const updatingTodo = moveTop ? todo : event.detail.data;
+				const nextId = moveTop ? event.detail.data.id : todo.id;
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
-					id: targetIndex ? event.detail.data.id : todo.id,
+					id: updatingTodo.id,
 					order: {
-						next_id: targetIndex ? targetIndex : event.detail.data.id
+						next_id: nextId
 					}
 				});
 				todos.updateTodo({
-					...event.detail.data,
+					...updatingTodo,
 					order: {
-						next_id: targetIndex ? targetIndex : event.detail.data.id
+						next_id: nextId
 					}
 				});
 				state = 'none';
