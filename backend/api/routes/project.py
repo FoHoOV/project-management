@@ -27,14 +27,13 @@ def create_for_user(
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.post(path="/attach-to-user")
+@router.post(path="/attach-to-user", response_model=Project)
 def attach_to_user(
     current_user: Annotated[User, Depends(get_current_user)],
     association: ProjectAttachAssociation,
     db: Session = Depends(get_db),
 ):
-    project_crud.attach_to_user(db, association, current_user.id)
-    return Response(status_code=HTTP_200_OK)
+    return project_crud.attach_to_user(db, association, current_user.id)
 
 
 @router.delete(path="/detach-from-user")

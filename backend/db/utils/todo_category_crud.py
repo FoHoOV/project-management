@@ -146,13 +146,15 @@ def attach_to_project(
         True,
     )
 
-    association_db = TodoCategoryProjectAssociation(
+    association_db_item = TodoCategoryProjectAssociation(
         todo_category_id=association.category_id, project_id=association.project_id
     )
 
     try:
-        db.add(association_db)
+        db.add(association_db_item)
         db.commit()
+        db.refresh(association_db_item)
+        return association_db_item
     except IntegrityError:
         raise UserFriendlyError("this category already belongs to this project")
 

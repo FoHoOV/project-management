@@ -41,13 +41,15 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
         True,
     )
 
-    association_db = ProjectUserAssociation(
+    association_db_item = ProjectUserAssociation(
         user_id=user.id, project_id=association.project_id
     )
 
     try:
-        db.add(association_db)
+        db.add(association_db_item)
         db.commit()
+        db.refresh(association_db_item)
+        return association_db_item
     except IntegrityError:
         raise UserFriendlyError(
             "this user already exists in this project's associations"

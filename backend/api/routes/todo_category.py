@@ -29,16 +29,15 @@ def create_for_user(
     return todo_category_crud.create(db=db, category=category, user_id=current_user.id)
 
 
-@router.post("/attach-to-project")
+@router.post("/attach-to-project", response_model=TodoCategory)
 def attach_to_project(
     current_user: Annotated[User, Depends(get_current_user)],
     association: TodoCategoryAttachAssociation,
     db: Session = Depends(get_db),
 ):
-    todo_category_crud.attach_to_project(
+    return todo_category_crud.attach_to_project(
         db=db, association=association, user_id=current_user.id
     )
-    return Response(status_code=HTTP_200_OK)
 
 
 @router.delete(path="/detach-from-project")
