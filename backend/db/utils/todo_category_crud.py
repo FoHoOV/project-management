@@ -82,6 +82,44 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
     # this is a huge performance hit, first of all improve your queries and secondly come up with a new solution
+    # how it works:
+    # 1- update item where next = new.next to current.id (current.id, proj, new.next)
+    # executed sql for 1:
+    # UPDATE todo_category_order SET next_id=? WHERE todo_category_order.project_id = ? AND todo_category_order.next_id = ?
+    # 2- update item where next = current.id to current.next
+    # (current.next, proj, current.id)
+    # executed sql for 2:
+    # UPDATE todo_category_order SET next_id=? WHERE todo_category_order.project_id = ? AND todo_category_order.next_id = ?
+    # 3- update item.next to new.next (proj, current.id, new.next)
+    # executed sql for 3:
+    # INSERT INTO todo_category_order (project_id, category_id, next_id, created_date) VALUES (?, ?, ?, ?)
+    # ||
+    # UPDATE todo_category_order SET next_id=? WHERE todo_category_order.id = ?
+    # ---- examples (we have 1 2 3)
+    # ' 1 - > 2
+    # 1- no change (1, 1, 2)
+    # 2- no change (null, 1, 1)
+    # 3- new record 1 -> 2 (1, 1, 2)
+
+    # ' 1 -> 2
+    # 1- no change (1, 1, 2)
+    # 2- no change (2, 1, 1)
+    # 3- update 1 -> 2 (1, 1, 2)
+
+    # ' 2 -> 1
+    # 1- no change (2, 1, 1)
+    # 2- 1 point to null (null, 1, 2)
+    # 3- new record 2 -> 1 (1 , 2, 1)
+
+    # ' 1 -> 2
+    # 1- no change (1, 1, 2)
+    # 2- 2 point to null (null, 1, 1)
+    # 3- update (1, 1, 2)
+
+    # ' 2 -> 3
+    # 1- no change (2, 1, 3)
+    # 2- 1 points to null (null, 1, 2)
+    # 3- update (1, 2, 3)
 
     validate_todo_category_belongs_to_user(db, category.id, user_id)
     validate_project_belongs_to_user(db, category.project_id, user_id, user_id, True)

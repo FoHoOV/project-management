@@ -10,7 +10,7 @@ const addTodo = (todo: TodoItem): void => {
 				return category;
 			}
 			category.items.push(todo);
-			_sortTodos(category.items);
+			category.items = _sortedTodos(category.items);
 			return category;
 		});
 	});
@@ -40,7 +40,7 @@ const updateTodo = (todo: TodoItem) => {
 				}
 				return todo;
 			});
-			_sortTodos(category.items);
+			category.items = _sortedTodos(category.items);
 			return category;
 		});
 	});
@@ -48,9 +48,9 @@ const updateTodo = (todo: TodoItem) => {
 
 const addCategory = (category: TodoCategory) => {
 	_update((categories) => {
-		_sortTodos(category.items);
+		category.items = _sortedTodos(category.items);
 		categories.push(category);
-		_sortCategories(categories);
+		categories = _sortedCategories(categories);
 		return categories;
 	});
 };
@@ -61,10 +61,10 @@ const updateCategory = (category: TodoCategory) => {
 			if (value.id !== category.id) {
 				return value;
 			}
-			_sortTodos(category.items);
+			category.items = _sortedTodos(category.items);
 			return category;
 		});
-		_sortCategories(categories);
+		categories = _sortedCategories(categories);
 		return categories;
 	});
 };
@@ -78,7 +78,7 @@ const removeCategory = (category: TodoCategory) => {
 const setTodoCategories = (categories: TodoCategory[]) => {
 	_set(
 		categories.map((category) => {
-			_sortTodos(category.items);
+			category.items = _sortedTodos(category.items);
 			return category;
 		})
 	);
@@ -88,43 +88,52 @@ const clearTodoCategories = () => {
 	_set([]);
 };
 
-function _sortTodos(todos: TodoItem[]) {
-	todos.sort((a, b) => {
-		let state: 'same-place' | 'go-up' | 'go-down' = 'same-place';
-
-		if (a.order?.next_id && a.order.next_id > b.id) {
-			state = 'go-up';
-		}
-
-		if (state == 'same-place') {
-			state = a.id > b.id ? 'go-up' : 'go-down';
-		}
-
-		if (a.is_done != b.is_done) {
-			state = a.is_done ? 'go-down' : 'go-up';
-		}
-
-		switch (state) {
-			case 'go-up':
-				return -1;
-			case 'go-down':
-				return 1;
-		}
+function _sortedTodos(todos: TodoItem[]) {
+	_sortById(todos);
+	return _sortByCustomOrder(todos, (element) => {
+		return (element as TodoItem).order?.next_id;
 	});
 }
 
-function _sortCategories(categories: TodoCategory[]) {
-	categories.sort((a, b) => {
-		let state: 'same-place' | 'go-left' | 'go-right' = 'same-place';
+function _sortedCategories(categories: TodoCategory[]) {
+	_sortById(categories);
+	return _sortByCustomOrder(categories, (element) => {
+		return (element as TodoCategory).orders.length === 1
+			? (element as TodoCategory).orders[0].next_id
+			: null;
+	});
+}
 
-		const firstElementOrder = a.orders.length === 1 ? a.orders[0] : null;
-		//const secondElementOrder = a.orders.length === 1 ? b.orders[0] : null;
+function _sortByCustomOrder<T extends { id: number }>(
+	elements: T[],
+	getNextId: (element: T) => number | null | undefined
+) {
+	elements.forEach((element, index) => {
+		const nextId = getNextId(element);
 
-		if (firstElementOrder && firstElementOrder.next_id && firstElementOrder.next_id > b.id) {
-			state = 'go-left';
+		if (nextId === null) {
+			return;
 		}
 
-		if (state == 'same-place') {
+		const nextElementIndex = elements.findIndex((value) => value.id == nextId);
+		const savedNextElement = elements[index + 1];
+
+		if (nextElementIndex === -1) {
+			throw new Error(`could't find next element with id = ${nextElementIndex}`);
+		}
+
+		elements[index + 1] = elements[nextElementIndex];
+		elements[nextElementIndex] = savedNextElement;
+	});
+
+	return elements.filter((element) => element != null);
+}
+
+function _sortById(elements: { id: number }[]) {
+	elements.sort((a, b) => {
+		let state: 'same-place' | 'go-left' | 'go-right' = 'same-place';
+
+		if (a.id !== b.id) {
 			state = a.id > b.id ? 'go-left' : 'go-right';
 		}
 
@@ -133,6 +142,8 @@ function _sortCategories(categories: TodoCategory[]) {
 				return -1;
 			case 'go-right':
 				return 1;
+			case 'same-place':
+				return 0;
 		}
 	});
 }
