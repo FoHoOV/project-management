@@ -225,13 +225,6 @@ function _updateElementSort<T extends { id: number }>(
 	setNextId: (element: T, nextId: number | null) => void
 ) {
 	console.log(JSON.stringify(elements));
-	const existingItemWithNewNext = elements.find(
-		(element) => getNextId(element) === elementWithNewOrder.newNextId
-	);
-
-	if (existingItemWithNewNext) {
-		setNextId(existingItemWithNewNext, elementWithNewOrder.id);
-	}
 
 	const existingItemPointingToUpdatingElement = elements.find(
 		(element) => getNextId(element) === elementWithNewOrder.id
@@ -239,6 +232,14 @@ function _updateElementSort<T extends { id: number }>(
 
 	if (existingItemPointingToUpdatingElement) {
 		setNextId(existingItemPointingToUpdatingElement, elementWithNewOrder.oldNextId);
+	}
+
+	const existingItemWithNewNext = elements.find(
+		(element) => getNextId(element) === elementWithNewOrder.newNextId
+	);
+
+	if (existingItemWithNewNext) {
+		setNextId(existingItemWithNewNext, elementWithNewOrder.id);
 	}
 
 	const currentElement = elements.find((element) => element.id == elementWithNewOrder.id);
