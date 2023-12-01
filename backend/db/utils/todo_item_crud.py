@@ -78,6 +78,11 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
     if todo.new_category_id is not None:
         validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
+        # update item.next to current.next where item.next = current.todo_id
+        db.query(TodoItemOrder).filter(TodoItemOrder.next_id == todo.id).update(
+            {"next_id": db_item.order.next_id if db_item.order is not None else None}
+        )
+        db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == todo.id).delete()
         db_item.category_id = todo.new_category_id
 
     if todo.is_done is not None:
@@ -127,7 +132,14 @@ def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
 
 def remove(db: Session, todo: TodoItemDelete, user_id: int):
     validate_todo_item_belongs_to_user(db, todo.id, user_id=user_id)
-
+    db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
+    if not db_item:
+        return
+    # update item.next to current.next where item.next = current.todo_id
+    db.query(TodoItemOrder).filter(TodoItemOrder.next_id == todo.id).update(
+        {"next_id": db_item.order.next_id if db_item.order is not None else None}
+    )
+    db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == todo.id).delete()
     db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
     db.commit()
 

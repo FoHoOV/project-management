@@ -241,6 +241,30 @@ def detach_from_project(
         True,
     )
 
+    # this belongs to user cuz we checked in line 235
+    current_category_order = (
+        db.query(TodoCategoryOrder)
+        .filter(
+            TodoCategoryOrder.project_id == association.project_id,
+            TodoCategoryOrder.category_id == association.category_id,
+        )
+        .first()
+    )
+
+    # update item.next to current.next where item.next = current.category_id
+    db.query(TodoCategoryOrder).filter(
+        TodoCategoryOrder.project_id == association.project_id,
+        TodoCategoryOrder.next_id == association.category_id,
+    ).update(
+        {
+            "next_id": current_category_order.next_id
+            if current_category_order is not None
+            else None
+        }
+    )
+
+    db.delete(current_category_order)
+
     db.query(TodoCategoryProjectAssociation).filter(
         TodoCategoryProjectAssociation.project_id == association.project_id,
         TodoCategoryProjectAssociation.todo_category_id == association.category_id,

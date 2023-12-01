@@ -23,6 +23,11 @@ const removeTodo = (todo: TodoItem) => {
 				return category;
 			}
 			category.items = category.items.filter((value) => value.id !== todo.id);
+			category.items.forEach((item) => {
+				if (_getTodoItemNextId(item) === todo.id) {
+					_setTodoItemNextId(item, _getTodoItemNextId(todo));
+				}
+			});
 			return category;
 		});
 	});
@@ -98,7 +103,13 @@ const updateCategory = (category: TodoCategory) => {
 
 const removeCategory = (category: TodoCategory) => {
 	_update((categories) => {
-		return categories.filter((value) => value.id !== category.id);
+		const result = categories.filter((value) => value.id !== category.id);
+		result.forEach((value) => {
+			if (_getTodoCategoryNextId(value) === category.id) {
+				_setTodoCategoryNextId(value, _getTodoCategoryNextId(category));
+			}
+		});
+		return result;
 	});
 };
 
