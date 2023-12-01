@@ -122,7 +122,7 @@
 					new_category_id: category.id
 				});
 				todos.removeTodo(event.detail.data);
-				todos.addTodo({ ...event.detail.data, category_id: category.id });
+				todos.addTodo({ ...event.detail.data, category_id: category.id, order: null });
 				state = 'none';
 			},
 			errorCallback: async (e) => {

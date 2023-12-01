@@ -22,12 +22,13 @@ const removeTodo = (todo: TodoItem) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
-			category.items = category.items.filter((value) => value.id !== todo.id);
 			category.items.forEach((item) => {
 				if (_getTodoItemNextId(item) === todo.id) {
 					_setTodoItemNextId(item, _getTodoItemNextId(todo));
 				}
 			});
+			category.items = category.items.filter((value) => value.id !== todo.id);
+
 			return category;
 		});
 	});
