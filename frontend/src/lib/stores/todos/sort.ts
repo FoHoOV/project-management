@@ -30,9 +30,12 @@ export function sortByCustomOrder<T extends { id: number }>(
 	elements: (T | null)[],
 	getNextId: (element: T) => number | null | undefined
 ) {
+	const MAX_NUMBER_OF_REASONABLE_ITERATIONS = elements.length * elements.length * elements.length;
 	// improve later
 	let index = 0;
 	let mutations = 0;
+	let numberOfIterations = 0;
+	const movedIds: number[] = [];
 
 	const increaseIndex = () => {
 		index += 1;
@@ -43,8 +46,6 @@ export function sortByCustomOrder<T extends { id: number }>(
 			mutations = 0;
 		}
 	};
-
-	const movedIds: number[] = [];
 
 	const moveCurrentToLeftOfNext = (
 		currentIndex: number,
@@ -63,20 +64,30 @@ export function sortByCustomOrder<T extends { id: number }>(
 	const moveOtherToRightOfCurrent = (
 		currentIndex: number,
 		nextElementIndex: number,
-		currentElement: T
+		nextId: number
 	) => {
-		if (elements[nextElementIndex == 0 ? 0 : nextElementIndex + 1]?.id === currentElement.id) {
+		if (
+			elements[currentIndex == elements.length - 1 ? currentIndex : currentIndex + 1]?.id === nextId
+		) {
 			return;
 		}
-
-		const nextId = elements[nextElementIndex]?.id as number;
-		elements[currentIndex] = null;
-		elements.splice(nextElementIndex + 1, 0, currentElement);
+		const savedNextElement = elements[nextElementIndex];
+		elements[nextElementIndex] = null;
+		elements.splice(currentIndex + 1, 0, savedNextElement);
 		mutations += 1;
 		movedIds.push(nextId);
 	};
 
+	const updateNumberOfIterations = () => {
+		numberOfIterations += 1;
+		if (numberOfIterations > MAX_NUMBER_OF_REASONABLE_ITERATIONS) {
+			throw new Error('reached maximum number of iterations');
+		}
+	};
+
 	while (index < elements.length) {
+		updateNumberOfIterations();
+
 		const element = elements[index];
 
 		if (element === null) {
@@ -98,11 +109,11 @@ export function sortByCustomOrder<T extends { id: number }>(
 		}
 
 		if (nextId == element.id) {
-			throw new Error('database error, for some reason element.next = element ');
+			throw new Error('database error, for some reason element.next = element.id');
 		}
 
 		if (nextId < element.id || movedIds.findIndex((movedId) => movedId === element.id) > -1) {
-			moveOtherToRightOfCurrent(index, nextElementIndex, element);
+			moveOtherToRightOfCurrent(index, nextElementIndex, nextId);
 		} else {
 			moveCurrentToLeftOfNext(index, nextElementIndex, element);
 		}
