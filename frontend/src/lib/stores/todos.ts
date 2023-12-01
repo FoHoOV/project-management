@@ -27,8 +27,7 @@ const removeTodo = (todo: TodoItem) => {
 					_setTodoItemNextId(item, _getTodoItemNextId(todo));
 				}
 			});
-			category.items = category.items.filter((value) => value.id !== todo.id);
-
+			category.items = _sortedTodos(category.items.filter((value) => value.id !== todo.id));
 			return category;
 		});
 	});
@@ -54,7 +53,8 @@ const updateTodo = (todo: TodoItem) => {
 
 const updateTodoSort = (
 	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
-	oldNextId: number | null | undefined
+	oldNextId: number | null | undefined,
+	skipSort = false
 ) => {
 	_update((categories) => {
 		categories = categories.map<TodoCategory>((category) => {
@@ -71,7 +71,11 @@ const updateTodoSort = (
 				_getTodoItemNextId,
 				_setTodoItemNextId
 			);
-			category.items = _sortedTodos(category.items);
+
+			if (!skipSort) {
+				category.items = _sortedTodos(category.items);
+			}
+
 			return category;
 		});
 		categories = _sortedCategories(categories);
@@ -110,7 +114,7 @@ const removeCategory = (category: TodoCategory) => {
 				_setTodoCategoryNextId(value, _getTodoCategoryNextId(category));
 			}
 		});
-		return result;
+		return _sortedCategories(result);
 	});
 };
 
@@ -131,7 +135,8 @@ const clearTodoCategories = () => {
 
 const updateCategoriesSort = (
 	category: Omit<TodoCategory, 'orders'> & { order: { next_id: number } },
-	oldNextId: number | null
+	oldNextId: number | null,
+	skipSort = false
 ) => {
 	_update((categories) => {
 		_updateElementSort(
@@ -140,7 +145,7 @@ const updateCategoriesSort = (
 			_getTodoCategoryNextId,
 			_setTodoCategoryNextId
 		);
-		return _sortedCategories(categories);
+		return skipSort ? categories : _sortedCategories(categories);
 	});
 };
 

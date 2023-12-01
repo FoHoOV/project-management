@@ -69,7 +69,7 @@
 			await handleUpdateCategoryOrder(event as DropEvent<TodoCategory>);
 			return;
 		} else {
-			handleTodoItemDropped(event as DropEvent<TodoItem>);
+			await handleTodoItemDropped(event as DropEvent<TodoItem>);
 			return;
 		}
 	}
@@ -108,14 +108,14 @@
 		});
 	}
 
-	function handleTodoItemDropped(event: DropEvent<TodoItem>) {
+	async function handleTodoItemDropped(event: DropEvent<TodoItem>) {
 		if (category.items.find((todo) => event.detail.data.id == todo.id)) {
 			// if dropped on itself then we don't need to do anything
 			return;
 		}
 
 		state = 'calling-service';
-		callServiceInClient({
+		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					...event.detail.data,
