@@ -86,8 +86,8 @@
 
 		await callServiceInClient({
 			serviceCall: async () => {
-				const updatingCategory = moveLeft ? category : event.detail.data;
-				const nextId = moveLeft ? event.detail.data.id : category.id;
+				const updatingCategory = moveLeft ? event.detail.data : category;
+				const nextId = moveLeft ? category.id : event.detail.data.id;
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: updatingCategory.id,
 					project_id: projectId,
@@ -95,14 +95,10 @@
 						next_id: nextId
 					}
 				});
-				todos.updateCategory({
-					...updatingCategory,
-					orders: [
-						{
-							next_id: nextId
-						}
-					]
-				});
+				todos.updateCategoriesSort(
+					{ ...updatingCategory, orders: [{ next_id: nextId }] },
+					updatingCategory.orders.length == 1 ? updatingCategory.orders[0].next_id : null
+				);
 				state = 'none';
 			},
 			errorCallback: async (e) => {

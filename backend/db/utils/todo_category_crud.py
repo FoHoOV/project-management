@@ -81,21 +81,10 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 
 def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
-    # this is a huge performance hit, first of all improve your queries and secondly come up with a new solution
-    # how it works:
-    # 1- update item where next = new.next to current.id (current.id, proj, new.next)
-    # executed sql for 1:
-    # UPDATE todo_category_order SET next_id=? WHERE todo_category_order.project_id = ? AND todo_category_order.next_id = ?
-    # 2- update item where next = current.id to current.next
-    # (current.next, proj, current.id)
-    # executed sql for 2:
-    # UPDATE todo_category_order SET next_id=? WHERE todo_category_order.project_id = ? AND todo_category_order.next_id = ?
+    # 1- update item.next where item.next = new.next to current.id (current.id, proj, new.next)
+    # 2- update item.next where item.next = current.id to current.next
     # 3- update item.next to new.next (proj, current.id, new.next)
-    # executed sql for 3:
-    # INSERT INTO todo_category_order (project_id, category_id, next_id, created_date) VALUES (?, ?, ?, ?)
-    # ||
-    # UPDATE todo_category_order SET next_id=? WHERE todo_category_order.id = ?
-    # ---- examples (we have 1 2 3)
+    # ---- examples
     # ' 1 - > 2
     # 1- no change (1, 1, 2)
     # 2- no change (null, 1, 1)

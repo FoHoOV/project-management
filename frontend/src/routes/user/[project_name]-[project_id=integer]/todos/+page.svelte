@@ -1,8 +1,7 @@
 <script lang="ts">
 	import TodoList from '$lib/components/todo/TodoList.svelte';
-	import Alert from '$components/Alert.svelte';
 	import type { ActionData, PageData } from './$types';
-	import todoCategories from '$lib/stores/todos';
+	import todos from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
 	import CreateTodoItem from './CreateTodoItem.svelte';
 	import CircleButton from '$components/buttons/CircleButton.svelte';
@@ -12,35 +11,36 @@
 	import Empty from '$components/Empty.svelte';
 	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
+	export let state: 'loading' | 'none' = 'loading';
 
 	let createTodoCategory: Modal;
 
-	async function resolveTodoCategories() {
-		const fetchedTodos = await data.streamed.todos;
-		if (fetchedTodos.success) {
-			todoCategories.setTodoCategories(fetchedTodos.response);
-		} else {
-			Promise.reject(fetchedTodos.error.body.message);
+	onMount(() => {
+		if (!data.response) {
+			state = 'none';
+			return;
 		}
-	}
+		todos.setTodoCategories(data.response);
+		state = 'none';
+	});
 </script>
 
 <svelte:head>
 	<title>todos</title>
 </svelte:head>
 
-<!-- stream the data from load function !-->
-{#await resolveTodoCategories()}
+{#if state === 'loading'}
 	<span class="loading loading-ring m-auto block" />
-{:then}
+{:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#if $todoCategories.length == 0}
+		{#if $todos.length == 0}
 			<Empty text="Create your first todo list!" />
 		{:else}
-			{#each $todoCategories as category (category.id)}
+			{#each $todos as category (category.id)}
 				<div class="shrink-0 basis-[24rem] md:basis-[25rem]" animate:flip={{ duration: 200 }}>
 					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
 						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
@@ -60,6 +60,4 @@
 			<CreateTodoCategory {form} />
 		</svelte:fragment>
 	</Modal>
-{:catch error}
-	<Alert type="error" message={error.message} />
-{/await}
+{/if}

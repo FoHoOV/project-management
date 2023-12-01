@@ -77,20 +77,18 @@
 
 		await callServiceInClient({
 			serviceCall: async () => {
-				const updatingTodo = moveTop ? todo : event.detail.data;
-				const nextId = moveTop ? event.detail.data.id : todo.id;
+				const updatingTodo = moveTop ? event.detail.data : todo;
+				const nextId = moveTop ? todo.id : event.detail.data.id;
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: updatingTodo.id,
 					order: {
 						next_id: nextId
 					}
 				});
-				todos.updateTodo({
-					...updatingTodo,
-					order: {
-						next_id: nextId
-					}
-				});
+				todos.updateTodoSort(
+					{ ...updatingTodo, order: { next_id: nextId } },
+					updatingTodo.order?.next_id
+				);
 				state = 'none';
 			},
 			errorCallback: async (e) => {

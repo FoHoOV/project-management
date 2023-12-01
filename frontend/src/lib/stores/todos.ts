@@ -46,6 +46,30 @@ const updateTodo = (todo: TodoItem) => {
 	});
 };
 
+const updateTodoSort = (todo: TodoItem, oldNextId: number | null | undefined) => {
+	_update((categories) => {
+		categories = categories.map<TodoCategory>((category) => {
+			if (category.id !== todo.category_id) {
+				return category;
+			}
+			_updateElementSort(
+				category.items,
+				{
+					...todo,
+					oldNextId: oldNextId ?? null,
+					newNextId: todo.order?.next_id ?? null
+				},
+				_getTodoItemNextId,
+				_setTodoItemNextId
+			);
+			category.items = _sortedTodos(category.items);
+			return category;
+		});
+		categories = _sortedCategories(categories);
+		return categories;
+	});
+};
+
 const addCategory = (category: TodoCategory) => {
 	_update((categories) => {
 		category.items = _sortedTodos(category.items);
@@ -77,10 +101,12 @@ const removeCategory = (category: TodoCategory) => {
 
 const setTodoCategories = (categories: TodoCategory[]) => {
 	_set(
-		categories.map((category) => {
-			category.items = _sortedTodos(category.items);
-			return category;
-		})
+		_sortedCategories(
+			categories.map((category) => {
+				category.items = _sortedTodos(category.items);
+				return category;
+			})
+		)
 	);
 };
 
@@ -88,45 +114,92 @@ const clearTodoCategories = () => {
 	_set([]);
 };
 
+const updateCategoriesSort = (category: TodoCategory, oldNextId: number | null) => {
+	_update((categories) => {
+		_updateElementSort(
+			categories,
+			{ ...category, oldNextId: oldNextId, newNextId: category.orders[0].next_id },
+			_getTodoCategoryNextId,
+			_setTodoCategoryNextId
+		);
+		return _sortedCategories(categories);
+	});
+};
+
+function _getTodoItemNextId(todo: TodoItem) {
+	return todo.order?.next_id ?? null;
+}
+
+function _setTodoItemNextId(todo: TodoItem, nextId: number | null) {
+	todo.order = { next_id: nextId };
+}
+
+function _getTodoCategoryNextId(todoCategory: TodoCategory) {
+	return todoCategory.orders.length === 1 ? todoCategory.orders[0].next_id : null;
+}
+
+function _setTodoCategoryNextId(todoCategory: TodoCategory, nextId: number | null) {
+	todoCategory.orders = [{ next_id: nextId }];
+}
+
 function _sortedTodos(todos: TodoItem[]) {
 	_sortById(todos);
-	return _sortByCustomOrder(todos, (element) => {
-		return (element as TodoItem).order?.next_id;
-	});
+	return _sortByCustomOrder(todos, _getTodoItemNextId);
 }
 
 function _sortedCategories(categories: TodoCategory[]) {
 	_sortById(categories);
-	return _sortByCustomOrder(categories, (element) => {
-		return (element as TodoCategory).orders.length === 1
-			? (element as TodoCategory).orders[0].next_id
-			: null;
-	});
+	return _sortByCustomOrder(categories, _getTodoCategoryNextId);
 }
 
 function _sortByCustomOrder<T extends { id: number }>(
-	elements: T[],
+	elements: (T | null)[],
 	getNextId: (element: T) => number | null | undefined
 ) {
-	elements.forEach((element, index) => {
+	// improve later
+	let index = 0;
+	let alters = 0;
+
+	const increaseIndex = () => {
+		index += 1;
+		if (index >= elements.length && alters > 0) {
+			index = 0;
+			alters = 0;
+		}
+	};
+
+	while (index < elements.length) {
+		const element = elements[index];
+
+		if (element === null) {
+			increaseIndex();
+			continue;
+		}
+
 		const nextId = getNextId(element);
 
 		if (nextId === null) {
-			return;
+			increaseIndex();
+			continue;
 		}
 
-		const nextElementIndex = elements.findIndex((value) => value.id == nextId);
-		const savedNextElement = elements[index + 1];
+		const nextElementIndex = elements.findIndex((value) => value?.id == nextId);
 
 		if (nextElementIndex === -1) {
 			throw new Error(`could't find next element with id = ${nextElementIndex}`);
 		}
 
-		elements[index + 1] = elements[nextElementIndex];
-		elements[nextElementIndex] = savedNextElement;
-	});
+		const newElementIndex = nextElementIndex == 0 ? 0 : nextElementIndex;
+		if (elements[newElementIndex == 0 ? 0 : newElementIndex - 1]?.id !== element.id) {
+			elements[index] = null;
+			elements.splice(newElementIndex, 0, element);
+			alters += 1;
+		}
 
-	return elements.filter((element) => element != null);
+		increaseIndex();
+	}
+
+	return elements.filter((element) => element != null) as T[];
 }
 
 function _sortById(elements: { id: number }[]) {
@@ -148,14 +221,49 @@ function _sortById(elements: { id: number }[]) {
 	});
 }
 
+function _updateElementSort<T extends { id: number }>(
+	elements: T[],
+	elementWithNewOrder: {
+		id: number;
+		oldNextId: number | null;
+		newNextId: number | null;
+	},
+	getNextId: (element: T) => number | null,
+	setNextId: (element: T, nextId: number | null) => void
+) {
+	const existingItemWithNewNext = elements.find(
+		(element) => getNextId(element) === elementWithNewOrder.id
+	);
+	if (existingItemWithNewNext) {
+		setNextId(existingItemWithNewNext, elementWithNewOrder.id);
+	}
+
+	const existingItemPointingToUpdatingElement = elements.find(
+		(element) => getNextId(element) === elementWithNewOrder.id
+	);
+	if (existingItemPointingToUpdatingElement) {
+		setNextId(existingItemPointingToUpdatingElement, elementWithNewOrder.oldNextId);
+	}
+
+	const currentElement = elements.find((element) => element.id == elementWithNewOrder.id);
+
+	if (!currentElement) {
+		throw new Error('current element not found in dataset');
+	}
+
+	setNextId(currentElement, elementWithNewOrder.newNextId);
+}
+
 export default {
 	setTodoCategories,
 	addTodo,
 	addCategory,
 	updateCategory,
+	updateCategoriesSort,
 	removeCategory,
 	removeTodo,
 	updateTodo,
+	updateTodoSort,
 	clearTodoCategories,
 	subscribe
 };

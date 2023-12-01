@@ -15,24 +15,38 @@ export const load = (async ({ locals, fetch, params }) => {
 	// if we reject or throw a redirect in streamed promises it doesn't work for now and crashes the server
 	// we have to wait for a fix or handle the error and make it an expected error :(
 	// even returning an error (which is an expected error) still results in a server crash :(
-	return {
-		streamed: {
-			todos: callService({
-				serviceCall: async () => {
-					return await TodoCategoryClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).getForUserTodoCategory(Number.parseInt(params.project_id));
-				},
-				errorCallback: async (e) => {
-					if (e.type === ErrorType.UNAUTHORIZED) {
-						e.preventDefaultHandler = true;
-					}
-					return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
-				}
-			})
+	// return {
+	// 	streamed: {
+	// 		todos: callService({
+	// 			serviceCall: async () => {
+	// 				return await TodoCategoryClient({
+	// 					token: locals.token,
+	// 					fetchApi: fetch
+	// 				}).getForUserTodoCategory(Number.parseInt(params.project_id));
+	// 			},
+	// 			errorCallback: async (e) => {
+	// 				if (e.type === ErrorType.UNAUTHORIZED) {
+	// 					e.preventDefaultHandler = true;
+	// 				}
+	// 				return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
+	// 			}
+	// 		})
+	// 	}
+
+	return await callService({
+		serviceCall: async () => {
+			return await TodoCategoryClient({
+				token: locals.token,
+				fetchApi: fetch
+			}).getForUserTodoCategory(Number.parseInt(params.project_id));
+		},
+		errorCallback: async (e) => {
+			if (e.type === ErrorType.UNAUTHORIZED) {
+				e.preventDefaultHandler = true;
+			}
+			return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
 		}
-	};
+	});
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
