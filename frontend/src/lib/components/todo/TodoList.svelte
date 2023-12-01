@@ -96,7 +96,7 @@
 					}
 				});
 				todos.updateCategoriesSort(
-					{ ...updatingCategory, orders: [{ next_id: nextId }] },
+					{ ...updatingCategory, order: { next_id: nextId } },
 					updatingCategory.orders.length == 1 ? updatingCategory.orders[0].next_id : null
 				);
 				state = 'none';

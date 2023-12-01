@@ -46,7 +46,10 @@ const updateTodo = (todo: TodoItem) => {
 	});
 };
 
-const updateTodoSort = (todo: TodoItem, oldNextId: number | null | undefined) => {
+const updateTodoSort = (
+	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
+	oldNextId: number | null | undefined
+) => {
 	_update((categories) => {
 		categories = categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
@@ -57,7 +60,7 @@ const updateTodoSort = (todo: TodoItem, oldNextId: number | null | undefined) =>
 				{
 					...todo,
 					oldNextId: oldNextId ?? null,
-					newNextId: todo.order?.next_id ?? null
+					newNextId: todo.order.next_id
 				},
 				_getTodoItemNextId,
 				_setTodoItemNextId
@@ -114,11 +117,14 @@ const clearTodoCategories = () => {
 	_set([]);
 };
 
-const updateCategoriesSort = (category: TodoCategory, oldNextId: number | null) => {
+const updateCategoriesSort = (
+	category: Omit<TodoCategory, 'orders'> & { order: { next_id: number } },
+	oldNextId: number | null
+) => {
 	_update((categories) => {
 		_updateElementSort(
 			categories,
-			{ ...category, oldNextId: oldNextId, newNextId: category.orders[0].next_id },
+			{ ...category, oldNextId: oldNextId, newNextId: category.order.next_id },
 			_getTodoCategoryNextId,
 			_setTodoCategoryNextId
 		);
@@ -204,20 +210,7 @@ function _sortByCustomOrder<T extends { id: number }>(
 
 function _sortById(elements: { id: number }[]) {
 	elements.sort((a, b) => {
-		let state: 'same-place' | 'go-left' | 'go-right' = 'same-place';
-
-		if (a.id !== b.id) {
-			state = a.id > b.id ? 'go-left' : 'go-right';
-		}
-
-		switch (state) {
-			case 'go-left':
-				return -1;
-			case 'go-right':
-				return 1;
-			case 'same-place':
-				return 0;
-		}
+		return b.id - a.id;
 	});
 }
 
@@ -226,11 +219,12 @@ function _updateElementSort<T extends { id: number }>(
 	elementWithNewOrder: {
 		id: number;
 		oldNextId: number | null;
-		newNextId: number | null;
+		newNextId: number;
 	},
 	getNextId: (element: T) => number | null,
 	setNextId: (element: T, nextId: number | null) => void
 ) {
+	console.log(JSON.stringify(elements));
 	const existingItemWithNewNext = elements.find(
 		(element) => getNextId(element) === elementWithNewOrder.newNextId
 	);
@@ -254,6 +248,7 @@ function _updateElementSort<T extends { id: number }>(
 	}
 
 	setNextId(currentElement, elementWithNewOrder.newNextId);
+	console.log(JSON.stringify(elements));
 }
 
 export default {

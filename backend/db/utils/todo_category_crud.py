@@ -33,7 +33,6 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
         db.query(TodoCategory)
         .join(TodoCategory.projects)
         .filter(Project.id == filter.project_id)
-        .filter(TodoCategoryOrder.project_id == filter.project_id)
         .order_by(TodoCategory.id.desc())
     )
 
@@ -81,36 +80,68 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 
 def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
-    # 1- update item.next where item.next = new.next to current.id (current.id, proj, new.next)
-    # 2- update item.next where item.next = current.id to current.next
-    # 3- update item.next to new.next (proj, current.id, new.next)
-    # ---- examples
-    # ' 1 - > 2
-    # 1- no change (1, 1, 2)
-    # 2- no change (null, 1, 1)
-    # 3- new record 1 -> 2 (1, 1, 2)
+    # I have an ordered list of items, and the type of these items is defined as follows:
 
-    # ' 1 -> 2
-    # 1- no change (1, 1, 2)
-    # 2- no change (2, 1, 1)
-    # 3- update 1 -> 2 (1, 1, 2)
+    # ```typescript
+    # type Item {
+    #     id: number;
+    #     next: number | null;
+    # }
+    # ```
 
-    # ' 2 -> 1
-    # 1- no change (2, 1, 1)
-    # 2- 1 point to null (null, 1, 2)
-    # 3- new record 2 -> 1 (1 , 2, 1)
+    # Here, `id` is unique, and the mentioned list is initially ordered by `id`. The `next` property represents the ID of the next item in the list, and it may be `null`. Let's discuss the purpose of the `next` property. If a user wishes to create a custom order for this list, they can do so by setting the `next` value.
 
-    # ' 1 -> 2
-    # 1- no change (1, 1, 2)
-    # 2- 2 point to null (null, 1, 1)
-    # 3- update (1, 1, 2)
+    # For example, consider the following list:
 
-    # ' 2 -> 3
-    # 1- no change (2, 1, 3)
-    # 2- 1 points to null (null, 1, 2)
-    # 3- update (1, 2, 3)
+    # ```typescript
+    # const myList = [
+    #     { id: 5, next: null },
+    #     { id: 4, next: null },
+    #     { id: 2, next: null },
+    #     { id: 1, next: 5 }
+    # ];
+    # ```
+
+    # To order this list, it should become:
+
+    # ```typescript
+    # const orderedList = [
+    #     { id: 5, next: null },
+    #     { id: 1, next: 5 },
+    #     { id: 4, next: null },
+    #     { id: 2, next: null }
+    # ];
+    # ```
+
+    # Essentially, what happens is that we initially order the list by `id`, and then we rearrange the elements based on the `next` property. If `next` points to item `a`, the mentioned item should be exactly below item `a`. Additionally, there are constraints: for each list, the `next` value is unique throughout the entire list.
+
+    # Consider another example:
+
+    # ```typescript
+    # const myList = [
+    #     { id: 5, next: null },
+    #     { id: 4, next: 1 },
+    #     { id: 2, next: null },
+    #     { id: 1, next: 5 }
+    # ];
+    # ```
+
+    # The ordered list would be:
+
+    # ```typescript
+    # const orderedList = [
+    #     { id: 5, next: null },
+    #     { id: 1, next: 5 },
+    #     { id: 4, next: 1 },
+    #     { id: 2, next: null }
+    # ];
+    # ```
+
+    # So I want to prioritize the ordering based on the 'next' property when it is not null.
+    # This requires that next values don't create a cyclic order and hopefully we are taking that into account.
 
     validate_todo_category_belongs_to_user(db, category.id, user_id)
+    validate_todo_category_belongs_to_user(db, category.order.next_id, user_id)
     validate_project_belongs_to_user(db, category.project_id, user_id, user_id, True)
 
     db_item = (
@@ -122,6 +153,16 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
 
     if db_item is None:
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
+
+    if (
+        db.query(TodoCategory)
+        .filter(
+            TodoCategory.id == category.order.next_id, Project.id == category.project_id
+        )
+        .count()
+        == 1
+    ):
+        raise UserFriendlyError("todo category(next) doesn't belong to this project")
 
     filtered_orders = list(
         filter(lambda order: order.category_id == category.id, db_item.orders)
@@ -135,11 +176,13 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
         filtered_orders[0] if len(filtered_orders) == 1 else None
     )
 
+    # existing item with new.next
     db.query(TodoCategoryOrder).filter(
         TodoCategoryOrder.project_id == category.project_id,
         TodoCategoryOrder.next_id == category.order.next_id,
     ).update({"next_id": category.id})
 
+    # existing item pointing to the updating element
     db.query(TodoCategoryOrder).filter(
         TodoCategoryOrder.project_id == category.project_id,
         TodoCategoryOrder.next_id == category.id,
