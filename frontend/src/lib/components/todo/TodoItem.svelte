@@ -71,14 +71,14 @@
 			return;
 		}
 
-		const moveTop = state == 'drop-zone-top-activated';
+		const moveUp = state == 'drop-zone-top-activated';
 
 		state = 'calling-service';
 
 		await callServiceInClient({
 			serviceCall: async () => {
-				const updatingTodo = moveTop ? event.detail.data : todo;
-				const nextId = moveTop ? todo.id : event.detail.data.id;
+				const updatingTodo = moveUp ? event.detail.data : todo;
+				const nextId = moveUp ? todo.id : event.detail.data.id;
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: updatingTodo.id,
 					order: {
@@ -98,6 +98,7 @@
 			}
 		});
 	}
+
 	function handleDragHover(event: CustomDragEvent) {
 		const position = cursorOnElementPositionY(event.detail.node, {
 			x: event.detail.originalEvent.clientX,
