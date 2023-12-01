@@ -142,22 +142,20 @@ export function updateElementSort<T extends { id: number }>(
 ) {
 	console.log(JSON.stringify(elements));
 
-	// point new.next to item.next
-	const elementOrderByNextId = elements.find(
+	const next = elements.find((element) => element.id === elementWithNewOrder.newNextId);
+
+	// point existing item.next where next=new.id to next.next
+	const elementPointingToNewId = elements.find(
 		(element) => getNextId(element) === elementWithNewOrder.newNextId
 	);
 
-	if (elementOrderByNextId) {
-		setNextId(elementOrderByNextId, elementWithNewOrder.oldNextId);
+	if (elementPointingToNewId) {
+		setNextId(elementPointingToNewId, next ? getNextId(next) : null);
 	}
 
-	// point existing item where next=new.next to self.id
-	const existingItemWithNewNext = elements.find(
-		(element) => getNextId(element) === elementWithNewOrder.newNextId
-	);
-
-	if (existingItemWithNewNext) {
-		setNextId(existingItemWithNewNext, elementWithNewOrder.id);
+	// point new.next to item.next
+	if (next) {
+		setNextId(next, elementWithNewOrder.oldNextId);
 	}
 
 	const currentElement = elements.find((element) => element.id == elementWithNewOrder.id);

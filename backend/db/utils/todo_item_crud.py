@@ -110,15 +110,22 @@ def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
     if db_item is None:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
-    # point new.next to item.next
-    db.query(TodoItemOrder).filter(
-        TodoItemOrder.todo_id == todo.order.next_id,
-    ).update({"next_id": db_item.order.next_id if db_item.order is not None else None})
+    next = (
+        db.query(TodoItemOrder)
+        .filter(
+            TodoItemOrder.todo_id == todo.order.next_id,
+        )
+        .first()
+    )
 
-    # point existing item where next=new.next to self.id
+    # point existing item.next where next=new.id to next.next
     db.query(TodoItemOrder).filter(
-        TodoItemOrder.next_id == todo.id,
-    ).update({"next_id": db_item.id})
+        TodoItemOrder.next_id == todo.order.next_id,
+    ).update({"next_id": next.next_id if next is not None else None})
+
+    if next is not None:
+        # point new.next to item.next
+        next.next_id = db_item.order.next_id if db_item.order is not None else None
 
     if db_item.order is None:
         db.add(TodoItemOrder(todo_id=todo.id, next_id=todo.order.next_id))

@@ -176,17 +176,24 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
         filtered_orders[0] if len(filtered_orders) == 1 else None
     )
 
-    # point new.next to item.next
-    db.query(TodoCategoryOrder).filter(
-        TodoCategoryOrder.project_id == category.project_id,
-        TodoCategoryOrder.category_id == category.order.next_id,
-    ).update({"next_id": order.next_id if order is not None else None})
+    next = (
+        db.query(TodoCategoryOrder)
+        .filter(
+            TodoCategoryOrder.project_id == category.project_id,
+            TodoCategoryOrder.category_id == category.order.next_id,
+        )
+        .first()
+    )
 
-    # point existing item where next=new.next to self.id
+    # point existing item.next where next=next.id to next.next
     db.query(TodoCategoryOrder).filter(
         TodoCategoryOrder.project_id == category.project_id,
         TodoCategoryOrder.next_id == category.order.next_id,
-    ).update({"next_id": category.id})
+    ).update({"next_id": next.next_id if next is not None else None})
+
+    if next is not None:
+        # point next.next to item.next
+        next.next_id = order.next_id if order is not None else None
 
     if order is None:
         db.add(
