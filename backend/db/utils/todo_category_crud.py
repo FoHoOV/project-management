@@ -241,7 +241,7 @@ def detach_from_project(
         True,
     )
 
-    # this belongs to user cuz we checked in line 235
+    # this belongs to user cuz we have already checked it
     current_category_order = (
         db.query(TodoCategoryOrder)
         .filter(
@@ -264,11 +264,6 @@ def detach_from_project(
     )
 
     db.delete(current_category_order)
-
-    db.query(TodoCategoryProjectAssociation).filter(
-        TodoCategoryProjectAssociation.project_id == association.project_id,
-        TodoCategoryProjectAssociation.todo_category_id == association.category_id,
-    ).delete()
 
     if (
         db.query(TodoCategoryProjectAssociation)

@@ -14,7 +14,7 @@ class TodoCategoryOrder(BasesWithCreatedDate):
     next_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_category.id"), nullable=True
     )
-    category: Mapped["TodoCategory"] = relationship(foreign_keys=[category_id], back_populates="orders")  # type: ignore
+    category: Mapped["TodoCategory"] = relationship(foreign_keys=[category_id], cascade="all, delete-orphan", single_parent=True, back_populates="orders")  # type: ignore
     project_id_and_category_id_ux = UniqueConstraint(
         "project_id", "category_id", name="project_id_and_category_id_ux"
     )

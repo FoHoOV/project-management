@@ -97,10 +97,14 @@ export function sortByCustomOrder<T extends { id: number }>(
 			throw new Error(`could't find next element with id = ${nextElementIndex}`);
 		}
 
-		if (nextId < element.id) {
-			moveCurrentToLeftOfNext(index, nextElementIndex, element);
-		} else {
+		if (nextId == element.id) {
+			throw new Error('database error, for some reason element.next = element ');
+		}
+
+		if (nextId < element.id || movedIds.findIndex((movedId) => movedId === element.id) > -1) {
 			moveOtherToRightOfCurrent(index, nextElementIndex, element);
+		} else {
+			moveCurrentToLeftOfNext(index, nextElementIndex, element);
 		}
 
 		increaseIndex();
