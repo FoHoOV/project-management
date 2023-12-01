@@ -110,15 +110,15 @@ def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
     if db_item is None:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
-    # existing item with new.next
+    # point new.next to item.next
     db.query(TodoItemOrder).filter(
-        TodoItemOrder.next_id == todo.order.next_id,
-    ).update({"next_id": todo.id})
+        TodoItemOrder.todo_id == todo.order.next_id,
+    ).update({"next_id": db_item.order.next_id if db_item.order is not None else None})
 
-    # existing item pointing to the updating element
+    # point existing item where next=new.next to self.id
     db.query(TodoItemOrder).filter(
         TodoItemOrder.next_id == todo.id,
-    ).update({"next_id": db_item.order.next_id if db_item.order is not None else None})
+    ).update({"next_id": db_item.id})
 
     if db_item.order is None:
         db.add(TodoItemOrder(todo_id=todo.id, next_id=todo.order.next_id))
@@ -135,6 +135,7 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
     db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
     if not db_item:
         return
+
     # update item.next to current.next where item.next = current.todo_id
     db.query(TodoItemOrder).filter(TodoItemOrder.next_id == todo.id).update(
         {"next_id": db_item.order.next_id if db_item.order is not None else None}
