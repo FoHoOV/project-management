@@ -160,7 +160,7 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
             TodoCategory.id == category.order.next_id, Project.id == category.project_id
         )
         .count()
-        == 1
+        == 0
     ):
         raise UserFriendlyError("todo category(next) doesn't belong to this project")
 
@@ -176,17 +176,17 @@ def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
         filtered_orders[0] if len(filtered_orders) == 1 else None
     )
 
-    # existing item with new.next
-    db.query(TodoCategoryOrder).filter(
-        TodoCategoryOrder.project_id == category.project_id,
-        TodoCategoryOrder.next_id == category.order.next_id,
-    ).update({"next_id": category.id})
-
     # existing item pointing to the updating element
     db.query(TodoCategoryOrder).filter(
         TodoCategoryOrder.project_id == category.project_id,
         TodoCategoryOrder.next_id == category.id,
     ).update({"next_id": order.next_id if order is not None else None})
+
+    # existing item with new.next
+    db.query(TodoCategoryOrder).filter(
+        TodoCategoryOrder.project_id == category.project_id,
+        TodoCategoryOrder.next_id == category.order.next_id,
+    ).update({"next_id": category.id})
 
     if order is None:
         db.add(
