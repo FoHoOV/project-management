@@ -1,5 +1,6 @@
 <script lang="ts">
-	import toasts, { type Toast } from '$lib/stores/toasts';
+	import toasts from '$lib/stores/toasts';
+	import type { Toast } from '$lib/stores/toasts/toasts';
 	import { fade, slide } from 'svelte/transition';
 
 	function getToastTypeClass(toast: Toast): string {
