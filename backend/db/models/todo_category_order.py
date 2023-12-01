@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -15,3 +15,6 @@ class TodoCategoryOrder(BasesWithCreatedDate):
         ForeignKey("todo_category.id"), nullable=True
     )
     category: Mapped["TodoCategory"] = relationship(foreign_keys=[category_id], back_populates="orders")  # type: ignore
+    project_id_and_category_id_ux = UniqueConstraint(
+        "project_id", "category_id", name="project_id_and_category_id_ux"
+    )
