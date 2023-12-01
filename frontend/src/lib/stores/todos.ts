@@ -164,13 +164,15 @@ function _sortByCustomOrder<T extends { id: number }>(
 ) {
 	// improve later
 	let index = 0;
-	let alters = 0;
+	let mutations = 0;
 
 	const increaseIndex = () => {
 		index += 1;
-		if (index >= elements.length && alters > 0) {
+		if (index >= elements.length && mutations > 0) {
+			// if the list had mutations it is not sorted yet
+			// mutations should be 0 when the list is sorted
 			index = 0;
-			alters = 0;
+			mutations = 0;
 		}
 	};
 
@@ -184,7 +186,7 @@ function _sortByCustomOrder<T extends { id: number }>(
 
 		const nextId = getNextId(element);
 
-		if (nextId === null) {
+		if (nextId === null || nextId === undefined) {
 			increaseIndex();
 			continue;
 		}
@@ -195,11 +197,10 @@ function _sortByCustomOrder<T extends { id: number }>(
 			throw new Error(`could't find next element with id = ${nextElementIndex}`);
 		}
 
-		const newElementIndex = nextElementIndex == 0 ? 0 : nextElementIndex;
-		if (elements[newElementIndex == 0 ? 0 : newElementIndex - 1]?.id !== element.id) {
+		if (elements[nextElementIndex == 0 ? 0 : nextElementIndex - 1]?.id !== element.id) {
 			elements[index] = null;
-			elements.splice(newElementIndex, 0, element);
-			alters += 1;
+			elements.splice(nextElementIndex == 0 ? 0 : nextElementIndex, 0, element);
+			mutations += 1;
 		}
 
 		increaseIndex();
