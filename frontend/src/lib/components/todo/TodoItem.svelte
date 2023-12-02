@@ -87,7 +87,7 @@
 				});
 				todos.updateTodoSort(
 					{ ...updatingTodo, order: { next_id: nextId } },
-					updatingTodo.order?.next_id,
+					event.detail.data.id,
 					event.detail.data.category_id !== todo.category_id
 				);
 				state = 'none';

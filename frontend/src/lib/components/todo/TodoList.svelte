@@ -97,7 +97,7 @@
 				});
 				todos.updateCategoriesSort(
 					{ ...updatingCategory, order: { next_id: nextId } },
-					updatingCategory.orders.length == 1 ? updatingCategory.orders[0].next_id : null
+					event.detail.data.id
 				);
 				state = 'none';
 			},

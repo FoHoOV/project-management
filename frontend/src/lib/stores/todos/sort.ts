@@ -132,38 +132,56 @@ export function sortById(elements: { id: number }[]) {
 
 export function updateElementSort<T extends { id: number }>(
 	elements: T[],
-	elementWithNewOrder: {
+	newOrder: {
 		id: number;
-		oldNextId: number | null;
-		newNextId: number;
+		nextId: number;
 	},
+	movingElementId: number,
 	getNextId: (element: T) => number | null,
 	setNextId: (element: T, nextId: number | null) => void
 ) {
 	console.log(JSON.stringify(elements));
 
-	const next = elements.find((element) => element.id === elementWithNewOrder.newNextId);
+	const movingElement = elements.find((value) => value.id == movingElementId);
 
-	// point existing item.next where next=new.id to next.next
-	const elementPointingToNewId = elements.find(
-		(element) => getNextId(element) === elementWithNewOrder.newNextId
+	if (!movingElement) {
+		throw new Error('moving element not found in dataset');
+	}
+
+	const existingOrderToMovingElement = elements.find(
+		(value) => getNextId(value) == movingElementId
 	);
 
-	if (elementPointingToNewId) {
-		setNextId(elementPointingToNewId, next ? getNextId(next) : null);
+	if (existingOrderToMovingElement) {
+		setNextId(existingOrderToMovingElement, getNextId(movingElement));
 	}
 
-	// point new.next to item.next
-	if (next) {
-		setNextId(next, elementWithNewOrder.oldNextId);
+	if (movingElementId == newOrder.id) {
+		// X 4 3 2 1 Y
+		// 4 -> 1 with (moving = 4): X 3 2 4 1 Y
+		// or
+		// X 4 3 2 1 Y
+		// 1 -> 4 with (moving = 1): X 1 4 3 2 Y
+		const existingOrderToNewOrderId = elements.find((value) => getNextId(value) == newOrder.id);
+		if (existingOrderToNewOrderId) {
+			setNextId(existingOrderToNewOrderId, movingElementId);
+		}
+		setNextId(movingElement, newOrder.id);
+	} else {
+		// X 4 3 2 1 Y
+		// 4 -> 1 with (moving = 1): X 4 1 3 2 Y
+		// or
+		// X 4 3 2 1 Y
+		// 1 -> 4 with (moving = 4): X 3 2 1 4 Y
+
+		const elementWithNewOrderId = elements.find((value) => value.id == newOrder.id);
+		if (!elementWithNewOrderId) {
+			throw new Error('elementWithNewOrder.id not found in dataset');
+		}
+
+		setNextId(movingElement, getNextId(elementWithNewOrderId));
+		setNextId(elementWithNewOrderId, movingElementId);
 	}
 
-	const currentElement = elements.find((element) => element.id == elementWithNewOrder.id);
-
-	if (!currentElement) {
-		throw new Error('current element not found in dataset');
-	}
-
-	setNextId(currentElement, elementWithNewOrder.newNextId);
 	console.log(JSON.stringify(elements));
 }

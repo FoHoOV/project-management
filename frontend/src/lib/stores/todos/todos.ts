@@ -62,7 +62,7 @@ const updateTodo = (todo: TodoItem) => {
 
 const updateTodoSort = (
 	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
-	oldNextId: number | null | undefined,
+	movingElementId: number,
 	skipSort = false
 ) => {
 	_update((categories) => {
@@ -74,9 +74,9 @@ const updateTodoSort = (
 				category.items,
 				{
 					...todo,
-					oldNextId: oldNextId ?? null,
-					newNextId: todo.order.next_id
+					nextId: todo.order.next_id
 				},
+				movingElementId,
 				getTodoItemNextId,
 				setTodoItemNextId
 			);
@@ -144,13 +144,14 @@ const clearTodoCategories = () => {
 
 const updateCategoriesSort = (
 	category: Omit<TodoCategory, 'orders'> & { order: { next_id: number } },
-	oldNextId: number | null,
+	movingElementId: number,
 	skipSort = false
 ) => {
 	_update((categories) => {
 		updateElementSort(
 			categories,
-			{ ...category, oldNextId: oldNextId, newNextId: category.order.next_id },
+			{ ...category, nextId: category.order.next_id },
+			movingElementId,
 			getTodoCategoryNextId,
 			setTodoCategoryNextId
 		);
