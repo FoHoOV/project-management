@@ -13,8 +13,12 @@
 		"format": "prettier --plugin-search-dir . --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"open-api:generate": "rm -rf ./src/lib/generated-client; openapi-generator-cli generate --generator-key typescript-fetch && npm run open-api:zod",
-		"open-api:zod": "mkdirp ./src/lib/generated-client/zod && typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js"
+		"open-api:generate:windows": "del .\\src\\lib\\generated-client && npm run open-api:generate:shared && npm run open-api:zod:windows",
+		"open-api:zod:windows": "mkdir .\\src\\lib\\generated-client\\zod && npm run open-api:zod:shared",
+		"open-api:generate:linux": "rm -rf ./src/lib/generated-client && npm run open-api:generate:shared && npm run open-api:zod:linux",
+		"open-api:zod:linux": "mkdirp ./src/lib/generated-client/zod && npm run open-api:zod:shared",
+		"open-api:generate:shared": "openapi-generator-cli generate --generator-key typescript-fetch ",
+		"open-api:zod:shared":"typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js"
 	},
 	"devDependencies": {
 		"@openapitools/openapi-generator-cli": "^2.7.0",

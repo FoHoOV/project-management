@@ -11,14 +11,26 @@
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate",
-			"name": "npm:open-api:generate",
+			"command": "npm run open-api:generate:linux",
+			"name": "npm:open-api:generate:linyx",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"command": "npm run open-api:generate:windows",
+			"name": "npm:open-api:generate:windows",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"command": "npm run open-api:zod:linyx",
+			"name": "npm:open-api:zod:linyx",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
 			"command": "npm run open-api:zod",
-			"name": "npm:open-api:zod",
+			"name": "npm:open-api:zod:windows",
 			"request": "launch",
 			"type": "node-terminal"
 		},
