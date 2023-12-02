@@ -23,6 +23,7 @@ class TodoCategoryUpdateOrder(BaseModel):
     id: int
     order: OrderedItem
     project_id: int
+    moving_id: int
 
 
 class TodoCategoryAttachAssociation(BaseModel):

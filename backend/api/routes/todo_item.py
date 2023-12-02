@@ -47,8 +47,8 @@ def update_order(
     todo: TodoItemUpdateOrder,
     db: Session = Depends(get_db),
 ):
-    db_items = todo_item_crud.update_order(db=db, todo=todo, user_id=current_user.id)
-    return db_items
+    todo_item_crud.update_order(db=db, new_order=todo, user_id=current_user.id)
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.delete(path="/remove")

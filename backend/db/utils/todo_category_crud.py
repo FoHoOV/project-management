@@ -1,6 +1,7 @@
 from typing import List
+from db.utils.element_sort_update import update_element_order
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from db.models import project
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
@@ -79,136 +80,45 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     return db_item
 
 
-def update_order(db: Session, category: TodoCategoryUpdateOrder, user_id: int):
-    # I have an ordered list of items, and the type of these items is defined as follows:
+def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
+    validate_todo_category_belongs_to_user(db, new_order.id, user_id)
+    validate_todo_category_belongs_to_user(db, new_order.order.next_id, user_id)
+    validate_project_belongs_to_user(db, new_order.project_id, user_id, user_id, True)
 
-    # ```typescript
-    # type Item {
-    #     id: number;
-    #     next: number | null;
-    # }
-    # ```
-
-    # Here, `id` is unique, and the mentioned list is initially ordered by `id`. The `next` property represents the ID of the next item in the list, and it may be `null`. Let's discuss the purpose of the `next` property. If a user wishes to create a custom order for this list, they can do so by setting the `next` value.
-
-    # For example, consider the following list:
-
-    # ```typescript
-    # const myList = [
-    #     { id: 5, next: null },
-    #     { id: 4, next: null },
-    #     { id: 2, next: null },
-    #     { id: 1, next: 5 }
-    # ];
-    # ```
-
-    # To order this list, it should become:
-
-    # ```typescript
-    # const orderedList = [
-    #     { id: 5, next: null },
-    #     { id: 1, next: 5 },
-    #     { id: 4, next: null },
-    #     { id: 2, next: null }
-    # ];
-    # ```
-
-    # Essentially, what happens is that we initially order the list by `id`, and then we rearrange the elements based on the `next` property. If `next` points to item `a`, the mentioned item should be exactly below item `a`. Additionally, there are constraints: for each list, the `next` value is unique throughout the entire list.
-
-    # Consider another example:
-
-    # ```typescript
-    # const myList = [
-    #     { id: 5, next: null },
-    #     { id: 4, next: 1 },
-    #     { id: 2, next: null },
-    #     { id: 1, next: 5 }
-    # ];
-    # ```
-
-    # The ordered list would be:
-
-    # ```typescript
-    # const orderedList = [
-    #     { id: 5, next: null },
-    #     { id: 1, next: 5 },
-    #     { id: 4, next: 1 },
-    #     { id: 2, next: null }
-    # ];
-    # ```
-
-    # So I want to prioritize the ordering based on the 'next' property when it is not null.
-    # This requires that next values don't create a cyclic order and hopefully we are taking that into account.
-
-    validate_todo_category_belongs_to_user(db, category.id, user_id)
-    validate_todo_category_belongs_to_user(db, category.order.next_id, user_id)
-    validate_project_belongs_to_user(db, category.project_id, user_id, user_id, True)
-
-    db_item = (
-        db.query(TodoCategory)
-        .join(TodoCategory.projects)
-        .filter(TodoCategory.id == category.id, Project.id == category.project_id)
-        .first()
-    )
-
-    if db_item is None:
-        raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
-
-    if (
-        db.query(TodoCategory)
-        .filter(
-            TodoCategory.id == category.order.next_id, Project.id == category.project_id
+    def get_next_id(category: TodoCategory):
+        filtered_orders = list(
+            filter(lambda order: order.category_id == category.id, category.orders)
         )
-        .count()
-        == 0
-    ):
-        raise UserFriendlyError("todo category(next) doesn't belong to this project")
+        if len(filtered_orders) > 1:
+            raise UserFriendlyError(
+                "db error: TodoCategory has more than 1 order for this project"
+            )
 
-    filtered_orders = list(
-        filter(lambda order: order.category_id == category.id, db_item.orders)
-    )
-    if len(filtered_orders) > 1:
-        raise UserFriendlyError(
-            "db error: TodoCategory has more than 1 order for this project"
-        )
+        return filtered_orders[0] if len(filtered_orders) == 1 else None
 
-    order: TodoCategoryOrder | None = (
-        filtered_orders[0] if len(filtered_orders) == 1 else None
-    )
-
-    next = (
-        db.query(TodoCategoryOrder)
-        .filter(
-            TodoCategoryOrder.project_id == category.project_id,
-            TodoCategoryOrder.category_id == category.order.next_id,
-        )
-        .first()
-    )
-
-    # point existing item.next where next=next.id to next.next
-    db.query(TodoCategoryOrder).filter(
-        TodoCategoryOrder.project_id == category.project_id,
-        TodoCategoryOrder.next_id == category.order.next_id,
-    ).update({"next_id": next.next_id if next is not None else None})
-
-    if next is not None:
-        # point next.next to item.next
-        next.next_id = order.next_id if order is not None else None
-
-    if order is None:
+    def create_order(id: int, next_id: int):
         db.add(
             TodoCategoryOrder(
-                category_id=category.id,
-                project_id=category.project_id,
-                next_id=category.order.next_id,
+                category_id=id,
+                project_id=new_order.project_id,
+                next_id=next_id,
             )
         )
-    else:
-        order.next_id = category.order.next_id
+
+    update_element_order(
+        db,
+        TodoCategory,
+        TodoCategoryOrder,
+        db.query(TodoCategoryOrder).filter(
+            TodoCategoryOrder.project_id == new_order.project_id
+        ),
+        new_order.moving_id,
+        new_order,
+        get_next_id,
+        create_order,
+    )
 
     db.commit()
-    db.refresh(db_item)
-    return db_item
 
 
 def attach_to_project(

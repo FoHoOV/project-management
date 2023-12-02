@@ -49,6 +49,7 @@ def detach_from_project(
     todo_category_crud.detach_from_project(
         db=db, association=association, user_id=current_user.id
     )
+
     return Response(status_code=HTTP_200_OK)
 
 
@@ -65,17 +66,14 @@ def update_item(
     return db_items
 
 
-@router.patch(path="/update-order", response_model=TodoCategory)
+@router.patch(path="/update-order")
 def update_order(
     current_user: Annotated[User, Depends(get_current_user)],
     category: TodoCategoryUpdateOrder,
     db: Session = Depends(get_db),
 ):
-    db_items = todo_category_crud.update_order(
-        db=db, category=category, user_id=current_user.id
-    )
-
-    return db_items
+    todo_category_crud.update_order(db=db, new_order=category, user_id=current_user.id)
+    return Response(status_code=HTTP_200_OK)
 
 
 @router.get("/list", response_model=list[TodoCategory])

@@ -34,6 +34,7 @@ class TodoItemUpdateItem(TodoItemBase):
 class TodoItemUpdateOrder(BaseModel):
     id: int
     order: OrderedItem
+    moving_id: int
 
 
 class TodoItemDelete(BaseModel):

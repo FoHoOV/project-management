@@ -1,4 +1,5 @@
 from typing import List
+from db.utils.element_sort_update import update_element_order
 from sqlalchemy.orm import Session
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
@@ -99,42 +100,30 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     return db_item
 
 
-def update_order(db: Session, todo: TodoItemUpdateOrder, user_id: int):
+def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
     # TODO: refactor to share logic with todo_category_curd.update_order
 
-    validate_todo_item_belongs_to_user(db, todo.id, user_id)
-    validate_todo_item_belongs_to_user(db, todo.order.next_id, user_id)
+    validate_todo_item_belongs_to_user(db, new_order.id, user_id)
+    validate_todo_item_belongs_to_user(db, new_order.order.next_id, user_id)
 
-    db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
+    def get_next_id(todo: TodoItem):
+        return todo.order.next_id if todo.order is not None else None
 
-    if db_item is None:
-        raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
+    def create_order(id: int, next_id: int):
+        db.add(TodoItemOrder(todo_id=id, next_id=next_id))
 
-    next = (
-        db.query(TodoItemOrder)
-        .filter(
-            TodoItemOrder.todo_id == todo.order.next_id,
-        )
-        .first()
+    update_element_order(
+        db,
+        TodoItem,
+        TodoItemOrder,
+        db.query(TodoItemOrder),
+        new_order.moving_id,
+        new_order,
+        get_next_id,
+        create_order,
     )
 
-    # point existing item.next where next=new.id to next.next
-    db.query(TodoItemOrder).filter(
-        TodoItemOrder.next_id == todo.order.next_id,
-    ).update({"next_id": next.next_id if next is not None else None})
-
-    if next is not None:
-        # point new.next to item.next
-        next.next_id = db_item.order.next_id if db_item.order is not None else None
-
-    if db_item.order is None:
-        db.add(TodoItemOrder(todo_id=todo.id, next_id=todo.order.next_id))
-    else:
-        db_item.order.next_id = todo.order.next_id
-
     db.commit()
-    db.refresh(db_item)
-    return db_item
 
 
 def remove(db: Session, todo: TodoItemDelete, user_id: int):
