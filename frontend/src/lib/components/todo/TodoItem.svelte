@@ -81,9 +81,8 @@
 				const nextId = moveUp ? todo.id : event.detail.data.id;
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: updatingTodo.id,
-					order: {
-						next_id: nextId
-					}
+					moving_id: event.detail.data.id,
+					next_id: nextId
 				});
 				todos.updateTodoSort(
 					{ ...updatingTodo, order: { next_id: nextId } },

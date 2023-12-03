@@ -91,9 +91,8 @@
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: updatingCategory.id,
 					project_id: projectId,
-					order: {
-						next_id: nextId
-					}
+					moving_id: event.detail.data.id,
+					next_id: nextId
 				});
 				todos.updateCategoriesSort(
 					{ ...updatingCategory, order: { next_id: nextId } },
