@@ -6,7 +6,7 @@ then execute this:
 
 ```bash
 # create the clients and zod schemas
-npm run open-api:generate # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
+npm run open-api:generate:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
 ```
 Since we need the API url of our backend in our frontend, you will need to create an `.env` file in the root of frontend folder and add the following line:
 

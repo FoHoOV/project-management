@@ -12,7 +12,7 @@
 		},
 		{
 			"command": "npm run open-api:generate:linux",
-			"name": "npm:open-api:generate:linyx",
+			"name": "npm:open-api:generate:linux",
 			"request": "launch",
 			"type": "node-terminal"
 		},
@@ -23,8 +23,8 @@
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:zod:linyx",
-			"name": "npm:open-api:zod:linyx",
+			"command": "npm run open-api:zod:linux",
+			"name": "npm:open-api:zod:linux",
 			"request": "launch",
 			"type": "node-terminal"
 		},
