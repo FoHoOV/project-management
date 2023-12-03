@@ -82,21 +82,10 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
     validate_todo_category_belongs_to_user(db, new_order.id, user_id)
-    validate_todo_category_belongs_to_user(db, new_order.order.next_id, user_id)
+    validate_todo_category_belongs_to_user(db, new_order.next_id, user_id)
     validate_project_belongs_to_user(db, new_order.project_id, user_id, user_id, True)
 
-    def get_next_id(category: TodoCategory):
-        filtered_orders = list(
-            filter(lambda order: order.category_id == category.id, category.orders)
-        )
-        if len(filtered_orders) > 1:
-            raise UserFriendlyError(
-                "db error: TodoCategory has more than 1 order for this project"
-            )
-
-        return filtered_orders[0] if len(filtered_orders) == 1 else None
-
-    def create_order(id: int, next_id: int):
+    def create_order(id: int, next_id: int | None):
         db.add(
             TodoCategoryOrder(
                 category_id=id,
@@ -107,14 +96,12 @@ def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
 
     update_element_order(
         db,
-        TodoCategory,
-        TodoCategoryOrder,
+        TodoCategoryOrder,  # type: ignore TODO: fix
         db.query(TodoCategoryOrder).filter(
             TodoCategoryOrder.project_id == new_order.project_id
-        ),
+        ),  # type: ignore TODO: fix
         new_order.moving_id,
-        new_order,
-        get_next_id,
+        {"id": new_order.id, "next_id": new_order.next_id},
         create_order,
     )
 

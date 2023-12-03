@@ -101,25 +101,18 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
 
 def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
-    # TODO: refactor to share logic with todo_category_curd.update_order
-
     validate_todo_item_belongs_to_user(db, new_order.id, user_id)
-    validate_todo_item_belongs_to_user(db, new_order.order.next_id, user_id)
+    validate_todo_item_belongs_to_user(db, new_order.next_id, user_id)
 
-    def get_next_id(todo: TodoItem):
-        return todo.order.next_id if todo.order is not None else None
-
-    def create_order(id: int, next_id: int):
+    def create_order(id: int, next_id: int | None):
         db.add(TodoItemOrder(todo_id=id, next_id=next_id))
 
     update_element_order(
         db,
-        TodoItem,
         TodoItemOrder,
         db.query(TodoItemOrder),
         new_order.moving_id,
-        new_order,
-        get_next_id,
+        {"id": new_order.id, "next_id": new_order.next_id},
         create_order,
     )
 

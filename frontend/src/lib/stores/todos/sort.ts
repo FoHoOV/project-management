@@ -162,6 +162,11 @@ export function updateElementSort<T extends { id: number }>(
 		// or
 		// X 4 3 2 1 Y
 		// 1 -> 4 with (moving = 1): X 1 4 3 2 Y
+
+		if (movingElementId != newOrder.id) {
+			throw new Error('moving_id cannot differ from id when a->b and a is the moving element');
+		}
+
 		const existingOrderToNewOrderId = elements.find((value) => getNextId(value) == newOrder.id);
 		if (existingOrderToNewOrderId) {
 			setNextId(existingOrderToNewOrderId, movingElementId);
@@ -173,6 +178,10 @@ export function updateElementSort<T extends { id: number }>(
 		// or
 		// X 4 3 2 1 Y
 		// 1 -> 4 with (moving = 4): X 3 2 1 4 Y
+
+		if (movingElementId != newOrder.nextId) {
+			throw new Error('moving_id cannot differ from next_id when a->b and b is the moving element');
+		}
 
 		const elementWithNewOrderId = elements.find((value) => value.id == newOrder.id);
 		if (!elementWithNewOrderId) {

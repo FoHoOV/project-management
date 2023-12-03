@@ -1,5 +1,7 @@
-from db.utils.exceptions import UserFriendlyError
-from sqlalchemy.orm import DeclarativeBase, Mapped, Query, Session
+from dataclasses import dataclass
+from tkinter import NO
+from typing import Callable, Type, TypedDict
+from sqlalchemy.orm import DeclarativeBase, Mapped, Query, Session, MappedColumn
 
 # I have an ordered list of items, and the type of these items is defined as follows:
 
@@ -63,71 +65,87 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Query, Session
 
 
 class OrderedItem(DeclarativeBase):
-    id: Mapped[int]
-    next_id: Mapped[int]
+    id: MappedColumn[int]
+    next_id: MappedColumn[int | None]
 
 
-class QueryClass(DeclarativeBase):
-    id: Mapped[int]
-    order: Mapped[OrderedItem | None]
-
-
-class NewOrder:
+class NewOrder(TypedDict):
     id: int
     next_id: int
 
 
 def update_element_order[
-    TQueryClass: QueryClass, TOrderedItemClass: OrderedItem
+    TOrderedItemClass: OrderedItem
 ](
     db: Session,
-    query_class: TQueryClass,
-    order_class: TOrderedItemClass,
+    order_class: Type[TOrderedItemClass],
     order_query: Query[TOrderedItemClass],
     moving_id: int,
     new_order: NewOrder,
-    get_next_id,
-    create_order,
+    create_order: Callable[[int, int | None], None],
 ):
-    db_moving_element = db.query(QueryClass).filter(query_class.id == moving_id).first()
-
-    if not db_moving_element:
-        raise UserFriendlyError("The item that you are trying to move wasn't found")
+    # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
+    db_moving_element = order_query.filter(order_class.id == moving_id).first()
 
     db.query(order_class.next_id == moving_id).update(
-        {"next_id": get_next_id(db_moving_element)}
+        {
+            "next_id": db_moving_element.next_id
+            if db_moving_element is not None
+            else None
+        }
     )
 
-    if moving_id == new_order.id:
+    if moving_id == new_order["id"]:
         # X 4 3 2 1 Y
         # 4 -> 1 with (moving = 4): X 3 2 4 1 Y
         # or
         # X 4 3 2 1 Y
         # 1 -> 4 with (moving = 1): X 1 4 3 2 Y
-        order_query.filter(order_class.next_id == new_order.id).update(
+
+        if moving_id != new_order["id"]:
+            raise Exception(
+                "moving_id cannot differ from id when a->b and a is the moving element"
+            )
+
+        order_query.filter(order_class.next_id == new_order["id"]).update(
             {"next_id": moving_id}
         )
 
         if db_moving_element is None:
-            create_order(moving_id, new_order.id)
+            create_order(moving_id, new_order["id"])
         else:
-            db_moving_element.next_id = new_order.id
+            db_moving_element.next_id = new_order["id"]
     else:
         # X 4 3 2 1 Y
         # 4 -> 1 with (moving = 1): X 4 1 3 2 Y
         # or
         # X 4 3 2 1 Y
         # 1 -> 4 with (moving = 4): X 3 2 1 4 Y
+
+        if moving_id != new_order["next_id"]:
+            raise Exception(
+                "moving_id cannot differ from next_id when a->b and b is the moving element"
+            )
+
         element_with_new_order_id = order_query.filter(
-            order_class.id == new_order.id
+            order_class.id == new_order["id"]
         ).first()
 
         if db_moving_element is None:
-            create_order(moving_id, get_next_id(element_with_new_order_id))
+            create_order(
+                moving_id,
+                element_with_new_order_id.next_id
+                if element_with_new_order_id is not None
+                else None,
+            )
         else:
-            db_moving_element.next_id = get_next_id(element_with_new_order_id)
+            db_moving_element.next_id = (
+                element_with_new_order_id.next_id
+                if element_with_new_order_id is not None
+                else None
+            )
 
         if element_with_new_order_id is None:
-            create_order(new_order.id, moving_id)
+            create_order(new_order["id"], moving_id)
         else:
             element_with_new_order_id.next_id = moving_id

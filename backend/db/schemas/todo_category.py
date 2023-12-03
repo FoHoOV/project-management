@@ -21,7 +21,7 @@ class TodoCategoryUpdateItem(TodoCategoryBase):
 
 class TodoCategoryUpdateOrder(BaseModel):
     id: int
-    order: OrderedItem
+    next_id: int
     project_id: int
     moving_id: int
 

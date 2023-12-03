@@ -33,7 +33,7 @@ class TodoItemUpdateItem(TodoItemBase):
 
 class TodoItemUpdateOrder(BaseModel):
     id: int
-    order: OrderedItem
+    next_id: int
     moving_id: int
 
 
