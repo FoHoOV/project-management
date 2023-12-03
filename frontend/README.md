@@ -38,4 +38,4 @@ You can preview the production build with `npm run preview`.
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
 ## Known bugs
-1. Ordering doesn't work when TodoItem/TodoCategory order value is the same but ids are different
+1. Custom orders doesn't work when dragging/dropping from one todo category to another one, you will have to first move the todo to category B then update the order (it works for categories tho)

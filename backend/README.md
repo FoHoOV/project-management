@@ -20,7 +20,3 @@ python -m uvicorn main:app --reload --port 8080
 After running the project goto 
 http://127.0.0.1:8080/docs 
 for a web based swagger docs.
-
-## Known bugs
-1. Ordering doesn't work when TodoItem/TodoCategory order value is the same but ids are different
-2. Updating the order of TodoCategory in a project affects other projects where this TodoCategory is linked to
