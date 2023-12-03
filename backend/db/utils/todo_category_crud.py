@@ -95,7 +95,6 @@ def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
         )
 
     update_element_order(
-        db,
         TodoCategoryOrder,  # type: ignore TODO: fix
         db.query(TodoCategoryOrder).filter(
             TodoCategoryOrder.project_id == new_order.project_id

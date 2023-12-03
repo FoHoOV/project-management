@@ -167,11 +167,11 @@ export function updateElementSort<T extends { id: number }>(
 			throw new Error('moving_id cannot differ from id when a->b and a is the moving element');
 		}
 
-		const existingOrderToNewOrderId = elements.find((value) => getNextId(value) == newOrder.id);
+		const existingOrderToNewOrderId = elements.find((value) => getNextId(value) == newOrder.nextId);
 		if (existingOrderToNewOrderId) {
 			setNextId(existingOrderToNewOrderId, movingElementId);
 		}
-		setNextId(movingElement, newOrder.id);
+		setNextId(movingElement, newOrder.nextId);
 	} else {
 		// X 4 3 2 1 Y
 		// 4 -> 1 with (moving = 1): X 4 1 3 2 Y

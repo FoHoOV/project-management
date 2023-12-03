@@ -108,7 +108,6 @@ def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
         db.add(TodoItemOrder(todo_id=id, next_id=next_id))
 
     update_element_order(
-        db,
         TodoItemOrder,
         db.query(TodoItemOrder),
         new_order.moving_id,
