@@ -41,7 +41,7 @@ def update_item(
     return db_items
 
 
-@router.patch(path="/update-order", response_model=TodoItem)
+@router.patch(path="/update-order")
 def update_order(
     current_user: Annotated[User, Depends(get_current_user)],
     todo: TodoItemUpdateOrder,
