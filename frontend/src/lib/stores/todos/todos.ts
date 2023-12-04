@@ -63,9 +63,23 @@ const updateTodo = (todo: TodoItem) => {
 const updateTodoSort = (
 	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
 	movingElementId: number,
+	movingElementNewCategoryId: number,
 	skipSort = false
 ) => {
 	_update((categories) => {
+		const todoItem = categories
+			.find((category) => category.id == todo.category_id)
+			?.items.find((item) => item.id == movingElementId);
+
+		if (!todoItem) {
+			throw new Error("todo item not found while updating the todo item's sort");
+		}
+
+		if (todoItem.category_id !== movingElementNewCategoryId) {
+			removeTodo(todoItem);
+			addTodo({ ...todoItem, category_id: movingElementNewCategoryId });
+		}
+
 		categories = categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;

@@ -83,6 +83,7 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
     validate_todo_category_belongs_to_user(db, new_order.id, user_id)
     validate_todo_category_belongs_to_user(db, new_order.next_id, user_id)
+    validate_todo_category_belongs_to_user(db, new_order.moving_id, user_id)
     validate_project_belongs_to_user(db, new_order.project_id, user_id, user_id, True)
 
     def create_order(id: int, next_id: int | None):

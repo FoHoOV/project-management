@@ -103,9 +103,27 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
     validate_todo_item_belongs_to_user(db, new_order.id, user_id)
     validate_todo_item_belongs_to_user(db, new_order.next_id, user_id)
+    validate_todo_item_belongs_to_user(db, new_order.moving_id, user_id)
 
     def create_order(id: int, next_id: int | None):
         db.add(TodoItemOrder(todo_id=id, next_id=next_id))
+
+    moving_element = (
+        db.query(TodoItem).filter(TodoItem.id == new_order.moving_id).first()
+    )
+
+    if moving_element is None:
+        # never happens cuz we checked if it exists and belongs to user by calling validate_todo_item_belongs_to_user
+        raise UserFriendlyError("moving element not found")
+
+    if moving_element.category_id != new_order.new_category_id:
+        update_item(
+            db,
+            TodoItemUpdateItem.model_construct(
+                id=moving_element.id, new_category_id=new_order.new_category_id
+            ),
+            user_id,
+        )
 
     update_element_order(
         TodoItemOrder,

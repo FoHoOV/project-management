@@ -82,12 +82,13 @@
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: updatingTodo.id,
 					moving_id: event.detail.data.id,
+					new_category_id: todo.category_id,
 					next_id: nextId
 				});
 				todos.updateTodoSort(
 					{ ...updatingTodo, order: { next_id: nextId } },
 					event.detail.data.id,
-					event.detail.data.category_id !== todo.category_id
+					todo.category_id
 				);
 				state = 'none';
 			},
@@ -96,6 +97,12 @@
 				state = 'none';
 			}
 		});
+
+		if (event.detail.data.category_id != todo.category_id) {
+			// we stopPropagation cause if the category ids are not the same we've already updated the category_id for this element
+			event.stopPropagation();
+			event.preventDefault();
+		}
 	}
 
 	function handleDragHover(event: CustomDragEvent) {
