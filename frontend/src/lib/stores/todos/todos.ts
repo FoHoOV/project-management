@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
+import { getTodoCategoryMovingId, setTodoCategoryMovingId, setTodoItemMovingId } from './sort';
 import {
 	sortedTodos,
 	getTodoItemNextId,
@@ -7,7 +8,8 @@ import {
 	updateElementSort,
 	sortedCategories,
 	getTodoCategoryNextId,
-	setTodoCategoryNextId
+	setTodoCategoryNextId,
+	getTodoItemMovingId
 } from './sort';
 
 const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
@@ -95,7 +97,9 @@ const updateTodoSort = (
 				},
 				movingElement.id,
 				getTodoItemNextId,
-				setTodoItemNextId
+				getTodoItemMovingId,
+				setTodoItemNextId,
+				setTodoItemMovingId
 			);
 
 			if (!skipSort) {
@@ -170,7 +174,9 @@ const updateCategoriesSort = (
 			{ ...category, nextId: category.order.next_id },
 			movingElementId,
 			getTodoCategoryNextId,
-			setTodoCategoryNextId
+			getTodoCategoryMovingId,
+			setTodoCategoryNextId,
+			setTodoCategoryMovingId
 		);
 		return skipSort ? categories : sortedCategories(categories);
 	});

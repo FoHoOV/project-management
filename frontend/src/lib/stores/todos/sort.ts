@@ -5,7 +5,15 @@ export function getTodoItemNextId(todo: TodoItem) {
 }
 
 export function setTodoItemNextId(todo: TodoItem, nextId: number | null) {
-	todo.order = { next_id: nextId };
+	todo.order = { moving_id: todo.id, ...todo.order, next_id: nextId };
+}
+
+export function getTodoItemMovingId(todo: TodoItem) {
+	return todo.order?.moving_id;
+}
+
+export function setTodoItemMovingId(todo: TodoItem, movingId: number) {
+	todo.order = { next_id: null, ...todo.order, moving_id: movingId };
 }
 
 export function getTodoCategoryNextId(todoCategory: TodoCategory) {
@@ -13,29 +21,37 @@ export function getTodoCategoryNextId(todoCategory: TodoCategory) {
 }
 
 export function setTodoCategoryNextId(todoCategory: TodoCategory, nextId: number | null) {
-	todoCategory.orders = [{ next_id: nextId }];
+	const existingOrder = todoCategory.orders.length > 0 ? { ...todoCategory.orders[0] } : {};
+	todoCategory.orders = [{ moving_id: todoCategory.id, ...existingOrder, next_id: nextId }];
 }
 
+export function getTodoCategoryMovingId(todoCategory: TodoCategory) {
+	return todoCategory.orders.length === 1 ? todoCategory.orders[0].moving_id : undefined;
+}
+export function setTodoCategoryMovingId(todoCategory: TodoCategory, movingId: number) {
+	const existingOrder = todoCategory.orders.length > 0 ? { ...todoCategory.orders[0] } : {};
+	todoCategory.orders = [{ next_id: null, ...existingOrder, moving_id: movingId }];
+}
 export function sortedTodos(todos: TodoItem[]) {
 	sortById(todos);
-	return sortByCustomOrder(todos, getTodoItemNextId);
+	return sortByCustomOrder(todos, getTodoItemNextId, getTodoItemMovingId);
 }
 
 export function sortedCategories(categories: TodoCategory[]) {
 	sortById(categories);
-	return sortByCustomOrder(categories, getTodoCategoryNextId);
+	return sortByCustomOrder(categories, getTodoCategoryNextId, getTodoCategoryMovingId);
 }
 
 export function sortByCustomOrder<T extends { id: number }>(
 	elements: (T | null)[],
-	getNextId: (element: T) => number | null | undefined
+	getNextId: (element: T) => number | null | undefined,
+	getMovingId: (element: T) => number | undefined
 ) {
 	const MAX_NUMBER_OF_REASONABLE_ITERATIONS = elements.length * elements.length * elements.length;
 	// improve later
 	let index = 0;
 	let mutations = 0;
 	let numberOfIterations = 0;
-	const movedIds: number[] = [];
 
 	const increaseIndex = () => {
 		index += 1;
@@ -58,7 +74,6 @@ export function sortByCustomOrder<T extends { id: number }>(
 		elements[currentIndex] = null;
 		elements.splice(nextElementIndex, 0, currentElement);
 		mutations += 1;
-		movedIds.push(currentElement.id);
 	};
 
 	const moveOtherToRightOfCurrent = (
@@ -75,7 +90,6 @@ export function sortByCustomOrder<T extends { id: number }>(
 		elements[nextElementIndex] = null;
 		elements.splice(currentIndex + 1, 0, savedNextElement);
 		mutations += 1;
-		movedIds.push(nextId);
 	};
 
 	const updateNumberOfIterations = () => {
@@ -112,10 +126,10 @@ export function sortByCustomOrder<T extends { id: number }>(
 			throw new Error('database error, for some reason element.next = element.id');
 		}
 
-		if (nextId < element.id || movedIds.findIndex((movedId) => movedId === element.id) > -1) {
-			moveOtherToRightOfCurrent(index, nextElementIndex, nextId);
-		} else {
+		if (getMovingId(element) === element.id) {
 			moveCurrentToLeftOfNext(index, nextElementIndex, element);
+		} else {
+			moveOtherToRightOfCurrent(index, nextElementIndex, nextId);
 		}
 
 		increaseIndex();
@@ -138,7 +152,9 @@ export function updateElementSort<T extends { id: number }>(
 	},
 	movingElementId: number,
 	getNextId: (element: T) => number | null,
-	setNextId: (element: T, nextId: number | null) => void
+	getMovingId: (element: T) => number | undefined,
+	setNextId: (element: T, nextId: number | null) => void,
+	setMovingId: (element: T, movingId: number) => void
 ) {
 	console.log(JSON.stringify(elements));
 
@@ -148,13 +164,14 @@ export function updateElementSort<T extends { id: number }>(
 		throw new Error('moving element not found in dataset');
 	}
 
-	const existingOrderToMovingElement = elements.find(
-		(value) => getNextId(value) == movingElementId
+	removeElementFromSortedList(
+		elements,
+		movingElementId,
+		getNextId,
+		getMovingId,
+		setNextId,
+		setMovingId
 	);
-
-	if (existingOrderToMovingElement) {
-		setNextId(existingOrderToMovingElement, getNextId(movingElement));
-	}
 
 	if (movingElementId == newOrder.id) {
 		// X 4 3 2 1 Y
@@ -163,11 +180,17 @@ export function updateElementSort<T extends { id: number }>(
 		// X 4 3 2 1 Y
 		// 1 -> 4 with (moving = 1): X 1 4 3 2 Y
 
-		const existingOrderToNewOrderId = elements.find((value) => getNextId(value) == newOrder.nextId);
-		if (existingOrderToNewOrderId) {
-			setNextId(existingOrderToNewOrderId, movingElementId);
+		const existingElementPointingToNewNext = elements.find(
+			(value) => getNextId(value) == newOrder.nextId
+		);
+		if (existingElementPointingToNewNext) {
+			setNextId(existingElementPointingToNewNext, movingElementId);
+			if (getMovingId(existingElementPointingToNewNext) == newOrder.nextId) {
+				setMovingId(existingElementPointingToNewNext, movingElementId);
+			}
 		}
 		setNextId(movingElement, newOrder.nextId);
+		setMovingId(movingElement, movingElementId);
 	} else if (movingElementId == newOrder.nextId) {
 		// X 4 3 2 1 Y
 		// 4 -> 1 with (moving = 1): X 4 1 3 2 Y
@@ -180,11 +203,62 @@ export function updateElementSort<T extends { id: number }>(
 			throw new Error('elementWithNewOrder.id not found in dataset');
 		}
 
+		let movingElementMovingId: number | undefined;
+		if (getMovingId(elementWithNewOrderId) == newOrder.id) {
+			movingElementMovingId = movingElementId;
+		} else {
+			movingElementMovingId = getMovingId(elementWithNewOrderId);
+		}
+		if (movingElementMovingId == undefined) {
+			throw new Error(
+				'unexpected behavior, calculated movingElementMovingId was undefined whilst updating elements sorting'
+			);
+		}
 		setNextId(movingElement, getNextId(elementWithNewOrderId));
+		setMovingId(movingElement, movingElementMovingId);
 		setNextId(elementWithNewOrderId, movingElementId);
+		setMovingId(elementWithNewOrderId, movingElementId);
 	} else {
 		throw new Error('unhandled sorting case');
 	}
+
+	console.log(JSON.stringify(elements));
+}
+
+export function removeElementFromSortedList<T extends { id: number }>(
+	elements: T[],
+	deletingElementId: number,
+	getNextId: (element: T) => number | null,
+	getMovingId: (element: T) => number | undefined,
+	setNextId: (element: T, nextId: number | null) => void,
+	setMovingId: (element: T, movingId: number) => void
+) {
+	console.log(JSON.stringify(elements));
+
+	const deletingElement = elements.find((value) => value.id == deletingElementId);
+
+	if (!deletingElement) {
+		throw new Error('deletingElement element not found in dataset');
+	}
+
+	const existingItemPointingToDeletingItem = elements.find(
+		(value) => getNextId(value) == deletingElementId
+	);
+
+	if (existingItemPointingToDeletingItem) {
+		let movingId: number;
+		if (getMovingId(existingItemPointingToDeletingItem) == deletingElementId) {
+			movingId = existingItemPointingToDeletingItem.id;
+		} else {
+			const deletingItemNextId = getNextId(deletingElement);
+			movingId =
+				deletingItemNextId !== null ? deletingItemNextId : existingItemPointingToDeletingItem.id;
+		}
+		setNextId(existingItemPointingToDeletingItem, getNextId(deletingElement));
+		setMovingId(existingItemPointingToDeletingItem, movingId);
+	}
+
+	setNextId(deletingElement, null);
 
 	console.log(JSON.stringify(elements));
 }
