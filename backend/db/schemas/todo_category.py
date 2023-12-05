@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
-from db.schemas.base import NullableOrderedItem, OrderedItem
+from db.schemas.base import NullableOrderedItem
 from db.schemas.todo_item import TodoItem
 
 

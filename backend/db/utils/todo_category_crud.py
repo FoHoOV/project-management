@@ -1,5 +1,8 @@
 from typing import List
-from db.utils.element_sort_update import update_element_order
+from db.utils.element_sort_update import (
+    delete_item_from_sorted_items,
+    update_element_order,
+)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, Query
 from db.models import project
@@ -86,11 +89,12 @@ def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
     validate_todo_category_belongs_to_user(db, new_order.moving_id, user_id)
     validate_project_belongs_to_user(db, new_order.project_id, user_id, user_id, True)
 
-    def create_order(id: int, next_id: int | None):
+    def create_order(id: int, moving_id: int, next_id: int | None):
         db.add(
             TodoCategoryOrder(
                 category_id=id,
                 project_id=new_order.project_id,
+                moving_id=moving_id,
                 next_id=next_id,
             )
         )
@@ -156,30 +160,29 @@ def detach_from_project(
         True,
     )
 
-    # this belongs to user cuz we have already checked it
-    current_category_order = (
-        db.query(TodoCategoryOrder)
-        .filter(
-            TodoCategoryOrder.project_id == association.project_id,
-            TodoCategoryOrder.category_id == association.category_id,
+    def get_todo_category_order(id: int):
+        return (
+            db.query(TodoCategoryOrder)
+            .filter(
+                TodoCategoryOrder.project_id == association.project_id,
+                TodoCategoryOrder.category_id == id,
+            )
+            .first()
         )
-        .first()
-    )
 
-    # update item.next to current.next where item.next = current.category_id
-    db.query(TodoCategoryOrder).filter(
-        TodoCategoryOrder.project_id == association.project_id,
-        TodoCategoryOrder.next_id == association.category_id,
-    ).update(
-        {
-            "next_id": current_category_order.next_id
-            if current_category_order is not None
-            else None
-        }
-    )
+    def get_item_id(category_order: TodoCategoryOrder):
+        return category_order.category_id
 
-    if current_category_order is not None:
-        db.delete(current_category_order)
+    delete_item_from_sorted_items(
+        db,
+        TodoCategoryOrder,  # type: ignore
+        db.query(TodoCategoryOrder).filter(
+            TodoCategoryOrder.project_id == association.project_id
+        ),  # type: ignore
+        association.category_id,
+        get_todo_category_order,  # type: ignore
+        get_item_id,  # type: ignore
+    )
 
     db.query(TodoCategoryProjectAssociation).filter(
         TodoCategoryProjectAssociation.project_id == association.project_id,

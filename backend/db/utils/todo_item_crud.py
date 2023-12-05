@@ -1,5 +1,8 @@
 from typing import List
-from db.utils.element_sort_update import update_element_order
+from db.utils.element_sort_update import (
+    delete_item_from_sorted_items,
+    update_element_order,
+)
 from sqlalchemy.orm import Session
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
@@ -75,11 +78,27 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
     if todo.new_category_id is not None and db_item.category_id != todo.new_category_id:
         validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
-        # update item.next to current.next where item.next = current.todo_id
-        db.query(TodoItemOrder).filter(TodoItemOrder.next_id == todo.id).update(
-            {"next_id": db_item.order.next_id if db_item.order is not None else None}
+
+        def get_todo_item_order(id: int):
+            return (
+                db.query(TodoItemOrder)
+                .filter(
+                    TodoItemOrder.todo_id == id,
+                )
+                .first()
+            )
+
+        def get_item_id(todo_item_order: TodoItemOrder):
+            return todo_item_order.todo_id
+
+        delete_item_from_sorted_items(
+            db,
+            TodoItem,
+            db.query(TodoItem),
+            todo.id,
+            get_todo_item_order,
+            get_item_id,
         )
-        db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == todo.id).delete()
         db_item.category_id = todo.new_category_id
 
     if todo.is_done is not None:
@@ -101,8 +120,8 @@ def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
     validate_todo_item_belongs_to_user(db, new_order.next_id, user_id)
     validate_todo_item_belongs_to_user(db, new_order.moving_id, user_id)
 
-    def create_order(id: int, next_id: int | None):
-        db.add(TodoItemOrder(todo_id=id, next_id=next_id))
+    def create_order(id: int, moving_id: int, next_id: int | None):
+        db.add(TodoItemOrder(todo_id=id, moving_id=moving_id, next_id=next_id))
 
     def get_ordered_todo_item(id: int):
         return db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == id).first()
@@ -133,11 +152,27 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
     if not db_item:
         return
 
-    # update item.next to current.next where item.next = current.todo_id
-    db.query(TodoItemOrder).filter(TodoItemOrder.next_id == todo.id).update(
-        {"next_id": db_item.order.next_id if db_item.order is not None else None}
+    def get_todo_item_order(id: int):
+        return (
+            db.query(TodoItemOrder)
+            .filter(
+                TodoItemOrder.todo_id == id,
+            )
+            .first()
+        )
+
+    def get_item_id(todo_item_order: TodoItemOrder):
+        return todo_item_order.todo_id
+
+    delete_item_from_sorted_items(
+        db,
+        TodoItem,
+        db.query(TodoItem),
+        todo.id,
+        get_todo_item_order,
+        get_item_id,
     )
-    db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == todo.id).delete()
+
     db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
     db.commit()
 

@@ -67,6 +67,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Query, Session, MappedColumn
 
 class OrderedItem(DeclarativeBase):
     next_id: MappedColumn[int | None]
+    moving_id: MappedColumn[int]
 
 
 class NewOrder(TypedDict):
@@ -81,7 +82,7 @@ def update_element_order[
     order_query: Query[TOrderedItemClass],
     moving_id: int,
     new_order: NewOrder,
-    create_order: Callable[[int, int | None], None],
+    create_order: Callable[[int, int, int | None], None],
     get_item: Callable[[int], TOrderedItemClass | None],
 ):
     # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
@@ -101,14 +102,20 @@ def update_element_order[
         # or
         # X 4 3 2 1 Y
         # 1 -> 4 with (moving = 1): X 1 4 3 2 Y
-        order_query.filter(order_class.next_id == new_order["next_id"]).update(
-            {"next_id": moving_id}
-        )
+        existing_element_pointing_to_new_next = order_query.filter(
+            order_class.next_id == new_order["next_id"]
+        ).first()
+
+        if existing_element_pointing_to_new_next is not None:
+            existing_element_pointing_to_new_next.next_id = moving_id
+            if existing_element_pointing_to_new_next.moving_id == new_order["next_id"]:
+                existing_element_pointing_to_new_next.moving_id = moving_id
 
         if db_moving_element is None:
-            create_order(moving_id, new_order["next_id"])
+            create_order(moving_id, moving_id, new_order["next_id"])
         else:
             db_moving_element.next_id = new_order["next_id"]
+            db_moving_element.moving_id = moving_id
     elif moving_id == new_order["next_id"]:
         # X 4 3 2 1 Y
         # 4 -> 1 with (moving = 1): X 4 1 3 2 Y
@@ -118,9 +125,19 @@ def update_element_order[
 
         element_with_new_order_id = get_item(new_order["id"])
 
+        moving_element_moving_id = None
+        if element_with_new_order_id is None or (
+            element_with_new_order_id is not None
+            and element_with_new_order_id.moving_id == new_order["id"]
+        ):
+            moving_element_moving_id = moving_id
+        else:
+            moving_element_moving_id = element_with_new_order_id.moving_id
+
         if db_moving_element is None:
             create_order(
                 moving_id,
+                moving_element_moving_id,
                 element_with_new_order_id.next_id
                 if element_with_new_order_id is not None
                 else None,
@@ -131,10 +148,50 @@ def update_element_order[
                 if element_with_new_order_id is not None
                 else None
             )
+            db_moving_element.moving_id = moving_element_moving_id
 
         if element_with_new_order_id is None:
-            create_order(new_order["id"], moving_id)
+            create_order(new_order["id"], moving_id, moving_id)
         else:
             element_with_new_order_id.next_id = moving_id
+            element_with_new_order_id.moving_id = moving_id
     else:
         raise Exception("unhandled sorting case")
+
+
+def delete_item_from_sorted_items[
+    TOrderedItemClass: OrderedItem
+](
+    db: Session,
+    order_class: Type[TOrderedItemClass],
+    order_query: Query[TOrderedItemClass],
+    deleting_item_id: int,
+    get_item: Callable[[int], TOrderedItemClass | None],
+    get_item_id: Callable[[TOrderedItemClass], int],
+):
+    # the validation that deleting_item_id exists and belongs to user is callers responsibility
+    deleting_item_order = get_item(deleting_item_id)
+
+    exiting_item_pointing_to_deleting_item = order_query.filter(
+        order_class.next_id == deleting_item_id,
+    ).first()
+
+    if exiting_item_pointing_to_deleting_item is not None:
+        # update item.next to current.next where item.next = current.category_id
+        moving_id = None
+        if exiting_item_pointing_to_deleting_item.moving_id == deleting_item_id:
+            moving_id = get_item_id(exiting_item_pointing_to_deleting_item)
+        else:
+            moving_id = (
+                deleting_item_order.next_id
+                if deleting_item_order is not None
+                and deleting_item_order.next_id is not None
+                else get_item_id(exiting_item_pointing_to_deleting_item)
+            )
+        exiting_item_pointing_to_deleting_item.next_id = (
+            deleting_item_order.next_id if deleting_item_order is not None else None
+        )
+        exiting_item_pointing_to_deleting_item.moving_id = moving_id
+
+    if deleting_item_order is not None:
+        db.delete(deleting_item_order)
