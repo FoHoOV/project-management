@@ -10,6 +10,7 @@ python -m venv venv
 ... depends on os
 pip install -r requirements.txt
 ```
+* this project requires python 3.12 or greater
 
 ## Running the project
 If you are using vscode you can simply use the run&debug to run the backend app after doing the mentioned steps. 
