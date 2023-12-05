@@ -168,7 +168,7 @@ export function updateElementSort<T extends { id: number }>(
 			setNextId(existingOrderToNewOrderId, movingElementId);
 		}
 		setNextId(movingElement, newOrder.nextId);
-	} else if (movingElementId != newOrder.nextId) {
+	} else if (movingElementId == newOrder.nextId) {
 		// X 4 3 2 1 Y
 		// 4 -> 1 with (moving = 1): X 4 1 3 2 Y
 		// or
