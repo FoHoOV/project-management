@@ -178,7 +178,13 @@ def detach_from_project(
         }
     )
 
-    db.delete(current_category_order)
+    if current_category_order is not None:
+        db.delete(current_category_order)
+
+    db.query(TodoCategoryProjectAssociation).filter(
+        TodoCategoryProjectAssociation.project_id == association.project_id,
+        TodoCategoryProjectAssociation.todo_category_id == association.category_id,
+    ).delete()
 
     if (
         db.query(TodoCategoryProjectAssociation)
