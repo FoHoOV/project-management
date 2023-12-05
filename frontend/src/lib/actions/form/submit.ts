@@ -3,46 +3,17 @@ import type { SubmitFunction } from '@sveltejs/kit';
 import { enhance } from '$app/forms';
 
 import type { z } from 'zod';
-import { validate, type ValidatorErrorEvent, type ValidatorOptions } from './validator';
-
-export type EnhanceOptions<
-	TSchema extends z.ZodTypeAny,
-	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
-> = {
-	submit?: SubmitFunction;
-	form: TFormAction;
-	action?: TKey;
-	validator: ValidatorOptions<TSchema>;
-};
-
-export type FormActionResultType<
-	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
-> = TFormAction extends { response: infer TResult }
-	? Extract<TFormAction, { response: TResult }>['response']
-	: Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { response: any }>['response'];
-
-export type SubmitEvents<
-	TSchema extends z.ZodTypeAny,
-	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
-> = {
-	'on:submitstarted'?: (e: CustomEvent<void>) => void;
-	'on:submitended'?: (e: CustomEvent<void>) => void;
-	'on:submitredirected'?: (
-		e: CustomEvent<{
-			redirectUrl: URL;
-			formData: z.infer<TSchema>;
-		}>
-	) => void;
-	'on:submitsucceeded'?: (
-		e: CustomEvent<{
-			response: FormActionResultType<TFormAction, TKey>;
-			formData: z.infer<TSchema>;
-		}>
-	) => void;
-};
+import type {
+	SubmitEvents,
+	EnhanceOptions,
+	FormActionResultType,
+	SubmitRedirectedEventType,
+	SubmitStartEventType,
+	SubmitEndedEventType,
+	SubmitSucceededEventType
+} from './submit-types';
+import { validate } from './validator';
+import type { ValidatorErrorEvent } from './validator-types';
 
 export function superEnhance(
 	node: HTMLFormElement
@@ -99,10 +70,10 @@ function _defaultSubmitHandler<
 	options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>
 ): SubmitFunction {
 	return ({ formData }) => {
-		node.dispatchEvent(new CustomEvent('submitstarted'));
+		node.dispatchEvent(new CustomEvent('submitstarted') satisfies SubmitStartEventType);
 
 		return async ({ update, result }) => {
-			node.dispatchEvent(new CustomEvent('submitended'));
+			node.dispatchEvent(new CustomEvent('submitended') satisfies SubmitEndedEventType);
 			_focusOnFirstVisibleInput(node);
 
 			if (result.type == 'success') {
@@ -113,9 +84,9 @@ function _defaultSubmitHandler<
 					new CustomEvent('submitsucceeded', {
 						detail: {
 							response: _getResultFromFormAction(result.data, options),
-							formData: Object.fromEntries(formData)
+							formData: Object.fromEntries(formData) as z.infer<TSchema>
 						}
-					})
+					}) satisfies SubmitSucceededEventType<TSchema, TFormAction, TKey>
 				);
 			} else if (result.type == 'redirect') {
 				node.dispatchEvent(
@@ -126,7 +97,7 @@ function _defaultSubmitHandler<
 								: new URL(result.location),
 							formData: Object.fromEntries(formData)
 						}
-					})
+					}) satisfies SubmitRedirectedEventType<TSchema>
 				);
 			}
 

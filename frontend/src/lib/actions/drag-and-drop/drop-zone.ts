@@ -1,6 +1,10 @@
 import type { ActionReturn } from 'svelte/action';
 
-export type DropEvent<Data extends object> = CustomEvent<{ data: Data; names: string[] }>;
+export type DropEvent<Data extends object> = CustomEvent<{
+	data: Data;
+	names: string[];
+	originalEvent: DragEvent;
+}>;
 export type CustomDragEvent = CustomEvent<{
 	names: string[];
 	node: HTMLElement;
@@ -45,7 +49,7 @@ export function dropzone<Data extends object>(
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
-			}) as CustomDragEvent
+			}) satisfies CustomDragEvent
 		);
 	}
 
@@ -70,7 +74,7 @@ export function dropzone<Data extends object>(
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
-			}) as CustomDragEvent
+			}) satisfies CustomDragEvent
 		);
 	}
 
@@ -108,9 +112,10 @@ export function dropzone<Data extends object>(
 			new CustomEvent('dropped', {
 				detail: {
 					data: JSON.parse(data),
-					names: _getMatchingDropZoneNames(event, options)
+					names: _getMatchingDropZoneNames(event, options),
+					originalEvent: event
 				}
-			}) as DropEvent<Data>
+			}) satisfies DropEvent<Data>
 		);
 	}
 
@@ -122,7 +127,7 @@ export function dropzone<Data extends object>(
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
-			}) as CustomDragEvent
+			}) satisfies CustomDragEvent
 		);
 	}
 

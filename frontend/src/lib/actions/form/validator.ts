@@ -1,18 +1,12 @@
 import type { ActionReturn } from 'svelte/action';
 import type { z } from 'zod';
 import { convertFormDataToObject } from './utils';
-
-export type ValidatorErrorsType<T extends z.ZodTypeAny> = z.typeToFlattenedError<
-	z.infer<T>
->['fieldErrors'];
-
-export type ValidatorOptions<TSchema extends z.ZodTypeAny> = {
-	schema: TSchema;
-};
-
-export type ValidatorErrorEvent<TSchema extends z.ZodTypeAny> = {
-	'on:submitclienterror': (e: CustomEvent<ValidatorErrorsType<TSchema>>) => void;
-};
+import type {
+	ValidatorOptions,
+	ValidatorErrorEvent,
+	ValidatorErrorsType,
+	SubmitClientErrorEventType
+} from './validator-types';
 
 export function validate<TSchema extends z.ZodTypeAny>(
 	node: HTMLFormElement,
@@ -31,7 +25,11 @@ export function validate<TSchema extends z.ZodTypeAny>(
 		event.preventDefault();
 		event.stopPropagation();
 		event.stopImmediatePropagation();
-		node.dispatchEvent(new CustomEvent('submitclienterror', { detail: errors }));
+		node.dispatchEvent(
+			new CustomEvent('submitclienterror', {
+				detail: errors
+			}) satisfies SubmitClientErrorEventType<TSchema>
+		);
 	};
 
 	node.addEventListener('submit', formClientSideValidateHandler);
