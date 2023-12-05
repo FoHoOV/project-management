@@ -204,18 +204,18 @@ export function updateElementSort<T extends { id: number }>(
 		}
 
 		if (getNextId(elementWithNewOrderId)) {
-			let movingElementMovingId: number | undefined;
+			let movingElementNewMovingId: number | undefined;
 			if (getMovingId(elementWithNewOrderId) == newOrder.id) {
-				movingElementMovingId = movingElementId;
+				movingElementNewMovingId = movingElementId;
 			} else {
-				movingElementMovingId = getMovingId(elementWithNewOrderId);
+				movingElementNewMovingId = getMovingId(elementWithNewOrderId);
 			}
-			if (movingElementMovingId == undefined) {
+			if (movingElementNewMovingId == undefined) {
 				throw new Error(
 					'unexpected behavior, calculated movingElementMovingId was undefined whilst updating elements sorting'
 				);
 			}
-			setMovingId(movingElement, movingElementMovingId);
+			setMovingId(movingElement, movingElementNewMovingId);
 		}
 
 		setNextId(movingElement, getNextId(elementWithNewOrderId));

@@ -122,18 +122,20 @@ def update_element_order[
 
         element_with_new_order_id = get_item_order(new_order["id"])
 
-        moving_element_moving_id = None
+        moving_element_new_moving_id = None
         if element_with_new_order_id is None or (
             element_with_new_order_id is not None
             and element_with_new_order_id.moving_id == new_order["id"]
         ):
-            moving_element_moving_id = moving_id
+            moving_element_new_moving_id = moving_id
         else:
-            moving_element_moving_id = element_with_new_order_id.moving_id
+            moving_element_new_moving_id = element_with_new_order_id.moving_id
 
         if db_moving_element is None and element_with_new_order_id is not None:
             create_order(
-                moving_id, moving_element_moving_id, element_with_new_order_id.next_id
+                moving_id,
+                moving_element_new_moving_id,
+                element_with_new_order_id.next_id,
             )
         elif db_moving_element is not None:
             db_moving_element.next_id = (
@@ -141,7 +143,7 @@ def update_element_order[
                 if element_with_new_order_id is not None
                 else None
             )
-            db_moving_element.moving_id = moving_element_moving_id
+            db_moving_element.moving_id = moving_element_new_moving_id
 
         if element_with_new_order_id is None:
             create_order(new_order["id"], moving_id, moving_id)
