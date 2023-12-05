@@ -9,6 +9,7 @@
 	import { page } from '$app/stores';
 	import { draggable, dropzone, type DropEvent, type CustomDragEvent } from '$lib/actions';
 	import {
+		DROP_EVENT_HANDLED_BY_TODO_ITEM,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		TODO_ITEM_ORDER_DROP_ZONE
 	} from '$components/todo/constants';
@@ -74,7 +75,7 @@
 		const moveUp = state == 'drop-zone-top-activated';
 
 		state = 'calling-service';
-
+		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 		await callServiceInClient({
 			serviceCall: async () => {
 				const updatingTodo = moveUp ? event.detail.data : todo;
@@ -82,12 +83,13 @@
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: updatingTodo.id,
 					moving_id: event.detail.data.id,
+					new_category_id: todo.category_id,
 					next_id: nextId
 				});
 				todos.updateTodoSort(
 					{ ...updatingTodo, order: { next_id: nextId } },
-					event.detail.data.id,
-					event.detail.data.category_id !== todo.category_id
+					event.detail.data,
+					todo.category_id
 				);
 				state = 'none';
 			},
@@ -96,6 +98,12 @@
 				state = 'none';
 			}
 		});
+
+		if (event.detail.data.category_id != todo.category_id) {
+			// we stopPropagation cause if the category ids are not the same we've already updated the category_id for this element
+			event.detail.originalEvent.stopPropagation();
+			event.detail.originalEvent.preventDefault();
+		}
 	}
 
 	function handleDragHover(event: CustomDragEvent) {

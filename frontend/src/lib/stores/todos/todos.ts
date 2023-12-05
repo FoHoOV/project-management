@@ -12,20 +12,24 @@ import {
 
 const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
 
-const addTodo = (todo: TodoItem): void => {
+const addTodo = (todo: TodoItem, skipSort = false): void => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
 			category.items.push(todo);
-			category.items = sortedTodos(category.items);
+
+			if (!skipSort) {
+				category.items = sortedTodos(category.items);
+			}
+
 			return category;
 		});
 	});
 };
 
-const removeTodo = (todo: TodoItem) => {
+const removeTodo = (todo: TodoItem, skipSort = false) => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
@@ -36,7 +40,11 @@ const removeTodo = (todo: TodoItem) => {
 					setTodoItemNextId(item, getTodoItemNextId(todo));
 				}
 			});
-			category.items = sortedTodos(category.items.filter((value) => value.id !== todo.id));
+
+			if (!skipSort) {
+				category.items = sortedTodos(category.items.filter((value) => value.id !== todo.id));
+			}
+
 			return category;
 		});
 	});
@@ -62,9 +70,18 @@ const updateTodo = (todo: TodoItem) => {
 
 const updateTodoSort = (
 	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
-	movingElementId: number,
+	movingElement: TodoItem,
+	movingElementNewCategoryId: number,
 	skipSort = false
 ) => {
+	if (movingElement.category_id !== movingElementNewCategoryId) {
+		removeTodo(movingElement);
+		addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
+		movingElement.category_id = movingElementNewCategoryId;
+		if (todo.id == movingElement.id) {
+			todo.category_id = movingElementNewCategoryId;
+		}
+	}
 	_update((categories) => {
 		categories = categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
@@ -73,10 +90,10 @@ const updateTodoSort = (
 			updateElementSort(
 				category.items,
 				{
-					...todo,
+					id: todo.id,
 					nextId: todo.order.next_id
 				},
-				movingElementId,
+				movingElement.id,
 				getTodoItemNextId,
 				setTodoItemNextId
 			);

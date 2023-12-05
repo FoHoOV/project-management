@@ -1,24 +1,12 @@
 import type { ActionReturn } from 'svelte/action';
-
-export type DropEvent<Data extends object> = CustomEvent<{ data: Data; names: string[] }>;
-export type CustomDragEvent = CustomEvent<{
-	names: string[];
-	node: HTMLElement;
-	originalEvent: DragEvent;
-}>;
-export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
-	highlighClasses?: string[];
-	model: Data; // I have to w8 for svelte5 for native ts support in markup
-	names: string[];
-	disabled?: boolean;
-};
-
-export type DropZoneEvents<Data extends object> = {
-	'on:dropped': (event: DropEvent<Data>) => void;
-	'on:dragEntered'?: (event: CustomDragEvent) => void;
-	'on:dragLeft'?: (event: CustomDragEvent) => void;
-	'on:dragHover'?: (event: CustomDragEvent) => void;
-};
+import type {
+	DropZoneOptions,
+	DropZoneEvents,
+	CustomDragEvent,
+	DropEvent
+} from './drop-zone-types';
+import { _CUSTOM_DRAGGABLE_EVENT_DATA } from './constants';
+import { getDraggingElement } from './shared';
 
 export function dropzone<Data extends object>(
 	node: HTMLElement,
@@ -45,7 +33,7 @@ export function dropzone<Data extends object>(
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
-			}) as CustomDragEvent
+			}) satisfies CustomDragEvent
 		);
 	}
 
@@ -70,7 +58,7 @@ export function dropzone<Data extends object>(
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
-			}) as CustomDragEvent
+			}) satisfies CustomDragEvent
 		);
 	}
 
@@ -104,13 +92,21 @@ export function dropzone<Data extends object>(
 
 		const data = event.dataTransfer.getData('text/plain');
 		node.classList.remove(...(options.highlighClasses as string[]));
+		const draggingElement = getDraggingElement() as HTMLElement;
 		node.dispatchEvent(
 			new CustomEvent('dropped', {
 				detail: {
 					data: JSON.parse(data),
-					names: _getMatchingDropZoneNames(event, options)
+					names: _getMatchingDropZoneNames(event, options),
+					originalEvent: event,
+					getCustomEventData: <T>(key: string) => {
+						return _getCustomEventData(draggingElement, key) as T | undefined;
+					},
+					addCustomEventData: (key: string, data: any) => {
+						_addCustomEventData(draggingElement, key, data);
+					}
 				}
-			}) as DropEvent<Data>
+			}) satisfies DropEvent<Data>
 		);
 	}
 
@@ -122,7 +118,7 @@ export function dropzone<Data extends object>(
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
 				}
-			}) as CustomDragEvent
+			}) satisfies CustomDragEvent
 		);
 	}
 
@@ -221,4 +217,25 @@ function _checkIfIsInSameDropZoneName<Data extends object>(
 		node.dataset.dropZoneNames === JSON.stringify(options.names) &&
 		_existInDropZoneTargetNames(event, options)
 	);
+}
+
+function _addCustomEventData(draggingElement: HTMLElement, key: string, data: any) {
+	const customData = draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA];
+	let parsedCustomData: Record<string, any> = {};
+	if (customData && customData.trim().length > 0) {
+		parsedCustomData = JSON.parse(customData);
+	}
+	draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA] = JSON.stringify({
+		...parsedCustomData,
+		[key]: data
+	});
+}
+
+function _getCustomEventData(draggingElement: HTMLElement, key: string): unknown | undefined {
+	const customData = draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA];
+	let parsedCustomData: Record<string, any> = {};
+	if (customData && customData.trim().length > 0) {
+		parsedCustomData = JSON.parse(customData);
+	}
+	return parsedCustomData[key];
 }

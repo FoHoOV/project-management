@@ -1,10 +1,6 @@
+import type { DraggableOptions } from './draggable-types';
 import { generateDropZoneTargetNames } from './drop-zone';
-
-export type DraggableOptions<Data extends object> = Partial<DataTransfer> & {
-	data: Data;
-	targetDropZoneNames: string[];
-	disabled?: boolean;
-};
+import { setDraggingElement } from './shared';
 
 export function draggable<Data extends object>(node: HTMLElement, options: DraggableOptions<Data>) {
 	_init(node, options);
@@ -13,7 +9,7 @@ export function draggable<Data extends object>(node: HTMLElement, options: Dragg
 		if (!e.dataTransfer || e.target !== node) {
 			return;
 		}
-
+		setDraggingElement(node);
 		e.dataTransfer.setData('text/plain', JSON.stringify({ ...options.data }));
 		e.dataTransfer.setData(generateDropZoneTargetNames(options.targetDropZoneNames), '');
 	}

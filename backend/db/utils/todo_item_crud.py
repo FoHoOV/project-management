@@ -67,17 +67,13 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     validate_todo_item_belongs_to_user(db, todo.id, user_id)
 
     db_item = (
-        db.query(TodoItem)
-        .filter(TodoItem.id == todo.id)
-        .join(TodoCategory)
-        .filter(TodoCategory.id == todo.category_id)
-        .first()
+        db.query(TodoItem).filter(TodoItem.id == todo.id).join(TodoCategory).first()
     )
 
     if not db_item:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
-    if todo.new_category_id is not None:
+    if todo.new_category_id is not None and db_item.category_id != todo.new_category_id:
         validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
         # update item.next to current.next where item.next = current.todo_id
         db.query(TodoItemOrder).filter(TodoItemOrder.next_id == todo.id).update(
@@ -103,9 +99,21 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
     validate_todo_item_belongs_to_user(db, new_order.id, user_id)
     validate_todo_item_belongs_to_user(db, new_order.next_id, user_id)
+    validate_todo_item_belongs_to_user(db, new_order.moving_id, user_id)
 
     def create_order(id: int, next_id: int | None):
         db.add(TodoItemOrder(todo_id=id, next_id=next_id))
+
+    def get_ordered_todo_item(id: int):
+        return db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == id).first()
+
+    update_item(
+        db,
+        TodoItemUpdateItem.model_construct(
+            id=new_order.moving_id, new_category_id=new_order.new_category_id
+        ),
+        user_id,
+    )
 
     update_element_order(
         TodoItemOrder,
@@ -113,6 +121,7 @@ def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
         new_order.moving_id,
         {"id": new_order.id, "next_id": new_order.next_id},
         create_order,
+        get_ordered_todo_item,
     )
 
     db.commit()
