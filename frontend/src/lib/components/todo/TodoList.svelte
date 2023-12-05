@@ -187,7 +187,7 @@
 			</div>
 			<div>
 				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
-				<span class="text-lg font-bold">{category.title}</span>
+				<span class="text-lg font-bold">{category.description}</span>
 			</div>
 		</div>
 		<div class="mt-2 flex w-full gap-2">
