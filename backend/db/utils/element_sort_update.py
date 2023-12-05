@@ -131,15 +131,11 @@ def update_element_order[
         else:
             moving_element_moving_id = element_with_new_order_id.moving_id
 
-        if db_moving_element is None:
+        if db_moving_element is None and element_with_new_order_id is not None:
             create_order(
-                moving_id,
-                moving_element_moving_id,
-                element_with_new_order_id.next_id
-                if element_with_new_order_id is not None
-                else None,
+                moving_id, moving_element_moving_id, element_with_new_order_id.next_id
             )
-        else:
+        elif db_moving_element is not None:
             db_moving_element.next_id = (
                 element_with_new_order_id.next_id
                 if element_with_new_order_id is not None

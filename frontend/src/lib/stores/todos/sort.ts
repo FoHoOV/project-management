@@ -203,19 +203,22 @@ export function updateElementSort<T extends { id: number }>(
 			throw new Error('elementWithNewOrder.id not found in dataset');
 		}
 
-		let movingElementMovingId: number | undefined;
-		if (getMovingId(elementWithNewOrderId) == newOrder.id) {
-			movingElementMovingId = movingElementId;
-		} else {
-			movingElementMovingId = getMovingId(elementWithNewOrderId);
+		if (getNextId(elementWithNewOrderId)) {
+			let movingElementMovingId: number | undefined;
+			if (getMovingId(elementWithNewOrderId) == newOrder.id) {
+				movingElementMovingId = movingElementId;
+			} else {
+				movingElementMovingId = getMovingId(elementWithNewOrderId);
+			}
+			if (movingElementMovingId == undefined) {
+				throw new Error(
+					'unexpected behavior, calculated movingElementMovingId was undefined whilst updating elements sorting'
+				);
+			}
+			setMovingId(movingElement, movingElementMovingId);
 		}
-		if (movingElementMovingId == undefined) {
-			throw new Error(
-				'unexpected behavior, calculated movingElementMovingId was undefined whilst updating elements sorting'
-			);
-		}
+
 		setNextId(movingElement, getNextId(elementWithNewOrderId));
-		setMovingId(movingElement, movingElementMovingId);
 		setNextId(elementWithNewOrderId, movingElementId);
 		setMovingId(elementWithNewOrderId, movingElementId);
 	} else {
