@@ -95,6 +95,16 @@ def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
             )
         )
 
+    def get_todo_category_order(id: int):
+        return (
+            db.query(TodoCategoryOrder)
+            .filter(
+                TodoCategoryOrder.project_id == new_order.project_id,
+                TodoCategoryOrder.category_id == id,
+            )
+            .first()
+        )
+
     update_element_order(
         TodoCategoryOrder,  # type: ignore TODO: fix
         db.query(TodoCategoryOrder).filter(
@@ -103,6 +113,7 @@ def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
         new_order.moving_id,
         {"id": new_order.id, "next_id": new_order.next_id},
         create_order,
+        get_todo_category_order,  # type: ignore TODO: fix
     )
 
     db.commit()

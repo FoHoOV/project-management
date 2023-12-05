@@ -26,8 +26,8 @@ class TodoItemCreate(TodoItemBase):
 class TodoItemUpdateItem(TodoItemBase):
     id: int
     new_category_id: int | None = None
-    title: str | None
-    description: str | None
+    title: str | None = None
+    description: str | None = None
     is_done: bool | None = None
 
 

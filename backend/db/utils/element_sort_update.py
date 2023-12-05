@@ -1,3 +1,4 @@
+from ast import Call
 from dataclasses import dataclass
 from tkinter import NO
 from typing import Callable, Type, TypedDict
@@ -65,7 +66,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Query, Session, MappedColumn
 
 
 class OrderedItem(DeclarativeBase):
-    id: MappedColumn[int]
     next_id: MappedColumn[int | None]
 
 
@@ -82,9 +82,10 @@ def update_element_order[
     moving_id: int,
     new_order: NewOrder,
     create_order: Callable[[int, int | None], None],
+    get_item: Callable[[int], TOrderedItemClass | None],
 ):
     # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
-    db_moving_element = order_query.filter(order_class.id == moving_id).first()
+    db_moving_element = get_item(moving_id)
 
     order_query.filter(order_class.next_id == moving_id).update(
         {
@@ -115,9 +116,7 @@ def update_element_order[
         # X 4 3 2 1 Y
         # 1 -> 4 with (moving = 4): X 3 2 1 4 Y
 
-        element_with_new_order_id = order_query.filter(
-            order_class.id == new_order["id"]
-        ).first()
+        element_with_new_order_id = get_item(new_order["id"])
 
         if db_moving_element is None:
             create_order(
