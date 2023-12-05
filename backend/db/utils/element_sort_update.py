@@ -103,16 +103,25 @@ def update_element_order[
             order_class.next_id == new_order["next_id"]
         ).first()
 
+        moving_element_new_moving_id = None
+        if existing_element_pointing_to_new_next is None or (
+            existing_element_pointing_to_new_next is not None
+            and existing_element_pointing_to_new_next.moving_id == new_order["next_id"]
+        ):
+            moving_element_new_moving_id = new_order["next_id"]
+        else:
+            moving_element_new_moving_id = moving_id
+
         if existing_element_pointing_to_new_next is not None:
             existing_element_pointing_to_new_next.next_id = moving_id
             if existing_element_pointing_to_new_next.moving_id == new_order["next_id"]:
                 existing_element_pointing_to_new_next.moving_id = moving_id
 
         if db_moving_element is None:
-            create_order(moving_id, moving_id, new_order["next_id"])
+            create_order(moving_id, moving_element_new_moving_id, new_order["next_id"])
         else:
             db_moving_element.next_id = new_order["next_id"]
-            db_moving_element.moving_id = moving_id
+            db_moving_element.moving_id = moving_element_new_moving_id
     elif moving_id == new_order["next_id"]:
         # X 4 3 2 1 Y
         # 4 -> 1 with (moving = 1): X 4 1 3 2 Y

@@ -183,6 +183,18 @@ export function updateElementSort<T extends { id: number }>(
 		const existingElementPointingToNewNext = elements.find(
 			(value) => getNextId(value) == newOrder.nextId
 		);
+
+		let movingElementNewMovingId: number | undefined;
+
+		if (
+			!existingElementPointingToNewNext ||
+			getMovingId(existingElementPointingToNewNext) == newOrder.nextId
+		) {
+			movingElementNewMovingId = newOrder.nextId;
+		} else {
+			movingElementNewMovingId = movingElementId;
+		}
+
 		if (existingElementPointingToNewNext) {
 			setNextId(existingElementPointingToNewNext, movingElementId);
 			if (getMovingId(existingElementPointingToNewNext) == newOrder.nextId) {
@@ -190,7 +202,7 @@ export function updateElementSort<T extends { id: number }>(
 			}
 		}
 		setNextId(movingElement, newOrder.nextId);
-		setMovingId(movingElement, movingElementId);
+		setMovingId(movingElement, movingElementNewMovingId);
 	} else if (movingElementId == newOrder.nextId) {
 		// X 4 3 2 1 Y
 		// 4 -> 1 with (moving = 1): X 4 1 3 2 Y
