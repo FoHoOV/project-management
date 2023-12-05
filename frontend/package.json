@@ -1,11 +1,11 @@
 {
-	"name": "tut2",
+	"name": "todos",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "vite preview --port 5174",
 		"test": "npm run test:integration && npm run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -18,7 +18,7 @@
 		"open-api:generate:linux": "rm -rf ./src/lib/generated-client && npm run open-api:generate:shared && npm run open-api:zod:linux",
 		"open-api:zod:linux": "mkdirp ./src/lib/generated-client/zod && npm run open-api:zod:shared",
 		"open-api:generate:shared": "openapi-generator-cli generate --generator-key typescript-fetch ",
-		"open-api:zod:shared":"typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js"
+		"open-api:zod:shared": "typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js"
 	},
 	"devDependencies": {
 		"@openapitools/openapi-generator-cli": "^2.7.0",
