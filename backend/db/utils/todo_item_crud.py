@@ -81,8 +81,8 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
         delete_item_from_sorted_items(
             db,
-            TodoItem,
-            db.query(TodoItem),
+            TodoItemOrder,
+            db.query(TodoItemOrder),
             todo.id,
             lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
             lambda item: _get_todo_id_from_ordered_item(item),
@@ -140,8 +140,8 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
 
     delete_item_from_sorted_items(
         db,
-        TodoItem,
-        db.query(TodoItem),
+        TodoItemOrder,
+        db.query(TodoItemOrder),
         todo.id,
         lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
         lambda item: _get_todo_id_from_ordered_item(item),

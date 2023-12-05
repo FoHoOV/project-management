@@ -52,6 +52,7 @@ export function sortByCustomOrder<T extends { id: number }>(
 	let index = 0;
 	let mutations = 0;
 	let numberOfIterations = 0;
+	let movedElementIds: number[] = [];
 
 	const increaseIndex = () => {
 		index += 1;
@@ -60,6 +61,7 @@ export function sortByCustomOrder<T extends { id: number }>(
 			// mutations should be 0 when the list is sorted
 			index = 0;
 			mutations = 0;
+			movedElementIds = [];
 		}
 	};
 
@@ -74,6 +76,7 @@ export function sortByCustomOrder<T extends { id: number }>(
 		elements[currentIndex] = null;
 		elements.splice(nextElementIndex, 0, currentElement);
 		mutations += 1;
+		movedElementIds.push(currentElement.id);
 	};
 
 	const moveOtherToRightOfCurrent = (
@@ -90,6 +93,7 @@ export function sortByCustomOrder<T extends { id: number }>(
 		elements[nextElementIndex] = null;
 		elements.splice(currentIndex + 1, 0, savedNextElement);
 		mutations += 1;
+		movedElementIds.push(nextId);
 	};
 
 	const updateNumberOfIterations = () => {
@@ -126,7 +130,10 @@ export function sortByCustomOrder<T extends { id: number }>(
 			throw new Error('database error, for some reason element.next = element.id');
 		}
 
-		if (getMovingId(element) === element.id) {
+		if (
+			getMovingId(element) === element.id &&
+			!movedElementIds.find((value) => value == element.id)
+		) {
 			moveCurrentToLeftOfNext(index, nextElementIndex, element);
 		} else {
 			moveOtherToRightOfCurrent(index, nextElementIndex, nextId);
@@ -187,7 +194,7 @@ export function updateElementSort<T extends { id: number }>(
 		let movingElementNewMovingId: number | undefined;
 
 		if (
-			!existingElementPointingToNewNext ||
+			existingElementPointingToNewNext &&
 			getMovingId(existingElementPointingToNewNext) == newOrder.nextId
 		) {
 			movingElementNewMovingId = newOrder.nextId;

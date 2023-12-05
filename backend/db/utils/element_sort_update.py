@@ -104,7 +104,7 @@ def update_element_order[
         ).first()
 
         moving_element_new_moving_id = None
-        if existing_element_pointing_to_new_next is None or (
+        if (
             existing_element_pointing_to_new_next is not None
             and existing_element_pointing_to_new_next.moving_id == new_order["next_id"]
         ):
