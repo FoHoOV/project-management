@@ -79,25 +79,13 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     if todo.new_category_id is not None and db_item.category_id != todo.new_category_id:
         validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
 
-        def get_todo_item_order(id: int):
-            return (
-                db.query(TodoItemOrder)
-                .filter(
-                    TodoItemOrder.todo_id == id,
-                )
-                .first()
-            )
-
-        def get_item_id(todo_item_order: TodoItemOrder):
-            return todo_item_order.todo_id
-
         delete_item_from_sorted_items(
             db,
             TodoItem,
             db.query(TodoItem),
             todo.id,
-            get_todo_item_order,
-            get_item_id,
+            lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
+            lambda item: _get_todo_id_from_ordered_item(item),
         )
         db_item.category_id = todo.new_category_id
 
@@ -123,9 +111,6 @@ def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
     def create_order(id: int, moving_id: int, next_id: int | None):
         db.add(TodoItemOrder(todo_id=id, moving_id=moving_id, next_id=next_id))
 
-    def get_ordered_todo_item(id: int):
-        return db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == id).first()
-
     update_item(
         db,
         TodoItemUpdateItem.model_construct(
@@ -140,7 +125,8 @@ def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
         new_order.moving_id,
         {"id": new_order.id, "next_id": new_order.next_id},
         create_order,
-        get_ordered_todo_item,
+        lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
+        lambda item: _get_todo_id_from_ordered_item(item),
     )
 
     db.commit()
@@ -152,25 +138,13 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
     if not db_item:
         return
 
-    def get_todo_item_order(id: int):
-        return (
-            db.query(TodoItemOrder)
-            .filter(
-                TodoItemOrder.todo_id == id,
-            )
-            .first()
-        )
-
-    def get_item_id(todo_item_order: TodoItemOrder):
-        return todo_item_order.todo_id
-
     delete_item_from_sorted_items(
         db,
         TodoItem,
         db.query(TodoItem),
         todo.id,
-        get_todo_item_order,
-        get_item_id,
+        lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
+        lambda item: _get_todo_id_from_ordered_item(item),
     )
 
     db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
@@ -189,3 +163,11 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         == 0
     ):
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
+
+
+def _get_todo_item_order(db: Session, id: int):
+    return db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == id).first()
+
+
+def _get_todo_id_from_ordered_item(todo_item_order: TodoItemOrder):
+    return todo_item_order.todo_id

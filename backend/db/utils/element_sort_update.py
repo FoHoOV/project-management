@@ -83,17 +83,14 @@ def update_element_order[
     moving_id: int,
     new_order: NewOrder,
     create_order: Callable[[int, int, int | None], None],
-    get_item: Callable[[int], TOrderedItemClass | None],
+    get_item_order: Callable[[int], TOrderedItemClass | None],
+    get_item_id: Callable[[TOrderedItemClass], int],
 ):
     # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
-    db_moving_element = get_item(moving_id)
+    db_moving_element = get_item_order(moving_id)
 
-    order_query.filter(order_class.next_id == moving_id).update(
-        {
-            "next_id": db_moving_element.next_id
-            if db_moving_element is not None
-            else None
-        }
+    _remove_item_from_sorted_items_in_position(
+        order_class, order_query, moving_id, get_item_order, get_item_id
     )
 
     if moving_id == new_order["id"]:
@@ -123,7 +120,7 @@ def update_element_order[
         # X 4 3 2 1 Y
         # 1 -> 4 with (moving = 4): X 3 2 1 4 Y
 
-        element_with_new_order_id = get_item(new_order["id"])
+        element_with_new_order_id = get_item_order(new_order["id"])
 
         moving_element_moving_id = None
         if element_with_new_order_id is None or (
@@ -166,32 +163,50 @@ def delete_item_from_sorted_items[
     order_class: Type[TOrderedItemClass],
     order_query: Query[TOrderedItemClass],
     deleting_item_id: int,
-    get_item: Callable[[int], TOrderedItemClass | None],
+    get_item_order: Callable[[int], TOrderedItemClass | None],
     get_item_id: Callable[[TOrderedItemClass], int],
 ):
+    _remove_item_from_sorted_items_in_position(
+        order_class, order_query, deleting_item_id, get_item_order, get_item_id
+    )
+
     # the validation that deleting_item_id exists and belongs to user is callers responsibility
-    deleting_item_order = get_item(deleting_item_id)
-
-    exiting_item_pointing_to_deleting_item = order_query.filter(
-        order_class.next_id == deleting_item_id,
-    ).first()
-
-    if exiting_item_pointing_to_deleting_item is not None:
-        # update item.next to current.next where item.next = current.category_id
-        moving_id = None
-        if exiting_item_pointing_to_deleting_item.moving_id == deleting_item_id:
-            moving_id = get_item_id(exiting_item_pointing_to_deleting_item)
-        else:
-            moving_id = (
-                deleting_item_order.next_id
-                if deleting_item_order is not None
-                and deleting_item_order.next_id is not None
-                else get_item_id(exiting_item_pointing_to_deleting_item)
-            )
-        exiting_item_pointing_to_deleting_item.next_id = (
-            deleting_item_order.next_id if deleting_item_order is not None else None
-        )
-        exiting_item_pointing_to_deleting_item.moving_id = moving_id
+    deleting_item_order = get_item_order(deleting_item_id)
 
     if deleting_item_order is not None:
         db.delete(deleting_item_order)
+
+
+def _remove_item_from_sorted_items_in_position[
+    TOrderedItemClass: OrderedItem
+](
+    order_class: Type[TOrderedItemClass],
+    order_query: Query[TOrderedItemClass],
+    removing_item_id: int,
+    get_item_order: Callable[[int], TOrderedItemClass | None],
+    get_item_id: Callable[[TOrderedItemClass], int],
+):
+    # the validation that removing_item_id exists and belongs to user is callers responsibility
+    removing_item_order = get_item_order(removing_item_id)
+
+    exiting_item_pointing_to_removing_item = order_query.filter(
+        order_class.next_id == removing_item_id,
+    ).first()
+
+    if exiting_item_pointing_to_removing_item is None:
+        return
+
+    moving_id = None
+    if exiting_item_pointing_to_removing_item.moving_id == removing_item_id:
+        moving_id = get_item_id(exiting_item_pointing_to_removing_item)
+    else:
+        moving_id = (
+            removing_item_order.next_id
+            if removing_item_order is not None
+            and removing_item_order.next_id is not None
+            else get_item_id(exiting_item_pointing_to_removing_item)
+        )
+    exiting_item_pointing_to_removing_item.next_id = (
+        removing_item_order.next_id if removing_item_order is not None else None
+    )
+    exiting_item_pointing_to_removing_item.moving_id = moving_id
