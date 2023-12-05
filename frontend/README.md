@@ -8,6 +8,8 @@ then execute this:
 # create the clients and zod schemas
 npm run open-api:generate:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
 ```
+* OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
+
 Since we need the API url of our backend in our frontend, you will need to create an `.env` file in the root of frontend folder and add the following line:
 
 ```bash
