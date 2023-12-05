@@ -1,10 +1,5 @@
+import type { DraggableOptions } from './draggable-types';
 import { generateDropZoneTargetNames } from './drop-zone';
-
-export type DraggableOptions<Data extends object> = Partial<DataTransfer> & {
-	data: Data;
-	targetDropZoneNames: string[];
-	disabled?: boolean;
-};
 
 export function draggable<Data extends object>(node: HTMLElement, options: DraggableOptions<Data>) {
 	_init(node, options);

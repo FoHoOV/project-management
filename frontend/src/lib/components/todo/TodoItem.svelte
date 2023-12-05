@@ -87,7 +87,7 @@
 				});
 				todos.updateTodoSort(
 					{ ...updatingTodo, order: { next_id: nextId } },
-					event.detail.data.id,
+					event.detail.data,
 					todo.category_id
 				);
 				state = 'none';
@@ -100,8 +100,8 @@
 
 		if (event.detail.data.category_id != todo.category_id) {
 			// we stopPropagation cause if the category ids are not the same we've already updated the category_id for this element
-			event.stopPropagation();
-			event.preventDefault();
+			event.detail.originalEvent.stopPropagation();
+			event.detail.originalEvent.preventDefault();
 		}
 	}
 

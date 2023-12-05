@@ -62,24 +62,19 @@ const updateTodo = (todo: TodoItem) => {
 
 const updateTodoSort = (
 	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
-	movingElementId: number,
+	movingElement: TodoItem,
 	movingElementNewCategoryId: number,
 	skipSort = false
 ) => {
+	if (movingElement.category_id !== movingElementNewCategoryId) {
+		removeTodo(movingElement);
+		addTodo({ ...movingElement, category_id: movingElementNewCategoryId });
+		movingElement.category_id = movingElementNewCategoryId;
+		if (todo.id == movingElement.id) {
+			todo.category_id = movingElementNewCategoryId;
+		}
+	}
 	_update((categories) => {
-		const todoItem = categories
-			.find((category) => category.id == todo.category_id)
-			?.items.find((item) => item.id == movingElementId);
-
-		if (!todoItem) {
-			throw new Error("todo item not found while updating the todo item's sort");
-		}
-
-		if (todoItem.category_id !== movingElementNewCategoryId) {
-			removeTodo(todoItem);
-			addTodo({ ...todoItem, category_id: movingElementNewCategoryId });
-		}
-
 		categories = categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;
@@ -87,10 +82,10 @@ const updateTodoSort = (
 			updateElementSort(
 				category.items,
 				{
-					...todo,
+					id: todo.id,
 					nextId: todo.order.next_id
 				},
-				movingElementId,
+				movingElement.id,
 				getTodoItemNextId,
 				setTodoItemNextId
 			);

@@ -1,28 +1,10 @@
 import type { ActionReturn } from 'svelte/action';
-
-export type DropEvent<Data extends object> = CustomEvent<{
-	data: Data;
-	names: string[];
-	originalEvent: DragEvent;
-}>;
-export type CustomDragEvent = CustomEvent<{
-	names: string[];
-	node: HTMLElement;
-	originalEvent: DragEvent;
-}>;
-export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
-	highlighClasses?: string[];
-	model: Data; // I have to w8 for svelte5 for native ts support in markup
-	names: string[];
-	disabled?: boolean;
-};
-
-export type DropZoneEvents<Data extends object> = {
-	'on:dropped': (event: DropEvent<Data>) => void;
-	'on:dragEntered'?: (event: CustomDragEvent) => void;
-	'on:dragLeft'?: (event: CustomDragEvent) => void;
-	'on:dragHover'?: (event: CustomDragEvent) => void;
-};
+import type {
+	DropZoneOptions,
+	DropZoneEvents,
+	CustomDragEvent,
+	DropEvent
+} from './drop-zone-types';
 
 export function dropzone<Data extends object>(
 	node: HTMLElement,
