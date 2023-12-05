@@ -5,6 +5,8 @@ import type {
 	CustomDragEvent,
 	DropEvent
 } from './drop-zone-types';
+import { _CUSTOM_DRAGGABLE_EVENT_DATA } from './constants';
+import { getDraggingElement } from './shared';
 
 export function dropzone<Data extends object>(
 	node: HTMLElement,
@@ -90,12 +92,19 @@ export function dropzone<Data extends object>(
 
 		const data = event.dataTransfer.getData('text/plain');
 		node.classList.remove(...(options.highlighClasses as string[]));
+		const draggingElement = getDraggingElement() as HTMLElement;
 		node.dispatchEvent(
 			new CustomEvent('dropped', {
 				detail: {
 					data: JSON.parse(data),
 					names: _getMatchingDropZoneNames(event, options),
-					originalEvent: event
+					originalEvent: event,
+					getCustomEventData: <T>(key: string) => {
+						return _getCustomEventData(draggingElement, key) as T | undefined;
+					},
+					addCustomEventData: (key: string, data: any) => {
+						_addCustomEventData(draggingElement, key, data);
+					}
 				}
 			}) satisfies DropEvent<Data>
 		);
@@ -208,4 +217,25 @@ function _checkIfIsInSameDropZoneName<Data extends object>(
 		node.dataset.dropZoneNames === JSON.stringify(options.names) &&
 		_existInDropZoneTargetNames(event, options)
 	);
+}
+
+function _addCustomEventData(draggingElement: HTMLElement, key: string, data: any) {
+	const customData = draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA];
+	let parsedCustomData: Record<string, any> = {};
+	if (customData && customData.trim().length > 0) {
+		parsedCustomData = JSON.parse(customData);
+	}
+	draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA] = JSON.stringify({
+		...parsedCustomData,
+		[key]: data
+	});
+}
+
+function _getCustomEventData(draggingElement: HTMLElement, key: string): unknown | undefined {
+	const customData = draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA];
+	let parsedCustomData: Record<string, any> = {};
+	if (customData && customData.trim().length > 0) {
+		parsedCustomData = JSON.parse(customData);
+	}
+	return parsedCustomData[key];
 }

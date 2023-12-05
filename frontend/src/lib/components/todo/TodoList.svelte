@@ -20,6 +20,7 @@
 	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
 	import {
+		DROP_EVENT_HANDLED_BY_TODO_ITEM,
 		TODO_CATEGORY_ORDER_DROP_ZONE,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME
 	} from '$components/todo/constants';
@@ -108,8 +109,11 @@
 	}
 
 	async function handleTodoItemDropped(event: DropEvent<TodoItem>) {
-		if (category.items.find((todo) => event.detail.data.id == todo.id)) {
-			// if dropped on itself then we don't need to do anything
+		if (
+			category.items.find((todo) => event.detail.data.id == todo.id) ||
+			event.detail.getCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM)
+		) {
+			state = 'none';
 			return;
 		}
 

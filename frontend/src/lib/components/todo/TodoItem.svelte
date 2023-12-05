@@ -9,6 +9,7 @@
 	import { page } from '$app/stores';
 	import { draggable, dropzone, type DropEvent, type CustomDragEvent } from '$lib/actions';
 	import {
+		DROP_EVENT_HANDLED_BY_TODO_ITEM,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		TODO_ITEM_ORDER_DROP_ZONE
 	} from '$components/todo/constants';
@@ -74,7 +75,7 @@
 		const moveUp = state == 'drop-zone-top-activated';
 
 		state = 'calling-service';
-
+		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 		await callServiceInClient({
 			serviceCall: async () => {
 				const updatingTodo = moveUp ? event.detail.data : todo;

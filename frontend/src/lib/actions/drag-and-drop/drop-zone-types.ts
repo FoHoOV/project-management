@@ -2,6 +2,8 @@ export type DropEvent<Data extends object> = CustomEvent<{
 	data: Data;
 	names: string[];
 	originalEvent: DragEvent;
+	addCustomEventData: (key: string, data: any) => void;
+	getCustomEventData: <T>(key: string) => T | undefined;
 }>;
 export type CustomDragEvent = CustomEvent<{
 	names: string[];
