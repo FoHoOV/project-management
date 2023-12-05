@@ -137,4 +137,4 @@ def update_element_order[
         else:
             element_with_new_order_id.next_id = moving_id
     else:
-        raise Exception("unhandled case")
+        raise Exception("unhandled sorting case")
