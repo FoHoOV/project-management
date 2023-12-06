@@ -240,19 +240,19 @@ export function removeElementFromSortedList<T extends { id: number }>(
 
 	if (getLeftId(deletingElement) !== null) {
 		const elementPointingToNewLeft = elements.find(
-			(element) => getLeftId(element) == deletingElement.id
+			(element) => element.id == getLeftId(deletingElement)
 		);
 		if (elementPointingToNewLeft) {
-			setLeftId(elementPointingToNewLeft, getLeftId(deletingElement));
+			setRightId(elementPointingToNewLeft, getRightId(deletingElement));
 		}
 	}
 
 	if (getRightId(deletingElement) !== null) {
 		const elementPointingToNewRight = elements.find(
-			(element) => getRightId(element) == deletingElement.id
+			(element) => element.id == getRightId(deletingElement)
 		);
 		if (elementPointingToNewRight) {
-			setRightId(elementPointingToNewRight, getRightId(deletingElement));
+			setLeftId(elementPointingToNewRight, getLeftId(deletingElement));
 		}
 	}
 

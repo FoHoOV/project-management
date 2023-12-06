@@ -19,8 +19,8 @@ class TodoItemOrder(BasesWithCreatedDate):
     moving_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id"), unique=True)
     todo: Mapped["TodoItem"] = relationship(foreign_keys=[todo_id], single_parent=True, back_populates="order")  # type: ignore
 
-    todo_id_and_left_id_check = CheckConstraint("todo_id != left_id")
-    todo_id_and_right_id_check = CheckConstraint("todo_id != right_id")
-    left_id_and_right_id_check = CheckConstraint(
-        "left_id != null and left_id != right_id"
+    __table_args__ = (
+        CheckConstraint("todo_id != left_id"),
+        CheckConstraint("todo_id != right_id"),
+        CheckConstraint("left_id != null and left_id != right_id"),
     )

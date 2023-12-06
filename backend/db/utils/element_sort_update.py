@@ -117,14 +117,14 @@ def _remove_item_from_sorted_items_in_position[
         return
 
     if removing_item_order.left_id is not None:
-        order_query.filter(order_class.left_id == removing_item_id).update(
-            {"left_id": removing_item_order.left_id}
+        order_query.filter(order_class.id == removing_item_order.left_id).update(
+            {"right_id": removing_item_order.right_id}
         )
 
     if removing_item_order.right_id is not None:
         order_query.filter(
-            order_class.right_id == removing_item_id,
-        ).update({"right_id": removing_item_order.right_id})
+            order_class.id == removing_item_order.right_id,
+        ).update({"left_id": removing_item_order.left_id})
 
     removing_item_order.left_id = None
     removing_item_order.right_id = None

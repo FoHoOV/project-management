@@ -18,16 +18,12 @@ class TodoCategoryOrder(BasesWithCreatedDate):
         ForeignKey("todo_category.id"), nullable=True
     )
     category: Mapped["TodoCategory"] = relationship(foreign_keys=[category_id], cascade="all, delete-orphan", single_parent=True, back_populates="orders")  # type: ignore
-    project_id_and_category_id_ux = UniqueConstraint("project_id", "category_id")
-    project_id_and_right_category_id_ux = UniqueConstraint(
-        "project_id", "category_id", "right_id"
-    )
-    project_id_and_left_category_id_ux = UniqueConstraint(
-        "project_id", "category_id", "left_id"
-    )
 
-    category_id_and_left_id_check = CheckConstraint("category_id != left_id")
-    category_id_and_right_id_check = CheckConstraint("category_id != right_id")
-    left_id_and_right_id_check = CheckConstraint(
-        "left_id != null and left_id != right_id"
+    __table_args__ = (
+        UniqueConstraint("project_id", "category_id"),
+        UniqueConstraint("project_id", "left_id"),
+        UniqueConstraint("project_id", "right_id"),
+        CheckConstraint("category_id != left_id"),
+        CheckConstraint("category_id != right_id"),
+        CheckConstraint("left_id != null and left_id != right_id"),
     )

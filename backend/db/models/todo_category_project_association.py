@@ -12,4 +12,4 @@ class TodoCategoryProjectAssociation(BasesWithCreatedDate):
     )
     project_id: Mapped[int] = mapped_column(ForeignKey("project.id"), primary_key=True)
 
-    project_id_and_category_id_ux = UniqueConstraint("project_id", "category_id")
+    __table_args__ = (UniqueConstraint("project_id", "todo_category_id"),)
