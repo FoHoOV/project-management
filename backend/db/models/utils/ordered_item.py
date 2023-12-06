@@ -1,20 +1,55 @@
-from dataclasses import dataclass
-from tkinter import NO
+from typing import Type
+from sqlalchemy.orm import Mapped, Query
+from db.models.base import DeclarativeBase
+from db.utils.exceptions import UserFriendlyError
+
 from typing import Callable, Type, TypedDict
-from sqlalchemy.orm import DeclarativeBase, Query, Session, MappedColumn
+from sqlalchemy.orm import DeclarativeBase, Query, Session
 
 from db.utils.exceptions import UserFriendlyError
 
 
 class OrderedItem(DeclarativeBase):
-    left_id: MappedColumn[int | None]
-    right_id: MappedColumn[int | None]
+    left_id: Mapped[int | None]
+    right_id: Mapped[int | None]
 
 
 class NewOrder(TypedDict):
     item_id: int
     right_id: int | None
     left_id: int | None
+
+
+def cyclic_order_validator[
+    TOrderedItemClass: OrderedItem
+](
+    order_class: Type[TOrderedItemClass],
+    order_query: Query[TOrderedItemClass],
+    item_id_column: Mapped[int],
+    item_id: int,
+    new_left_id: int | None,
+    new_right_id: int | None,
+):
+    if new_left_id is not None and (
+        order_query.filter(
+            order_class.right_id == item_id,
+            item_id_column != new_left_id,
+        ).count()
+        > 0
+    ):
+        raise UserFriendlyError(
+            f"these values create a cyclic order: {item_id=}, {new_left_id=}, {new_right_id=}"
+        )
+    if new_right_id is not None and (
+        order_query.filter(
+            order_class.left_id == item_id,
+            item_id_column != new_right_id,
+        ).count()
+        > 0
+    ):
+        raise UserFriendlyError(
+            f"these values create a cyclic order: {item_id=}, {new_left_id=}, {new_right_id=}"
+        )
 
 
 def update_element_order[

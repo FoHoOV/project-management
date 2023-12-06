@@ -1,8 +1,9 @@
-from sqlalchemy import CheckConstraint, ForeignKey
-from sqlalchemy.orm import Mapped
+from sqlalchemy import CheckConstraint, Connection, ForeignKey, event
+from sqlalchemy.orm import Mapped, Session, Mapper
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
+from db.models.utils.ordered_item import cyclic_order_validator
 
 
 class TodoItemOrder(BasesWithCreatedDate):
@@ -24,3 +25,33 @@ class TodoItemOrder(BasesWithCreatedDate):
         CheckConstraint("todo_id != right_id"),
         CheckConstraint("left_id != null and left_id != right_id"),
     )
+
+
+@event.listens_for(TodoItemOrder, "before_insert")
+def validate_advanced_cyclic_order_before_insert(
+    mapper: Mapper, connection: Connection, target: TodoItemOrder
+):
+    with Session(connection.engine) as session:
+        cyclic_order_validator(
+            TodoItemOrder,
+            session.query(TodoItemOrder),
+            TodoItemOrder.todo_id,
+            target.todo_id,
+            target.left_id,
+            target.right_id,
+        )
+
+
+@event.listens_for(TodoItemOrder, "before_update")
+def validate_advanced_cyclic_order_before_update(
+    mapper: Mapper, connection: Connection, target: TodoItemOrder
+):
+    with Session(connection.engine) as session:
+        cyclic_order_validator(
+            TodoItemOrder,
+            session.query(TodoItemOrder),
+            TodoItemOrder.todo_id,
+            target.todo_id,
+            target.left_id,
+            target.right_id,
+        )

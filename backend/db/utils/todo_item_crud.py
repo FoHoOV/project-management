@@ -1,5 +1,5 @@
 from typing import List
-from db.utils.element_sort_update import (
+from db.models.utils.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
 )
