@@ -9,7 +9,8 @@ import {
 	sortedCategories,
 	getTodoCategoryLeftId,
 	setTodoCategoryLeftId,
-	getTodoItemLeftId
+	getTodoItemLeftId,
+	removeElementFromSortedList
 } from './sort';
 
 const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
@@ -37,11 +38,15 @@ const removeTodo = (todo: TodoItem, skipSort = false) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
-			category.items.forEach((item) => {
-				if (getTodoItemRightId(item) === todo.id) {
-					setTodoItemRightId(item, getTodoItemRightId(todo));
-				}
-			});
+
+			removeElementFromSortedList(
+				category.items,
+				todo.id,
+				getTodoItemLeftId,
+				getTodoItemRightId,
+				setTodoItemLeftId,
+				setTodoItemRightId
+			);
 
 			if (!skipSort) {
 				category.items = sortedTodos(category.items.filter((value) => value.id !== todo.id));
@@ -132,13 +137,15 @@ const updateCategory = (category: TodoCategory) => {
 
 const removeCategory = (category: TodoCategory) => {
 	_update((categories) => {
-		const result = categories.filter((value) => value.id !== category.id);
-		result.forEach((value) => {
-			if (getTodoCategoryLeftId(value) === category.id) {
-				setTodoCategoryLeftId(value, getTodoCategoryLeftId(category));
-			}
-		});
-		return sortedCategories(result);
+		removeElementFromSortedList(
+			categories,
+			category.id,
+			getTodoCategoryLeftId,
+			getTodoCategoryRightId,
+			setTodoCategoryLeftId,
+			setTodoCategoryRightId
+		);
+		return categories.filter((value) => value.id !== category.id);
 	});
 };
 
