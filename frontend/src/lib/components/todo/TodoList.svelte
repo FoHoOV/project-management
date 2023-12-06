@@ -27,7 +27,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import { cursorOnElementPositionX } from '$lib/utils';
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
-	import { generateNewOrderForTodoCategory } from '$components/todo/utils';
+	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
 
 	export let category: TodoCategory;
 	export let project: Project;
@@ -91,11 +91,11 @@
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: event.detail.data.id,
 					project_id: project.id,
-					...generateNewOrderForTodoCategory(category, moveLeft, project)
+					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, project)
 				});
 				todos.updateCategoriesSort(
 					event.detail.data,
-					generateNewOrderForTodoCategory(category, moveLeft, project)
+					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, project)
 				);
 				state = 'none';
 			},

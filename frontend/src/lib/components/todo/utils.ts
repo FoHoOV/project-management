@@ -2,19 +2,22 @@ import type { TodoCategory, TodoItem, Project } from '$lib/generated-client/mode
 
 export function generateNewOrderForTodoItem(
 	target: TodoItem,
+	movingItem: TodoItem,
 	moveItemToLeftOfTarget: boolean,
 	category: TodoCategory
 ) {
 	let newOrder: { left_id: number | null; right_id: number | null };
+	const leftTodoItemId = getLeftTodoItemId(target.id, category);
+	const rightTodoItemId = getRightTodoItemId(target.id, category);
 	if (moveItemToLeftOfTarget) {
 		newOrder = {
-			left_id: getLeftTodoItemId(target.id, category),
+			left_id: leftTodoItemId == movingItem.id ? null : leftTodoItemId,
 			right_id: target.id
 		};
 	} else {
 		newOrder = {
 			left_id: target.id,
-			right_id: getRightTodoItemId(target.id, category)
+			right_id: rightTodoItemId == movingItem.id ? null : rightTodoItemId
 		};
 	}
 	return newOrder;
@@ -22,19 +25,22 @@ export function generateNewOrderForTodoItem(
 
 export function generateNewOrderForTodoCategory(
 	target: TodoCategory,
+	movingItem: TodoCategory,
 	moveItemToLeftOfTarget: boolean,
 	project: Project
 ) {
 	let newOrder: { left_id: number | null; right_id: number | null };
+	const leftTodoCategoryId = getLeftTodoCategoryId(target.id, project);
+	const rightTodoCategoryId = getRightTodoCategoryId(target.id, project);
 	if (moveItemToLeftOfTarget) {
 		newOrder = {
-			left_id: getLeftTodoCategoryId(target.id, project),
+			left_id: leftTodoCategoryId == movingItem.id ? null : leftTodoCategoryId,
 			right_id: target.id
 		};
 	} else {
 		newOrder = {
 			left_id: target.id,
-			right_id: getRightTodoCategoryId(target.id, project)
+			right_id: rightTodoCategoryId == movingItem.id ? null : rightTodoCategoryId
 		};
 	}
 	return newOrder;

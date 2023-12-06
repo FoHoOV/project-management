@@ -17,7 +17,7 @@
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { cursorOnElementPositionY } from '$lib/utils';
 	import toasts from '$lib/stores/toasts';
-	import { generateNewOrderForTodoItem } from '$components/todo/utils';
+	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
@@ -83,12 +83,12 @@
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: event.detail.data.id,
 					new_category_id: todo.category_id,
-					...generateNewOrderForTodoItem(todo, moveUp, category)
+					...generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, category)
 				});
 				todos.updateTodoSort(
 					event.detail.data,
 					todo.category_id,
-					generateNewOrderForTodoItem(todo, moveUp, category)
+					generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, category)
 				);
 				state = 'none';
 			},

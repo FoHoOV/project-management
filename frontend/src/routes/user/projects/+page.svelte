@@ -7,6 +7,7 @@
 	import type { ActionData, PageData } from './$types';
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
 	import projects from '$lib/stores/projects/projects';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -17,7 +18,9 @@
 		modal.show();
 	}
 
-	projects.setProjects(data.projects);
+	onMount(() => {
+		projects.setProjects(data.projects);
+	});
 </script>
 
 <ProjectList projects={data.projects}>
