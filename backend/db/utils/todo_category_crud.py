@@ -107,16 +107,13 @@ def update_order(db: Session, moving_item: TodoCategoryUpdateOrder, user_id: int
         db.query(TodoCategoryOrder).filter(
             TodoCategoryOrder.project_id == moving_item.project_id
         ),
+        TodoCategoryOrder.category_id,
         {
             "item_id": moving_item.id,
             "left_id": moving_item.left_id,
             "right_id": moving_item.right_id,
         },
         create_order,
-        lambda category_item_id: _get_todo_category_order(
-            db, category_item_id, moving_item.project_id
-        ),
-        _get_todo_category_id_from_order,
     )
 
     db.commit()
@@ -165,10 +162,8 @@ def detach_from_project(
         db.query(TodoCategoryOrder).filter(
             TodoCategoryOrder.project_id == association.project_id
         ),
+        TodoCategoryOrder.category_id,
         association.category_id,
-        lambda category_item_id: _get_todo_category_order(
-            db, category_item_id, association.project_id
-        ),
     )
 
     db.query(TodoCategoryProjectAssociation).filter(
@@ -202,18 +197,3 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
         == 0
     ):
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
-
-
-def _get_todo_category_order(db: Session, category_id: int, project_id: int):
-    return (
-        db.query(TodoCategoryOrder)
-        .filter(
-            TodoCategoryOrder.project_id == project_id,
-            TodoCategoryOrder.category_id == category_id,
-        )
-        .first()
-    )
-
-
-def _get_todo_category_id_from_order(category_order: TodoCategoryOrder):
-    return category_order.category_id
