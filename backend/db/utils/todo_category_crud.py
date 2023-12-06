@@ -56,7 +56,7 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     db.refresh(db_item)
 
     association = TodoCategoryProjectAssociation(
-        project_id=category.project_id, todo_category_id=db_item.id
+        project_id=category.project_id, category_id=db_item.id
     )
     db.add(association)
     db.commit()
@@ -132,7 +132,7 @@ def attach_to_project(
     )
 
     association_db_item = TodoCategoryProjectAssociation(
-        todo_category_id=association.category_id, project_id=association.project_id
+        category_id=association.category_id, project_id=association.project_id
     )
 
     try:
@@ -168,14 +168,12 @@ def detach_from_project(
 
     db.query(TodoCategoryProjectAssociation).filter(
         TodoCategoryProjectAssociation.project_id == association.project_id,
-        TodoCategoryProjectAssociation.todo_category_id == association.category_id,
+        TodoCategoryProjectAssociation.category_id == association.category_id,
     ).delete()
 
     if (
         db.query(TodoCategoryProjectAssociation)
-        .filter(
-            TodoCategoryProjectAssociation.todo_category_id == association.category_id
-        )
+        .filter(TodoCategoryProjectAssociation.category_id == association.category_id)
         .count()
         == 0
     ):
