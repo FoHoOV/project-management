@@ -39,10 +39,10 @@ def cyclic_order_validator[
             )
         ).count()
 
-        if not has_errors:
-            result = order_query.filter(order_class.left_id == item_id).first()
-            if result is not None and get_item_id(result) != new_right_id:
-                has_errors = True
+        # if not has_errors:
+        #     result = order_query.filter(order_class.left_id == item_id).first()
+        #     if result is not None and get_item_id(result) != new_right_id:
+        #         has_errors = True
 
     if new_right_id is not None and not has_errors:
         has_errors = (
@@ -63,10 +63,10 @@ def cyclic_order_validator[
             > 0
         )
 
-        if not has_errors:
-            result = order_query.filter(order_class.right_id == item_id).first()
-            if result is not None and get_item_id(result) != new_left_id:
-                has_errors = True
+        # if not has_errors:
+        #     result = order_query.filter(order_class.right_id == item_id).first()
+        #     if result is not None and get_item_id(result) != new_left_id:
+        #         has_errors = True
 
     if has_errors:
         raise UserFriendlyError(
