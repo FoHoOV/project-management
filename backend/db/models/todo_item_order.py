@@ -10,7 +10,10 @@ class TodoItemOrder(BasesWithCreatedDate):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     todo_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id"), unique=True)
-    next_id: Mapped[int | None] = mapped_column(
+    left_id: Mapped[int | None] = mapped_column(
+        ForeignKey("todo_item.id"), nullable=True, unique=True
+    )
+    right_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_item.id"), nullable=True, unique=True
     )
     moving_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id"), unique=True)

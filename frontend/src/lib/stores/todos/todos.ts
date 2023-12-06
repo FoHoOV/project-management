@@ -1,15 +1,15 @@
 import { writable } from 'svelte/store';
-import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
-import { getTodoCategoryMovingId, setTodoCategoryMovingId, setTodoItemMovingId } from './sort';
+import type { NullableOrderedItem, TodoCategory, TodoItem } from '$lib/generated-client/models';
+import { getTodoCategoryRightId, setTodoCategoryRightId, setTodoItemLeftId } from './sort';
 import {
 	sortedTodos,
-	getTodoItemNextId,
-	setTodoItemNextId,
+	getTodoItemRightId,
+	setTodoItemRightId,
 	updateElementSort,
 	sortedCategories,
-	getTodoCategoryNextId,
-	setTodoCategoryNextId,
-	getTodoItemMovingId
+	getTodoCategoryLeftId,
+	setTodoCategoryLeftId,
+	getTodoItemLeftId
 } from './sort';
 
 const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
@@ -38,8 +38,8 @@ const removeTodo = (todo: TodoItem, skipSort = false) => {
 				return category;
 			}
 			category.items.forEach((item) => {
-				if (getTodoItemNextId(item) === todo.id) {
-					setTodoItemNextId(item, getTodoItemNextId(todo));
+				if (getTodoItemRightId(item) === todo.id) {
+					setTodoItemRightId(item, getTodoItemRightId(todo));
 				}
 			});
 
@@ -71,35 +71,29 @@ const updateTodo = (todo: TodoItem) => {
 };
 
 const updateTodoSort = (
-	todo: Omit<TodoItem, 'order'> & { order: { next_id: number } },
 	movingElement: TodoItem,
 	movingElementNewCategoryId: number,
+	newOrder: NonNullable<TodoItem['order']>,
 	skipSort = false
 ) => {
 	if (movingElement.category_id !== movingElementNewCategoryId) {
 		removeTodo(movingElement);
 		addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
 		movingElement.category_id = movingElementNewCategoryId;
-		if (todo.id == movingElement.id) {
-			todo.category_id = movingElementNewCategoryId;
-		}
 	}
 	_update((categories) => {
 		categories = categories.map<TodoCategory>((category) => {
-			if (category.id !== todo.category_id) {
+			if (category.id !== movingElement.category_id) {
 				return category;
 			}
 			updateElementSort(
 				category.items,
-				{
-					id: todo.id,
-					nextId: todo.order.next_id
-				},
 				movingElement.id,
-				getTodoItemNextId,
-				getTodoItemMovingId,
-				setTodoItemNextId,
-				setTodoItemMovingId
+				{ leftId: newOrder.left_id, rightId: newOrder.right_id },
+				getTodoItemLeftId,
+				getTodoItemRightId,
+				setTodoItemLeftId,
+				setTodoItemRightId
 			);
 
 			if (!skipSort) {
@@ -140,8 +134,8 @@ const removeCategory = (category: TodoCategory) => {
 	_update((categories) => {
 		const result = categories.filter((value) => value.id !== category.id);
 		result.forEach((value) => {
-			if (getTodoCategoryNextId(value) === category.id) {
-				setTodoCategoryNextId(value, getTodoCategoryNextId(category));
+			if (getTodoCategoryLeftId(value) === category.id) {
+				setTodoCategoryLeftId(value, getTodoCategoryLeftId(category));
 			}
 		});
 		return sortedCategories(result);
@@ -164,19 +158,19 @@ const clearTodoCategories = () => {
 };
 
 const updateCategoriesSort = (
-	category: Omit<TodoCategory, 'orders'> & { order: { next_id: number } },
-	movingElementId: number,
+	movingElement: TodoCategory,
+	newOrder: NonNullable<NullableOrderedItem>,
 	skipSort = false
 ) => {
 	_update((categories) => {
 		updateElementSort(
 			categories,
-			{ ...category, nextId: category.order.next_id },
-			movingElementId,
-			getTodoCategoryNextId,
-			getTodoCategoryMovingId,
-			setTodoCategoryNextId,
-			setTodoCategoryMovingId
+			movingElement.id,
+			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
+			getTodoCategoryLeftId,
+			getTodoCategoryRightId,
+			setTodoCategoryLeftId,
+			setTodoCategoryRightId
 		);
 		return skipSort ? categories : sortedCategories(categories);
 	});

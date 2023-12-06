@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { faCheckCircle, faTrashCan, faUndo } from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
-	import type { TodoItem } from '$lib/generated-client/models';
+	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
 	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -17,8 +17,10 @@
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { cursorOnElementPositionY } from '$lib/utils';
 	import toasts from '$lib/stores/toasts';
+	import { generateNewOrderForTodoItem } from '$components/todo/utils';
 
 	export let todo: TodoItem;
+	export let category: TodoCategory;
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
@@ -78,18 +80,15 @@
 		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 		await callServiceInClient({
 			serviceCall: async () => {
-				const updatingTodo = moveUp ? event.detail.data : todo;
-				const nextId = moveUp ? todo.id : event.detail.data.id;
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
-					id: updatingTodo.id,
-					moving_id: event.detail.data.id,
+					id: event.detail.data.id,
 					new_category_id: todo.category_id,
-					next_id: nextId
+					...generateNewOrderForTodoItem(todo, moveUp, category)
 				});
 				todos.updateTodoSort(
-					{ ...updatingTodo, order: { next_id: nextId } },
 					event.detail.data,
-					todo.category_id
+					todo.category_id,
+					generateNewOrderForTodoItem(todo, moveUp, category)
 				);
 				state = 'none';
 			},

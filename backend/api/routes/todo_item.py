@@ -47,7 +47,7 @@ def update_order(
     todo: TodoItemUpdateOrder,
     db: Session = Depends(get_db),
 ):
-    todo_item_crud.update_order(db=db, new_order=todo, user_id=current_user.id)
+    todo_item_crud.update_order(db=db, moving_item=todo, user_id=current_user.id)
     return Response(status_code=HTTP_200_OK)
 
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from db.schemas.base import NullableOrderedItem
 
@@ -33,9 +33,9 @@ class TodoItemUpdateItem(TodoItemBase):
 
 class TodoItemUpdateOrder(BaseModel):
     id: int
-    next_id: int
+    left_id: int | None
+    right_id: int | None
     new_category_id: int
-    moving_id: int
 
 
 class TodoItemDelete(BaseModel):

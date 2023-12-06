@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from db.schemas.base import NullableOrderedItem
 from db.schemas.todo_item import TodoItem
 
@@ -21,9 +21,9 @@ class TodoCategoryUpdateItem(TodoCategoryBase):
 
 class TodoCategoryUpdateOrder(BaseModel):
     id: int
-    next_id: int
+    left_id: int | None
+    right_id: int | None
     project_id: int
-    moving_id: int
 
 
 class TodoCategoryAttachAssociation(BaseModel):

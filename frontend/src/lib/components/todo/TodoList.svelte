@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TodoItem, TodoCategory } from '$lib/generated-client';
+	import type { TodoItem, TodoCategory, Project } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 	import TodoItemComponent from './TodoItem.svelte';
 	import { receive, send } from './transitions';
@@ -27,9 +27,10 @@
 	import Spinner from '$components/Spinner.svelte';
 	import { cursorOnElementPositionX } from '$lib/utils';
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
+	import { generateNewOrderForTodoCategory } from '$components/todo/utils';
 
 	export let category: TodoCategory;
-	export let projectId: number;
+	export let project: Project;
 	export { className as class };
 
 	let className: string = '';
@@ -45,7 +46,7 @@
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
 					category_id: category.id,
-					project_id: projectId
+					project_id: project.id
 				});
 				todos.removeCategory(category);
 				state = 'none';
@@ -87,17 +88,14 @@
 
 		await callServiceInClient({
 			serviceCall: async () => {
-				const updatingCategory = moveLeft ? event.detail.data : category;
-				const nextId = moveLeft ? category.id : event.detail.data.id;
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
-					id: updatingCategory.id,
-					project_id: projectId,
-					moving_id: event.detail.data.id,
-					next_id: nextId
+					id: event.detail.data.id,
+					project_id: project.id,
+					...generateNewOrderForTodoCategory(category, moveLeft, project)
 				});
 				todos.updateCategoriesSort(
-					{ ...updatingCategory, order: { next_id: nextId } },
-					event.detail.data.id
+					event.detail.data,
+					generateNewOrderForTodoCategory(category, moveLeft, project)
 				);
 				state = 'none';
 			},
@@ -216,7 +214,7 @@
 					out:send={{ key: todo.id }}
 					animate:flip={{ duration: 200 }}
 				>
-					<TodoItemComponent {todo} />
+					<TodoItemComponent {todo} {category} />
 				</div>
 			{/each}
 		{:else}

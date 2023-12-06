@@ -83,32 +83,36 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     return db_item
 
 
-def update_order(db: Session, new_order: TodoCategoryUpdateOrder, user_id: int):
-    validate_todo_category_belongs_to_user(db, new_order.id, user_id)
-    validate_todo_category_belongs_to_user(db, new_order.next_id, user_id)
-    validate_todo_category_belongs_to_user(db, new_order.moving_id, user_id)
-    validate_project_belongs_to_user(db, new_order.project_id, user_id, user_id, True)
+def update_order(db: Session, moving_item: TodoCategoryUpdateOrder, user_id: int):
+    validate_todo_category_belongs_to_user(db, moving_item.id, user_id)
+    if moving_item.left_id is not None:
+        validate_todo_category_belongs_to_user(db, moving_item.left_id, user_id)
+    if moving_item.right_id is not None:
+        validate_todo_category_belongs_to_user(db, moving_item.right_id, user_id)
+    validate_project_belongs_to_user(db, moving_item.project_id, user_id, user_id, True)
 
-    def create_order(id: int, moving_id: int, next_id: int | None):
+    def create_order(id: int, left_id: int | None, right_id: int | None):
         db.add(
             TodoCategoryOrder(
                 category_id=id,
-                project_id=new_order.project_id,
-                moving_id=moving_id,
-                next_id=next_id,
+                project_id=moving_item.project_id,
+                left_id=left_id,
+                right_id=right_id,
             )
         )
 
     update_element_order(
-        TodoCategoryOrder,  # type: ignore TODO: fix
+        TodoCategoryOrder,
         db.query(TodoCategoryOrder).filter(
-            TodoCategoryOrder.project_id == new_order.project_id
-        ),  # type: ignore TODO: fix
-        new_order.moving_id,
-        {"id": new_order.id, "next_id": new_order.next_id},
+            TodoCategoryOrder.project_id == moving_item.project_id
+        ),
+        {
+            "id": moving_item.id,
+            "left_id": moving_item.left_id,
+            "right_id": moving_item.right_id,
+        },
         create_order,
-        lambda category_item_id: _get_todo_category_order(db, category_item_id, new_order.project_id),  # type: ignore
-        lambda item: _get_category_id_from_ordered_item(item),  # type: ignore
+        lambda category_item_id: _get_todo_category_order(db, category_item_id, moving_item.project_id),  # type: ignore
     )
 
     db.commit()
@@ -153,13 +157,14 @@ def detach_from_project(
 
     delete_item_from_sorted_items(
         db,
-        TodoCategoryOrder,  # type: ignore
+        TodoCategoryOrder,
         db.query(TodoCategoryOrder).filter(
             TodoCategoryOrder.project_id == association.project_id
-        ),  # type: ignore
+        ),
         association.category_id,
-        lambda category_item_id: _get_todo_category_order(db, category_item_id, association.project_id),  # type: ignore
-        lambda item: _get_category_id_from_ordered_item(item),  # type: ignore
+        lambda category_item_id: _get_todo_category_order(
+            db, category_item_id, association.project_id
+        ),
     )
 
     db.query(TodoCategoryProjectAssociation).filter(
@@ -204,7 +209,3 @@ def _get_todo_category_order(db: Session, category_id: int, project_id: int):
         )
         .first()
     )
-
-
-def _get_category_id_from_ordered_item(category_order: TodoCategoryOrder):
-    return category_order.category_id

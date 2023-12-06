@@ -85,7 +85,6 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
             db.query(TodoItemOrder),
             todo.id,
             lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
-            lambda item: _get_todo_id_from_ordered_item(item),
         )
         db_item.category_id = todo.new_category_id
 
@@ -103,18 +102,22 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     return db_item
 
 
-def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
-    validate_todo_item_belongs_to_user(db, new_order.id, user_id)
-    validate_todo_item_belongs_to_user(db, new_order.next_id, user_id)
-    validate_todo_item_belongs_to_user(db, new_order.moving_id, user_id)
+def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
+    validate_todo_item_belongs_to_user(db, moving_item.id, user_id)
 
-    def create_order(id: int, moving_id: int, next_id: int | None):
-        db.add(TodoItemOrder(todo_id=id, moving_id=moving_id, next_id=next_id))
+    if moving_item.left_id is not None:
+        validate_todo_item_belongs_to_user(db, moving_item.left_id, user_id)
+
+    if moving_item.right_id is not None:
+        validate_todo_item_belongs_to_user(db, moving_item.right_id, user_id)
+
+    def create_order(id: int, left_id: int | None, right_id: int | None):
+        db.add(TodoItemOrder(todo_id=id, left_id=left_id, right_id=right_id))
 
     update_item(
         db,
         TodoItemUpdateItem.model_construct(
-            id=new_order.moving_id, new_category_id=new_order.new_category_id
+            id=moving_item.id, new_category_id=moving_item.new_category_id
         ),
         user_id,
     )
@@ -122,11 +125,13 @@ def update_order(db: Session, new_order: TodoItemUpdateOrder, user_id: int):
     update_element_order(
         TodoItemOrder,
         db.query(TodoItemOrder),
-        new_order.moving_id,
-        {"id": new_order.id, "next_id": new_order.next_id},
+        {
+            "id": moving_item.id,
+            "left_id": moving_item.left_id,
+            "right_id": moving_item.right_id,
+        },
         create_order,
         lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
-        lambda item: _get_todo_id_from_ordered_item(item),
     )
 
     db.commit()
@@ -144,7 +149,6 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
         db.query(TodoItemOrder),
         todo.id,
         lambda todo_item_id: _get_todo_item_order(db, todo_item_id),
-        lambda item: _get_todo_id_from_ordered_item(item),
     )
 
     db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
@@ -167,7 +171,3 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
 
 def _get_todo_item_order(db: Session, id: int):
     return db.query(TodoItemOrder).filter(TodoItemOrder.todo_id == id).first()
-
-
-def _get_todo_id_from_ordered_item(todo_item_order: TodoItemOrder):
-    return todo_item_order.todo_id

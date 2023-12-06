@@ -1,58 +1,58 @@
 import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 
-export function getTodoItemNextId(todo: TodoItem) {
-	return todo.order?.next_id ?? null;
+export function getTodoItemLeftId(todo: TodoItem) {
+	return todo.order?.left_id ?? null;
 }
 
-export function setTodoItemNextId(todo: TodoItem, nextId: number | null) {
-	todo.order = { moving_id: todo.id, ...todo.order, next_id: nextId };
+export function setTodoItemLeftId(todo: TodoItem, leftId: number | null) {
+	todo.order = { right_id: null, ...todo.order, left_id: leftId };
 }
 
-export function getTodoItemMovingId(todo: TodoItem) {
-	return todo.order?.moving_id;
+export function getTodoItemRightId(todo: TodoItem) {
+	return todo.order?.right_id ?? null;
 }
 
-export function setTodoItemMovingId(todo: TodoItem, movingId: number) {
-	todo.order = { next_id: null, ...todo.order, moving_id: movingId };
+export function setTodoItemRightId(todo: TodoItem, rightId: number | null) {
+	todo.order = { left_id: null, ...todo.order, right_id: rightId };
 }
 
-export function getTodoCategoryNextId(todoCategory: TodoCategory) {
-	return todoCategory.orders.length === 1 ? todoCategory.orders[0].next_id : null;
+export function getTodoCategoryLeftId(todoCategory: TodoCategory) {
+	return todoCategory.orders.length === 1 ? todoCategory.orders[0].left_id : null;
 }
 
-export function setTodoCategoryNextId(todoCategory: TodoCategory, nextId: number | null) {
+export function setTodoCategoryLeftId(todoCategory: TodoCategory, leftId: number | null) {
 	const existingOrder = todoCategory.orders.length > 0 ? { ...todoCategory.orders[0] } : {};
-	todoCategory.orders = [{ moving_id: todoCategory.id, ...existingOrder, next_id: nextId }];
+	todoCategory.orders = [{ right_id: null, ...existingOrder, left_id: leftId }];
 }
 
-export function getTodoCategoryMovingId(todoCategory: TodoCategory) {
-	return todoCategory.orders.length === 1 ? todoCategory.orders[0].moving_id : undefined;
+export function getTodoCategoryRightId(todoCategory: TodoCategory) {
+	return todoCategory.orders.length === 1 ? todoCategory.orders[0].right_id : null;
 }
-export function setTodoCategoryMovingId(todoCategory: TodoCategory, movingId: number) {
+export function setTodoCategoryRightId(todoCategory: TodoCategory, rightId: number | null) {
 	const existingOrder = todoCategory.orders.length > 0 ? { ...todoCategory.orders[0] } : {};
-	todoCategory.orders = [{ next_id: null, ...existingOrder, moving_id: movingId }];
+	todoCategory.orders = [{ left_id: null, ...existingOrder, right_id: rightId }];
 }
 export function sortedTodos(todos: TodoItem[]) {
 	sortById(todos);
-	return sortByCustomOrder(todos, getTodoItemNextId, getTodoItemMovingId);
+	return sortByCustomOrder(todos, getTodoItemLeftId, getTodoItemRightId);
 }
 
 export function sortedCategories(categories: TodoCategory[]) {
 	sortById(categories);
-	return sortByCustomOrder(categories, getTodoCategoryNextId, getTodoCategoryMovingId);
+	return sortByCustomOrder(categories, getTodoCategoryLeftId, getTodoCategoryRightId);
 }
 
 export function sortByCustomOrder<T extends { id: number }>(
 	elements: (T | null)[],
-	getNextId: (element: T) => number | null | undefined,
-	getMovingId: (element: T) => number | undefined
+	getLeftId: (element: T) => number | null,
+	getRightId: (element: T) => number | null
 ) {
 	const MAX_NUMBER_OF_REASONABLE_ITERATIONS = elements.length * elements.length * elements.length;
 	// improve later
 	let index = 0;
 	let mutations = 0;
 	let numberOfIterations = 0;
-	let movedElementIds: number[] = [];
+	//let movedElementIds: number[] = [];
 
 	const increaseIndex = () => {
 		index += 1;
@@ -61,39 +61,41 @@ export function sortByCustomOrder<T extends { id: number }>(
 			// mutations should be 0 when the list is sorted
 			index = 0;
 			mutations = 0;
-			movedElementIds = [];
+			//movedElementIds = [];
 		}
 	};
 
-	const moveCurrentToLeftOfNext = (
+	const moveOtherToLeftOfCurrent = (
 		currentIndex: number,
-		nextElementIndex: number,
-		currentElement: T
+		leftElementIndex: number,
+		leftId: number
 	) => {
-		if (elements[nextElementIndex == 0 ? 0 : nextElementIndex - 1]?.id === currentElement.id) {
+		if (elements[currentIndex == 0 ? currentIndex : currentIndex - 1]?.id === leftId) {
 			return;
 		}
-		elements[currentIndex] = null;
-		elements.splice(nextElementIndex, 0, currentElement);
+		const savedLeftElement = elements[leftElementIndex];
+		elements[leftElementIndex] = null;
+		elements.splice(currentIndex, 0, savedLeftElement);
 		mutations += 1;
-		movedElementIds.push(currentElement.id);
+		//movedElementIds.push(nextId);
 	};
 
 	const moveOtherToRightOfCurrent = (
 		currentIndex: number,
-		nextElementIndex: number,
-		nextId: number
+		rightElementIndex: number,
+		rightId: number
 	) => {
 		if (
-			elements[currentIndex == elements.length - 1 ? currentIndex : currentIndex + 1]?.id === nextId
+			elements[currentIndex == elements.length - 1 ? currentIndex : currentIndex + 1]?.id ===
+			rightId
 		) {
 			return;
 		}
-		const savedNextElement = elements[nextElementIndex];
-		elements[nextElementIndex] = null;
+		const savedNextElement = elements[rightElementIndex];
+		elements[rightElementIndex] = null;
 		elements.splice(currentIndex + 1, 0, savedNextElement);
 		mutations += 1;
-		movedElementIds.push(nextId);
+		//movedElementIds.push(nextId);
 	};
 
 	const updateNumberOfIterations = () => {
@@ -113,30 +115,36 @@ export function sortByCustomOrder<T extends { id: number }>(
 			continue;
 		}
 
-		const nextId = getNextId(element);
+		const rightId = getRightId(element);
 
-		if (nextId === null || nextId === undefined) {
-			increaseIndex();
-			continue;
+		if (rightId !== null) {
+			const rightElementIndex = elements.findIndex((value) => value?.id == rightId);
+
+			if (rightElementIndex === -1) {
+				throw new Error(`could't find next element with id = ${rightId}`);
+			}
+
+			if (rightId == element.id) {
+				throw new Error('database error: for some reason element.rightId = element.id');
+			}
+
+			moveOtherToRightOfCurrent(index, rightElementIndex, rightId);
 		}
 
-		const nextElementIndex = elements.findIndex((value) => value?.id == nextId);
+		const leftId = getLeftId(element);
 
-		if (nextElementIndex === -1) {
-			throw new Error(`could't find next element with id = ${nextElementIndex}`);
-		}
+		if (leftId !== null) {
+			const leftElementIndex = elements.findIndex((value) => value?.id == leftId);
 
-		if (nextId == element.id) {
-			throw new Error('database error, for some reason element.next = element.id');
-		}
+			if (leftElementIndex === -1) {
+				throw new Error(`could't find next element with id = ${leftId}`);
+			}
 
-		if (
-			getMovingId(element) === element.id &&
-			!movedElementIds.find((value) => value == element.id)
-		) {
-			moveCurrentToLeftOfNext(index, nextElementIndex, element);
-		} else {
-			moveOtherToRightOfCurrent(index, nextElementIndex, nextId);
+			if (leftId == element.id) {
+				throw new Error('database error: for some reason element.leftId = element.id');
+			}
+
+			moveOtherToLeftOfCurrent(index, leftElementIndex, leftId);
 		}
 
 		increaseIndex();
@@ -153,15 +161,15 @@ export function sortById(elements: { id: number }[]) {
 
 export function updateElementSort<T extends { id: number }>(
 	elements: T[],
-	newOrder: {
-		id: number;
-		nextId: number;
-	},
 	movingElementId: number,
-	getNextId: (element: T) => number | null,
-	getMovingId: (element: T) => number | undefined,
-	setNextId: (element: T, nextId: number | null) => void,
-	setMovingId: (element: T, movingId: number) => void
+	movingElementNewOrder: {
+		rightId: number | null;
+		leftId: number | null;
+	},
+	getLeftId: (element: T) => number | null,
+	getRightId: (element: T) => number | null,
+	setLeftId: (element: T, leftId: number | null) => void,
+	setRightId: (element: T, rightId: number | null) => void
 ) {
 	console.log(JSON.stringify(elements));
 
@@ -174,75 +182,28 @@ export function updateElementSort<T extends { id: number }>(
 	removeElementFromSortedList(
 		elements,
 		movingElementId,
-		getNextId,
-		getMovingId,
-		setNextId,
-		setMovingId
+		getLeftId,
+		getRightId,
+		setLeftId,
+		setRightId
+	);
+	const elementPointingTonNewLeft = elements.find(
+		(element) => getLeftId(element) == movingElementNewOrder.leftId
+	);
+	const elementPointingToNewRight = elements.find(
+		(element) => getRightId(element) == movingElementNewOrder.rightId
 	);
 
-	if (movingElementId == newOrder.id) {
-		// X 4 3 2 1 Y
-		// 4 -> 1 with (moving = 4): X 3 2 4 1 Y
-		// or
-		// X 4 3 2 1 Y
-		// 1 -> 4 with (moving = 1): X 1 4 3 2 Y
-
-		const existingElementPointingToNewNext = elements.find(
-			(value) => getNextId(value) == newOrder.nextId
-		);
-
-		let movingElementNewMovingId: number | undefined;
-
-		if (
-			existingElementPointingToNewNext &&
-			getMovingId(existingElementPointingToNewNext) == newOrder.nextId
-		) {
-			movingElementNewMovingId = newOrder.nextId;
-		} else {
-			movingElementNewMovingId = movingElementId;
-		}
-
-		if (existingElementPointingToNewNext) {
-			setNextId(existingElementPointingToNewNext, movingElementId);
-			if (getMovingId(existingElementPointingToNewNext) == newOrder.nextId) {
-				setMovingId(existingElementPointingToNewNext, movingElementId);
-			}
-		}
-		setNextId(movingElement, newOrder.nextId);
-		setMovingId(movingElement, movingElementNewMovingId);
-	} else if (movingElementId == newOrder.nextId) {
-		// X 4 3 2 1 Y
-		// 4 -> 1 with (moving = 1): X 4 1 3 2 Y
-		// or
-		// X 4 3 2 1 Y
-		// 1 -> 4 with (moving = 4): X 3 2 1 4 Y
-
-		const elementWithNewOrderId = elements.find((value) => value.id == newOrder.id);
-		if (!elementWithNewOrderId) {
-			throw new Error('elementWithNewOrder.id not found in dataset');
-		}
-
-		if (getNextId(elementWithNewOrderId)) {
-			let movingElementNewMovingId: number | undefined;
-			if (getMovingId(elementWithNewOrderId) == newOrder.id) {
-				movingElementNewMovingId = movingElementId;
-			} else {
-				movingElementNewMovingId = getMovingId(elementWithNewOrderId);
-			}
-			if (movingElementNewMovingId == undefined) {
-				throw new Error(
-					'unexpected behavior, calculated movingElementMovingId was undefined whilst updating elements sorting'
-				);
-			}
-			setMovingId(movingElement, movingElementNewMovingId);
-		}
-
-		setNextId(movingElement, getNextId(elementWithNewOrderId));
-		setNextId(elementWithNewOrderId, movingElementId);
-		setMovingId(elementWithNewOrderId, movingElementId);
-	} else {
-		throw new Error('unhandled sorting case');
+	if (elementPointingTonNewLeft) {
+		setLeftId(elementPointingTonNewLeft, movingElementId);
 	}
+
+	if (elementPointingToNewRight) {
+		setRightId(elementPointingToNewRight, movingElementId);
+	}
+
+	setLeftId(movingElement, movingElementNewOrder.leftId);
+	setRightId(movingElement, movingElementNewOrder.rightId);
 
 	console.log(JSON.stringify(elements));
 }
@@ -250,10 +211,10 @@ export function updateElementSort<T extends { id: number }>(
 export function removeElementFromSortedList<T extends { id: number }>(
 	elements: T[],
 	deletingElementId: number,
-	getNextId: (element: T) => number | null,
-	getMovingId: (element: T) => number | undefined,
-	setNextId: (element: T, nextId: number | null) => void,
-	setMovingId: (element: T, movingId: number) => void
+	getLeftId: (element: T) => number | null,
+	getRightId: (element: T) => number | null,
+	setLeftId: (element: T, leftId: number | null) => void,
+	setRightId: (element: T, rightId: number | null) => void
 ) {
 	console.log(JSON.stringify(elements));
 
@@ -263,24 +224,23 @@ export function removeElementFromSortedList<T extends { id: number }>(
 		throw new Error('deletingElement element not found in dataset');
 	}
 
-	const existingItemPointingToDeletingItem = elements.find(
-		(value) => getNextId(value) == deletingElementId
-	);
-
-	if (existingItemPointingToDeletingItem) {
-		let movingId: number;
-		if (getMovingId(existingItemPointingToDeletingItem) == deletingElementId) {
-			movingId = existingItemPointingToDeletingItem.id;
-		} else {
-			const deletingItemNextId = getNextId(deletingElement);
-			movingId =
-				deletingItemNextId !== null ? deletingItemNextId : existingItemPointingToDeletingItem.id;
+	if (getLeftId(deletingElement)) {
+		const elementPointingToNewLeft = elements.find(
+			(element) => getLeftId(element) == getLeftId(deletingElement)
+		);
+		if (elementPointingToNewLeft) {
+			setLeftId(elementPointingToNewLeft, getLeftId(deletingElement));
 		}
-		setNextId(existingItemPointingToDeletingItem, getNextId(deletingElement));
-		setMovingId(existingItemPointingToDeletingItem, movingId);
 	}
 
-	setNextId(deletingElement, null);
+	if (getRightId(deletingElement)) {
+		const elementPointingToNewRight = elements.find(
+			(element) => getRightId(element) == getRightId(deletingElement)
+		);
+		if (elementPointingToNewRight) {
+			setRightId(elementPointingToNewRight, getRightId(deletingElement));
+		}
+	}
 
 	console.log(JSON.stringify(elements));
 }
