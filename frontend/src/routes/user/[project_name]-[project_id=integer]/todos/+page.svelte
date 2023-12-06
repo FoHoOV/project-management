@@ -2,7 +2,6 @@
 	import TodoList from '$lib/components/todo/TodoList.svelte';
 	import type { ActionData, PageData } from './$types';
 	import todos from '$lib/stores/todos';
-	import projects from '$lib/stores/projects';
 	import { flip } from 'svelte/animate';
 	import CreateTodoItem from './CreateTodoItem.svelte';
 	import CircleButton from '$components/buttons/CircleButton.svelte';
@@ -10,11 +9,8 @@
 	import Modal from '$components/popups/Modal.svelte';
 	import CreateTodoCategory from './CreateTodoCategory.svelte';
 	import Empty from '$components/Empty.svelte';
-	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import type { Project } from '$lib/generated-client/models';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -22,20 +18,8 @@
 
 	let createTodoCategory: Modal;
 
-	const projectId = Number.parseInt($page.params.project_id);
-
-	const project = $projects.find((project) => project.id == projectId) as Project;
-
-	if (!project) {
-		goto('/user/projects');
-	}
-
 	onMount(() => {
-		if (!data.response) {
-			state = 'none';
-			return;
-		}
-		todos.setTodoCategories(data.response);
+		todos.setTodoCategories(data.categories.response);
 		state = 'none';
 	});
 </script>
@@ -53,7 +37,7 @@
 		{:else}
 			{#each $todos as category (category.id)}
 				<div class="shrink-0 basis-[27rem]" animate:flip={{ duration: 200 }}>
-					<TodoList {category} {project}>
+					<TodoList {category} project={data.project.response}>
 						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 						<AttachToProject slot="attach-to-project" {form} categoryId={category.id} />
 					</TodoList>

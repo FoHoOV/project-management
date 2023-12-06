@@ -8,7 +8,7 @@ import {
 	TodoCategoryAttachAssociation
 } from '$lib/generated-client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
-import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
+import { TodoItemClient, TodoCategoryClient, ProjectClient } from '$lib/client-wrapper/clients';
 
 export const load = (async ({ locals, fetch, params }) => {
 	// https://github.com/sveltejs/kit/issues/9785
@@ -33,7 +33,22 @@ export const load = (async ({ locals, fetch, params }) => {
 	// 		})
 	// 	}
 
-	return await callService({
+	const project = await callService({
+		serviceCall: async () => {
+			return await ProjectClient({
+				token: locals.token,
+				fetchApi: fetch
+			}).searchProject(Number.parseInt(params.project_id));
+		},
+		errorCallback: async (e) => {
+			if (e.type === ErrorType.UNAUTHORIZED) {
+				e.preventDefaultHandler = true;
+			}
+			return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching the project!' });
+		}
+	});
+
+	const categories = await callService({
 		serviceCall: async () => {
 			return await TodoCategoryClient({
 				token: locals.token,
@@ -47,6 +62,16 @@ export const load = (async ({ locals, fetch, params }) => {
 			return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
 		}
 	});
+
+	if (!project.success) {
+		throw project.error;
+	}
+
+	if (!categories.success) {
+		throw categories.error;
+	}
+
+	return { project: project, categories: categories };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {

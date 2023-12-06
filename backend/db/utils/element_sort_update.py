@@ -2,6 +2,8 @@ from ast import Call
 from dataclasses import dataclass
 from tkinter import NO
 from typing import Callable, Type, TypedDict
+from fastapi.exceptions import ValidationException
+from pydantic import ValidationError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Query, Session, MappedColumn
 
 
@@ -26,6 +28,12 @@ def update_element_order[
     create_order: Callable[[int, int | None, int | None], None],
     get_item_order: Callable[[int], TOrderedItemClass | None],
 ):
+    if (
+        moving_item["id"] == moving_item["left_id"]
+        or moving_item["id"] == moving_item["right_id"]
+    ):
+        raise ValidationException("Inputs values create a cyclic order")
+
     # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
     _remove_item_from_sorted_items_in_position(
         order_class, order_query, moving_item["id"], get_item_order

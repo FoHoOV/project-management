@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -25,3 +25,6 @@ class TodoCategoryOrder(BasesWithCreatedDate):
     project_id_and_left_category_id_ux = UniqueConstraint(
         "project_id", "category_id", "left_id"
     )
+
+    category_id_and_left_id_check = CheckConstraint("category_id != left_id")
+    category_id_and_right_id_check = CheckConstraint("category_id != right_id")

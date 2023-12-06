@@ -187,6 +187,7 @@ export function updateElementSort<T extends { id: number }>(
 		setLeftId,
 		setRightId
 	);
+
 	const elementPointingTonNewLeft = elements.find(
 		(element) => getLeftId(element) == movingElementNewOrder.leftId
 	);
