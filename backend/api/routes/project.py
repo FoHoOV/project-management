@@ -27,7 +27,7 @@ def create_for_user(
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.post(path="/attach-to-user", response_model=Project)
+@router.post(path="/attach-to-user", response_model=ProjectAttachAssociation)
 def attach_to_user(
     current_user: Annotated[User, Depends(get_current_user)],
     association: ProjectAttachAssociation,

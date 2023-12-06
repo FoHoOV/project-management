@@ -29,7 +29,7 @@ def create_for_user(
     return todo_category_crud.create(db=db, category=category, user_id=current_user.id)
 
 
-@router.post("/attach-to-project", response_model=TodoCategory)
+@router.post("/attach-to-project", response_model=TodoCategoryAttachAssociation)
 def attach_to_project(
     current_user: Annotated[User, Depends(get_current_user)],
     association: TodoCategoryAttachAssociation,
