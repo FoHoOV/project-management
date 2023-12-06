@@ -2,11 +2,11 @@ from sqlalchemy import CheckConstraint, Connection, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, Session, Mapper
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import BasesWithCreatedDate
+from db.models.base import BaseOrderedItem, BasesWithCreatedDate
 from db.models.utils.ordered_item import cyclic_order_validator
 
 
-class TodoCategoryOrder(BasesWithCreatedDate):
+class TodoCategoryOrder(BasesWithCreatedDate, BaseOrderedItem):
     __tablename__ = "todo_category_order"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -42,6 +42,7 @@ def validate_advanced_cyclic_order_before_insert(
             target.category_id,
             target.left_id,
             target.right_id,
+            lambda item: item.category_id,
         )
 
 
@@ -57,4 +58,5 @@ def validate_advanced_cyclic_order_before_update(
             target.category_id,
             target.left_id,
             target.right_id,
+            lambda item: item.category_id,
         )

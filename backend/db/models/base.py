@@ -17,3 +17,10 @@ class BasesWithCreatedDate(Base):
     created_date: Mapped[DateTime] = mapped_column(
         DateTime(), default=datetime.datetime.utcnow()
     )
+
+
+class BaseOrderedItem(DeclarativeBase):
+    __abstract__ = True
+
+    left_id: Mapped[int | None]
+    right_id: Mapped[int | None]

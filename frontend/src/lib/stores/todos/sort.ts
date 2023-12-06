@@ -115,24 +115,6 @@ export function sortByCustomOrder<T extends { id: number }>(
 			continue;
 		}
 
-		const rightId = getRightId(element);
-
-		if (rightId !== null) {
-			const rightElementIndex = elements.findIndex((value) => value?.id == rightId);
-
-			if (rightElementIndex === -1) {
-				throw new Error(`could't find next element with id = ${rightId}`);
-			}
-
-			if (rightId == element.id) {
-				throw new Error('database error: for some reason element.rightId = element.id');
-			}
-
-			moveCurrentToLeftOfOther(index, rightElementIndex, rightId);
-			increaseIndex();
-			continue;
-		}
-
 		const leftId = getLeftId(element);
 
 		if (leftId !== null) {
@@ -147,6 +129,24 @@ export function sortByCustomOrder<T extends { id: number }>(
 			}
 
 			moveCurrentToRightOfOther(index, leftElementIndex, leftId);
+			increaseIndex();
+			continue;
+		}
+
+		const rightId = getRightId(element);
+
+		if (rightId !== null) {
+			const rightElementIndex = elements.findIndex((value) => value?.id == rightId);
+
+			if (rightElementIndex === -1) {
+				throw new Error(`could't find next element with id = ${rightId}`);
+			}
+
+			if (rightId == element.id) {
+				throw new Error('database error: for some reason element.rightId = element.id');
+			}
+
+			moveCurrentToLeftOfOther(index, rightElementIndex, rightId);
 			increaseIndex();
 			continue;
 		}
@@ -199,22 +199,42 @@ export function updateElementSort<T extends { id: number }>(
 		setRightId
 	);
 
-	const elementPointingToNewLeft = elements.find(
-		(element) =>
-			movingElementNewOrder.leftId != null && getLeftId(element) == movingElementNewOrder.leftId
-	);
-	const elementPointingToNewRight = elements.find(
-		(element) =>
-			movingElementNewOrder.rightId != null && getRightId(element) == movingElementNewOrder.rightId
-	);
+	elements
+		.filter(
+			(element) =>
+				movingElementNewOrder.leftId != null && getLeftId(element) == movingElementNewOrder.leftId
+		)
+		.forEach((element) => {
+			setLeftId(element, movingElementId);
+		});
 
-	if (elementPointingToNewLeft) {
-		setLeftId(elementPointingToNewLeft, movingElementId);
-	}
+	elements
+		.filter(
+			(element) =>
+				movingElementNewOrder.leftId != null && element.id == movingElementNewOrder.leftId
+		)
+		.forEach((element) => {
+			setRightId(element, movingElementId);
+		});
 
-	if (elementPointingToNewRight) {
-		setRightId(elementPointingToNewRight, movingElementId);
-	}
+	elements
+		.filter(
+			(element) =>
+				movingElementNewOrder.rightId != null &&
+				getRightId(element) == movingElementNewOrder.rightId
+		)
+		.forEach((element) => {
+			setRightId(element, movingElementId);
+		});
+
+	elements
+		.filter(
+			(element) =>
+				movingElementNewOrder.rightId != null && element.id == movingElementNewOrder.rightId
+		)
+		.forEach((element) => {
+			setLeftId(element, movingElementId);
+		});
 
 	setLeftId(movingElement, movingElementNewOrder.leftId);
 	setRightId(movingElement, movingElementNewOrder.rightId);
@@ -238,35 +258,42 @@ export function removeElementFromSortedList<T extends { id: number }>(
 		throw new Error('deletingElement element not found in dataset');
 	}
 
+	const deletingElementLeftId = getLeftId(deletingElement);
+	const deletingElementRightId = getRightId(deletingElement);
+
+	setLeftId(deletingElement, null);
+	setRightId(deletingElement, null);
+
 	let existingItemPointingToCurrent = elements.find(
 		(element) => getRightId(element) == deletingElementId
 	);
+
 	if (existingItemPointingToCurrent) {
-		setRightId(existingItemPointingToCurrent, getRightId(deletingElement));
+		setRightId(existingItemPointingToCurrent, deletingElementRightId);
 	}
 
 	existingItemPointingToCurrent = elements.find(
 		(element) => getLeftId(element) == deletingElementId
 	);
 	if (existingItemPointingToCurrent) {
-		setLeftId(existingItemPointingToCurrent, getLeftId(deletingElement));
+		setLeftId(existingItemPointingToCurrent, deletingElementLeftId);
 	}
 
-	if (getLeftId(deletingElement) !== null) {
+	if (deletingElementLeftId !== null) {
 		const elementPointingToNewLeft = elements.find(
-			(element) => element.id == getLeftId(deletingElement)
+			(element) => element.id == deletingElementLeftId
 		);
 		if (elementPointingToNewLeft) {
-			setRightId(elementPointingToNewLeft, getRightId(deletingElement));
+			setRightId(elementPointingToNewLeft, deletingElementRightId);
 		}
 	}
 
-	if (getRightId(deletingElement) !== null) {
+	if (deletingElementRightId !== null) {
 		const elementPointingToNewRight = elements.find(
-			(element) => element.id == getRightId(deletingElement)
+			(element) => element.id == deletingElementRightId
 		);
 		if (elementPointingToNewRight) {
-			setLeftId(elementPointingToNewRight, getLeftId(deletingElement));
+			setLeftId(elementPointingToNewRight, deletingElementLeftId);
 		}
 	}
 
