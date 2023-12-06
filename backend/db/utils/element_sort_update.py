@@ -31,6 +31,10 @@ def update_element_order[
     if (
         moving_item["id"] == moving_item["left_id"]
         or moving_item["id"] == moving_item["right_id"]
+        or (
+            moving_item["left_id"] is not None
+            and moving_item["left_id"] == moving_item["right_id"]
+        )
     ):
         raise ValidationException("inputs values create a cyclic order")
 

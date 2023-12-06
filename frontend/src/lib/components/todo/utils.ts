@@ -27,11 +27,11 @@ export function generateNewOrderForTodoCategory(
 	target: TodoCategory,
 	movingItem: TodoCategory,
 	moveItemToLeftOfTarget: boolean,
-	project: Project
+	todoCategories: TodoCategory[]
 ) {
 	let newOrder: { left_id: number | null; right_id: number | null };
-	const leftTodoCategoryId = getLeftTodoCategoryId(target.id, project);
-	const rightTodoCategoryId = getRightTodoCategoryId(target.id, project);
+	const leftTodoCategoryId = getLeftTodoCategoryId(target.id, todoCategories);
+	const rightTodoCategoryId = getRightTodoCategoryId(target.id, todoCategories);
 	if (moveItemToLeftOfTarget) {
 		newOrder = {
 			left_id: leftTodoCategoryId == movingItem.id ? null : leftTodoCategoryId,
@@ -46,16 +46,14 @@ export function generateNewOrderForTodoCategory(
 	return newOrder;
 }
 
-export function getRightTodoCategoryId(id: number, project: Project) {
-	const currentIndex = project.todo_categories.findIndex((category) => category.id == id);
-	return currentIndex === project.todo_categories.length - 1
-		? null
-		: project.todo_categories[currentIndex + 1].id;
+export function getRightTodoCategoryId(id: number, todoCategories: TodoCategory[]) {
+	const currentIndex = todoCategories.findIndex((category) => category.id == id);
+	return currentIndex === todoCategories.length - 1 ? null : todoCategories[currentIndex + 1].id;
 }
 
-export function getLeftTodoCategoryId(id: number, project: Project) {
-	const currentIndex = project.todo_categories.findIndex((category) => category.id == id);
-	return currentIndex === 0 ? null : project.todo_categories[currentIndex - 1].id;
+export function getLeftTodoCategoryId(id: number, todoCategories: TodoCategory[]) {
+	const currentIndex = todoCategories.findIndex((category) => category.id == id);
+	return currentIndex === 0 ? null : todoCategories[currentIndex - 1].id;
 }
 
 export function getRightTodoItemId(id: number, category: TodoCategory) {

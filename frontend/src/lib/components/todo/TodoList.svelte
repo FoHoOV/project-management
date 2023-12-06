@@ -30,7 +30,7 @@
 	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
 
 	export let category: TodoCategory;
-	export let project: Project;
+	export let projectId: number;
 	export { className as class };
 
 	let className: string = '';
@@ -46,7 +46,7 @@
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
 					category_id: category.id,
-					project_id: project.id
+					project_id: projectId
 				});
 				todos.removeCategory(category);
 				state = 'none';
@@ -90,12 +90,12 @@
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: event.detail.data.id,
-					project_id: project.id,
-					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, project)
+					project_id: projectId,
+					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
 				});
 				todos.updateCategoriesSort(
 					event.detail.data,
-					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, project)
+					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
 				);
 				state = 'none';
 			},

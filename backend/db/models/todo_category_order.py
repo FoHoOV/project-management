@@ -28,3 +28,6 @@ class TodoCategoryOrder(BasesWithCreatedDate):
 
     category_id_and_left_id_check = CheckConstraint("category_id != left_id")
     category_id_and_right_id_check = CheckConstraint("category_id != right_id")
+    left_id_and_right_id_check = CheckConstraint(
+        "left_id != null and left_id != right_id"
+    )

@@ -9,6 +9,7 @@
 	import Modal from '$components/popups/Modal.svelte';
 	import CreateTodoCategory from './CreateTodoCategory.svelte';
 	import Empty from '$components/Empty.svelte';
+	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
 	import { onMount } from 'svelte';
 
@@ -19,7 +20,11 @@
 	let createTodoCategory: Modal;
 
 	onMount(() => {
-		todos.setTodoCategories(data.categories.response);
+		if (!data.response) {
+			state = 'none';
+			return;
+		}
+		todos.setTodoCategories(data.response);
 		state = 'none';
 	});
 </script>
@@ -37,7 +42,7 @@
 		{:else}
 			{#each $todos as category (category.id)}
 				<div class="shrink-0 basis-[27rem]" animate:flip={{ duration: 200 }}>
-					<TodoList {category} project={data.project.response}>
+					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
 						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 						<AttachToProject slot="attach-to-project" {form} categoryId={category.id} />
 					</TodoList>
