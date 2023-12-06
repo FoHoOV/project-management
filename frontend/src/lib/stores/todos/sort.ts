@@ -65,22 +65,7 @@ export function sortByCustomOrder<T extends { id: number }>(
 		}
 	};
 
-	const moveOtherToLeftOfCurrent = (
-		currentIndex: number,
-		leftElementIndex: number,
-		leftId: number
-	) => {
-		if (elements[currentIndex == 0 ? currentIndex : currentIndex - 1]?.id === leftId) {
-			return;
-		}
-		const savedLeftElement = elements[leftElementIndex];
-		elements[leftElementIndex] = null;
-		elements.splice(currentIndex, 0, savedLeftElement);
-		mutations += 1;
-		//movedElementIds.push(nextId);
-	};
-
-	const moveOtherToRightOfCurrent = (
+	const moveCurrentToLeftOfOther = (
 		currentIndex: number,
 		rightElementIndex: number,
 		rightId: number
@@ -91,9 +76,24 @@ export function sortByCustomOrder<T extends { id: number }>(
 		) {
 			return;
 		}
-		const savedNextElement = elements[rightElementIndex];
-		elements[rightElementIndex] = null;
-		elements.splice(currentIndex + 1, 0, savedNextElement);
+		const savedCurrentElement = elements[currentIndex];
+		elements[currentIndex] = null;
+		elements.splice(rightElementIndex, 0, savedCurrentElement);
+		mutations += 1;
+		//movedElementIds.push(nextId);
+	};
+
+	const moveCurrentToRightOfOther = (
+		currentIndex: number,
+		leftElementIndex: number,
+		leftId: number
+	) => {
+		if (elements[currentIndex == 0 ? currentIndex : currentIndex - 1]?.id === leftId) {
+			return;
+		}
+		const savedCurrentElement = elements[currentIndex];
+		elements[currentIndex] = null;
+		elements.splice(leftElementIndex + 1, 0, savedCurrentElement);
 		mutations += 1;
 		//movedElementIds.push(nextId);
 	};
@@ -128,7 +128,9 @@ export function sortByCustomOrder<T extends { id: number }>(
 				throw new Error('database error: for some reason element.rightId = element.id');
 			}
 
-			moveOtherToRightOfCurrent(index, rightElementIndex, rightId);
+			moveCurrentToLeftOfOther(index, rightElementIndex, rightId);
+			increaseIndex();
+			continue;
 		}
 
 		const leftId = getLeftId(element);
@@ -144,7 +146,9 @@ export function sortByCustomOrder<T extends { id: number }>(
 				throw new Error('database error: for some reason element.leftId = element.id');
 			}
 
-			moveOtherToLeftOfCurrent(index, leftElementIndex, leftId);
+			moveCurrentToRightOfOther(index, leftElementIndex, leftId);
+			increaseIndex();
+			continue;
 		}
 
 		increaseIndex();
@@ -179,6 +183,13 @@ export function updateElementSort<T extends { id: number }>(
 		throw new Error('moving element not found in dataset');
 	}
 
+	if (
+		movingElement.id === movingElementNewOrder.rightId ||
+		movingElement.id === movingElementNewOrder.leftId
+	) {
+		throw new Error('inputs values create a cyclic order');
+	}
+
 	removeElementFromSortedList(
 		elements,
 		movingElementId,
@@ -189,10 +200,12 @@ export function updateElementSort<T extends { id: number }>(
 	);
 
 	const elementPointingTonNewLeft = elements.find(
-		(element) => getLeftId(element) == movingElementNewOrder.leftId
+		(element) =>
+			movingElementNewOrder.leftId != null && getLeftId(element) == movingElementNewOrder.leftId
 	);
 	const elementPointingToNewRight = elements.find(
-		(element) => getRightId(element) == movingElementNewOrder.rightId
+		(element) =>
+			movingElementNewOrder.rightId != null && getRightId(element) == movingElementNewOrder.rightId
 	);
 
 	if (elementPointingTonNewLeft) {
@@ -225,18 +238,18 @@ export function removeElementFromSortedList<T extends { id: number }>(
 		throw new Error('deletingElement element not found in dataset');
 	}
 
-	if (getLeftId(deletingElement)) {
+	if (getLeftId(deletingElement) !== null) {
 		const elementPointingToNewLeft = elements.find(
-			(element) => getLeftId(element) == getLeftId(deletingElement)
+			(element) => getLeftId(element) == deletingElement.id
 		);
 		if (elementPointingToNewLeft) {
 			setLeftId(elementPointingToNewLeft, getLeftId(deletingElement));
 		}
 	}
 
-	if (getRightId(deletingElement)) {
+	if (getRightId(deletingElement) !== null) {
 		const elementPointingToNewRight = elements.find(
-			(element) => getRightId(element) == getRightId(deletingElement)
+			(element) => getRightId(element) == deletingElement.id
 		);
 		if (elementPointingToNewRight) {
 			setRightId(elementPointingToNewRight, getRightId(deletingElement));

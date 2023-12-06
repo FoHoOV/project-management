@@ -32,7 +32,7 @@ def update_element_order[
         moving_item["id"] == moving_item["left_id"]
         or moving_item["id"] == moving_item["right_id"]
     ):
-        raise ValidationException("Inputs values create a cyclic order")
+        raise ValidationException("inputs values create a cyclic order")
 
     # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
     _remove_item_from_sorted_items_in_position(
@@ -40,12 +40,30 @@ def update_element_order[
     )
 
     if moving_item["left_id"] is not None:
+        if (
+            order_query.filter(
+                order_class.id == moving_item["left_id"],
+                order_class.left_id == moving_item["id"],
+            ).count()
+            > 0
+        ):
+            raise ValidationException("inputs values create a cyclic order")
+
         order_query.filter(
             order_class.left_id == moving_item["left_id"],
             order_class.id != moving_item["id"],
         ).update({"left_id": moving_item["id"]})
 
     if moving_item["right_id"] is not None:
+        if (
+            order_query.filter(
+                order_class.id == moving_item["right_id"],
+                order_class.right_id == moving_item["id"],
+            ).count()
+            > 0
+        ):
+            raise ValidationException("inputs values create a cyclic order")
+
         order_query.filter(
             order_class.right_id == moving_item["right_id"],
             order_class.id != moving_item["id"],
@@ -94,15 +112,15 @@ def _remove_item_from_sorted_items_in_position[
     if removing_item_order is None:
         return
 
-    if removing_item_order.right_id is not None:
-        order_query.filter(
-            order_class.right_id == removing_item_id,
-        ).update({"right_id": removing_item_order.right_id})
-
     if removing_item_order.left_id is not None:
         order_query.filter(order_class.left_id == removing_item_id).update(
             {"left_id": removing_item_order.left_id}
         )
 
-    removing_item_order.right_id = None
+    if removing_item_order.right_id is not None:
+        order_query.filter(
+            order_class.right_id == removing_item_id,
+        ).update({"right_id": removing_item_order.right_id})
+
     removing_item_order.left_id = None
+    removing_item_order.right_id = None
