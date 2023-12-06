@@ -175,7 +175,7 @@
 		<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
 		<div class="flex w-full max-w-full flex-col self-start">
 			<div class="flex w-full justify-between">
-				<div class="max-w-full">
+				<div class="flex max-w-full items-center">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
 					<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
 						>{category.title}</span
@@ -185,7 +185,7 @@
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
 			</div>
-			<div class="max-w-full">
+			<div class="flex max-w-full items-center">
 				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
 				<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
 					>{category.description}</span
