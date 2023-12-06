@@ -13,6 +13,12 @@ class TodoItem(BasesWithCreatedDate):
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     is_done: Mapped[bool] = mapped_column(Boolean(), default=False)
-    category_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
-    category: Mapped["TodoCategory"] = relationship(back_populates="items")  # type: ignore
-    order: Mapped[TodoItemOrder | None] = relationship(foreign_keys=[TodoItemOrder.todo_id], uselist=False, back_populates="todo", cascade="all, delete-orphan")  # type: ignore
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("todo_category.id", ondelete="CASCADE")
+    )
+    category: Mapped["TodoCategory"] = relationship(  # type: ignore
+        "TodoCategory",
+        back_populates="items",
+        single_parent=True,
+    )
+    order: Mapped[TodoItemOrder | None] = relationship("TodoItemOrder", foreign_keys=[TodoItemOrder.todo_id], uselist=False, back_populates="todo", cascade="all, delete-orphan")  # type: ignore

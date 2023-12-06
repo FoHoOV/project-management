@@ -14,9 +14,10 @@ class Project(BasesWithCreatedDate):
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     users: Mapped[List["User"]] = relationship(  # type: ignore
-        secondary="project_user_association", back_populates="projects"
+        "User", secondary="project_user_association", back_populates="projects"
     )
     todo_categories: Mapped[List["TodoCategory"]] = relationship(  # type: ignore
+        "TodoCategory",
         secondary="todo_category_project_association",
         back_populates="projects",
         order_by="desc(TodoCategory.id)",

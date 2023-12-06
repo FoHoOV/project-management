@@ -14,16 +14,19 @@ class TodoCategory(BasesWithCreatedDate):
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     items: Mapped[List["TodoItem"]] = relationship(  # type: ignore
+        "TodoItem",
         back_populates="category",
         cascade="all, delete-orphan",
         order_by="desc(TodoItem.id), desc(TodoItem.is_done)",
     )
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
+        "Project",
         secondary="todo_category_project_association",
         back_populates="todo_categories",
         order_by="desc(Project.id)",
     )
     orders: Mapped[List[TodoCategoryOrder]] = relationship(  # type: ignore
+        "TodoCategoryOrder",
         foreign_keys=[TodoCategoryOrder.category_id],
         cascade="all, delete-orphan",
         back_populates="category",

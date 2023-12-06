@@ -8,8 +8,10 @@ class TodoCategoryProjectAssociation(BasesWithCreatedDate):
     __tablename__ = "todo_category_project_association"
 
     todo_category_id: Mapped[int] = mapped_column(
-        ForeignKey("todo_category.id"), primary_key=True
+        ForeignKey("todo_category.id", ondelete="CASCADE"), primary_key=True
     )
-    project_id: Mapped[int] = mapped_column(ForeignKey("project.id"), primary_key=True)
+    project_id: Mapped[int] = mapped_column(
+        ForeignKey("project.id", ondelete="CASCADE"), primary_key=True
+    )
 
     __table_args__ = (UniqueConstraint("project_id", "todo_category_id"),)

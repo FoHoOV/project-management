@@ -13,5 +13,5 @@ class User(BasesWithCreatedDate):
     username: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String())
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
-        secondary="project_user_association", back_populates="users"
+        "Project", secondary="project_user_association", back_populates="users"
     )
