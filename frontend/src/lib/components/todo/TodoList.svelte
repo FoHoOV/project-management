@@ -173,19 +173,23 @@
 	/>
 	<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
 		<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
-		<div class="flex w-full flex-col self-start">
+		<div class="flex w-full max-w-full flex-col self-start">
 			<div class="flex w-full justify-between">
-				<div>
+				<div class="max-w-full">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
-					<span class="text-lg font-bold">{category.title}</span>
+					<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
+						>{category.title}</span
+					>
 				</div>
 				<button on:click={handleRemoveCategory}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
 			</div>
-			<div>
+			<div class="max-w-full">
 				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
-				<span class="text-lg font-bold">{category.description}</span>
+				<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
+					>{category.description}</span
+				>
 			</div>
 		</div>
 		<div class="mt-2 flex w-full gap-2">

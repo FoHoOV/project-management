@@ -120,7 +120,7 @@
 </script>
 
 <div
-	class="card mt-4 !bg-base-200 shadow-xl hover:bg-base-100"
+	class="card mt-4 max-h-full !bg-base-200 shadow-xl hover:bg-base-100"
 	use:dropzone={{
 		model: todo,
 		names: [TODO_ITEM_ORDER_DROP_ZONE],

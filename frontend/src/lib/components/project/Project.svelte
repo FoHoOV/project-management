@@ -50,9 +50,9 @@
 			<div class="tooltip" data-tip="project id">
 				<span>#{project.id}</span>
 			</div>
-			<span>{project.title}</span>
+			<span class="block max-w-full truncate hover:text-clip">{project.title}</span>
 		</div>
-		<p>{project.description}</p>
+		<p class="max-w-full truncate hover:text-clip">{project.description}</p>
 
 		<div class="stats grid-flow-row shadow lg:grid-flow-col">
 			<div class="stat">

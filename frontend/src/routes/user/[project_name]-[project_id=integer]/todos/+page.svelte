@@ -41,7 +41,7 @@
 			<Empty text="Create your first todo list!" />
 		{:else}
 			{#each $todos as category (category.id)}
-				<div class="shrink-0 basis-[27rem]" animate:flip={{ duration: 200 }}>
+				<div class="max-w-[27rem] shrink-0 basis-[27rem]" animate:flip={{ duration: 200 }}>
 					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
 						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
 						<AttachToProject slot="attach-to-project" {form} categoryId={category.id} />
