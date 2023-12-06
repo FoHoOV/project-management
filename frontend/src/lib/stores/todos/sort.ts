@@ -199,7 +199,7 @@ export function updateElementSort<T extends { id: number }>(
 		setRightId
 	);
 
-	const elementPointingTonNewLeft = elements.find(
+	const elementPointingToNewLeft = elements.find(
 		(element) =>
 			movingElementNewOrder.leftId != null && getLeftId(element) == movingElementNewOrder.leftId
 	);
@@ -208,8 +208,8 @@ export function updateElementSort<T extends { id: number }>(
 			movingElementNewOrder.rightId != null && getRightId(element) == movingElementNewOrder.rightId
 	);
 
-	if (elementPointingTonNewLeft) {
-		setLeftId(elementPointingTonNewLeft, movingElementId);
+	if (elementPointingToNewLeft) {
+		setLeftId(elementPointingToNewLeft, movingElementId);
 	}
 
 	if (elementPointingToNewRight) {
@@ -232,10 +232,24 @@ export function removeElementFromSortedList<T extends { id: number }>(
 ) {
 	console.log(JSON.stringify(elements));
 
-	const deletingElement = elements.find((value) => value.id == deletingElementId);
+	const deletingElement = elements.find((element) => element.id == deletingElementId);
 
 	if (!deletingElement) {
 		throw new Error('deletingElement element not found in dataset');
+	}
+
+	let existingItemPointingToCurrent = elements.find(
+		(element) => getRightId(element) == deletingElementId
+	);
+	if (existingItemPointingToCurrent) {
+		setRightId(existingItemPointingToCurrent, getRightId(deletingElement));
+	}
+
+	existingItemPointingToCurrent = elements.find(
+		(element) => getLeftId(element) == deletingElementId
+	);
+	if (existingItemPointingToCurrent) {
+		setLeftId(existingItemPointingToCurrent, getLeftId(deletingElement));
 	}
 
 	if (getLeftId(deletingElement) !== null) {
