@@ -1,4 +1,5 @@
 from typing import Type
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import Mapped, Query
 from db.models.base import DeclarativeBase
 from db.utils.exceptions import UserFriendlyError
@@ -32,23 +33,34 @@ def cyclic_order_validator[
 ):
     if new_left_id is not None and (
         order_query.filter(
-            order_class.right_id == item_id,
-            item_id_column != new_left_id,
+            or_(
+                and_(
+                    order_class.right_id == item_id,
+                    item_id_column != new_left_id,
+                ),
+                (and_(item_id_column == new_left_id, order_class.right_id != item_id)),
+            )
         ).count()
         > 0
     ):
         raise UserFriendlyError(
-            f"these values create a cyclic order: {item_id=}, {new_left_id=}, {new_right_id=}"
+            f"these values create a cyclic/invalid order: {item_id=}, {new_left_id=}, {new_right_id=}"
         )
+
     if new_right_id is not None and (
         order_query.filter(
-            order_class.left_id == item_id,
-            item_id_column != new_right_id,
+            or_(
+                and_(
+                    order_class.left_id == item_id,
+                    item_id_column != new_right_id,
+                ),
+                (and_(item_id_column == new_right_id, order_class.left_id != item_id)),
+            )
         ).count()
         > 0
     ):
         raise UserFriendlyError(
-            f"these values create a cyclic order: {item_id=}, {new_left_id=}, {new_right_id=}"
+            f"these values create a cyclic/invalid order: {item_id=}, {new_left_id=}, {new_right_id=}"
         )
 
 
