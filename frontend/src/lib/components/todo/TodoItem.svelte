@@ -64,16 +64,6 @@
 			return;
 		}
 
-		if (event.detail.data.is_done !== todo.is_done) {
-			state = 'none';
-			toasts.addToast({
-				message: 'todo status should be same for custom todo orders',
-				time: 5000,
-				type: 'error'
-			});
-			return;
-		}
-
 		const moveUp = state == 'drop-zone-top-activated';
 
 		state = 'calling-service';
