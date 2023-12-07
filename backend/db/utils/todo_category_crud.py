@@ -1,16 +1,15 @@
-from typing import List
+from annotated_types import T
 from db.models.utils.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
 )
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, Query
-from db.models import project
+from sqlalchemy.orm import Session, defaultload, noload, contains_eager, lazyload
+from sqlalchemy import or_, and_
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
 from db.models.todo_category_order import TodoCategoryOrder
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
-from db.models.todo_item import TodoItem
 from db.models.user import User
 
 from db.schemas.todo_category import (
@@ -35,9 +34,20 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
     )
     return (
         db.query(TodoCategory)
+        .outerjoin(
+            TodoCategory.orders.and_(TodoCategoryOrder.project_id == filter.project_id)
+        )
         .join(TodoCategory.projects)
         .filter(Project.id == filter.project_id)
         .order_by(TodoCategory.id.desc())
+        .options(
+            lazyload(
+                TodoCategory.orders.and_(
+                    TodoCategoryOrder.project_id == filter.project_id
+                )
+            )
+        )  # TODO: see why the fuck do we need this to exist
+        .all()
     )
 
 
