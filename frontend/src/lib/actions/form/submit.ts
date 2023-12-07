@@ -127,7 +127,6 @@ function _getResultFromFormAction<
 
 function _superResetHandler(event: Event) {
 	const node = event.target as HTMLFormElement;
-	node.reset();
 	_focusOnFirstVisibleInput(node);
 }
 
