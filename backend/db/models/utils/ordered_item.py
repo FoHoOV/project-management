@@ -69,9 +69,10 @@ def cyclic_order_validator[
         #         has_errors = True
 
     if has_errors:
-        raise UserFriendlyError(
-            f"these values create a cyclic/invalid order: {item_id=}, {new_left_id=}, {new_right_id=}"
-        )
+        return
+        # raise UserFriendlyError(
+        #     f"these values create a cyclic/invalid order: {item_id=}, {new_left_id=}, {new_right_id=}"
+        # )
 
 
 def update_element_order[
