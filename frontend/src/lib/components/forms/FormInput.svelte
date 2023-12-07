@@ -8,6 +8,7 @@
 	export let hideLabel: boolean = false;
 	export let type: HTMLInputAttributes['type'] = 'text';
 	export let value: string | number | boolean | undefined = '';
+	export let autoFocus: boolean | null = null;
 	export { className as class };
 
 	let className: string = '';
@@ -23,6 +24,7 @@
 	<label class="label" class:hidden={hideLabel} for={name}>
 		<span class="label-text">{label}</span>
 	</label>
+	<!-- svelte-ignore a11y-autofocus -->
 	<input
 		bind:this={input}
 		{type}
@@ -31,6 +33,7 @@
 		placeholder={label}
 		class="input input-bordered w-full"
 		{value}
+		autofocus={autoFocus}
 	/>
 	<Alert type="error" message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
 </div>

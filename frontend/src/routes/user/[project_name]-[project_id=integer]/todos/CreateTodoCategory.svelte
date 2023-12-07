@@ -68,7 +68,13 @@
 			value={$page.params.project_id}
 			errors={''}
 		/>
-		<FormInput name="title" class="w-full" hideLabel={true} errors={formErrors?.errors?.title} />
+		<FormInput
+			name="title"
+			autoFocus={true}
+			class="w-full"
+			hideLabel={true}
+			errors={formErrors?.errors?.title}
+		/>
 		<FormInput
 			name="description"
 			class="w-full"
