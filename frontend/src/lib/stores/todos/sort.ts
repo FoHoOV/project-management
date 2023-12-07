@@ -33,12 +33,12 @@ export function setTodoCategoryRightId(todoCategory: TodoCategory, rightId: numb
 	todoCategory.orders = [{ left_id: null, ...existingOrder, right_id: rightId }];
 }
 export function sortedTodos(todos: TodoItem[]) {
-	sortById(todos);
+	sortById(todos, false);
 	return sortByCustomOrder(todos, getTodoItemLeftId, getTodoItemRightId);
 }
 
 export function sortedCategories(categories: TodoCategory[]) {
-	sortById(categories);
+	sortById(categories, true);
 	return sortByCustomOrder(categories, getTodoCategoryLeftId, getTodoCategoryRightId);
 }
 
@@ -157,9 +157,9 @@ export function sortByCustomOrder<T extends { id: number }>(
 	return elements.filter((element) => element != null) as T[];
 }
 
-export function sortById(elements: { id: number }[]) {
+export function sortById(elements: { id: number }[], ascending: boolean) {
 	elements.sort((a, b) => {
-		return b.id - a.id;
+		return ascending ? a.id - b.id : b.id - a.id;
 	});
 }
 
