@@ -63,6 +63,19 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
+
+    update_order(
+        db,
+        TodoItemUpdateOrder.model_validate(
+            {
+                "id": db_item.id,
+                "right_id": None,
+                "left_id": _get_first_todo_id_in_category(db, todo.category_id),
+                "new_category_id": todo.category_id,
+            }
+        ),
+        user_id,
+    )
     return db_item
 
 
@@ -76,17 +89,19 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     if not db_item:
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
-    if todo.new_category_id is not None and db_item.category_id != todo.new_category_id:
-        validate_todo_category_belongs_to_user(db, todo.new_category_id, user_id)
-
-        delete_item_from_sorted_items(
+    if todo.new_category_id is not None:
+        update_order(
             db,
-            TodoItemOrder,
-            db.query(TodoItemOrder),
-            TodoItemOrder.todo_id,
-            todo.id,
+            TodoItemUpdateOrder.model_validate(
+                {
+                    "id": db_item.id,
+                    "right_id": None,
+                    "left_id": _get_first_todo_id_in_category(db, todo.new_category_id),
+                    "new_category_id": todo.new_category_id,
+                }
+            ),
+            user_id,
         )
-        db_item.category_id = todo.new_category_id
 
     if todo.is_done is not None:
         db_item.is_done = todo.is_done
@@ -111,16 +126,30 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
     if moving_item.right_id is not None:
         validate_todo_item_belongs_to_user(db, moving_item.right_id, user_id)
 
+    db_item = (
+        db.query(TodoItem)
+        .filter(TodoItem.id == moving_item.id)
+        .join(TodoItem.category)
+        .first()
+    )
+
+    if not db_item:
+        raise UserFriendlyError("moving item not found or doesn't belong to user")
+
+    if db_item.category_id != moving_item.new_category_id:
+        validate_todo_category_belongs_to_user(db, moving_item.new_category_id, user_id)
+        delete_item_from_sorted_items(
+            db,
+            TodoItemOrder,
+            db.query(TodoItemOrder),
+            TodoItemOrder.todo_id,
+            db_item.id,
+        )
+        db_item.category_id = moving_item.new_category_id
+        db.commit()
+
     def create_order(id: int, left_id: int | None, right_id: int | None):
         db.add(TodoItemOrder(todo_id=id, left_id=left_id, right_id=right_id))
-
-    update_item(
-        db,
-        TodoItemUpdateItem.model_construct(
-            id=moving_item.id, new_category_id=moving_item.new_category_id
-        ),
-        user_id,
-    )
 
     update_element_order(
         db,
@@ -168,3 +197,30 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         == 0
     ):
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
+
+
+def _get_first_todo_id_in_category(db: Session, category_id: int):
+    last_item_in_the_list = (
+        db.query(TodoItemOrder)
+        .join(TodoItemOrder.todo)
+        .join(TodoItem.category)
+        .filter(TodoCategory.id == category_id)
+        .filter(TodoItemOrder.right_id == None)
+        .first()
+    )
+
+    if last_item_in_the_list is not None:
+        return last_item_in_the_list.todo_id
+
+    last_item_in_the_list = (
+        db.query(TodoItem)
+        .join(TodoItem.category)
+        .filter(TodoCategory.id == category_id)
+        .order_by(TodoItem.id.desc())
+        .limit(2)
+        .all()
+    )
+    if len(last_item_in_the_list) > 1:
+        return last_item_in_the_list[1].id
+
+    return None
