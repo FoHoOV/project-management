@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, Session, Mapper
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BaseOrderedItem, BasesWithCreatedDate
-from db.models.utils.ordered_item import cyclic_order_validator
+from db.models.validators.ordered_item import cyclic_order_validator
 
 
 class TodoCategoryOrder(BasesWithCreatedDate, BaseOrderedItem):
