@@ -299,3 +299,26 @@ export function removeElementFromSortedList<T extends { id: number }>(
 
 	console.log(JSON.stringify(elements));
 }
+
+export function getLastTodoItemInSortedListExceptCurrent(items: TodoItem[], currentTodoId: number) {
+	const lastItemInList = items.find(
+		(item) => item.id !== currentTodoId && getTodoItemRightId(item) === null
+	);
+	if (lastItemInList !== undefined) {
+		return lastItemInList;
+	}
+	return items.find((item) => item.id != currentTodoId) ?? null;
+}
+
+export function getLastTodoCategoryInSortedListExceptCurrent(
+	items: TodoCategory[],
+	currentTodoCategoryId: number
+) {
+	const lastItemInList = items.find(
+		(item) => item.id !== currentTodoCategoryId && getTodoCategoryRightId(item) === null
+	);
+	if (lastItemInList !== undefined) {
+		return lastItemInList;
+	}
+	return items.find((item) => item.id != currentTodoCategoryId) ?? null;
+}

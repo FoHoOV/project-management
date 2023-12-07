@@ -1,6 +1,12 @@
 import { writable } from 'svelte/store';
 import type { NullableOrderedItem, TodoCategory, TodoItem } from '$lib/generated-client/models';
-import { getTodoCategoryRightId, setTodoCategoryRightId, setTodoItemLeftId } from './sort';
+import {
+	getLastTodoCategoryInSortedListExceptCurrent,
+	getLastTodoItemInSortedListExceptCurrent,
+	getTodoCategoryRightId,
+	setTodoCategoryRightId,
+	setTodoItemLeftId
+} from './sort';
 import {
 	sortedTodos,
 	getTodoItemRightId,
@@ -22,6 +28,19 @@ const addTodo = (todo: TodoItem, skipSort = false): void => {
 				return category;
 			}
 			category.items.push(todo);
+
+			updateElementSort(
+				category.items,
+				todo.id,
+				{
+					leftId: getLastTodoItemInSortedListExceptCurrent(category.items, todo.id)?.id ?? null,
+					rightId: null
+				},
+				getTodoItemLeftId,
+				getTodoItemRightId,
+				setTodoItemLeftId,
+				setTodoItemRightId
+			);
 
 			if (!skipSort) {
 				category.items = sortedTodos(category.items);
@@ -116,6 +135,18 @@ const addCategory = (category: TodoCategory) => {
 	_update((categories) => {
 		category.items = sortedTodos(category.items);
 		categories.push(category);
+		updateElementSort(
+			categories,
+			category.id,
+			{
+				leftId: getLastTodoCategoryInSortedListExceptCurrent(categories, category.id)?.id ?? null,
+				rightId: null
+			},
+			getTodoCategoryLeftId,
+			getTodoCategoryRightId,
+			setTodoCategoryLeftId,
+			setTodoCategoryRightId
+		);
 		categories = sortedCategories(categories);
 		return categories;
 	});
