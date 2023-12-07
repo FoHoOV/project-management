@@ -7,6 +7,7 @@ from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.project import (
     Project,
+    ProjectAttachAssociationResponse,
     ProjectCreate,
     ProjectDetachAssociation,
     ProjectRead,
@@ -27,7 +28,7 @@ def create_for_user(
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.post(path="/attach-to-user", response_model=ProjectAttachAssociation)
+@router.post(path="/attach-to-user", response_model=ProjectAttachAssociationResponse)
 def attach_to_user(
     current_user: Annotated[User, Depends(get_current_user)],
     association: ProjectAttachAssociation,

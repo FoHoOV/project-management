@@ -32,6 +32,11 @@ class ProjectAttachAssociation(ProjectBase):
     username: constr(min_length=3)  # type: ignore
 
 
+class ProjectAttachAssociationResponse(ProjectBase):
+    project_id: int
+    user_id: int
+
+
 class PartialUser(BaseModel):
     id: int
     username: str
