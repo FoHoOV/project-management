@@ -70,7 +70,9 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
             {
                 "id": db_item.id,
                 "right_id": None,
-                "left_id": _get_first_todo_id_in_category(db, todo.category_id),
+                "left_id": _get_last_todo_id_in_category_except_current(
+                    db, db_item.id, todo.category_id
+                ),
                 "new_category_id": todo.category_id,
             }
         ),
@@ -96,7 +98,9 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
                 {
                     "id": db_item.id,
                     "right_id": None,
-                    "left_id": _get_first_todo_id_in_category(db, todo.new_category_id),
+                    "left_id": _get_last_todo_id_in_category_except_current(
+                        db, todo.id, todo.new_category_id
+                    ),
                     "new_category_id": todo.new_category_id,
                 }
             ),
@@ -199,13 +203,16 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
 
 
-def _get_first_todo_id_in_category(db: Session, category_id: int):
+def _get_last_todo_id_in_category_except_current(
+    db: Session, current_todo_id: int, category_id: int
+):
     last_item_in_the_list = (
         db.query(TodoItemOrder)
         .join(TodoItemOrder.todo)
         .join(TodoItem.category)
         .filter(TodoCategory.id == category_id)
         .filter(TodoItemOrder.right_id == None)
+        .filter(TodoItemOrder.todo_id != current_todo_id)
         .first()
     )
 
@@ -216,11 +223,12 @@ def _get_first_todo_id_in_category(db: Session, category_id: int):
         db.query(TodoItem)
         .join(TodoItem.category)
         .filter(TodoCategory.id == category_id)
+        .filter(TodoItem.id != current_todo_id)
         .order_by(TodoItem.id.desc())
-        .limit(2)
+        .limit(0)
         .all()
     )
-    if len(last_item_in_the_list) > 1:
-        return last_item_in_the_list[1].id
+    if len(last_item_in_the_list) > 0:
+        return last_item_in_the_list[0].id
 
     return None
