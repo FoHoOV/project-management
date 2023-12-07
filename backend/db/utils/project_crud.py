@@ -108,6 +108,10 @@ def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id
             TodoCategoryProjectAssociation.project_id == association.project_id
         ).delete()
 
+        db.query(TodoCategoryOrder).filter(
+            TodoCategoryOrder.project_id == association.project_id
+        ).delete()
+
         db.query(TodoCategory).filter(
             TodoCategory.id.in_(
                 [row.tuple()[0] for row in categories_with_deleting_project_id]
