@@ -10,7 +10,9 @@ class TodoItemOrder(BasesWithCreatedDate, BaseOrderedItem):
     __tablename__ = "todo_item_order"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    todo_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id"), unique=True)
+    todo_id: Mapped[int] = mapped_column(
+        ForeignKey("todo_item.id", ondelete="CASCADE"), unique=True
+    )
     left_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_item.id"), nullable=True, unique=True
     )

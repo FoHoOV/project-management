@@ -11,7 +11,9 @@ class TodoCategoryOrder(BasesWithCreatedDate, BaseOrderedItem):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("project.id"))
-    category_id: Mapped[int] = mapped_column(ForeignKey("todo_category.id"))
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("todo_category.id", ondelete="CASCADE")
+    )
     left_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_category.id"), nullable=True
     )

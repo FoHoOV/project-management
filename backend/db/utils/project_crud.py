@@ -1,6 +1,10 @@
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
+from db.models.todo_category_order import TodoCategoryOrder
+from db.models.todo_category_project_association import TodoCategoryProjectAssociation
+from db.models.todo_item import TodoItem
 from db.models.user import User
 from db.schemas.project import (
     ProjectAttachAssociation,
@@ -10,6 +14,7 @@ from db.schemas.project import (
 )
 from sqlalchemy.orm import Session
 from db.utils.exceptions import UserFriendlyError
+from db.models.todo_category import TodoCategory
 
 
 def create(db: Session, project: ProjectCreate, user_id: int):
@@ -70,16 +75,48 @@ def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id
         ProjectUserAssociation.user_id == user_id,
     ).delete()
 
-    db.commit()
-
     if (
         db.query(ProjectUserAssociation)
         .filter(ProjectUserAssociation.project_id == association.project_id)
         .count()
         == 0
     ):
+        # TODO: so what the fuck delete on cascade is for?? what da fak??
+        # it doesn't work if i dont delete them myself! :|
+
+        categories_with_deleting_project_id_subquery = (
+            db.query(TodoCategory.id, TodoCategoryProjectAssociation.project_id)
+            .join(
+                TodoCategoryProjectAssociation,
+                TodoCategory.id == TodoCategoryProjectAssociation.category_id,
+            )
+            .group_by(TodoCategory.id)
+            .having(func.count(TodoCategoryProjectAssociation.category_id) == 1)
+            .subquery()
+        )
+
+        categories_with_deleting_project_id = (
+            db.query(categories_with_deleting_project_id_subquery.c.id)
+            .filter(
+                categories_with_deleting_project_id_subquery.c.project_id
+                == association.project_id
+            )
+            .all()
+        )
+
+        db.query(TodoCategoryProjectAssociation).filter(
+            TodoCategoryProjectAssociation.project_id == association.project_id
+        ).delete()
+
+        db.query(TodoCategory).filter(
+            TodoCategory.id.in_(
+                [row.tuple()[0] for row in categories_with_deleting_project_id]
+            )
+        ).delete()
+
         db.query(Project).filter(Project.id == association.project_id).delete()
-        db.commit()
+
+    db.commit()
 
 
 def get_project(db: Session, project: ProjectRead, user_id: int):
