@@ -71,6 +71,21 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     db.add(association)
     db.commit()
 
+    update_order(
+        db,
+        TodoCategoryUpdateOrder.model_validate(
+            {
+                "id": db_item.id,
+                "left_id": _get_first_category_id_in_project(
+                    db, category.project_id, user_id
+                ),
+                "right_id": None,
+                "project_id": category.project_id,
+            }
+        ),
+        user_id,
+    )
+
     return db_item
 
 
@@ -205,3 +220,25 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
         == 0
     ):
         raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
+
+
+def _get_first_category_id_in_project(db: Session, project_id: int, user_id: int):
+    last_item_in_the_list = (
+        db.query(TodoCategoryOrder)
+        .filter(
+            TodoCategoryOrder.project_id == project_id,
+            TodoCategoryOrder.right_id == None,
+        )
+        .first()
+    )
+
+    if last_item_in_the_list is not None:
+        return last_item_in_the_list.category_id
+
+    last_item_in_the_list = get_categories_for_project(
+        db, TodoCategoryRead(project_id=project_id), user_id
+    )
+    if len(last_item_in_the_list) > 1:
+        return last_item_in_the_list[1].id
+
+    return None
