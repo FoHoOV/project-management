@@ -20,9 +20,7 @@
 		props?: ComponentProps<SvelteComponent<ComponentType>>
 	) {
 		selectedAction = actions.find((action) => action.name === name) ?? null;
-		if (props) {
-			selectedActionProps = props;
-		}
+		selectedActionProps = props ?? null;
 		modal.show();
 	}
 

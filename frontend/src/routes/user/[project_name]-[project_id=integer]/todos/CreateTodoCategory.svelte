@@ -18,7 +18,7 @@
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
-		isFormSubmitSuccessful = false;
+		state = 'none';
 	}
 </script>
 
