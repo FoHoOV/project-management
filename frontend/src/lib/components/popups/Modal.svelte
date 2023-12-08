@@ -1,14 +1,19 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
 	export let title: string = '';
 
+	const dispatch = createEventDispatcher<{ closed: {}; opened: {} }>();
 	let modalElement: HTMLDialogElement;
 
 	export function show() {
 		modalElement.show();
+		dispatch('opened', {});
 	}
 
 	export function close() {
 		modalElement.close();
+		dispatch('closed', {});
 	}
 
 	function handleKeyupEvent(e: KeyboardEvent) {

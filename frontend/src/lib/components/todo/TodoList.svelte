@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { TodoItem, TodoCategory, Project } from '$lib/generated-client';
+	import type { TodoItem, TodoCategory } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 	import TodoItemComponent from './TodoItem.svelte';
+	import type { Feature as TodoItemFeature } from './TodoItem.svelte';
 	import { receive, send } from './transitions';
 	import {
 		faArrowCircleRight,
@@ -18,7 +19,6 @@
 	import todos from '$lib/stores/todos';
 	import { dropzone, type DropEvent, draggable, type CustomDragEvent } from '$lib/actions';
 	import Alert from '$components/Alert.svelte';
-	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
 	import {
 		DROP_EVENT_HANDLED_BY_TODO_ITEM,
@@ -29,18 +29,24 @@
 	import { cursorOnElementPositionX } from '$lib/utils';
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
+	import { createEventDispatcher } from 'svelte';
+
+	type Feature = TodoItemFeature | 'edit-todo-category' | 'create-todo-item' | 'attach-to-project';
 
 	export let category: TodoCategory;
 	export let projectId: number;
 	export { className as class };
+	export let enabledFeatures: Feature[] | null = null;
 
 	let className: string = '';
 	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
-	let createTodoModal: Modal;
-	let attachToProjectModal: Modal;
-	let editCategoryModal: Modal;
+	const dispatch = createEventDispatcher<{
+		editTodoCategory: { category: TodoCategory };
+		createTodoItem: { category: TodoCategory };
+		attachToProject: { category: TodoCategory };
+	}>();
 
 	async function handleRemoveCategory() {
 		state = 'calling-service';
@@ -60,16 +66,16 @@
 		});
 	}
 
-	function handleCreateTodo(event: MouseEvent) {
-		createTodoModal.show();
-	}
-
 	function handleAttachToProject(event: MouseEvent) {
-		attachToProjectModal.show();
+		dispatch('attachToProject', { category: category });
 	}
 
 	function handleEditTodoCategory(event: MouseEvent) {
-		editCategoryModal.show();
+		dispatch('editTodoCategory', { category: category });
+	}
+
+	function handleCreateTodo(event: MouseEvent) {
+		dispatch('createTodoItem', { category: category });
 	}
 
 	async function handleOnDrop(event: DropEvent<{}>) {
@@ -188,7 +194,10 @@
 					>
 				</div>
 				<div>
-					<button on:click={handleEditTodoCategory} class:hidden={!$$slots['edit-todo-category']}>
+					<button
+						on:click={handleEditTodoCategory}
+						class:hidden={!enabledFeatures?.includes('edit-todo-category')}
+					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
 					<button on:click={handleRemoveCategory}>
@@ -206,7 +215,7 @@
 		<div class="mt-2 flex w-full gap-2">
 			<button
 				class="btn btn-success flex-1"
-				class:hidden={!$$slots['create-todo-item']}
+				class:hidden={!enabledFeatures?.includes('create-todo-item')}
 				on:click={handleCreateTodo}
 			>
 				<Fa icon={faCirclePlus} />
@@ -214,7 +223,7 @@
 			</button>
 			<button
 				class="btn btn-info flex-1"
-				class:hidden={!$$slots['attach-to-project']}
+				class:hidden={!enabledFeatures?.includes('attach-to-project')}
 				on:click={handleAttachToProject}
 			>
 				<Fa icon={faMapPin} />
@@ -229,12 +238,14 @@
 					out:send={{ key: todo.id }}
 					animate:flip={{ duration: 200 }}
 				>
-					<TodoItemComponent {todo} {category}>
-						<!--for slot forwarding to work flawlessly I have to wait for svelte5-->
-						<!--right now although this slot could be empty but the ProjectComponent thinks it has value and will render additional HTML-->
-						<!--https://github.com/sveltejs/svelte/pull/8304-->
-						<slot slot="edit-todo-item" name="edit-todo-item" let:todo {todo} />
-					</TodoItemComponent>
+					<TodoItemComponent
+						{todo}
+						{category}
+						enabledFeatures={enabledFeatures?.includes('edit-todo-item')
+							? ['edit-todo-item']
+							: null}
+						on:editTodoItem
+					></TodoItemComponent>
 				</div>
 			{/each}
 		{:else}
@@ -242,15 +253,3 @@
 		{/if}
 	</div>
 </div>
-
-<Modal title="Create a new todo here!" bind:this={createTodoModal}>
-	<slot slot="body" name="create-todo-item" />
-</Modal>
-
-<Modal title="Attach to project!" bind:this={attachToProjectModal}>
-	<slot slot="body" name="attach-to-project" />
-</Modal>
-
-<Modal title="Edit category details here" bind:this={editCategoryModal}>
-	<slot slot="body" name="edit-todo-category" />
-</Modal>

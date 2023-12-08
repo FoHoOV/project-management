@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+	export type Feature = 'edit-project' | 'attach-to-user';
+</script>
+
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -9,14 +13,16 @@
 	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
-	import Modal from '$components/popups/Modal.svelte';
 
 	export let project: Project;
+	export let enabledFeatures: Feature[] | null = null;
 
 	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null;
-	let attachToUserModal: Modal;
-	let editProjectModal: Modal;
+	const dispatch = createEventDispatcher<{
+		editProject: { project: Project };
+		attachToUser: { project: Project };
+	}>();
 
 	async function handleDetachProjectFromUser() {
 		state = 'calling-service';
@@ -37,11 +43,11 @@
 	}
 
 	function handleAttachToUser(event: MouseEvent) {
-		attachToUserModal.show();
+		dispatch('attachToUser', { project: project });
 	}
 
 	function handleEditProject(event: MouseEvent) {
-		editProjectModal.show();
+		dispatch('editProject', { project: project });
 	}
 </script>
 
@@ -57,7 +63,10 @@
 				</div>
 				<span class="block max-w-full truncate hover:text-clip">{project.title}</span>
 			</div>
-			<button on:click={handleEditProject} class:hidden={!$$slots['edit-project']}>
+			<button
+				on:click={handleEditProject}
+				class:hidden={!enabledFeatures?.includes('edit-project')}
+			>
 				<Fa icon={faEdit} class="text-success" />
 			</button>
 		</div>
@@ -90,7 +99,7 @@
 		<div class="card-actions justify-end pt-3">
 			<button
 				class="btn btn-success flex-1"
-				class:hidden={!$$slots['attach-to-user']}
+				class:hidden={!enabledFeatures?.includes('attach-to-user')}
 				on:click={handleAttachToUser}
 			>
 				Attach to user
@@ -111,11 +120,3 @@
 		</div>
 	</div>
 </div>
-
-<Modal title="Edit project here" bind:this={editProjectModal}>
-	<slot slot="body" name="edit-project" {project} />
-</Modal>
-
-<Modal title="Give another user access to this project" bind:this={attachToUserModal}>
-	<slot slot="body" name="attach-to-user" {project} />
-</Modal>

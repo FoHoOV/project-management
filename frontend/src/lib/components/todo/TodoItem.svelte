@@ -1,5 +1,9 @@
+<script lang="ts" context="module">
+	export type Feature = 'edit-todo-item';
+</script>
+
 <script lang="ts">
-	import { faCheckCircle, faEdit, faTrashCan, faUndo } from '@fortawesome/free-solid-svg-icons';
+	import { faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
@@ -16,17 +20,20 @@
 	import Spinner from '$components/Spinner.svelte';
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { cursorOnElementPositionY } from '$lib/utils';
-	import toasts from '$lib/stores/toasts';
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
-	import Modal from '$components/popups/Modal.svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
+	export let enabledFeatures: Feature[] | null = null;
 
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
-	let editTodoItemModal: Modal;
+
+	const dispatch = createEventDispatcher<{
+		editTodoItem: { todo: TodoItem };
+	}>();
 
 	async function handleChangeDoneStatus() {
 		state = 'calling-service';
@@ -112,7 +119,7 @@
 	}
 
 	function handleEditTodoItem() {
-		editTodoItemModal.show();
+		dispatch('editTodoItem', { todo: todo });
 	}
 </script>
 
@@ -153,7 +160,10 @@
 					checked={todo.is_done}
 					on:click={handleChangeDoneStatus}
 				/>
-				<button on:click={handleEditTodoItem} class:hidden={!$$slots['edit-todo-item']}>
+				<button
+					on:click={handleEditTodoItem}
+					class:hidden={!enabledFeatures?.includes('edit-todo-item')}
+				>
 					<Fa icon={faEdit} class="text-success" />
 				</button>
 				<button on:click={handleRemoveTodo}>
@@ -164,7 +174,3 @@
 		<p>{todo.description}</p>
 	</div>
 </div>
-
-<Modal title="Edit todo item here" bind:this={editTodoItemModal}>
-	<slot slot="body" name="edit-todo-item" {todo} />
-</Modal>

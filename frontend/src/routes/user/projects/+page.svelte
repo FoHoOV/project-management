@@ -7,21 +7,33 @@
 	import type { ActionData, PageData } from './$types';
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
 	import EditProject from '$routes/user/projects/EditProject.svelte';
+	import type { Project } from '$lib/generated-client/models';
+	import MultiModal from '$components/popups/MultiModal.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
 
-	let modal: Modal;
+	let modals: MultiModal;
 
 	function handleCreateProject() {
-		modal.show();
+		modals.show('create-project', { form: form });
+	}
+
+	function handleAttachToUser(e: CustomEvent<{ project: Project }>) {
+		modals.show('attach-to-user', { form: form, projectId: e.detail.project.id });
+	}
+
+	function handleEditProject(e: CustomEvent<{ project: Project }>) {
+		modals.show('edit-project', { form: form, projectId: e.detail.project.id });
 	}
 </script>
 
-<ProjectList projects={data.projects}>
-	<AttachToUser slot="attach-to-user" let:project {form} projectId={project.id}></AttachToUser>
-	<EditProject slot="edit-project" let:project {form} projectId={project.id}></EditProject>
-</ProjectList>
+<ProjectList
+	projects={data.projects}
+	enabledFeatures={['attach-to-user', 'edit-project']}
+	on:attachToUser={handleAttachToUser}
+	on:editProject={handleEditProject}
+></ProjectList>
 
 <CircleButton
 	icon={faPlus}
@@ -29,6 +41,15 @@
 	on:click={handleCreateProject}
 />
 
-<Modal title="Create a new project" bind:this={modal}>
-	<CreateProject slot="body" {form}></CreateProject>
-</Modal>
+<MultiModal
+	bind:this={modals}
+	actions={[
+		{ component: CreateProject, name: 'create-project', title: 'Create projects here!' },
+		{
+			component: AttachToUser,
+			name: 'attach-to-user',
+			title: 'Attach this project to another user'
+		},
+		{ component: EditProject, name: 'edit-project', title: 'Edit this projects info!' }
+	]}
+></MultiModal>
