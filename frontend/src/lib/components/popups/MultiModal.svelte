@@ -22,7 +22,7 @@
 	type ExtractComponentType<
 		TAction extends Action<any, any>,
 		Name extends TActions[number]['name']
-	> = TAction extends { name: Name } ? TAction['component'] : boolean;
+	> = TAction extends { name: Name } ? TAction['component'] : never;
 	export function show<TName extends TActions[number]['name']>(
 		name: TName,
 		props: ComponentProps<ExtractComponentType<TActions[number], TName>>
