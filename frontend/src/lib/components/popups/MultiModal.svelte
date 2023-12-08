@@ -1,14 +1,16 @@
 <script context="module" lang="ts">
-	export type Action<TName, TComponentType extends ComponentType> = {
+	export type Action<TName, TComponentType extends SvelteComponent> = {
 		component: TComponentType;
 		name: TName;
 		title: string;
 	};
+
+	type ActionsAny = readonly Action<any, any>[];
 </script>
 
-<script lang="ts" generics="TActions extends readonly Action<any, any>[]">
+<script lang="ts" generics="TActions extends ActionsAny">
 	import Modal from '$components/popups/Modal.svelte';
-	import type { ComponentProps, ComponentType, SvelteComponent } from 'svelte';
+	import type { ComponentProps, SvelteComponent } from 'svelte';
 
 	export let actions: TActions;
 
@@ -17,10 +19,13 @@
 
 	let modal: Modal;
 
-	type ExtractComponentType<TAction extends Action<any,any>, Name extends TActions[number]['name']> = TAction extends { name: Name } ? TAction['component'] : never;
+	type ExtractComponentType<
+		TAction extends Action<any, any>,
+		Name extends TActions[number]['name']
+	> = TAction extends { name: Name } ? TAction['component'] : boolean;
 	export function show<TName extends TActions[number]['name']>(
 		name: TName,
-		props: ComponentProps<SvelteComponent<ExtractComponentType<TActions[number], TName>>>
+		props: ComponentProps<ExtractComponentType<TActions[number], TName>>
 	) {
 		selectedAction = actions.find((action) => action.name === name) ?? null;
 		selectedActionProps = props ?? null;
