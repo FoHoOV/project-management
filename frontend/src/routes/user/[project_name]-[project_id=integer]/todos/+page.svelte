@@ -10,17 +10,33 @@
 	import Empty from '$components/Empty.svelte';
 	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, type ComponentProps, SvelteComponent } from 'svelte';
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
-	import MultiModal from '$components/popups/MultiModal.svelte';
+	import MultiModal, { type Action } from '$components/popups/MultiModal.svelte';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 
 	export let data: PageData;
 	export let form: ActionData;
 	export let state: 'loading' | 'none' = 'loading';
 
-	let modals: MultiModal;
+	let actions = [
+		{ component: CreateTodoItem, name: 'create-todo-item', title: 'Create your todos here!' },
+		{
+			component: CreateTodoCategory,
+			name: 'create-todo-category',
+			title: 'Create todo categories here!'
+		},
+		{
+			component: EditTodoCategory,
+			name: 'edit-todo-category',
+			title: 'Edit todo category details'
+		},
+		{ component: EditTodoItem, name: 'edit-todo-item', title: 'Edit todo item' },
+		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' }
+	] as const;
+
+	let modals: MultiModal<typeof actions>;
 
 	function handleCreateTodoCategory(e: MouseEvent) {
 		modals.show('create-todo-category', {
@@ -97,21 +113,4 @@
 	/>
 {/if}
 
-<MultiModal
-	actions={[
-		{ component: CreateTodoItem, name: 'create-todo-item', title: 'Create your todos here!' },
-		{
-			component: CreateTodoCategory,
-			name: 'create-todo-category',
-			title: 'Create todo categories here!'
-		},
-		{
-			component: EditTodoCategory,
-			name: 'edit-todo-category',
-			title: 'Edit todo category details'
-		},
-		{ component: EditTodoItem, name: 'edit-todo-item', title: 'Edit todo item' },
-		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' }
-	]}
-	bind:this={modals}
-></MultiModal>
+<MultiModal bind:this={modals} {actions}></MultiModal>

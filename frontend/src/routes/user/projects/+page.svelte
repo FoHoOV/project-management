@@ -13,7 +13,17 @@
 	export let data: PageData;
 	export let form: ActionData;
 
-	let modals: MultiModal;
+	let actions = [
+		{ component: CreateProject, name: 'create-project', title: 'Create projects here!' },
+		{
+			component: AttachToUser,
+			name: 'attach-to-user',
+			title: 'Attach this project to another user'
+		},
+		{ component: EditProject, name: 'edit-project', title: 'Edit this projects info!' }
+	] as const;
+
+	let modals: MultiModal<typeof actions>;
 
 	function handleCreateProject() {
 		modals.show('create-project', { form: form });
@@ -41,15 +51,4 @@
 	on:click={handleCreateProject}
 />
 
-<MultiModal
-	bind:this={modals}
-	actions={[
-		{ component: CreateProject, name: 'create-project', title: 'Create projects here!' },
-		{
-			component: AttachToUser,
-			name: 'attach-to-user',
-			title: 'Attach this project to another user'
-		},
-		{ component: EditProject, name: 'edit-project', title: 'Edit this projects info!' }
-	]}
-></MultiModal>
+<MultiModal bind:this={modals} {actions}></MultiModal>
