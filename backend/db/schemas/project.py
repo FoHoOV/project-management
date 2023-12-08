@@ -23,6 +23,10 @@ class ProjectCreate(ProjectBase):
         return title.title()
 
 
+class ProjectUpdate(ProjectCreate):
+    project_id: int
+
+
 class ProjectDetachAssociation(ProjectBase):
     project_id: int
 

@@ -12,6 +12,7 @@ from db.schemas.project import (
     ProjectDetachAssociation,
     ProjectRead,
     ProjectAttachAssociation,
+    ProjectUpdate,
 )
 from db.utils import project_crud
 
@@ -26,6 +27,15 @@ def create_for_user(
     db: Session = Depends(get_db),
 ):
     return project_crud.create(db=db, project=project, user_id=current_user.id)
+
+
+@router.patch(path="/update", response_model=Project)
+def update(
+    current_user: Annotated[User, Depends(get_current_user)],
+    project: ProjectUpdate,
+    db: Session = Depends(get_db),
+):
+    return project_crud.update(db, project, current_user.id)
 
 
 @router.post(path="/attach-to-user", response_model=ProjectAttachAssociationResponse)
