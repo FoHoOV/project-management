@@ -25,7 +25,7 @@
 	> = TAction extends { name: Name } ? TAction['component'] : never;
 	export function show<TName extends TActions[number]['name']>(
 		name: TName,
-		props: ComponentProps<ExtractComponentType<TActions[number], TName>>
+		props: any //TODO: ComponentProps<ExtractComponentType<TActions[number], TName>>
 	) {
 		selectedAction = actions.find((action) => action.name === name) ?? null;
 		selectedActionProps = props ?? null;
