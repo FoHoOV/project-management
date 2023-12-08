@@ -2,9 +2,13 @@ import type { PageServerLoad } from './$types';
 import { ProjectClient } from '$lib/client-wrapper/clients';
 import { callService, callServiceInFormActions } from '$lib/client-wrapper';
 import { error, type Actions } from '@sveltejs/kit';
-import { attachProjectSchema, createProjectSchema } from './validator';
+import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
 import { convertFormDataToObject, namedActionResult, superFail } from '$lib';
-import { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client/zod/schemas';
+import {
+	ProjectAttachAssociation,
+	ProjectCreate,
+	ProjectUpdate
+} from '$lib/generated-client/zod/schemas';
 
 export const load = (async ({ locals, fetch }) => {
 	const result = await callService({
@@ -72,6 +76,33 @@ export const actions = {
 				});
 			},
 			errorSchema: ProjectAttachAssociation
+		});
+
+		return namedActionResult(result, 'attach');
+	},
+	edit: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await editProjectSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await ProjectClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).updateProject({
+					...validationsResult.data
+				});
+			},
+			errorSchema: ProjectUpdate
 		});
 
 		return namedActionResult(result, 'attach');

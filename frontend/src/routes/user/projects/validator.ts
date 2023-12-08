@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client';
+import type { ProjectAttachAssociation, ProjectCreate, ProjectUpdate } from '$lib/generated-client';
 
 export const createProjectSchema = z.object({
 	title: z
@@ -18,3 +18,9 @@ export const attachProjectSchema = z.object({
 });
 
 ({}) as z.infer<typeof attachProjectSchema> satisfies ProjectAttachAssociation;
+
+export const editProjectSchema = createProjectSchema.extend({
+	project_id: z.number({ coerce: true })
+});
+
+({}) as z.infer<typeof editProjectSchema> satisfies ProjectUpdate;

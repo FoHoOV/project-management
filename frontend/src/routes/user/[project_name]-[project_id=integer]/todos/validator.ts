@@ -2,7 +2,9 @@ import { z } from 'zod';
 import type {
 	TodoItemCreate,
 	TodoCategoryCreate,
-	TodoCategoryAttachAssociation
+	TodoCategoryAttachAssociation,
+	TodoCategoryUpdateItem,
+	TodoItemUpdateItem
 } from '$lib/generated-client';
 
 export const createTodoItemSchema = z.object({
@@ -30,3 +32,20 @@ export const attachToProjectSchema = z.object({
 });
 
 ({}) as z.infer<typeof attachToProjectSchema> satisfies TodoCategoryAttachAssociation;
+
+export const editTodoCategorySchema = z.object({
+	id: z.number({ coerce: true }),
+	title: z.string().nonempty().min(2),
+	description: z.string().nonempty().min(2)
+});
+
+({}) as z.infer<typeof editTodoCategorySchema> satisfies TodoCategoryUpdateItem;
+
+export const editTodoItemSchema = z.object({
+	id: z.number({ coerce: true }),
+	category_id: z.number({coerce: true}),
+	title: z.string().nonempty().min(2),
+	description: z.string().nonempty().min(2)
+});
+
+({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;

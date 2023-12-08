@@ -1,14 +1,22 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { convertFormDataToObject, namedActionResult, superFail } from '$lib/actions/form';
-import { attachToProjectSchema, createTodoCategorySchema, createTodoItemSchema } from './validator';
+import {
+	attachToProjectSchema,
+	createTodoCategorySchema,
+	createTodoItemSchema,
+	editTodoCategorySchema,
+	editTodoItemSchema
+} from './validator';
 import {
 	TodoItemCreate,
 	TodoCategoryCreate,
-	TodoCategoryAttachAssociation
+	TodoCategoryAttachAssociation,
+	TodoCategoryUpdateItem,
+	TodoItemUpdateItem
 } from '$lib/generated-client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
-import { TodoItemClient, TodoCategoryClient, ProjectClient } from '$lib/client-wrapper/clients';
+import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
 
 export const load = (async ({ locals, fetch, params }) => {
 	// https://github.com/sveltejs/kit/issues/9785
@@ -130,5 +138,59 @@ export const actions: Actions = {
 		});
 
 		return namedActionResult(result, 'attachToProject');
+	},
+	editTodoCategory: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await editTodoCategorySchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoCategoryClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).updateItemTodoCategory({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoCategoryUpdateItem
+		});
+
+		return namedActionResult(result, 'editTodoCategory');
+	},
+	editTodoItem: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await editTodoItemSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoItemClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).updateItemTodoItem({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoItemUpdateItem
+		});
+
+		return namedActionResult(result, 'editTodoItem');
 	}
 } satisfies Actions;
