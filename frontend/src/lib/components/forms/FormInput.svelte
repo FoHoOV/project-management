@@ -4,7 +4,7 @@
 
 	export let name: string;
 	export let label: string = name;
-	export let errors: string | string[] | null | undefined;
+	export let errors: string | string[] | null | undefined | (string | null)[];
 	export let hideLabel: boolean = false;
 	export let type: HTMLInputAttributes['type'] = 'text';
 	export let value: string | number | boolean | undefined = '';
