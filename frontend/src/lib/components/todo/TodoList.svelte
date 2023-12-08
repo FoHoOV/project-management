@@ -233,7 +233,7 @@
 						<!--for slot forwarding to work flawlessly I have to wait for svelte5-->
 						<!--right now although this slot could be empty but the ProjectComponent thinks it has value and will render additional HTML-->
 						<!--https://github.com/sveltejs/svelte/pull/8304-->
-						<slot slot="edit-todo-item" name="edit-todo-item" />
+						<slot slot="edit-todo-item" name="edit-todo-item" let:todo {todo} />
 					</TodoItemComponent>
 				</div>
 			{/each}

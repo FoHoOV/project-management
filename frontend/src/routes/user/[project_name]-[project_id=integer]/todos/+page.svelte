@@ -12,6 +12,8 @@
 	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
 	import { onMount } from 'svelte';
+	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
+	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -44,6 +46,15 @@
 				<div class="max-w-[27rem] shrink-0 basis-[27rem]" animate:flip={{ duration: 200 }}>
 					<TodoList {category} projectId={Number.parseInt($page.params.project_id)}>
 						<CreateTodoItem slot="create-todo-item" {form} categoryId={category.id} />
+						<EditTodoCategory slot="edit-todo-category" {form} categoryId={category.id}
+						></EditTodoCategory>
+						<EditTodoItem
+							slot="edit-todo-item"
+							let:todo
+							{form}
+							categoryId={category.id}
+							todoId={todo.id}
+						></EditTodoItem>
 						<AttachToProject slot="attach-to-project" {form} categoryId={category.id} />
 					</TodoList>
 				</div>

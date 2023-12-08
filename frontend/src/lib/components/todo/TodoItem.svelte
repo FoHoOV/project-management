@@ -166,5 +166,5 @@
 </div>
 
 <Modal title="Edit todo item here" bind:this={editTodoItemModal}>
-	<slot slot="body" name="edit-todo-item" />
+	<slot slot="body" name="edit-todo-item" {todo} />
 </Modal>

@@ -11,15 +11,14 @@
 	export let projectId: number | undefined;
 
 	let formElement: HTMLFormElement;
+	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
 
 	$: formErrors = getFormErrors(form);
-	let isAttachProjectSubmitting = false;
-	let isFormSubmitSuccessful = false;
 
 	function resetForm() {
 		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
-		isFormSubmitSuccessful = false;
+		state = 'none';
 	}
 </script>
 
@@ -35,20 +34,19 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		isFormSubmitSuccessful = false;
+		state = 'none';
 	}}
 	on:submitstarted={() => {
-		isAttachProjectSubmitting = true;
-		isFormSubmitSuccessful = false;
+		state = 'submitting';
 	}}
 	on:submitended={() => {
-		isAttachProjectSubmitting = false;
+		state = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
 		// based on docs and on how invalidate works this doesn't do shit
 		await invalidate('/user/projects'); // TODO: use stores/runes later
 		resetForm();
-		isFormSubmitSuccessful = true;
+		state = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -58,7 +56,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={isFormSubmitSuccessful ? 'project has successfully attached to user!' : ''}
+			message={state == 'submit-successful' ? 'project has successfully attached to user!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
@@ -80,7 +78,7 @@
 				text="add"
 				class="btn-success flex-1"
 				type="submit"
-				loading={isAttachProjectSubmitting}
+				loading={state == 'submitting'}
 			/>
 			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 		</div>

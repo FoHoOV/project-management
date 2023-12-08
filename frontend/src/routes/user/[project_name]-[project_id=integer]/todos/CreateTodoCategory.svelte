@@ -11,11 +11,9 @@
 	export let form: ActionData;
 
 	let formElement: HTMLFormElement;
+	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
 
 	$: formErrors = getFormErrors(form);
-
-	let isCreateTodoCategorySubmitting = false;
-	let isFormSubmitSuccessful = false;
 
 	function resetForm() {
 		formElement.reset();
@@ -36,19 +34,18 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		isFormSubmitSuccessful = false;
+		state = 'none';
 	}}
 	on:submitstarted={() => {
-		isCreateTodoCategorySubmitting = true;
-		isFormSubmitSuccessful = false;
+		state = 'submitting';
 	}}
 	on:submitended={() => {
-		isCreateTodoCategorySubmitting = false;
+		state = 'none';
 	}}
 	on:submitsucceeded={(e) => {
 		todos.addCategory(e.detail.response);
 		resetForm();
-		isFormSubmitSuccessful = true;
+		state = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -58,7 +55,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={isFormSubmitSuccessful ? 'category created!' : ''}
+			message={state == 'submit-successful' ? 'category created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
@@ -86,7 +83,7 @@
 				text="add"
 				class="btn-success flex-1"
 				type="submit"
-				loading={isCreateTodoCategorySubmitting}
+				loading={state == 'submitting'}
 			/>
 			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 		</div>

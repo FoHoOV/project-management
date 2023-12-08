@@ -113,7 +113,7 @@
 </div>
 
 <Modal title="Edit project here" bind:this={editProjectModal}>
-	<slot slot="body" name="edit-project" />
+	<slot slot="body" name="edit-project" {project} />
 </Modal>
 
 <Modal title="Give another user access to this project" bind:this={attachToUserModal}>

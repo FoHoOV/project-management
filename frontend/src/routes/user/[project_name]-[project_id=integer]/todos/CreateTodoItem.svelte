@@ -14,8 +14,7 @@
 	let formElement: HTMLFormElement;
 
 	$: formErrors = getFormErrors(form);
-	let isAddTodoItemSubmitting = false;
-	let isFormSubmitSuccessful = false;
+	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
 
 	function resetForm() {
 		formElement.reset();
@@ -36,26 +35,29 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		isFormSubmitSuccessful = false;
+		state = 'none';
 	}}
 	on:submitstarted={() => {
-		isAddTodoItemSubmitting = true;
-		isFormSubmitSuccessful = false;
+		state = 'submitting';
 	}}
 	on:submitended={() => {
-		isAddTodoItemSubmitting = false;
+		state = 'none';
 	}}
 	on:submitsucceeded={(e) => {
 		todos.addTodo(e.detail.response);
 		resetForm();
-		isFormSubmitSuccessful = true;
+		state = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
 	class="card flex w-full flex-row items-start justify-center bg-base-300"
 >
 	<div class="card-body items-center text-center">
-		<Alert class="mb-1" type="success" message={isFormSubmitSuccessful ? 'todo created!' : ''} />
+		<Alert
+			class="mb-1"
+			type="success"
+			message={state == 'submit-successful' ? 'todo created!' : ''}
+		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
 		<FormInput class="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
@@ -77,7 +79,7 @@
 				text="add"
 				class="btn-success flex-1"
 				type="submit"
-				loading={isAddTodoItemSubmitting}
+				loading={state == 'submitting'}
 			/>
 			<LoadingButton text="reset" class="btn-warning  flex-1" type="button" on:click={resetForm} />
 		</div>

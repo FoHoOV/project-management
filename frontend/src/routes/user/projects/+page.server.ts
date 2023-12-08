@@ -105,6 +105,6 @@ export const actions = {
 			errorSchema: ProjectUpdate
 		});
 
-		return namedActionResult(result, 'attach');
+		return namedActionResult(result, 'edit');
 	}
 } satisfies Actions;

@@ -6,6 +6,7 @@
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { ActionData, PageData } from './$types';
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
+	import EditProject from '$routes/user/projects/EditProject.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -18,7 +19,8 @@
 </script>
 
 <ProjectList projects={data.projects}>
-	<AttachToUser slot="attach-to-user" let:project {form} projectId={project?.id}></AttachToUser>
+	<AttachToUser slot="attach-to-user" let:project {form} projectId={project.id}></AttachToUser>
+	<EditProject slot="edit-project" let:project {form} projectId={project.id}></EditProject>
 </ProjectList>
 
 <CircleButton
