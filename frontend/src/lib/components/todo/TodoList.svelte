@@ -6,6 +6,7 @@
 	import {
 		faArrowCircleRight,
 		faCirclePlus,
+		faEdit,
 		faInfoCircle,
 		faMapPin,
 		faTrashCan
@@ -39,6 +40,7 @@
 	let apiErrorTitle: string | null;
 	let createTodoModal: Modal;
 	let attachToProjectModal: Modal;
+	let editCategoryModal: Modal;
 
 	async function handleRemoveCategory() {
 		state = 'calling-service';
@@ -64,6 +66,10 @@
 
 	function handleAttachToProject(event: MouseEvent) {
 		attachToProjectModal.show();
+	}
+
+	function handleEditTodoCategory(event: MouseEvent) {
+		editCategoryModal.show();
 	}
 
 	async function handleOnDrop(event: DropEvent<{}>) {
@@ -181,9 +187,14 @@
 						>{category.title}</span
 					>
 				</div>
-				<button on:click={handleRemoveCategory}>
-					<Fa icon={faTrashCan} class="text-red-400" />
-				</button>
+				<div>
+					<button on:click={handleEditTodoCategory} class:hidden={!$$slots['edit-todo-category']}>
+						<Fa icon={faEdit} class="text-success" />
+					</button>
+					<button on:click={handleRemoveCategory}>
+						<Fa icon={faTrashCan} class="text-red-400" />
+					</button>
+				</div>
 			</div>
 			<div class="flex max-w-full items-center">
 				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
@@ -218,7 +229,12 @@
 					out:send={{ key: todo.id }}
 					animate:flip={{ duration: 200 }}
 				>
-					<TodoItemComponent {todo} {category} />
+					<TodoItemComponent {todo} {category}>
+						<!--for slot forwarding to work flawlessly I have to wait for svelte5-->
+						<!--right now although this slot could be empty but the ProjectComponent thinks it has value and will render additional HTML-->
+						<!--https://github.com/sveltejs/svelte/pull/8304-->
+						<slot slot="edit-todo-item" name="edit-todo-item" />
+					</TodoItemComponent>
 				</div>
 			{/each}
 		{:else}
@@ -228,13 +244,13 @@
 </div>
 
 <Modal title="Create a new todo here!" bind:this={createTodoModal}>
-	<svelte:fragment slot="body">
-		<slot name="create-todo-item" />
-	</svelte:fragment>
+	<slot slot="body" name="create-todo-item" />
 </Modal>
 
 <Modal title="Attach to project!" bind:this={attachToProjectModal}>
-	<svelte:fragment slot="body">
-		<slot name="attach-to-project" />
-	</svelte:fragment>
+	<slot slot="body" name="attach-to-project" />
+</Modal>
+
+<Modal title="Edit category details here" bind:this={editCategoryModal}>
+	<slot slot="body" name="edit-todo-category" />
 </Modal>

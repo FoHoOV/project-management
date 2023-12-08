@@ -1,18 +1,9 @@
 <script lang="ts">
 	import ProjectComponent from './Project.svelte';
 	import type { Project as ProjectType } from '$lib/generated-client/models';
-	import Modal from '$components/popups/Modal.svelte';
 	import Empty from '$components/Empty.svelte';
 
 	export let projects: ProjectType[];
-
-	let selectedProject: ProjectType | undefined;
-	let attachToProjectModal: Modal;
-
-	function handleAttachToUser(event: CustomEvent<{ project: ProjectType }>) {
-		attachToProjectModal.show();
-		selectedProject = event.detail.project;
-	}
 </script>
 
 {#if projects.length == 0}
@@ -20,15 +11,13 @@
 {:else}
 	<div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
 		{#each projects as project}
-			<ProjectComponent
-				{project}
-				on:attachToUser={handleAttachToUser}
-				showAttachToUserButton={$$slots['attach-to-project']}
-			></ProjectComponent>
+			<ProjectComponent {project}>
+				<!--for slot forwarding to work flawlessly I have to wait for svelte5-->
+				<!--right now although this slot could be empty but the ProjectComponent thinks it has value and will render additional HTML-->
+				<!--https://github.com/sveltejs/svelte/pull/8304-->
+				<slot slot="edit-project" name="edit-project" />
+				<slot slot="attach-to-user" name="attach-to-user" let:project {project} />
+			</ProjectComponent>
 		{/each}
 	</div>
 {/if}
-
-<Modal title="Give another user access to this project" bind:this={attachToProjectModal}>
-	<slot slot="body" name="attach-to-project" {selectedProject} />
-</Modal>

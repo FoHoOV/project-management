@@ -18,8 +18,7 @@
 </script>
 
 <ProjectList projects={data.projects}>
-	<AttachToUser slot="attach-to-project" let:selectedProject {form} projectId={selectedProject?.id}
-	></AttachToUser>
+	<AttachToUser slot="attach-to-user" let:project {form} projectId={project?.id}></AttachToUser>
 </ProjectList>
 
 <CircleButton

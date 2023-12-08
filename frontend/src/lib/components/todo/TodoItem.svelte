@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { faCheckCircle, faTrashCan, faUndo } from '@fortawesome/free-solid-svg-icons';
+	import { faCheckCircle, faEdit, faTrashCan, faUndo } from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
@@ -18,12 +18,15 @@
 	import { cursorOnElementPositionY } from '$lib/utils';
 	import toasts from '$lib/stores/toasts';
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
+	import Modal from '$components/popups/Modal.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
+
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
+	let editTodoItemModal: Modal;
 
 	async function handleChangeDoneStatus() {
 		state = 'calling-service';
@@ -107,6 +110,10 @@
 	function handleDragLeft() {
 		state = 'none';
 	}
+
+	function handleEditTodoItem() {
+		editTodoItemModal.show();
+	}
 </script>
 
 <div
@@ -146,6 +153,9 @@
 					checked={todo.is_done}
 					on:click={handleChangeDoneStatus}
 				/>
+				<button on:click={handleEditTodoItem} class:hidden={!$$slots['edit-todo-item']}>
+					<Fa icon={faEdit} class="text-success" />
+				</button>
 				<button on:click={handleRemoveTodo}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
@@ -154,3 +164,7 @@
 		<p>{todo.description}</p>
 	</div>
 </div>
+
+<Modal title="Edit todo item here" bind:this={editTodoItemModal}>
+	<slot slot="body" name="edit-todo-item" />
+</Modal>
