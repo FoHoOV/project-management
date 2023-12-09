@@ -4,8 +4,10 @@ import { convertFormDataToObject, namedActionResult, superFail } from '$lib/acti
 import {
 	attachToProjectSchema,
 	createTodoCategorySchema,
+	createTodoCommentSchema,
 	createTodoItemSchema,
 	editTodoCategorySchema,
+	editTodoCommentSchema,
 	editTodoItemSchema
 } from './validator';
 import {
@@ -13,10 +15,16 @@ import {
 	TodoCategoryCreate,
 	TodoCategoryAttachAssociation,
 	TodoCategoryUpdateItem,
-	TodoItemUpdateItem
+	TodoItemUpdateItem,
+	TodoCommentCreate,
+	TodoCommentUpdate
 } from '$lib/generated-client/zod/schemas';
 import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
-import { TodoItemClient, TodoCategoryClient } from '$lib/client-wrapper/clients';
+import {
+	TodoItemClient,
+	TodoCategoryClient,
+	TodoItemCommentClient
+} from '$lib/client-wrapper/clients';
 
 export const load = (async ({ locals, fetch, params }) => {
 	// https://github.com/sveltejs/kit/issues/9785
@@ -192,5 +200,59 @@ export const actions: Actions = {
 		});
 
 		return namedActionResult(result, 'editTodoItem');
+	},
+	createTodoComment: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await createTodoCommentSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoItemCommentClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).createTodoItemComment({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoCommentCreate
+		});
+
+		return namedActionResult(result, 'createTodoComment');
+	},
+	editTodoComment: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await editTodoCommentSchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoItemCommentClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).updateTodoItemComment({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoCommentUpdate
+		});
+
+		return namedActionResult(result, 'editTodoComment');
 	}
 } satisfies Actions;

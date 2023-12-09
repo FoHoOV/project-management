@@ -4,7 +4,7 @@
 </script>
 
 <script lang="ts">
-	import { faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+	import { faComment, faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
@@ -23,6 +23,9 @@
 	import { cursorOnElementPositionY } from '$lib/utils';
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
+	import Modal from '$components/popups/Modal.svelte';
+	import { TodoItemCommentApi } from '$lib/generated-client';
+	import TodoComments from './TodoComments.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
@@ -31,6 +34,7 @@
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
+	let commentsModal: Modal;
 
 	const dispatch = createEventDispatcher<{
 		editTodoItem: { todo: TodoItem };
@@ -122,6 +126,10 @@
 	function handleEditTodoItem() {
 		dispatch('editTodoItem', { todo: todo });
 	}
+
+	function handleShowComments() {
+		commentsModal.show();
+	}
 </script>
 
 <div
@@ -170,8 +178,23 @@
 				<button on:click={handleRemoveTodo}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
+				<button on:click={handleShowComments}>
+					<Fa icon={faComment} class="text-info"></Fa>
+				</button>
 			</div>
 		</div>
 		<p>{todo.description}</p>
 	</div>
 </div>
+
+<Modal title="Manage your todo comments here" bind:this={commentsModal}>
+	<TodoComments
+		slot="body"
+		todoId={todo.id}
+		enabledFeatures={enabledFeatures?.filter((feature) => {
+			feature == 'edit-comment' || feature == 'create-comment';
+		}) ?? null}
+		on:createComment
+		on:editComment
+	></TodoComments>
+</Modal>

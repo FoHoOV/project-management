@@ -15,6 +15,9 @@
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
 	import MultiModal, { type Action } from '$components/popups/MultiModal.svelte';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
+	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
+	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
+	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -22,6 +25,12 @@
 
 	let actions = [
 		{ component: CreateTodoItem, name: 'create-todo-item', title: 'Create your todos here!' },
+		{
+			component: CreateTodoComment,
+			name: 'create-todo-comment',
+			title: 'Create todo comments here!'
+		},
+		{ component: EditTodoComment, name: 'edit-todo-comment', title: 'Edit comment' },
 		{
 			component: CreateTodoCategory,
 			name: 'create-todo-category',
@@ -69,6 +78,15 @@
 		selectedActionProps = { categoryId: e.detail.category.id };
 	}
 
+	function handleCreateComment(e: CustomEvent<{ todoId: number }>) {
+		modals.show('create-todo-comment');
+		selectedActionProps = { todoId: e.detail.todoId };
+	}
+
+	function handleEditTodoComment(e: CustomEvent<{ comment: TodoComment }>) {
+		modals.show('edit-todo-comment');
+		selectedActionProps = { comment: e.detail.comment };
+	}
 	onMount(() => {
 		if (!data.response) {
 			state = 'none';
@@ -99,12 +117,16 @@
 							'attach-to-project',
 							'create-todo-item',
 							'edit-todo-category',
-							'edit-todo-item'
+							'edit-todo-item',
+							'create-comment',
+							'edit-comment'
 						]}
 						on:createTodoItem={handleCreateTodoItem}
 						on:editTodoItem={handleEditTodoItem}
 						on:editTodoCategory={handleEditTodoCategory}
 						on:attachToProject={handleAttachToProject}
+						on:editComment={handleEditTodoComment}
+						on:createComment={handleCreateComment}
 					></TodoList>
 				</div>
 			{/each}

@@ -252,6 +252,8 @@
 							? ['edit-todo-item']
 							: null}
 						on:editTodoItem
+						on:createComment
+						on:editComment
 					></TodoItemComponent>
 				</div>
 			{/each}
