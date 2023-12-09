@@ -205,14 +205,15 @@
 						>{category.title}</span
 					>
 				</div>
-				<div>
+				<div class="flex gap-2">
 					<button
 						on:click={handleEditTodoCategory}
+						class="text-xl"
 						class:hidden={!enabledFeatures?.includes('edit-todo-category')}
 					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
-					<button on:click={handleRemoveCategory}>
+					<button class="text-xl" on:click={handleRemoveCategory}>
 						<Fa icon={faTrashCan} class="text-red-400" />
 					</button>
 				</div>
