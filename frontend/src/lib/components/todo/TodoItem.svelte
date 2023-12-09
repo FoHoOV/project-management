@@ -24,12 +24,15 @@
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
 	import Modal from '$components/popups/Modal.svelte';
-	import { TodoItemCommentApi } from '$lib/generated-client';
 	import TodoComments from './TodoComments.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
 	export let enabledFeatures: Feature[] | null = null;
+
+	$: enabledTodoCommentFeatures = (enabledFeatures?.filter(
+		(feature) => feature == 'edit-comment' || feature == 'create-comment'
+	) ?? null) as TodoCommentFeature[] | null;
 
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
@@ -191,9 +194,7 @@
 	<TodoComments
 		slot="body"
 		todoId={todo.id}
-		enabledFeatures={enabledFeatures?.filter((feature) => {
-			feature == 'edit-comment' || feature == 'create-comment';
-		}) ?? null}
+		enabledFeatures={enabledTodoCommentFeatures}
 		on:createComment
 		on:editComment
 	></TodoComments>

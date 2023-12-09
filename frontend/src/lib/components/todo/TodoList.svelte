@@ -45,6 +45,11 @@
 	export { className as class };
 	export let enabledFeatures: Feature[] | null = null;
 
+	$: todoItemEnabledFeatures = (enabledFeatures?.filter(
+		(feature) =>
+			feature == 'edit-comment' || feature == 'create-comment' || feature == 'edit-todo-item'
+	) ?? null) as TodoItemFeature[] | null;
+
 	let className: string = '';
 	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
 		'none';
@@ -248,9 +253,7 @@
 					<TodoItemComponent
 						{todo}
 						{category}
-						enabledFeatures={enabledFeatures?.includes('edit-todo-item')
-							? ['edit-todo-item']
-							: null}
+						enabledFeatures={todoItemEnabledFeatures}
 						on:editTodoItem
 						on:createComment
 						on:editComment
