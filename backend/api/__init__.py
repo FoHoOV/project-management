@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from api.routes import oath
+from api.routes import oath, todo_item_comment
 from db import init_db
 from db.utils.exceptions import UserFriendlyError
 
@@ -28,6 +28,7 @@ def create_app():
     app.include_router(project.router)
     app.include_router(todo_category.router)
     app.include_router(todo_item.router)
+    app.include_router(todo_item_comment.router)
 
     app.openapi_version = (
         "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it

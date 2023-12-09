@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
+from db.models.todo_item_comments import TodoItemComment
 from db.models.todo_item_order import TodoItemOrder
 
 
@@ -20,5 +21,11 @@ class TodoItem(BasesWithCreatedDate):
         "TodoCategory",
         back_populates="items",
         single_parent=True,
+    )
+    comments: Mapped[TodoItemComment] = relationship(
+        "TodoItemComment",
+        foreign_keys=[TodoItemComment.todo_id],
+        back_populates="todo",
+        cascade="all, delete-orphan",
     )
     order: Mapped[TodoItemOrder | None] = relationship("TodoItemOrder", foreign_keys=[TodoItemOrder.todo_id], uselist=False, back_populates="todo", cascade="all, delete-orphan")  # type: ignore
