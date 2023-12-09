@@ -9,6 +9,7 @@
 	import EditProject from '$routes/user/projects/EditProject.svelte';
 	import type { Project } from '$lib/generated-client/models';
 	import MultiModal from '$components/popups/MultiModal.svelte';
+	import type { ComponentProps } from 'svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -23,18 +24,26 @@
 		{ component: EditProject, name: 'edit-project', title: 'Edit this projects info!' }
 	] as const;
 
+	let selectedActionProps: ComponentProps<any> | null = null;
+
 	let modals: MultiModal<typeof actions>;
 
+	// TODO: this hack is ugly AF, refactor after svelte5 comes out
+	$: selectedActionProps = { ...selectedActionProps, form };
+
 	function handleCreateProject() {
-		modals.show('create-project', { form: form });
+		modals.show('create-project');
+		selectedActionProps = {};
 	}
 
 	function handleAttachToUser(e: CustomEvent<{ project: Project }>) {
-		modals.show('attach-to-user', { form: form, projectId: e.detail.project.id });
+		modals.show('attach-to-user');
+		selectedActionProps = { projectId: e.detail.project.id };
 	}
 
 	function handleEditProject(e: CustomEvent<{ project: Project }>) {
-		modals.show('edit-project', { form: form, projectId: e.detail.project.id });
+		modals.show('edit-project');
+		selectedActionProps = { projectId: e.detail.project.id };
 	}
 </script>
 
@@ -51,4 +60,4 @@
 	on:click={handleCreateProject}
 />
 
-<MultiModal bind:this={modals} {actions}></MultiModal>
+<MultiModal bind:this={modals} {actions} {selectedActionProps}></MultiModal>

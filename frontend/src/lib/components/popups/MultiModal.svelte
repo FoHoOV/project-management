@@ -13,9 +13,9 @@
 	import type { ComponentProps, SvelteComponent } from 'svelte';
 
 	export let actions: TActions;
+	export let selectedActionProps: ComponentProps<any> | null = null;
 
 	let selectedAction: Action<any, any> | null;
-	let selectedActionProps: ComponentProps<any> | null = null;
 
 	let modal: Modal;
 
@@ -23,12 +23,16 @@
 		TAction extends Action<any, any>,
 		Name extends TActions[number]['name']
 	> = TAction extends { name: Name } ? TAction['component'] : never;
-	export function show<TName extends TActions[number]['name']>(
-		name: TName,
-		props: any //TODO: ComponentProps<ExtractComponentType<TActions[number], TName>>
-	) {
+
+	export function show<TName extends TActions[number]['name']>(name: TName) {
 		selectedAction = actions.find((action) => action.name === name) ?? null;
-		selectedActionProps = props ?? null;
+		//selectedActionProps = props ?? null;
+		// props was a param that i removed for now
+		// till svelte5 comes out i can simply use signals to make this a reactive value
+		// for instance if we pass in {form: form, title: title} and these values are reactive only the initial value of
+		// these things will be passed to this function
+		// we can work around this by passing getters but the API will look like shit
+		// so for now I'll still to passing props as a Prop to this component itself to make it fully reactive by nature
 		modal.show();
 	}
 

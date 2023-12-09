@@ -36,33 +36,37 @@
 		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' }
 	] as const;
 
+	let selectedActionProps: ComponentProps<any> | null = null;
+
 	let modals: MultiModal<typeof actions>;
 
+	$: selectedActionProps = { ...selectedActionProps, form };
+
 	function handleCreateTodoCategory(e: MouseEvent) {
-		modals.show('create-todo-category', {
-			form: form,
+		modals.show('create-todo-category');
+		selectedActionProps = {
 			projectId: parseInt($page.params.projectId)
-		});
+		};
 	}
 
 	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
-		modals.show('edit-todo-category', { form: form, categoryId: e.detail.category.id });
+		modals.show('edit-todo-category');
+		selectedActionProps = { categoryId: e.detail.category.id };
 	}
 
 	function handleAttachToProject(e: CustomEvent<{ category: TodoCategory }>) {
-		modals.show('attach-to-project', { form: form, categoryId: e.detail.category.id });
+		modals.show('attach-to-project');
+		selectedActionProps = { categoryId: e.detail.category.id };
 	}
 
 	function handleEditTodoItem(e: CustomEvent<{ todo: TodoItem }>) {
-		modals.show('edit-todo-item', {
-			form: form,
-			todoId: e.detail.todo.id,
-			categoryId: e.detail.todo.category_id
-		});
+		modals.show('edit-todo-item');
+		selectedActionProps = { todoId: e.detail.todo.id, categoryId: e.detail.todo.category_id };
 	}
 
 	function handleCreateTodoItem(e: CustomEvent<{ category: TodoCategory }>) {
-		modals.show('create-todo-item', { form: form, categoryId: e.detail.category.id });
+		modals.show('create-todo-item');
+		selectedActionProps = { categoryId: e.detail.category.id };
 	}
 
 	onMount(() => {
@@ -113,4 +117,4 @@
 	/>
 {/if}
 
-<MultiModal bind:this={modals} {actions}></MultiModal>
+<MultiModal bind:this={modals} {actions} {selectedActionProps}></MultiModal>
