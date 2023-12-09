@@ -87,6 +87,7 @@
 		modals.show('edit-todo-comment');
 		selectedActionProps = { comment: e.detail.comment };
 	}
+
 	onMount(() => {
 		if (!data.response) {
 			state = 'none';

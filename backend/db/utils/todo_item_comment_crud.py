@@ -27,7 +27,9 @@ def list(db: Session, search: TodoCommentSearch, user_id: int):
     validate_todo_item_belongs_to_user(db, search.todo_id, user_id)
 
     return (
-        db.query(TodoItem.comments).filter(TodoItemComment.id == search.todo_id).all()
+        db.query(TodoItemComment)
+        .filter(TodoItemComment.todo_id == search.todo_id)
+        .all()
     )
 
 

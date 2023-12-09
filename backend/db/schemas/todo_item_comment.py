@@ -3,8 +3,8 @@ from pydantic import BaseModel
 
 
 class TodoCommentBase(BaseModel):
-    message: str
     id: int
+    message: str
 
 
 @dataclass
@@ -16,9 +16,15 @@ class TodoCommentCreate(BaseModel):
     message: str
     todo_id: int
 
+    class Config:
+        from_attributes = True
+
 
 class TodoCommentUpdate(TodoCommentBase):
     todo_id: int
+
+    class Config:
+        from_attributes = True
 
 
 class TodoCommentDelete(BaseModel):
@@ -27,3 +33,6 @@ class TodoCommentDelete(BaseModel):
 
 class TodoComment(TodoCommentBase):
     todo_id: int
+
+    class Config:
+        from_attributes = True

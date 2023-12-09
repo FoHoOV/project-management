@@ -4,7 +4,7 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
-	import { createTodoCommentSchema, editTodoCommentSchema } from './validator';
+	import { editTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
 	import { invalidateAll } from '$app/navigation';
 	import type { TodoComment } from '$lib/generated-client/models';
@@ -60,8 +60,8 @@
 			message={state == 'submit-successful' ? 'comment edited!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={comment.id} errors={''} />
-		<FormInput class="hidden" type="hidden" name="todo_id" value={comment.todo_id} errors={''} />
+		<FormInput class="hidden" type="hidden" name="id" value={comment?.id} errors={''} />
+		<FormInput class="hidden" type="hidden" name="todo_id" value={comment?.todo_id} errors={''} />
 		<FormInput
 			name="message"
 			autoFocus={true}
@@ -71,7 +71,7 @@
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
-				text="add"
+				text="Edit"
 				class="btn-success flex-1"
 				type="submit"
 				loading={state == 'submitting'}

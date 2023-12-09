@@ -11,7 +11,8 @@
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-	import { createEventDispatcher } from 'svelte';
+	import { afterUpdate, createEventDispatcher, onMount } from 'svelte';
+	import { flip } from 'svelte/animate';
 
 	export let todoId: number;
 	export let enabledFeatures: Feature[] | null = null;
@@ -25,19 +26,6 @@
 		editComment: { comment: TodoComment };
 		createComment: { todoId: number };
 	}>();
-
-	callServiceInClient({
-		serviceCall: async () => {
-			comments = await TodoItemCommentClient({ token: $page.data.token }).listTodoItemComment(
-				todoId
-			);
-			state = 'none';
-		},
-		errorCallback: async (e) => {
-			apiErrorTitle = e.message;
-			state = 'none';
-		}
-	});
 
 	async function handleDeleteComment(comment: TodoComment) {
 		await callServiceInClient({
@@ -61,6 +49,23 @@
 	function handleEditComment(comment: TodoComment) {
 		dispatch('editComment', { comment: comment });
 	}
+
+	afterUpdate(async () => {
+		// TODO: after I use runes ill refactor this to use runes and stop calling it on each component update
+		// this is a hack just for now
+		await callServiceInClient({
+			serviceCall: async () => {
+				comments = await TodoItemCommentClient({ token: $page.data.token }).listTodoItemComment(
+					todoId
+				);
+				state = 'none';
+			},
+			errorCallback: async (e) => {
+				apiErrorTitle = e.message;
+				state = 'none';
+			}
+		});
+	});
 </script>
 
 <div class="relative flex flex-col">
@@ -81,7 +86,10 @@
 		</div>
 	{:else}
 		{#each comments as comment (comment.id)}
-			<div class="card mt-4 max-h-full !bg-base-200 shadow-xl hover:bg-base-100">
+			<div
+				class="card mt-4 max-h-full !bg-base-200 shadow-xl hover:bg-base-100"
+				animate:flip={{ duration: 200 }}
+			>
 				<div class="card-body">
 					<div class="card-actions justify-end">
 						<button
