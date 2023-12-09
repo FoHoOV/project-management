@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
-	export type Feature = 'edit-todo-item';
+	import type { Feature as TodoCommentFeature } from './TodoComments.svelte';
+	export type Feature = TodoCommentFeature | 'edit-todo-item';
 </script>
 
 <script lang="ts">

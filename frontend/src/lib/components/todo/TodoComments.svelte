@@ -1,0 +1,99 @@
+<script lang="ts" context="module">
+	export type Feature = 'create-comment' | 'edit-comment';
+</script>
+
+<script script lang="ts">
+	import { page } from '$app/stores';
+	import Spinner from '$components/Spinner.svelte';
+	import Alert from '$components/Alert.svelte';
+	import { TodoItemCommentClient } from '$lib/client-wrapper/clients';
+	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import type { TodoComment } from '$lib/generated-client/zod/schemas';
+	import Fa from 'svelte-fa';
+	import { faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+	import { createEventDispatcher } from 'svelte';
+
+	export let todoId: number;
+	export let enabledFeatures: Feature[] | null = null;
+
+	let state: 'calling-service' | 'none' = 'calling-service';
+
+	let apiErrorTitle: string | null = null;
+	let comments: TodoComment[];
+
+	const dispatch = createEventDispatcher<{
+		editComment: { comment: TodoComment };
+		createComment: { todoId: number };
+	}>();
+
+	callServiceInClient({
+		serviceCall: async () => {
+			comments = await TodoItemCommentClient({ token: $page.data.token }).listTodoItemComment(
+				todoId
+			);
+			state = 'none';
+		},
+		errorCallback: async (e) => {
+			apiErrorTitle = e.message;
+			state = 'none';
+		}
+	});
+
+	async function handleDeleteComment(comment: TodoComment) {
+		await callServiceInClient({
+			serviceCall: async () => {
+				comments = await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(
+					comment
+				);
+				state = 'none';
+			},
+			errorCallback: async (e) => {
+				apiErrorTitle = e.message;
+				state = 'none';
+			}
+		});
+	}
+
+	function handleCreateComment() {
+		dispatch('createComment', { todoId: todoId });
+	}
+
+	function handleEditComment(comment: TodoComment) {
+		dispatch('editComment', { comment: comment });
+	}
+</script>
+
+<div class="flex flex-col">
+	<Spinner visible={state === 'calling-service'}></Spinner>
+	<Alert type="error" message={apiErrorTitle} />
+	<button
+		on:click={handleCreateComment}
+		class:hidden={!enabledFeatures?.includes('create-comment')}
+	>
+		<Fa icon={faEdit} class="text-success" />
+	</button>
+	{#each comments as comment (comment.id)}
+		<div class="card mt-4 max-h-full !bg-base-200 shadow-xl hover:bg-base-100">
+			<div class="card-body">
+				<div class="card-actions justify-end">
+					<button
+						class="btn btn-square btn-error btn-sm"
+						on:click={() => handleDeleteComment(comment)}
+					>
+						<Fa icon={faTrashCan}></Fa>
+					</button>
+					<button
+						class="btn btn-square btn-info btn-sm"
+						class:hidden={!enabledFeatures?.includes('edit-comment')}
+						on:click={() => handleEditComment(comment)}
+					>
+						<Fa icon={faEdit}></Fa>
+					</button>
+				</div>
+				<p class="font-bold">
+					{comment.message}
+				</p>
+			</div>
+		</div>
+	{/each}
+</div>

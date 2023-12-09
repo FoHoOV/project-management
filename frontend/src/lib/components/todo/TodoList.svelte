@@ -1,8 +1,17 @@
+<script context="module" lang="ts">
+	import type { Feature as TodoItemFeature } from './TodoItem.svelte';
+
+	export type Feature =
+		| TodoItemFeature
+		| 'edit-todo-category'
+		| 'create-todo-item'
+		| 'attach-to-project';
+</script>
+
 <script lang="ts">
 	import type { TodoItem, TodoCategory } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 	import TodoItemComponent from './TodoItem.svelte';
-	import type { Feature as TodoItemFeature } from './TodoItem.svelte';
 	import { receive, send } from './transitions';
 	import {
 		faArrowCircleRight,
@@ -30,8 +39,6 @@
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
-
-	type Feature = TodoItemFeature | 'edit-todo-category' | 'create-todo-item' | 'attach-to-project';
 
 	export let category: TodoCategory;
 	export let projectId: number;

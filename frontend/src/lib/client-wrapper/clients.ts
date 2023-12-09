@@ -4,7 +4,8 @@ import {
 	TodoItemApi,
 	TodoCategoryApi,
 	UserApi,
-	ProjectApi
+	ProjectApi,
+	TodoItemCommentApi
 } from '$lib/generated-client/apis';
 
 import {
@@ -62,15 +63,19 @@ export const OAuthClient = (config: ConfigurationOptions = { isTokenRequired: tr
 	return generateClient(OAuthApi, config);
 };
 
-export const TodoItemClient = (config?: ConfigurationOptions) => {
+export const TodoItemClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
 	return generateClient(TodoItemApi, config);
 };
 
-export const TodoCategoryClient = (config?: ConfigurationOptions) => {
+export const TodoItemCommentClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
+	return generateClient(TodoItemCommentApi, config);
+};
+
+export const TodoCategoryClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
 	return generateClient(TodoCategoryApi, config);
 };
 
-export const ProjectClient = (config?: ConfigurationOptions) => {
+export const ProjectClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
 	return generateClient(ProjectApi, config);
 };
 

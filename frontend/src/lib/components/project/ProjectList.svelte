@@ -1,10 +1,12 @@
+<script lang="ts" context="module">
+	import type { Feature as ProjectFeature } from './Project.svelte';
+	export type Feature = ProjectFeature;
+</script>
+
 <script lang="ts">
 	import ProjectComponent from './Project.svelte';
-	import type { Feature as ProjectFeature } from './Project.svelte';
 	import type { Project as ProjectType } from '$lib/generated-client/models';
 	import Empty from '$components/Empty.svelte';
-
-	type Feature = ProjectFeature;
 
 	export let projects: ProjectType[];
 	export let enabledFeatures: Feature[] | null = null;
