@@ -27,7 +27,12 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <dialog
-	class="modal modal-bottom sm:modal-middle"
+	class="modal modal-bottom cursor-default sm:modal-middle"
+	draggable="true"
+	on:dragstart={(e) => {
+		e.preventDefault();
+		e.stopPropagation();
+	}}
 	on:keyup={handleKeyupEvent}
 	bind:this={modalElement}
 >
