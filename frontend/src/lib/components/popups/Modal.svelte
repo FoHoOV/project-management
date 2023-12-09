@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	export let title: string = '';
+	export let dialogProps: Partial<HTMLAttributes<HTMLDialogElement>> = {};
+	export { className as class };
 
+	let className: string = '';
 	const dispatch = createEventDispatcher<{ closed: {}; opened: {} }>();
 	let modalElement: HTMLDialogElement;
 
@@ -27,12 +31,8 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <dialog
-	class="modal modal-bottom cursor-default sm:modal-middle"
-	draggable="true"
-	on:dragstart={(e) => {
-		e.preventDefault();
-		e.stopPropagation();
-	}}
+	class="modal modal-bottom cursor-default sm:modal-middle {className}"
+	{...dialogProps}
 	on:keyup={handleKeyupEvent}
 	bind:this={modalElement}
 >

@@ -190,7 +190,17 @@
 	</div>
 </div>
 
-<Modal title="Manage your todo comments here" bind:this={commentsModal}>
+<Modal
+	class="cursor-default"
+	title="Manage your todo comments here"
+	bind:this={commentsModal}
+	dialogProps={{
+		//@ts-ignore
+		//another ugly hack which will be solved by svelte5
+		ondragstart: 'event.preventDefault();event.stopPropagation();',
+		draggable: true
+	}}
+>
 	<TodoComments
 		slot="body"
 		todoId={todo.id}
