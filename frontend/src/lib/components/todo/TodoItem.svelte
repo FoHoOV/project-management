@@ -23,7 +23,6 @@
 	import { cursorOnElementPositionY } from '$lib/utils';
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
-	import Modal from '$components/popups/Modal.svelte';
 	import TodoComments from './TodoComments.svelte';
 
 	export let todo: TodoItem;
@@ -37,7 +36,7 @@
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
-	let commentsModal: Modal;
+	let todoComments: TodoComments;
 
 	const dispatch = createEventDispatcher<{
 		editTodoItem: { todo: TodoItem };
@@ -131,7 +130,7 @@
 	}
 
 	function handleShowComments() {
-		commentsModal.show();
+		todoComments.show();
 	}
 </script>
 
@@ -190,22 +189,10 @@
 	</div>
 </div>
 
-<Modal
-	class="cursor-default"
-	title="Manage your todo comments here"
-	bind:this={commentsModal}
-	dialogProps={{
-		//@ts-ignore
-		//another ugly hack which will be solved by svelte5
-		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: true
-	}}
->
-	<TodoComments
-		slot="body"
-		todoId={todo.id}
-		enabledFeatures={enabledTodoCommentFeatures}
-		on:createComment
-		on:editComment
-	></TodoComments>
-</Modal>
+<TodoComments
+	bind:this={todoComments}
+	todoId={todo.id}
+	enabledFeatures={enabledTodoCommentFeatures}
+	on:createComment
+	on:editComment
+></TodoComments>

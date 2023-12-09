@@ -20,7 +20,7 @@ from db.utils import todo_item_comment_crud
 router = APIRouter(prefix="/todo-item/comment", tags=["todo-item-comment"])
 
 
-@router.post("/create", response_model=TodoCommentBase)
+@router.post("/create", response_model=TodoComment)
 def create(
     current_user: Annotated[User, Depends(get_current_user)],
     comment: TodoCommentCreate,
@@ -32,7 +32,7 @@ def create(
     return result
 
 
-@router.patch(path="/update", response_model=TodoCommentBase)
+@router.patch(path="/update", response_model=TodoComment)
 def update(
     current_user: Annotated[User, Depends(get_current_user)],
     comment: TodoCommentUpdate,

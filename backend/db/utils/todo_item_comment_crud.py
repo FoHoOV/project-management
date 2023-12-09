@@ -29,6 +29,7 @@ def list(db: Session, search: TodoCommentSearch, user_id: int):
     return (
         db.query(TodoItemComment)
         .filter(TodoItemComment.todo_id == search.todo_id)
+        .order_by(TodoItemComment.id.desc())
         .all()
     )
 

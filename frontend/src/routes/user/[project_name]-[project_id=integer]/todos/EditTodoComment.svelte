@@ -8,6 +8,7 @@
 	import { page } from '$app/stores';
 	import { invalidateAll } from '$app/navigation';
 	import type { TodoComment } from '$lib/generated-client/models';
+	import todoComments from '$lib/stores/todo-comments/todo-comments';
 
 	export let form: ActionData;
 	export let comment: TodoComment;
@@ -45,7 +46,7 @@
 		state = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		await invalidateAll(); // TODO: use runes
+		todoComments.updateComment(e.detail.response);
 		resetForm();
 		state = 'submit-successful';
 	}}

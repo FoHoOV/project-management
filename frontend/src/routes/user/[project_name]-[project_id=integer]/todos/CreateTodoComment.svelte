@@ -6,7 +6,7 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
-	import { invalidateAll } from '$app/navigation';
+	import todoComments from '$lib/stores/todo-comments';
 
 	export let form: ActionData;
 	export let todoId: number;
@@ -44,7 +44,7 @@
 		state = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		await invalidateAll(); // TODO: use runes
+		todoComments.addComment(e.detail.response);
 		resetForm();
 		state = 'submit-successful';
 	}}
