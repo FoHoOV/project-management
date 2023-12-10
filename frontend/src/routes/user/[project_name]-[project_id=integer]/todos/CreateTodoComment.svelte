@@ -7,7 +7,7 @@
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
 	import todoComments from '$lib/stores/todo-comments';
-	import { generateTodoListUrl } from '$components/project/utils';
+	import { generateTodoListUrl } from '$params/utils';
 
 	export let form: ActionData;
 	export let todoId: number;

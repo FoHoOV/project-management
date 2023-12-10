@@ -7,7 +7,7 @@
 	import todos from '$lib/stores/todos';
 	import { editTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$components/project/utils';
+	import { generateTodoListUrl } from '$params/utils';
 
 	export let form: ActionData;
 	export let categoryId: number;

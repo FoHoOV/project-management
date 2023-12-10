@@ -13,7 +13,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
-	import { generateTodoListUrl } from '$components/project/utils';
+	import { generateTodoListUrl } from '$params/utils';
 
 	export let project: Project;
 	export let enabledFeatures: Feature[] | null = null;
