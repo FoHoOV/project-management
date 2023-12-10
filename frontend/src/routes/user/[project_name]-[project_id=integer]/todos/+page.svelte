@@ -52,40 +52,40 @@
 	$: selectedActionProps = { ...selectedActionProps, form };
 
 	function handleCreateTodoCategory(e: MouseEvent) {
-		modals.show('create-todo-category');
 		selectedActionProps = {
 			projectId: parseInt($page.params.projectId)
 		};
+		modals.show('create-todo-category');
 	}
 
 	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
-		modals.show('edit-todo-category');
 		selectedActionProps = { categoryId: e.detail.category.id };
+		modals.show('edit-todo-category');
 	}
 
 	function handleAttachToProject(e: CustomEvent<{ category: TodoCategory }>) {
-		modals.show('attach-to-project');
 		selectedActionProps = { categoryId: e.detail.category.id };
+		modals.show('attach-to-project');
 	}
 
 	function handleEditTodoItem(e: CustomEvent<{ todo: TodoItem }>) {
-		modals.show('edit-todo-item');
 		selectedActionProps = { todoId: e.detail.todo.id, categoryId: e.detail.todo.category_id };
+		modals.show('edit-todo-item');
 	}
 
 	function handleCreateTodoItem(e: CustomEvent<{ category: TodoCategory }>) {
-		modals.show('create-todo-item');
 		selectedActionProps = { categoryId: e.detail.category.id };
+		modals.show('create-todo-item');
 	}
 
 	function handleCreateComment(e: CustomEvent<{ todoId: number }>) {
-		modals.show('create-todo-comment');
 		selectedActionProps = { todoId: e.detail.todoId };
+		modals.show('create-todo-comment');
 	}
 
 	function handleEditTodoComment(e: CustomEvent<{ comment: TodoComment }>) {
-		modals.show('edit-todo-comment');
 		selectedActionProps = { comment: e.detail.comment };
+		modals.show('edit-todo-comment');
 	}
 
 	onMount(() => {
@@ -140,4 +140,9 @@
 	/>
 {/if}
 
-<MultiModal bind:this={modals} {actions} {selectedActionProps}></MultiModal>
+<MultiModal
+	bind:this={modals}
+	class="border border-success border-opacity-20"
+	{actions}
+	{selectedActionProps}
+></MultiModal>
