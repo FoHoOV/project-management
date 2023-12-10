@@ -9,7 +9,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { TodoComment } from '$lib/generated-client/models';
 	import todoComments from '$lib/stores/todo-comments/todo-comments';
-	import { generateTodoListUrl } from '$params/utils';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export let form: ActionData;
 	export let comment: TodoComment;

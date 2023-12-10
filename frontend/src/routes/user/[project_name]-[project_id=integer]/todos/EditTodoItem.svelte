@@ -7,7 +7,7 @@
 	import todos from '$lib/stores/todos';
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$params/utils';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export let form: ActionData;
 	export let todoId: number;

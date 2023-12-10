@@ -7,7 +7,7 @@
 	import { attachToProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$params/utils';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export let form: ActionData;
 	export let categoryId: number;
