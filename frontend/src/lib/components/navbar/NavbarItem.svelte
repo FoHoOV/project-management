@@ -17,4 +17,5 @@
 		{/if}
 		{name}
 	</a>
+	<slot />
 </li>

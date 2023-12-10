@@ -10,6 +10,7 @@
 	import type { Project } from '$lib/generated-client/models';
 	import MultiModal from '$components/popups/MultiModal.svelte';
 	import type { ComponentProps } from 'svelte';
+	import projects from '$lib/stores/projects';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -30,6 +31,7 @@
 
 	// TODO: this hack is ugly AF, refactor after svelte5 comes out
 	$: selectedActionProps = { ...selectedActionProps, form };
+	$: projects.setProjects(data.projects);
 
 	function handleCreateProject() {
 		selectedActionProps = {};
@@ -48,7 +50,7 @@
 </script>
 
 <ProjectList
-	projects={data.projects}
+	projects={$projects}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}

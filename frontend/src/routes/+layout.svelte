@@ -4,8 +4,15 @@
 	import { navigating } from '$app/stores';
 	import type { PageData } from './$types';
 	import Drawer from '$components/Drawer.svelte';
-	import { faHome, faProjectDiagram, faTasks } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faArrowRight,
+		faHome,
+		faProjectDiagram,
+		faTasks
+	} from '@fortawesome/free-solid-svg-icons';
 	import Toasts from '$components/popups/Toasts.svelte';
+	import projects from '$lib/stores/projects/projects';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export let data: PageData;
 	// beforeNavigate(async ({ to, cancel }) => {
@@ -27,7 +34,7 @@
 	navbarTitle="Todos"
 	navbarTitleHref="/user/projects"
 >
-	<div slot="drawer-side" let:closeDrawer>
+	<svelte:fragment slot="drawer-side" let:closeDrawer>
 		<NavbarItem icon={faHome} href="/" name="Home" on:click={closeDrawer} />
 		{#if data.token}
 			<NavbarItem
@@ -35,9 +42,20 @@
 				href="/user/projects"
 				name="Projects"
 				on:click={closeDrawer}
-			/>
+			>
+				<ul>
+					{#each $projects as project (project.id)}
+						<NavbarItem
+							icon={faArrowRight}
+							href={generateTodoListUrl(project.title, project.id)}
+							name={project.title}
+							on:click={closeDrawer}
+						/>
+					{/each}
+				</ul></NavbarItem
+			>
 		{/if}
-	</div>
+	</svelte:fragment>
 
 	<svelte:fragment slot="drawer-navbar-end">
 		{#if data.token}

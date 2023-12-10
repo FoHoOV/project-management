@@ -5,7 +5,7 @@
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { editProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
+	import projects from '$lib/stores/projects';
 
 	export let form: ActionData;
 	export let projectId: number;
@@ -43,7 +43,7 @@
 		state = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		await invalidate('/user/projects'); // TODO: use stores/runes later
+		projects.updateProject(e.detail.response);
 		resetForm();
 		state = 'submit-successful';
 	}}

@@ -5,7 +5,7 @@
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { createProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
+	import projects from '$lib/stores/projects';
 
 	export let form: ActionData;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
@@ -42,8 +42,7 @@
 		state = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		// based on docs and on how invalidate works this doesn't do shit
-		await invalidate('/user/projects'); // TODO: use stores/runes later
+		projects.addProject(e.detail.response);
 		resetForm();
 		state = 'submit-successful';
 	}}
