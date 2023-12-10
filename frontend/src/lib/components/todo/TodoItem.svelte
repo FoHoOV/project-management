@@ -24,6 +24,7 @@
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
 	import TodoComments from './TodoComments.svelte';
+	import Modal from '$components/popups/Modal.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
@@ -33,10 +34,15 @@
 		(feature) => feature == 'edit-comment' || feature == 'create-comment'
 	) ?? null) as TodoCommentFeature[] | null;
 
-	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
-		'none';
+	let state:
+		| 'drop-zone-top-activated'
+		| 'drop-zone-bottom-activated'
+		| 'calling-service'
+		| 'showing-todo-comments'
+		| 'none' = 'none';
 	let apiErrorTitle: string | null;
 	let todoComments: TodoComments;
+	let todoCommentsModal: Modal;
 
 	const dispatch = createEventDispatcher<{
 		editTodoItem: { todo: TodoItem };
@@ -130,7 +136,8 @@
 	}
 
 	function handleShowComments() {
-		todoComments.show();
+		todoComments.updateComments();
+		todoCommentsModal.show();
 	}
 </script>
 
@@ -189,10 +196,26 @@
 	</div>
 </div>
 
-<TodoComments
-	bind:this={todoComments}
-	todoId={todo.id}
-	enabledFeatures={enabledTodoCommentFeatures}
-	on:createComment
-	on:editComment
-></TodoComments>
+<Modal
+	class="cursor-default border border-success border-opacity-20"
+	wrapperClasses={state != 'showing-todo-comments' ? 'hidden' : ''}
+	title="Manage your todo comments here"
+	bind:this={todoCommentsModal}
+	dialogProps={{
+		//@ts-ignore
+		//TODO: another ugly hack which will be solved by svelte5
+		ondragstart: 'event.preventDefault();event.stopPropagation();',
+		draggable: false
+	}}
+	on:opened={() => (state = 'showing-todo-comments')}
+	on:closed={() => (state = 'none')}
+>
+	<TodoComments
+		bind:this={todoComments}
+		slot="body"
+		todoId={todo.id}
+		enabledFeatures={enabledTodoCommentFeatures}
+		on:createComment
+		on:editComment
+	></TodoComments>
+</Modal>
