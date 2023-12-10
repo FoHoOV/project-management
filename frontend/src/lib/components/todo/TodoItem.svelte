@@ -166,7 +166,7 @@
 		<Alert type="error" message={apiErrorTitle} />
 
 		<div class="card-title flex w-full justify-between">
-			<h1>
+			<h1 class="truncate hover:text-clip">
 				{todo.title}
 			</h1>
 			<div class="flex items-center justify-center gap-2">
@@ -192,7 +192,7 @@
 				</button>
 			</div>
 		</div>
-		<p>{todo.description}</p>
+		<p class="truncate hover:text-clip">{todo.description}</p>
 	</div>
 </div>
 

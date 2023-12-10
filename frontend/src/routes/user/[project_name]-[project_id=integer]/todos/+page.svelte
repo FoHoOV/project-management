@@ -60,7 +60,7 @@
 	}
 
 	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
-		selectedActionProps = { categoryId: e.detail.category.id };
+		selectedActionProps = { category: e.detail.category };
 		modals.show('edit-todo-category');
 	}
 
@@ -70,7 +70,7 @@
 	}
 
 	function handleEditTodoItem(e: CustomEvent<{ todo: TodoItem }>) {
-		selectedActionProps = { todoId: e.detail.todo.id, categoryId: e.detail.todo.category_id };
+		selectedActionProps = { todo: e.detail.todo };
 		modals.show('edit-todo-item');
 	}
 

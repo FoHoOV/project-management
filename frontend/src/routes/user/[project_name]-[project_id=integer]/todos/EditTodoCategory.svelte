@@ -8,9 +8,10 @@
 	import { editTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import type { TodoCategory } from '$lib/generated-client/models';
 
 	export let form: ActionData;
-	export let categoryId: number;
+	export let category: TodoCategory;
 
 	let formElement: HTMLFormElement;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
@@ -62,17 +63,19 @@
 			message={state == 'submit-successful' ? 'todo category info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={categoryId} errors={''} />
+		<FormInput class="hidden" type="hidden" name="id" value={category.id} errors={''} />
 		<FormInput
 			name="title"
 			autoFocus={true}
 			class="w-full"
+			value={category.title}
 			hideLabel={true}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
 			name="description"
 			class="w-full"
+			value={category.description}
 			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>

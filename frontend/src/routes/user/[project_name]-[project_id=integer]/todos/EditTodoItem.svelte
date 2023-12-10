@@ -8,10 +8,10 @@
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import type { TodoItem } from '$lib/generated-client/models';
 
 	export let form: ActionData;
-	export let todoId: number;
-	export let categoryId: number;
+	export let todo: TodoItem;
 
 	let formElement: HTMLFormElement;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
@@ -60,17 +60,25 @@
 			message={state == 'submit-successful' ? 'todo item info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={todoId} errors={''} />
-		<FormInput class="hidden" type="hidden" name="category_id" value={categoryId} errors={''} />
+		<FormInput class="hidden" type="hidden" name="id" value={todo.id} errors={''} />
+		<FormInput
+			class="hidden"
+			type="hidden"
+			name="category_id"
+			value={todo.category_id}
+			errors={''}
+		/>
 		<FormInput
 			name="title"
 			autoFocus={true}
+			value={todo.title}
 			class="w-full"
 			hideLabel={true}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
 			name="description"
+			value={todo.description}
 			class="w-full"
 			hideLabel={true}
 			errors={formErrors?.errors?.description}

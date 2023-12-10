@@ -4,11 +4,12 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
+	import type { Project } from '$lib/generated-client/models';
 	import { editProjectSchema } from './validator';
 	import projects from '$lib/stores/projects';
 
 	export let form: ActionData;
-	export let projectId: number;
+	export let project: Project;
 
 	let formElement: HTMLFormElement;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
@@ -58,17 +59,19 @@
 			message={state == 'submit-successful' ? 'project info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="project_id" value={projectId} errors={''} />
+		<FormInput class="hidden" type="hidden" name="project_id" value={project.id} errors={''} />
 		<FormInput
 			name="title"
 			autoFocus={true}
 			class="w-full"
+			value={project.title}
 			hideLabel={true}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
 			name="description"
 			class="w-full"
+			value={project.description}
 			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>

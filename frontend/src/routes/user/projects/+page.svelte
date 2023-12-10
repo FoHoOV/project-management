@@ -44,7 +44,7 @@
 	}
 
 	function handleEditProject(e: CustomEvent<{ project: Project }>) {
-		selectedActionProps = { projectId: e.detail.project.id };
+		selectedActionProps = { project: e.detail.project };
 		modals.show('edit-project');
 	}
 </script>
