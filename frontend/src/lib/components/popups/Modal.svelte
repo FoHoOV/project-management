@@ -34,7 +34,7 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <dialog
-	class="modal modal-bottom cursor-default backdrop-brightness-50 sm:modal-middle {wrapperClasses}"
+	class="modal modal-bottom cursor-default backdrop-blur-sm backdrop-brightness-50 sm:modal-middle {wrapperClasses}"
 	{...dialogProps}
 	on:keyup={handleKeyupEvent}
 	on:close={close}
