@@ -1,7 +1,6 @@
-import type { PageServerLoad } from './$types';
 import { ProjectClient } from '$lib/client-wrapper/clients';
-import { callService, callServiceInFormActions } from '$lib/client-wrapper';
-import { error, type Actions } from '@sveltejs/kit';
+import { callServiceInFormActions } from '$lib/client-wrapper';
+import type { Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
 import { convertFormDataToObject, namedActionResult, superFail } from '$lib';
 import {
@@ -9,20 +8,6 @@ import {
 	ProjectCreate,
 	ProjectUpdate
 } from '$lib/generated-client/zod/schemas';
-
-export const load = (async ({ locals, fetch }) => {
-	const result = await callService({
-		serviceCall: async () => {
-			return await ProjectClient({ fetchApi: fetch, token: locals.token }).listProject();
-		}
-	});
-
-	if (!result.success) {
-		throw error(result.error.status, result.error.message);
-	}
-
-	return { projects: result.response };
-}) satisfies PageServerLoad;
 
 export const actions = {
 	create: async ({ request, locals, fetch }) => {

@@ -6,4 +6,5 @@ export const load = (async ({ parent }) => {
 	if (!token) {
 		throw redirect(303, '/login');
 	}
+	return {};
 }) satisfies LayoutLoad;

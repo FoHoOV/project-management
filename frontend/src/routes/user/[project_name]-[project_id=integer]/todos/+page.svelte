@@ -18,6 +18,7 @@
 	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
 	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
+	import Error from '$routes/+error.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -91,7 +92,7 @@
 	onMount(() => {
 		if (!data.response) {
 			state = 'none';
-			return;
+			throw new window.Error("couldn't load todo categories from server");
 		}
 		todos.setTodoCategories(data.response);
 		state = 'none';

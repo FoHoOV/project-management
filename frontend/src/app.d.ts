@@ -1,7 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
-import type { Token } from '$lib/client';
+import type { Token } from '$lib/generated-client/models';
 
 declare global {
 	namespace App {

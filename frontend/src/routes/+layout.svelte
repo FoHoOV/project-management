@@ -43,17 +43,8 @@
 				name="Projects"
 				on:click={closeDrawer}
 			>
-				<ul>
-					{#each $projects as project (project.id)}
-						<NavbarItem
-							icon={faArrowRight}
-							href={generateTodoListUrl(project.title, project.id)}
-							name={project.title}
-							on:click={closeDrawer}
-						/>
-					{/each}
-				</ul></NavbarItem
-			>
+				<slot name="nav-project-list" {closeDrawer} />
+			</NavbarItem>
 		{/if}
 	</svelte:fragment>
 

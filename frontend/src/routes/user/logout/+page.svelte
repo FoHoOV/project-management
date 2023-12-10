@@ -4,7 +4,7 @@
 	import Alert from '$components/Alert.svelte';
 	import { superEnhance } from '$lib/actions/form';
 
-	let isSubmitting = false;
+	let status: 'submitting' | 'none' = 'none';
 </script>
 
 <svelte:head>
@@ -17,13 +17,13 @@
 	<form
 		method="post"
 		use:superEnhance
-		on:submitstarted={() => (isSubmitting = true)}
-		on:submitended={() => (isSubmitting = false)}
+		on:submitstarted={() => (status = 'submitting')}
+		on:submitended={() => (status = 'none')}
 	>
 		<LoadingButton
 			class="btn-warning mt-2"
 			text="Yes, I'm a nerd :|"
-			loading={isSubmitting}
+			loading={status === 'submitting'}
 			type="submit"
 		/>
 	</form>

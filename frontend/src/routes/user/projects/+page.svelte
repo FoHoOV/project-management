@@ -12,7 +12,6 @@
 	import type { ComponentProps } from 'svelte';
 	import projects from '$lib/stores/projects';
 
-	export let data: PageData;
 	export let form: ActionData;
 
 	let actions = [
@@ -31,7 +30,6 @@
 
 	// TODO: this hack is ugly AF, refactor after svelte5 comes out
 	$: selectedActionProps = { ...selectedActionProps, form };
-	$: projects.setProjects(data.projects);
 
 	function handleCreateProject() {
 		selectedActionProps = {};
