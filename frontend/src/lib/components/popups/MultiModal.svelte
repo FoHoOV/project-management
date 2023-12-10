@@ -14,7 +14,9 @@
 
 	export let actions: TActions;
 	export let selectedActionProps: ComponentProps<any> | null = null;
+	export { wrapperClasses as class };
 
+	let wrapperClasses: string = '';
 	let selectedAction: Action<any, any> | null;
 
 	let modal: Modal;
@@ -41,7 +43,12 @@
 	}
 </script>
 
-<Modal title={selectedAction?.title} bind:this={modal} on:closed={handleCloseModal}>
+<Modal
+	title={selectedAction?.title}
+	class={wrapperClasses}
+	bind:this={modal}
+	on:closed={handleCloseModal}
+>
 	<svelte:component this={selectedAction?.component} slot="body" {...selectedActionProps}
 	></svelte:component>
 </Modal>

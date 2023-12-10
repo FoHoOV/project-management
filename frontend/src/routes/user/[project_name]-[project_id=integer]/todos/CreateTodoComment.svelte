@@ -62,8 +62,10 @@
 		<FormInput class="hidden" type="hidden" name="todo_id" value={todoId} errors={''} />
 		<FormInput
 			name="message"
+			type="text-area"
 			autoFocus={true}
 			class="w-full"
+			inputClasses="min-h-16"
 			hideLabel={true}
 			errors={formErrors?.errors?.message}
 		/>

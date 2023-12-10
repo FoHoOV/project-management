@@ -27,6 +27,7 @@
 				}).listTodoItemComment(todoId);
 				state = 'none';
 				todoComments.setOpenedTodoComments(result);
+				console.log($todoComments);
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
@@ -69,12 +70,12 @@
 </script>
 
 <Modal
-	class="cursor-default"
+	class="cursor-default border border-success border-opacity-20"
 	title="Manage your todo comments here"
 	bind:this={modal}
 	dialogProps={{
 		//@ts-ignore
-		//another ugly hack which will be solved by svelte5
+		//TODO: another ugly hack which will be solved by svelte5
 		ondragstart: 'event.preventDefault();event.stopPropagation();',
 		draggable: true
 	}}
@@ -90,15 +91,15 @@
 			<Fa icon={faPlus} />
 			<p>add comment</p>
 		</button>
-		{#if $todoComments.length == 0}
+		{#if $todoComments.length == 0 || $todoComments[0].todo_id != todoId}
 			<div class="my-2 flex flex-row items-center gap-2">
 				<Fa icon={faPlusCircle} />
-				<p class="text-lg font-bold">create your first comments using the plus sign</p>
+				<p class="break-words text-lg font-bold">create your first comments using the plus sign</p>
 			</div>
 		{:else}
 			{#each $todoComments as comment (comment.id)}
 				<div
-					class="card mt-4 max-h-full !bg-base-200 shadow-xl hover:bg-base-100"
+					class="card mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 					animate:flip={{ duration: 200 }}
 				>
 					<div class="card-body">
@@ -117,7 +118,7 @@
 								<Fa icon={faEdit}></Fa>
 							</button>
 						</div>
-						<p class="font-bold">
+						<p class="whitespace-pre-wrap break-words font-bold">
 							{comment.message}
 						</p>
 					</div>

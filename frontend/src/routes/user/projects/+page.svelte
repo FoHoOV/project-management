@@ -32,18 +32,18 @@
 	$: selectedActionProps = { ...selectedActionProps, form };
 
 	function handleCreateProject() {
-		modals.show('create-project');
 		selectedActionProps = {};
+		modals.show('create-project');
 	}
 
 	function handleAttachToUser(e: CustomEvent<{ project: Project }>) {
-		modals.show('attach-to-user');
 		selectedActionProps = { projectId: e.detail.project.id };
+		modals.show('attach-to-user');
 	}
 
 	function handleEditProject(e: CustomEvent<{ project: Project }>) {
-		modals.show('edit-project');
 		selectedActionProps = { projectId: e.detail.project.id };
+		modals.show('edit-project');
 	}
 </script>
 
@@ -60,4 +60,9 @@
 	on:click={handleCreateProject}
 />
 
-<MultiModal bind:this={modals} {actions} {selectedActionProps}></MultiModal>
+<MultiModal
+	bind:this={modals}
+	class="border border-success border-opacity-20"
+	{actions}
+	{selectedActionProps}
+></MultiModal>
