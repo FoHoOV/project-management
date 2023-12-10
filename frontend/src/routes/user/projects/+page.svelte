@@ -11,7 +11,9 @@
 	import MultiModal from '$components/popups/MultiModal.svelte';
 	import type { ComponentProps } from 'svelte';
 	import projects from '$lib/stores/projects';
+	import { browser } from '$app/environment';
 
+	export let data: PageData;
 	export let form: ActionData;
 
 	let actions = [
@@ -48,7 +50,7 @@
 </script>
 
 <ProjectList
-	projects={$projects}
+	projects={browser ? data.projects : $projects}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}
