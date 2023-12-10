@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 	import type { PageData } from './$types';
 	import Drawer from '$components/Drawer.svelte';
 	import {
@@ -13,6 +13,7 @@
 	import Toasts from '$components/popups/Toasts.svelte';
 	import projects from '$lib/stores/projects/projects';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 	// beforeNavigate(async ({ to, cancel }) => {
@@ -26,6 +27,10 @@
 	// 		await goto('/user/login');
 	// 	}
 	// });
+
+	onMount(() => {
+		projects.setProjects(data.projects);
+	});
 </script>
 
 <Drawer
@@ -43,7 +48,16 @@
 				name="Projects"
 				on:click={closeDrawer}
 			>
-				<slot name="nav-project-list" {closeDrawer} />
+				<ul>
+					{#each data.projects as project (project.id)}
+						<NavbarItem
+							icon={faArrowRight}
+							href={generateTodoListUrl(project.title, project.id)}
+							name={project.title}
+							on:click={closeDrawer}
+						/>
+					{/each}
+				</ul>
 			</NavbarItem>
 		{/if}
 	</svelte:fragment>
