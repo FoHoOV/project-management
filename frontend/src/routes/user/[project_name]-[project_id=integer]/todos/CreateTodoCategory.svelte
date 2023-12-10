@@ -7,6 +7,7 @@
 	import todos from '$lib/stores/todos';
 	import { createTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
+	import { generateTodoListUrl } from '$components/project/utils';
 
 	export let form: ActionData;
 
@@ -23,7 +24,7 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/createCategory"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/createCategory"
 	use:superEnhance={{
 		validator: { schema: createTodoCategorySchema },
 		form: form,

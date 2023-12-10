@@ -7,6 +7,7 @@
 	import todos from '$lib/stores/todos';
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
+	import { generateTodoListUrl } from '$components/project/utils';
 
 	export let form: ActionData;
 	export let todoId: number;
@@ -24,7 +25,7 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/editTodoItem"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTodoItem"
 	use:superEnhance={{
 		validator: { schema: editTodoItemSchema },
 		form: form,

@@ -13,6 +13,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
+	import { generateTodoListUrl } from '$components/project/utils';
 
 	export let project: Project;
 	export let enabledFeatures: Feature[] | null = null;
@@ -111,10 +112,7 @@
 					Detach
 				{/if}
 			</button>
-			<a
-				class="btn btn-info flex-1"
-				href="/user/{project.title.replaceAll(' ', '')}-{project.id}/todos"
-			>
+			<a class="btn btn-info flex-1" href={generateTodoListUrl(project.title, project.id)}>
 				Show todos
 			</a>
 		</div>

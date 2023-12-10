@@ -7,6 +7,7 @@
 	import { attachToProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { generateTodoListUrl } from '$components/project/utils';
 
 	export let form: ActionData;
 	export let categoryId: number;
@@ -24,7 +25,10 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/attachToProject"
+	action="{generateTodoListUrl(
+		$page.params.project_name,
+		$page.params.project_id
+	)}?/attachToProject"
 	use:superEnhance={{
 		validator: { schema: attachToProjectSchema },
 		form: form,
@@ -45,7 +49,7 @@
 	}}
 	on:submitsucceeded={async () => {
 		// based on docs and on how invalidate works this doesn't do shit
-		await invalidate(`/user/{$page.params.project_name}-{$page.params.project_id}/todos`); // TODO: use stores/runes later
+		await invalidate(`${generateTodoListUrl($page.params.project_name, $page.params.project_id)}`); // TODO: use stores/runes later
 		resetForm();
 		state = 'submit-successful';
 	}}

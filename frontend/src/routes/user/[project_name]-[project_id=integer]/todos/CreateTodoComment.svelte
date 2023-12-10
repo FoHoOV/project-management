@@ -7,6 +7,7 @@
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
 	import todoComments from '$lib/stores/todo-comments';
+	import { generateTodoListUrl } from '$components/project/utils';
 
 	export let form: ActionData;
 	export let todoId: number;
@@ -24,7 +25,10 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/createTodoComment"
+	action="{generateTodoListUrl(
+		$page.params.project_name,
+		$page.params.project_id
+	)}?/createTodoComment"
 	use:superEnhance={{
 		validator: { schema: createTodoCommentSchema },
 		form: form,

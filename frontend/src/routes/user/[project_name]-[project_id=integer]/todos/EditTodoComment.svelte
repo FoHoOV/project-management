@@ -9,6 +9,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { TodoComment } from '$lib/generated-client/models';
 	import todoComments from '$lib/stores/todo-comments/todo-comments';
+	import { generateTodoListUrl } from '$components/project/utils';
 
 	export let form: ActionData;
 	export let comment: TodoComment;
@@ -26,7 +27,10 @@
 </script>
 
 <form
-	action="/user/{$page.params.project_name}-{$page.params.project_id}/todos?/editTodoComment"
+	action="{generateTodoListUrl(
+		$page.params.project_name,
+		$page.params.project_id
+	)}?/editTodoComment"
 	use:superEnhance={{
 		validator: { schema: editTodoCommentSchema },
 		form: form,
@@ -69,6 +73,7 @@
 			autoFocus={true}
 			class="w-full"
 			inputClasses="min-h-16"
+			value={comment.message}
 			hideLabel={true}
 			errors={formErrors?.errors?.message}
 		/>
