@@ -10,16 +10,15 @@
 	import Empty from '$components/Empty.svelte';
 	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
-	import { onMount, type ComponentProps, SvelteComponent } from 'svelte';
+	import { onMount, type ComponentProps } from 'svelte';
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
-	import MultiModal, { type Action } from '$components/popups/MultiModal.svelte';
+	import MultiModal from '$components/popups/MultiModal.svelte';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
 	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
-	import Error from '$routes/+error.svelte';
-
+	
 	export let data: PageData;
 	export let form: ActionData;
 	export let state: 'loading' | 'none' = 'loading';

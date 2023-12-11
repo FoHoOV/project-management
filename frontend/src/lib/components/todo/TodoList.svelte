@@ -188,7 +188,7 @@
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 	on:dropped={handleOnDrop}
-	class="relative flex max-h-full w-full rounded-xl border border-base-300"
+	class="relative flex max-h-full w-full rounded-xl transition-colors border {category.projects.length > 1 ? "border-warning" : "border-info"} border-opacity-5 hover:border-opacity-25"
 >
 	<Spinner visible={state === 'calling-service'}></Spinner>
 	<DropZoneHelper
