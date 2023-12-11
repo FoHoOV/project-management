@@ -78,9 +78,9 @@
 		<p>add comment</p>
 	</button>
 	{#if $todoComments.length == 0 || $todoComments[0].todo_id != todoId}
-		<div class="my-2 flex flex-row items-center gap-2">
+		<div class="my-5 flex flex-row items-center gap-2">
 			<Fa icon={faPlusCircle} />
-			<p class="break-words text-lg font-bold">create your first comments using the plus sign</p>
+			<p class="break-words text-lg">create your first comments using the plus sign</p>
 		</div>
 	{:else}
 		{#each $todoComments as comment (comment.id)}
