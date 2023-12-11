@@ -27,9 +27,12 @@
 </script>
 
 <div class="flex flex-col {wrapperClasses}">
-	<label class="label" class:hidden={hideLabel} for={name}>
-		<span class="label-text">{label}</span>
-	</label>
+	{#if !hideLabel}
+		<label class="label" class:hidden={hideLabel} for={name}>
+			<span class="label-text">{label}</span>
+		</label>
+	{/if}
+
 	{#if type == 'text-area'}
 		<!-- svelte-ignore a11y-autofocus -->
 		<textarea
