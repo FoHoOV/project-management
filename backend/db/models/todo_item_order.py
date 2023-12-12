@@ -19,7 +19,9 @@ class TodoItemOrder(BasesWithCreatedDate, BaseOrderedItem):
     right_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_item.id"), nullable=True, unique=True
     )
-    todo: Mapped["TodoItem"] = relationship(foreign_keys=[todo_id], single_parent=True, back_populates="order")  # type: ignore
+    todo: Mapped["TodoItem"] = relationship(  # type: ignore
+        foreign_keys=[todo_id], single_parent=True, back_populates="order"
+    )
 
     __table_args__ = (
         CheckConstraint("todo_id != left_id"),

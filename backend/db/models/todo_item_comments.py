@@ -11,4 +11,6 @@ class TodoItemComment(BasesWithCreatedDate):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     todo_id: Mapped[int] = mapped_column(ForeignKey("todo_item.id", ondelete="CASCADE"))
     message: Mapped[str] = mapped_column(Text(), nullable=False)
-    todo: Mapped["TodoItem"] = relationship(foreign_keys=[todo_id], single_parent=True, back_populates="comments")  # type: ignore
+    todo: Mapped["TodoItem"] = relationship(  # type: ignore
+        foreign_keys=[todo_id], single_parent=True, back_populates="comments"
+    )

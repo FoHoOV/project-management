@@ -28,4 +28,13 @@ class TodoItem(BasesWithCreatedDate):
         back_populates="todo",
         cascade="all, delete-orphan",
     )
-    order: Mapped[TodoItemOrder | None] = relationship("TodoItemOrder", foreign_keys=[TodoItemOrder.todo_id], uselist=False, back_populates="todo", cascade="all, delete-orphan")  # type: ignore
+    tags: Mapped[List["Tag"]] = relationship(  # type: ignore
+        secondary="todo_item_tag_association", back_populates="todos"
+    )
+    order: Mapped[TodoItemOrder | None] = relationship(
+        "TodoItemOrder",
+        foreign_keys=[TodoItemOrder.todo_id],
+        uselist=False,
+        back_populates="todo",
+        cascade="all, delete-orphan",
+    )

@@ -22,7 +22,9 @@ class TodoCategoryOrder(BasesWithCreatedDate, BaseOrderedItem):
     right_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_category.id"), nullable=True
     )
-    category: Mapped["TodoCategory"] = relationship(foreign_keys=[category_id], single_parent=True, back_populates="orders")  # type: ignore
+    category: Mapped["TodoCategory"] = relationship(  # type: ignore
+        foreign_keys=[category_id], single_parent=True, back_populates="orders"
+    )
 
     __table_args__ = (
         UniqueConstraint("project_id", "category_id"),

@@ -11,11 +11,10 @@
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import todoComments from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
-	import Modal from '$components/popups/Modal.svelte';
-
+	
 	export let todoId: number;
 	export let enabledFeatures: Feature[] | null = null;
 
