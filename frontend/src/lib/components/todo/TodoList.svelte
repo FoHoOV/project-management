@@ -18,7 +18,7 @@
 		faCirclePlus,
 		faEdit,
 		faInfoCircle,
-		faMapPin,
+		faPaperclip,
 		faTrashCan
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
@@ -246,7 +246,7 @@
 				class:hidden={!enabledFeatures?.includes('attach-to-project')}
 				on:click={handleAttachToProject}
 			>
-				<Fa icon={faMapPin} />
+				<Fa icon={faPaperclip} />
 				Attach to project
 			</button>
 		</div>
