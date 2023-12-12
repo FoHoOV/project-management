@@ -38,7 +38,7 @@ export async function callServiceInFormActions<
 	TErrorSchema,
 	ReturnType<typeof superApplyAction<TErrorSchema>>
 >): Promise<
-	| { success: true; result: Awaited<TServiceCallResult>; error: never }
+	| { success: true; response: Awaited<TServiceCallResult>; error: never }
 	| Awaited<ReturnType<typeof superApplyAction<TErrorSchema>>>
 >;
 export async function callServiceInFormActions<
@@ -53,7 +53,7 @@ export async function callServiceInFormActions<
 	ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>,
 	'errorCallback'
 >): Promise<
-	{ success: true; result: Awaited<TServiceCallResult>; error: never } | TErrorCallbackResult
+	{ success: true; response: Awaited<TServiceCallResult>; error: never } | TErrorCallbackResult
 >;
 export async function callServiceInFormActions<
 	TServiceCallResult extends Promise<unknown>,
