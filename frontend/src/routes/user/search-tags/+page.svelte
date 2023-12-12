@@ -39,6 +39,7 @@
 				description: '',
 				items: result.map((value) => {
 					value.category_id = -1;
+					value.order = null;
 					return value;
 				}),
 				orders: [],
