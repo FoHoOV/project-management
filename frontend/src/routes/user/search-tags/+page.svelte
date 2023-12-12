@@ -83,7 +83,7 @@
 		type="text"
 		label="project id (Optional)"
 		name="projectId"
-		errors={formErrors.errors?.projectId}
+		errors={formErrors.errors?.projectId?.toString()}
 	></FormInput>
 	<div class="card-actions mt-3 w-full justify-end">
 		<LoadingButton
@@ -96,7 +96,7 @@
 	</div>
 </form>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+<div class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
 	{#if $todos.length > 0}
 		{#each $todos[0].items as todo (todo.id)}
 			<TodoItem {todo}></TodoItem>

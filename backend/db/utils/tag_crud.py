@@ -22,7 +22,7 @@ def create(db: Session, tag: TagCreate, user_id: int):
 
     tag_already_exists = False
     try:
-        validate_tag_belongs_to_user_by_name(db, tag.name, user_id)
+        validate_tag_belongs_to_user_by_name(db, tag.name, tag.project_id, user_id)
         tag_already_exists = True
     except UserFriendlyError:
         pass
@@ -43,7 +43,7 @@ def create(db: Session, tag: TagCreate, user_id: int):
 
 
 def search(db: Session, search: TagSearch, user_id: int):
-    validate_tag_belongs_to_user_by_name(db, search.name, user_id)
+    validate_tag_belongs_to_user_by_name(db, search.name, search.project_id, user_id)
 
     query = (
         db.query(TodoItem)
@@ -54,7 +54,7 @@ def search(db: Session, search: TagSearch, user_id: int):
     )
 
     if search.project_id is not None:
-        query.filter(Project.id == search.project_id)
+        query = query.filter(Project.id == search.project_id)
 
     return query.all()
 
@@ -85,7 +85,9 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
 
     try:
-        validate_tag_belongs_to_user_by_name(db, association.name, user_id)
+        validate_tag_belongs_to_user_by_name(
+            db, association.name, association.project_id, user_id
+        )
     except UserFriendlyError as e:
         if e.code != ErrorCode.TAG_NOT_FOUND:
             raise e
@@ -157,16 +159,21 @@ def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: i
     db.commit()
 
 
-def validate_tag_belongs_to_user_by_name(db: Session, tag_name: str, user_id: int):
-    result = (
+def validate_tag_belongs_to_user_by_name(
+    db: Session, tag_name: str, project_id: int | None, user_id: int
+):
+    query = (
         db.query(Project)
         .join(Project.users)
         .filter(User.id == user_id)
         .join(Project.tags)
         .filter(Tag.name == tag_name)
-        .count()
     )
-    if result == 0:
+
+    if project_id is not None:
+        query = query.filter(Project.id == project_id)
+
+    if query.count() == 0:
         raise UserFriendlyError(
             ErrorCode.TAG_NOT_FOUND, "tag not found or doesn't belong to user"
         )

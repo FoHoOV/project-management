@@ -16,9 +16,9 @@ export const actions = {
 	search: async ({ request, locals, fetch }) => {
 		const formData = await request.formData();
 
-		const validationsResult = await searchTagSchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
+		const validationsResult = await searchTagSchema.safeParseAsync({
+			...convertFormDataToObject(formData)
+		});
 
 		if (!validationsResult.success) {
 			return superFail(400, {
@@ -29,10 +29,17 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
-				return await TagClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).searchTag(validationsResult.data.name, validationsResult.data.projectId);
+				if (validationsResult.data.projectId) {
+					return await TagClient({
+						token: locals.token,
+						fetchApi: fetch
+					}).searchTag(validationsResult.data.name, validationsResult.data.projectId);
+				} else {
+					return await TagClient({
+						token: locals.token,
+						fetchApi: fetch
+					}).searchTag(validationsResult.data.name);
+				}
 			},
 			errorSchema: searchTagSchema
 		});
