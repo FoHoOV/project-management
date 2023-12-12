@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
 from fastapi import Query
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
 
 from db.schemas.base import NullableOrderedItem
 
@@ -57,7 +56,7 @@ class PartialTag(BaseModel):
 
 class TodoItem(TodoItemBase):
     id: int
-    tags: List[PartialTag]
+    tags: list[PartialTag]
     order: NullableOrderedItem | None
 
     class Config:

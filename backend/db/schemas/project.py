@@ -55,11 +55,17 @@ class PartialTodoCategory(BaseModel):
         from_attributes = True
 
 
+class PartialTag(BaseModel):
+    id: int
+    name: str
+
+
 class Project(ProjectBase):
     id: int
     title: str
     description: str
     users: list[PartialUser]
     todo_categories: list[PartialTodoCategory]
+    tags: list[PartialTag]
     done_todos_count: int
     pending_todos_count: int
