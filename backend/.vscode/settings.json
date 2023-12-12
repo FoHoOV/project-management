@@ -1,10 +1,11 @@
 {
-    "cSpell.words": [
-        "autoflush",
-        "fastapi",
-        "pydantic",
-        "sessionmaker",
-        "sqlalchemy",
-        "todos"
-    ]
+  "cSpell.words": [
+    "autoflush",
+    "DOESNT",
+    "fastapi",
+    "pydantic",
+    "sessionmaker",
+    "sqlalchemy",
+    "todos"
+  ]
 }

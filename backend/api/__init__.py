@@ -4,15 +4,15 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from api.routes import oath, tag, todo_item_comment
 from db import init_db
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import UserFriendlyError
 
-from .routes import todo_item, todo_category, user, project
+from .routes import todo_item, todo_category, user, project, error
 
 
 def db_excepted_exception_handler(request: Request, ex: UserFriendlyError):
     return JSONResponse(
         status_code=400,
-        content={"message": str(ex)},
+        content={"code": ex.code, "message": ex.description},
     )
 
 
@@ -29,6 +29,7 @@ def create_app():
     app.include_router(todo_category.router)
     app.include_router(todo_item.router)
     app.include_router(todo_item_comment.router)
+    app.include_router(error.router)
     app.include_router(tag.router)
 
     app.openapi_version = (

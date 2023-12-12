@@ -16,13 +16,15 @@ from db.schemas.project import (
     ProjectUpdate,
 )
 from sqlalchemy.orm import Session
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import ErrorCode, UserFriendlyError
 from db.models.todo_category import TodoCategory
 
 
 def create(db: Session, project: ProjectCreate, user_id: int):
     if db.query(User).filter(User.id == user_id).count() == 0:
-        raise UserFriendlyError("requested user doesn't exist")
+        raise UserFriendlyError(
+            ErrorCode.USER_NOT_FOUND, "requested user doesn't exist"
+        )
 
     db_item = Project(**project.model_dump())
     db.add(db_item)
@@ -51,7 +53,9 @@ def update(db: Session, project: ProjectUpdate, user_id: int):
 def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: int):
     user = db.query(User).filter(User.username == association.username).first()
     if user is None:
-        raise UserFriendlyError("requested user doesn't exist")
+        raise UserFriendlyError(
+            ErrorCode.USER_NOT_FOUND, "requested user doesn't exist"
+        )
 
     validate_project_belongs_to_user(
         db,
@@ -72,7 +76,8 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
         return association_db_item
     except IntegrityError:
         raise UserFriendlyError(
-            "this user already exists in this project's associations"
+            ErrorCode.USER_ASSOCIATION_ALREADY_EXISTS,
+            "this user already exists in this project's associations",
         )
 
 
@@ -155,7 +160,8 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
 
     if result is None:
         raise UserFriendlyError(
-            "project doesn't exist or doesn't belong to current user"
+            ErrorCode.PROJECT_NOT_FOUND,
+            "project doesn't exist or doesn't belong to current user",
         )
 
     return result
@@ -185,7 +191,8 @@ def validate_project_belongs_to_user(
         == 0
     ):
         raise UserFriendlyError(
-            "project doesn't exist or doesn't belong to current user"
+            ErrorCode.PROJECT_NOT_FOUND,
+            "project doesn't exist or doesn't belong to current user",
         )
 
     if (
@@ -197,4 +204,7 @@ def validate_project_belongs_to_user(
         .count()
         == 0
     ):
-        raise UserFriendlyError("project doesn't exist or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.PROJECT_NOT_FOUND,
+            "project doesn't exist or doesn't belong to user",
+        )

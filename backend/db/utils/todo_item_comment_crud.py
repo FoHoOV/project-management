@@ -7,7 +7,7 @@ from db.schemas.todo_item_comment import (
     TodoCommentSearch,
     TodoCommentUpdate,
 )
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
 
 
@@ -63,7 +63,10 @@ def validate_todo_comment_belongs_to_user(
         db.query(TodoItemComment).filter(TodoItemComment.id == todo_comment_id).first()
     )
 
-    error = UserFriendlyError("todo comment not found or doesn't belong to user")
+    error = UserFriendlyError(
+        ErrorCode.TODO_CATEGORY_NOT_FOUND,
+        "todo comment not found or doesn't belong to user",
+    )
 
     if todo_comment is None:
         raise error

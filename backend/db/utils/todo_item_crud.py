@@ -19,7 +19,7 @@ from db.schemas.todo_item import (
     SearchTodoItemParams,
     TodoItemUpdateOrder,
 )
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
 from db.utils.todo_category_crud import validate_todo_category_belongs_to_user
 
@@ -89,7 +89,10 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     )
 
     if not db_item:
-        raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TODO_NOT_FOUND,
+            "todo item doesn't exist or doesn't belong to user",
+        )
 
     if todo.new_category_id is not None:
         update_order(
@@ -138,7 +141,9 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
     )
 
     if not db_item:
-        raise UserFriendlyError("moving item not found or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TODO_NOT_FOUND, "moving item not found or doesn't belong to user"
+        )
 
     if db_item.category_id != moving_item.new_category_id:
         validate_todo_category_belongs_to_user(db, moving_item.new_category_id, user_id)
@@ -200,7 +205,10 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         .count()
         == 0
     ):
-        raise UserFriendlyError("todo item doesn't exist or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TODO_NOT_FOUND,
+            "todo item doesn't exist or doesn't belong to user",
+        )
 
 
 def _get_last_todo_id_in_category_except_current(

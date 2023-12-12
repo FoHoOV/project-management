@@ -1,13 +1,12 @@
 from typing import Type
-from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Mapped, Query
 from db.models.base import BaseOrderedItem
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import ErrorCode, UserFriendlyError
 
 from typing import Callable, Type, TypedDict
 from sqlalchemy.orm import Query, Session
 
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import UserFriendlyError
 
 
 class NewOrder(TypedDict):
@@ -34,7 +33,9 @@ def update_element_order[
             and moving_item["left_id"] == moving_item["right_id"]
         )
     ):
-        raise UserFriendlyError("inputs values create a cyclic order")
+        raise UserFriendlyError(
+            ErrorCode.INVALID_INPUT, "inputs values create a cyclic order"
+        )
 
     # the validation that moving_id, id, next_id exists and belongs to user is callers responsibility
     _remove_item_from_sorted_items_in_position(

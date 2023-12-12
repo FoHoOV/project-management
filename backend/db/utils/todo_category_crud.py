@@ -18,7 +18,7 @@ from db.schemas.todo_category import (
     TodoCategoryUpdateItem,
     TodoCategoryUpdateOrder,
 )
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
 
 
@@ -93,7 +93,10 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     db_item = db.query(TodoCategory).filter(TodoCategory.id == category.id).first()
 
     if db_item is None:
-        raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TODO_CATEGORY_NOT_FOUND,
+            "todo category doesn't exist or doesn't belong to user",
+        )
 
     if category.description is not None:
         db_item.description = category.description
@@ -164,7 +167,10 @@ def attach_to_project(
         db.refresh(association_db_item)
         return association_db_item
     except IntegrityError:
-        raise UserFriendlyError("this category already belongs to this project")
+        raise UserFriendlyError(
+            ErrorCode.CATEGORY_PROJECT_ASSOCIATION_ALREADY_EXISTS,
+            "this category already belongs to this project",
+        )
 
 
 def detach_from_project(
@@ -217,7 +223,10 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
         .count()
         == 0
     ):
-        raise UserFriendlyError("todo category doesn't exist or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TODO_CATEGORY_NOT_FOUND,
+            "todo category doesn't exist or doesn't belong to user",
+        )
 
 
 def _get_last_category_id_in_project_except_current(

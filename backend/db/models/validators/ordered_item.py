@@ -2,12 +2,12 @@ from typing import Type
 from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Mapped, Query
 from db.models.base import BaseOrderedItem
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import UserFriendlyError
 
 from typing import Callable, Type, TypedDict
 from sqlalchemy.orm import Query, Session
 
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import UserFriendlyError
 
 
 def cyclic_order_validator[

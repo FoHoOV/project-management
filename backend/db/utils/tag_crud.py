@@ -12,7 +12,7 @@ from db.schemas.tag import (
     TagSearch,
     TagUpdate,
 )
-from db.utils.exceptions import UserFriendlyError
+from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
 
@@ -28,7 +28,10 @@ def create(db: Session, tag: TagCreate, user_id: int):
         pass
 
     if tag_already_exists:
-        raise UserFriendlyError("This tag already exists for this project")
+        raise UserFriendlyError(
+            ErrorCode.TAG_PROJECT_ASSOCIATION_ALREADY_EXISTS,
+            "This tag already exists for this project",
+        )
 
     db_item = Tag(**tag.model_dump())
     db.add(db_item)
@@ -88,7 +91,10 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     )
 
     if tag_already_exists_for_todo:
-        raise UserFriendlyError("this tag already belongs to this todo")
+        raise UserFriendlyError(
+            ErrorCode.TAG_TODO_ASSOCIATION_ALREADY_EXISTS,
+            "this tag already belongs to this todo",
+        )
 
     db_item = TodoItemTagAssociation(
         todo_id=association.todo_id, tag_id=association.tag_id
@@ -115,7 +121,9 @@ def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: i
     )
 
     if affected_columns == 0:
-        raise UserFriendlyError("this tag doesn't exist for this todo")
+        raise UserFriendlyError(
+            ErrorCode.TAG_NOT_FOUND, "this tag doesn't exist for this todo"
+        )
 
     db.commit()
 
@@ -130,7 +138,9 @@ def validate_tag_belongs_to_user_by_name(db: Session, tag_name: str, user_id: in
         .count()
     )
     if result == 0:
-        raise UserFriendlyError("tag not found or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TAG_NOT_FOUND, "tag not found or doesn't belong to user"
+        )
 
 
 def validate_tag_belongs_to_user_by_id(db: Session, tag_id: int, user_id: int):
@@ -143,4 +153,6 @@ def validate_tag_belongs_to_user_by_id(db: Session, tag_id: int, user_id: int):
         .count()
     )
     if result == 0:
-        raise UserFriendlyError("tag not found or doesn't belong to user")
+        raise UserFriendlyError(
+            ErrorCode.TAG_NOT_FOUND, "tag not found or doesn't belong to user"
+        )
