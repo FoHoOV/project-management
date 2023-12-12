@@ -283,31 +283,9 @@ export const actions: Actions = {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).createTag({
-					...validationsResult.data
-				});
+				}).attachToTodoTag({ ...validationsResult.data, create_if_doesnt_exist: true });
 			},
-			errorCallback: async (e) => {
-				if (
-					e.type == ErrorType.API_ERROR &&
-					e.code == ErrorCode.TagProjectAssociationAlreadyExists
-				) {
-					return await callServiceInFormActions({
-						serviceCall: async () => {
-							return await TagClient({
-								token: locals.token,
-								fetchApi: fetch
-							}).attachToTodoTag({
-								todo_id: validationsResult.data.todo_id,
-								name: validationsResult.data.name
-							});
-						},
-						errorSchema: TagAttachToTodo
-					});
-				}
-				return superApplyAction(e);
-			},
-			errorSchema: TagCreate
+			errorSchema: TagAttachToTodo
 		});
 
 		return namedActionResult(result, 'addTag');

@@ -74,10 +74,10 @@ export const createTodoCommentSchema = z.object({
 export const addTagSchema = z.object({
 	name: z.string().min(1).max(30),
 	todo_id: z.number({ coerce: true }),
-	project_id: z.number({ coerce: true })
+	project_id: z.number({ coerce: true }),
+	create_if_doesnt_exist: z.boolean().default(false)
 });
 
-({}) as z.infer<typeof addTagSchema> satisfies TagCreate;
 ({}) as z.infer<typeof addTagSchema> satisfies TagAttachToTodo;
 
 export const editTagSchema = z.object({

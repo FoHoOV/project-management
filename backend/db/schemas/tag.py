@@ -18,6 +18,8 @@ class TagCreate(BaseModel):
 class TagAttachToTodo(BaseModel):
     name: str
     todo_id: int
+    project_id: int
+    create_if_doesnt_exist: bool
 
 
 class TagDetachFromTodo(BaseModel):

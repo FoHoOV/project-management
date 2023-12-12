@@ -6,19 +6,18 @@
 	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
-	import { TagClient, TodoItemCommentClient } from '$lib/client-wrapper/clients';
+	import { TagClient } from '$lib/client-wrapper/clients';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 	import Fa from 'svelte-fa';
 	import {
 		faEdit,
 		faPenNib,
 		faPlus,
 		faPlusCircle,
-		faTrashCan
+		faTrashCan,
+		faUnlink
 	} from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
-	import todoComments from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
 	import type { TodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos';
@@ -26,7 +25,7 @@
 	export let todo: TodoItem;
 	export let enabledFeatures: Feature[] | null = null;
 
-	let state: 'calling-service' | 'none' = 'calling-service';
+	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null = null;
 
 	const dispatch = createEventDispatcher<{
@@ -86,7 +85,10 @@
 		<p>add tag</p>
 	</button>
 	{#if todo.tags.length == 0}
-		<div class="my-5 flex flex-row items-center gap-2">
+		<div
+			class="my-5 flex flex-row items-center gap-2"
+			class:hidden={!enabledFeatures?.includes('add-tag')}
+		>
 			<Fa icon={faPlusCircle} />
 			<p class="break-words text-lg">add tags using the plus sign above</p>
 		</div>
@@ -102,7 +104,7 @@
 							<Fa icon={faTrashCan}></Fa>
 						</button>
 						<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>
-							<Fa icon={faPenNib}></Fa>
+							<Fa icon={faUnlink}></Fa>
 						</button>
 						<button
 							class="btn btn-square btn-info btn-sm"

@@ -47,7 +47,11 @@
 
 	$: todoItemEnabledFeatures = (enabledFeatures?.filter(
 		(feature) =>
-			feature == 'edit-comment' || feature == 'create-comment' || feature == 'edit-todo-item'
+			feature == 'edit-comment' ||
+			feature == 'create-comment' ||
+			feature == 'edit-todo-item' ||
+			feature == 'add-tag' ||
+			feature == 'edit-tag'
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';

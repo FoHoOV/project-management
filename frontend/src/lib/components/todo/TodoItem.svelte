@@ -147,6 +147,10 @@
 		todoComments.updateComments();
 		todoCommentsModal.show();
 	}
+
+	function handleShowTags() {
+		todoTagsModal.show();
+	}
 </script>
 
 <div
@@ -170,7 +174,7 @@
 		visible={state === 'drop-zone-top-activated' || state === 'drop-zone-bottom-activated'}
 		direction={state === 'drop-zone-top-activated' ? 'top' : 'bottom'}
 	/>
-	<div class="card-body">
+	<div class="card-body pb-4">
 		<Alert type="error" message={apiErrorTitle} />
 
 		<div class="card-title flex w-full justify-between">
@@ -202,16 +206,15 @@
 		</div>
 		<p class="truncate hover:text-clip">{todo.description}</p>
 
-		<div class="indicator">
+		<div class="indicator self-end">
 			<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
-			<button class="btn btn-info btn-outline">tags</button>
+			<button class="btn btn-info btn-outline" on:click={handleShowTags}>tags</button>
 		</div>
 	</div>
 </div>
 
 <Modal
 	class="cursor-default border border-success border-opacity-20"
-	wrapperClasses={state != 'showing-todo-tags' ? 'hidden' : ''}
 	title="Manage your tags here"
 	bind:this={todoTagsModal}
 	dialogProps={{

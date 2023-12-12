@@ -79,7 +79,22 @@ def delete(db: Session, tag: TagDelete, user_id: int):
 
 def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
-    validate_tag_belongs_to_user_by_name(db, association.name, user_id)
+
+    try:
+        validate_tag_belongs_to_user_by_name(db, association.name, user_id)
+    except UserFriendlyError as e:
+        if e.code != ErrorCode.TAG_NOT_FOUND:
+            raise e
+        if association.create_if_doesnt_exist:
+            raise e
+
+        create(
+            db,
+            TagCreate.model_validate(
+                {"name": association.name, "project_id": association.project_id}
+            ),
+            user_id,
+        )
 
     tag_already_exists_for_todo = (
         db.query(Tag)

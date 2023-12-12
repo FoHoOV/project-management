@@ -57,11 +57,25 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'add a new tag to this todo!' : ''}
+			message={state == 'submit-successful' ? 'your tag has been added to this todo item' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput name="todo_id" class="w-full" value={todoId} errors={''} type="hidden" />
-		<FormInput name="project_id" label="project id" type="hidden" errors={''} />
+		<FormInput
+			name="todo_id"
+			class="w-full"
+			hideLabel={true}
+			value={todoId}
+			errors={''}
+			type="hidden"
+		/>
+		<FormInput
+			name="project_id"
+			label="project id"
+			hideLabel={true}
+			value={$page.params.project_id}
+			type="hidden"
+			errors={''}
+		/>
 		<FormInput
 			name="name"
 			label="name"

@@ -77,7 +77,10 @@
 		<p>add comment</p>
 	</button>
 	{#if $todoComments.length == 0 || $todoComments[0].todo_id != todoId}
-		<div class="my-5 flex flex-row items-center gap-2">
+		<div
+			class="my-5 flex flex-row items-center gap-2"
+			class:hidden={!enabledFeatures?.includes('create-comment')}
+		>
 			<Fa icon={faPlusCircle} />
 			<p class="break-words text-lg">create your first comments using the plus sign</p>
 		</div>
