@@ -51,7 +51,8 @@
 			feature == 'create-comment' ||
 			feature == 'edit-todo-item' ||
 			feature == 'add-tag' ||
-			feature == 'edit-tag'
+			feature == 'edit-tag' ||
+			feature == 'update-todo-item-order'
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';

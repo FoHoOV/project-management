@@ -1,7 +1,11 @@
 <script lang="ts" context="module">
 	import type { Feature as TodoCommentFeature } from './TodoComments.svelte';
 	import type { Feature as TodoTagFeature } from './TodoTags.svelte';
-	export type Feature = TodoCommentFeature | TodoTagFeature | 'edit-todo-item';
+	export type Feature =
+		| TodoCommentFeature
+		| TodoTagFeature
+		| 'edit-todo-item'
+		| 'update-todo-item-order';
 </script>
 
 <script lang="ts">
@@ -163,7 +167,7 @@
 	use:draggable={{
 		data: todo,
 		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE],
-		disabled: state === 'calling-service'
+		disabled: state === 'calling-service' || !enabledFeatures?.includes('update-todo-item-order')
 	}}
 	on:dropped={handleUpdateTodoItemOrder}
 	on:dragHover={handleDragHover}

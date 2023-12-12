@@ -136,7 +136,8 @@
 							'create-comment',
 							'edit-comment',
 							'add-tag',
-							'edit-tag'
+							'edit-tag',
+							'update-todo-item-order'
 						]}
 						on:createTodoItem={handleCreateTodoItem}
 						on:editTodoItem={handleEditTodoItem}
