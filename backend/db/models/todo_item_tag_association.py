@@ -4,7 +4,7 @@ from sqlalchemy.orm import mapped_column
 from db.models.base import BasesWithCreatedDate
 
 
-class TodoCategoryProjectAssociation(BasesWithCreatedDate):
+class TodoItemTagAssociation(BasesWithCreatedDate):
     __tablename__ = "todo_item_tag_association"
 
     todo_id: Mapped[int] = mapped_column(
