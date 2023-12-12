@@ -60,7 +60,12 @@
 	class="px-1"
 	method="post"
 	action="/user/search-tags?/search"
-	use:superEnhance={{ form: form, action: 'search', validator: { schema: searchTagSchema } }}
+	use:superEnhance={{
+		form: form,
+		action: 'search',
+		resetOnSubmit: false,
+		validator: { schema: searchTagSchema }
+	}}
 	on:submitclienterror={(e) => {
 		formErrors = {
 			errors: e.detail,

@@ -101,7 +101,7 @@ function _defaultSubmitHandler<
 				);
 			}
 
-			await update();
+			await update({ reset: options?.resetOnSubmit });
 		};
 	};
 }

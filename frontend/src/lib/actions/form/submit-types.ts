@@ -10,6 +10,7 @@ export type EnhanceOptions<
 	submit?: SubmitFunction;
 	form: TFormAction;
 	action?: TKey;
+	resetOnSubmit?: boolean;
 	validator: ValidatorOptions<TSchema>;
 };
 
