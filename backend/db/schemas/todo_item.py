@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import List
 from fastapi import Query
 from pydantic import BaseModel, model_validator
 
@@ -49,8 +50,14 @@ class SearchTodoItemParams:
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
+class PartialTag:
+    id: int
+    name: str
+
+
 class TodoItem(TodoItemBase):
     id: int
+    tags: List[PartialTag]
     order: NullableOrderedItem | None
 
     class Config:

@@ -1,11 +1,9 @@
-from annotated_types import T
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
 )
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, defaultload, noload, contains_eager, lazyload
-from sqlalchemy import or_, and_
+from sqlalchemy.orm import Session, lazyload
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
 from db.models.todo_category_order import TodoCategoryOrder
