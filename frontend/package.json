@@ -13,7 +13,7 @@
 		"format": "prettier --plugin-search-dir . --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"open-api:generate:windows": "del .\\src\\lib\\generated-client && npm run open-api:generate:shared && npm run open-api:zod:windows",
+		"open-api:generate:windows": "(rmdir /s /q .\\src\\lib\\generated-client || true) && npm run open-api:generate:shared && npm run open-api:zod:windows",
 		"open-api:zod:windows": "mkdir .\\src\\lib\\generated-client\\zod && npm run open-api:zod:shared",
 		"open-api:generate:linux": "rm -rf ./src/lib/generated-client && npm run open-api:generate:shared && npm run open-api:zod:linux",
 		"open-api:zod:linux": "mkdirp ./src/lib/generated-client/zod && npm run open-api:zod:shared",
