@@ -62,6 +62,16 @@ def detach_from_todo(
     return Response(status_code=HTTP_200_OK)
 
 
+@router.delete(path="/delete")
+def delete(
+    current_user: Annotated[User, Depends(get_current_user)],
+    tag: TagDelete,
+    db: Session = Depends(get_db),
+):
+    tag_crud.delete(db=db, tag=tag, user_id=current_user.id)
+    return Response(status_code=HTTP_200_OK)
+
+
 @router.get(path="/list", response_model=list[Tag])
 def list(
     current_user: Annotated[User, Depends(get_current_user)],
