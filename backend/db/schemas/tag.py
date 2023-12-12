@@ -48,8 +48,8 @@ class PartialTodo(BaseModel):
 class Tag(BaseModel):
     id: int
     name: str
-    project_id: str
-    todos: PartialTodo
+    project_id: int
+    todos: list[PartialTodo]
 
     class Config:
         from_attributes = True

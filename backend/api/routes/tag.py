@@ -27,8 +27,7 @@ def create(
     tag: TagCreate,
     db: Session = Depends(get_db),
 ):
-    result = tag_crud.create(db=db, tag=tag, user_id=current_user.id)
-    return result
+    return tag_crud.create(db=db, tag=tag, user_id=current_user.id)
 
 
 @router.patch(path="/update", response_model=Tag)
