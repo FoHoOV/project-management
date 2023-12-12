@@ -3,6 +3,7 @@ from enum import IntEnum, StrEnum, auto
 
 
 class ErrorCode(StrEnum):
+    UNKNOWN_ERROR = auto()
     TAG_NOT_FOUND = auto()
     COMMENT_NOT_FOUND = auto()
     USER_NOT_FOUND = auto()
