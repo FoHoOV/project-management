@@ -8,6 +8,7 @@
 		faArrowRight,
 		faHome,
 		faProjectDiagram,
+		faSearch,
 		faTasks
 	} from '@fortawesome/free-solid-svg-icons';
 	import Toasts from '$components/popups/Toasts.svelte';
@@ -59,6 +60,12 @@
 					{/each}
 				</ul>
 			</NavbarItem>
+			<NavbarItem
+				icon={faSearch}
+				href="/user/search-tags"
+				name="Search by tag"
+				on:click={closeDrawer}
+			></NavbarItem>
 		{/if}
 	</svelte:fragment>
 

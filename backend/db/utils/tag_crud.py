@@ -45,14 +45,18 @@ def create(db: Session, tag: TagCreate, user_id: int):
 def search(db: Session, search: TagSearch, user_id: int):
     validate_tag_belongs_to_user_by_name(db, search.name, user_id)
 
-    return (
-        db.query(Tag)
+    query = (
+        db.query(TodoItem)
+        .join(TodoItem.tags)
         .join(Project.users)
         .filter(User.id == user_id)
-        .join(Project.tags)
         .filter(Tag.name == search.name)
-        .all()
     )
+
+    if search.project_id is not None:
+        query.filter(Project.id == search.project_id)
+
+    return query.all()
 
 
 def edit(db: Session, tag: TagUpdate, user_id: int):

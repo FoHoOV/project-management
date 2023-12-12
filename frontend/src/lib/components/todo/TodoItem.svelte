@@ -33,12 +33,20 @@
 	import TodoTags from './TodoTags.svelte';
 
 	export let todo: TodoItem;
-	export let category: TodoCategory;
+	export let category: TodoCategory | null = null;
 	export let enabledFeatures: Feature[] | null = null;
 
 	$: enabledTodoCommentFeatures = (enabledFeatures?.filter(
 		(feature) => feature == 'edit-comment' || feature == 'create-comment'
 	) ?? null) as TodoCommentFeature[] | null;
+
+	$: {
+		if (enabledFeatures?.includes('update-todo-item-order') && !category) {
+			throw new Error(
+				'If you want the todo-item to be able to update its order please provide the TodoCategory associated with it'
+			);
+		}
+	}
 
 	$: enabledTodoTagFeatures = (enabledFeatures?.filter(
 		(feature) => feature == 'edit-tag' || feature == 'add-tag'
@@ -99,6 +107,12 @@
 			return;
 		}
 
+		if (category === null) {
+			throw new Error('what?');
+		}
+
+		const cachedCategory = category;
+
 		const moveUp = state == 'drop-zone-top-activated';
 
 		state = 'calling-service';
@@ -108,12 +122,12 @@
 				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: event.detail.data.id,
 					new_category_id: todo.category_id,
-					...generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, category)
+					...generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				});
 				todos.updateTodoSort(
 					event.detail.data,
 					todo.category_id,
-					generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, category)
+					generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				);
 				state = 'none';
 			},

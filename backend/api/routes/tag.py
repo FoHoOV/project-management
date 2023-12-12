@@ -15,6 +15,7 @@ from db.schemas.tag import (
     TagSearch,
     Tag,
 )
+from db.schemas.todo_item import TodoItem
 from db.utils import tag_crud
 
 
@@ -72,8 +73,8 @@ def delete(
     return Response(status_code=HTTP_200_OK)
 
 
-@router.get(path="/list", response_model=list[Tag])
-def list(
+@router.get(path="/search", response_model=list[TodoItem])
+def search(
     current_user: Annotated[User, Depends(get_current_user)],
     search: TagSearch = Depends(TagSearch),
     db: Session = Depends(get_db),

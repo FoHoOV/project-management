@@ -5,6 +5,7 @@ from pydantic import BaseModel
 @dataclass
 class TagSearch:
     name: str
+    project_id: int | None = None
 
 
 class TagCreate(BaseModel):
