@@ -215,6 +215,7 @@
 
 <Modal
 	class="cursor-default border border-success border-opacity-20"
+	wrapperClasses={state != 'showing-todo-tags' ? 'hidden' : ''}
 	title="Manage your tags here"
 	bind:this={todoTagsModal}
 	dialogProps={{
