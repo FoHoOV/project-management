@@ -1,4 +1,5 @@
 from typing import List
+from db.models.todo_item_dependency import TodoItemDependency
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
@@ -13,8 +14,10 @@ from db.models.todo_item_order import TodoItemOrder
 from db.models.user import User
 from db.schemas.todo_item import (
     SearchTodoStatus,
+    TodoItemAddDependency,
     TodoItemCreate,
     TodoItemDelete,
+    TodoItemRemoveDependency,
     TodoItemUpdateItem,
     SearchTodoItemParams,
     TodoItemUpdateOrder,
@@ -111,6 +114,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         )
 
     if todo.is_done is not None:
+        _validate_dependencies_are_resolved(db_item)
         db_item.is_done = todo.is_done
 
     if todo.description is not None:
@@ -194,6 +198,52 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
     db.commit()
 
 
+def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id: int):
+    validate_todo_item_belongs_to_user(db, dependency.todo_id, user_id)
+    validate_todo_item_belongs_to_user(db, dependency.dependant_todo_id, user_id)
+
+    if (
+        db.query(TodoItemDependency)
+        .filter(
+            TodoItemDependency.todo_id == dependency.todo_id,
+            TodoItemDependency.dependant_todo_id == dependency.dependant_todo_id,
+        )
+        .count()
+        > 0
+    ):
+        raise UserFriendlyError(
+            ErrorCode.TODO_ITEM_DEPENDENCY_ALREADY_EXISTS,
+            "This todo item dependency already exists",
+        )
+
+    db_item = TodoItemDependency(**dependency.model_dump())
+    db.add(db_item)
+
+    db.commit()
+    db.refresh(db_item)
+
+    return db_item
+
+
+def remove_todo_dependency(
+    db: Session, dependency: TodoItemRemoveDependency, user_id: int
+):
+    db_item = (
+        db.query(TodoItemDependency)
+        .filter(TodoItemDependency.id == dependency.dependency_id)
+        .first()
+    )
+
+    if db_item is None:
+        raise UserFriendlyError(
+            ErrorCode.TODO_ITEM_DEPENDENCY_NOT_FOUND, "Dependency not found!"
+        )
+
+    validate_todo_item_belongs_to_user(db, db_item.todo_id, user_id)
+
+    db.delete(db_item)
+
+
 def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
     if (
         db.query(TodoItem)
@@ -209,6 +259,15 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
             ErrorCode.TODO_NOT_FOUND,
             "todo item doesn't exist or doesn't belong to user",
         )
+
+
+def _validate_dependencies_are_resolved(todo: TodoItem):
+    for dependency in todo.dependencies:
+        if not dependency.todo.is_done:
+            raise UserFriendlyError(
+                ErrorCode.DEPENDENCIES_NOT_RESOLVED,
+                "Cannot change todo status, because dependant todos are not done yet",
+            )
 
 
 def _get_last_todo_id_in_category_except_current(

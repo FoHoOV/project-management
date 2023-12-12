@@ -49,6 +49,19 @@ class SearchTodoItemParams:
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
+class TodoItemAddDependency(BaseModel):
+    todo_id: int
+    dependant_todo_id: int
+
+
+class TodoItemRemoveDependency(BaseModel):
+    dependency_id: int
+
+
+class TodoItemPartialDependency(BaseModel):
+    dependant_todo_id: int
+
+
 class TodoItemPartialTag(BaseModel):
     id: int
     name: str
@@ -58,6 +71,7 @@ class TodoItemPartialTag(BaseModel):
 class TodoItem(TodoItemBase):
     id: int
     tags: list[TodoItemPartialTag]
+    dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem | None
     comments_count: int
 
