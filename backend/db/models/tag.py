@@ -14,6 +14,9 @@ class Tag(BasesWithCreatedDate):
     project_id: Mapped[int] = mapped_column(
         ForeignKey("project.id", ondelete="CASCADE")
     )
+    project: Mapped[List["Project"]] = relationship(  # type: ignore
+        "Project", back_populates="tags", single_parent=True
+    )
     todos: Mapped[List["TodoItem"]] = relationship(  # type: ignore
         "TodoItem",
         secondary="todo_item_tag_association",
