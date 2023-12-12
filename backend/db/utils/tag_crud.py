@@ -117,6 +117,8 @@ def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: i
     if affected_columns == 0:
         raise UserFriendlyError("this tag doesn't exist for this todo")
 
+    db.commit()
+
 
 def validate_tag_belongs_to_user_by_name(db: Session, tag_name: str, user_id: int):
     result = (
