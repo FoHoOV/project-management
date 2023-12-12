@@ -6,6 +6,8 @@ import type { z } from 'zod';
 import type { ErrorMessage } from '$lib/utils/types';
 import { RequiredError, FetchError, ResponseError } from '$lib/generated-client/runtime';
 import { TokenError } from '$lib/utils/token';
+import { UserFriendlyErrorSchema } from '$lib/generated-client/zod/schemas';
+import { ErrorCode } from '$lib/generated-client/models';
 
 export const createRequest = (url: string, token?: string): Request => {
 	const request = new Request(url);
@@ -137,8 +139,9 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 	  }
 	| {
 			type: ErrorType.API_ERROR;
-			message: ErrorMessage;
+			message: string;
 			status: number;
+			code: ErrorCode;
 			response: Record<string, any>;
 			originalError: ResponseError;
 	  }
@@ -261,11 +264,26 @@ export async function callService<
 				};
 			}
 
+			const userFriendlyError = await UserFriendlyErrorSchema.safeParseAsync(response.detail);
+			if (userFriendlyError.success) {
+				return {
+					success: false,
+					error: await errorCallback({
+						type: ErrorType.API_ERROR,
+						status: e.response.status,
+						code: userFriendlyError.data.code,
+						message: userFriendlyError.data.description,
+						response: response,
+						originalError: e
+					})
+				};
+			}
 			return {
 				success: false,
 				error: await errorCallback({
 					type: ErrorType.API_ERROR,
 					status: e.response.status,
+					code: ErrorCode.UnknownError,
 					message: response?.message ?? e.message,
 					response: response,
 					originalError: e

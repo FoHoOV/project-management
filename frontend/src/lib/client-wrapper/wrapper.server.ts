@@ -16,7 +16,7 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 		case ErrorType.API_ERROR:
 			return superFail(404, {
 				message: e.message,
-				error: e.response as never
+				error: { code: e.code, message: e.message }
 			});
 		case ErrorType.VALIDATION_ERROR:
 			return superFail(400, { message: e.message, error: e.validationError });
