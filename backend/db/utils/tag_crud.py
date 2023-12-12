@@ -85,7 +85,7 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     except UserFriendlyError as e:
         if e.code != ErrorCode.TAG_NOT_FOUND:
             raise e
-        if association.create_if_doesnt_exist:
+        if not association.create_if_doesnt_exist:
             raise e
 
         create(
