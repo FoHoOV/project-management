@@ -50,7 +50,7 @@ class SearchTodoItemParams:
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
-class PartialTag:
+class PartialTag(BaseModel):
     id: int
     name: str
 

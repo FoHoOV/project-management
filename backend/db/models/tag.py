@@ -23,4 +23,4 @@ class Tag(BasesWithCreatedDate):
         back_populates="tags",
         order_by="desc(TodoItem.id)",
     )
-    __table_args__ = (UniqueConstraint("project_id", "title"),)
+    __table_args__ = (UniqueConstraint("project_id", "name"),)
