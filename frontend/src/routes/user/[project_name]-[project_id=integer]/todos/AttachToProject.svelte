@@ -64,7 +64,7 @@
 			message={state == 'submit-successful' ? 'attached to project!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput name="category_id" class="w-full" value={categoryId} errors={''} type="hidden" />
+		<FormInput name="category_id" class="hidden" value={categoryId} errors={''} type="hidden" />
 		<FormInput
 			name="project_id"
 			label="project id"

@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-	import { faComment, faEdit, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+	import { faComment, faEdit, faTags, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
 	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
@@ -144,7 +144,7 @@
 	}
 
 	function handleShowComments() {
-		todoComments.updateComments();
+		todoComments.refreshComments();
 		todoCommentsModal.show();
 	}
 
@@ -199,16 +199,23 @@
 				<button on:click={handleRemoveTodo}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
-				<button on:click={handleShowComments}>
-					<Fa icon={faComment} class="text-info"></Fa>
-				</button>
 			</div>
 		</div>
 		<p class="truncate hover:text-clip">{todo.description}</p>
 
-		<div class="indicator self-end">
-			<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
-			<button class="btn btn-info btn-outline" on:click={handleShowTags}>tags</button>
+		<div class="flex gap-2 self-end">
+			<button class="btn btn-info btn-outline btn-sm flex flex-row" on:click={handleShowComments}>
+				<Fa icon={faComment}></Fa>
+				<span>comments</span>
+			</button>
+
+			<div class="indicator self-end">
+				<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
+				<button class="btn btn-info btn-outline btn-sm" on:click={handleShowTags}>
+					<Fa icon={faTags}></Fa>
+					<span>tags</span>
+				</button>
+			</div>
 		</div>
 	</div>
 </div>
