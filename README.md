@@ -10,6 +10,8 @@ features it has right now:
   5. each project can be shared with other users (with detach/attach)
   6. each todo can have many comments (with add/edit/delete)
   7. you can sort todo categories or todo items in any arbitrary order and it will be saved on your user account (I'm storing this using linked list)
+  8. each todo can have multiple tags (with add/edit/delete)
+  9. you can search (all projects/project specific) by tag
 
 # how to run
   1. goto the backend project and follow the steps of its README.md
