@@ -1,5 +1,10 @@
 import { writable } from 'svelte/store';
-import type { NullableOrderedItem, TodoCategory, TodoItem } from '$lib/generated-client/models';
+import type {
+	NullableOrderedItem,
+	TodoItemPartialTag,
+	TodoCategory,
+	TodoItem
+} from '$lib/generated-client/models';
 import {
 	getLastTodoCategoryInSortedListExceptCurrent,
 	getLastTodoItemInSortedListExceptCurrent,
@@ -89,6 +94,66 @@ const updateTodo = (todo: TodoItem) => {
 				return todo;
 			});
 			category.items = sortedTodos(category.items);
+			return category;
+		});
+	});
+};
+
+const addTag = (todoId: number, tag: TodoItemPartialTag) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				if (todo.id !== todoId) {
+					return todo;
+				}
+				todo.tags.unshift(tag);
+				return todo;
+			});
+			return category;
+		});
+	});
+};
+
+const detachTag = (todoId: number, tag: TodoItemPartialTag) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				if (todo.id !== todoId) {
+					return todo;
+				}
+				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
+				return todo;
+			});
+			return category;
+		});
+	});
+};
+
+const deleteTag = (tag: TodoItemPartialTag) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
+				return todo;
+			});
+			return category;
+		});
+	});
+};
+
+const updateTag = (tag: TodoItemPartialTag) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				todo.tags = todo.tags.map((value) => {
+					if (value.id !== tag.id) {
+						return value;
+					}
+					value.name = tag.name;
+					return value;
+				});
+				return todo;
+			});
 			return category;
 		});
 	});
@@ -217,13 +282,20 @@ const updateCategoriesSort = (
 export default {
 	setTodoCategories,
 	addTodo,
+	addTag,
 	addCategory,
+
 	updateCategory,
+	updateTodo,
+	updateTag,
+	updateTodoSort,
 	updateCategoriesSort,
+
 	removeCategory,
 	removeTodo,
-	updateTodo,
-	updateTodoSort,
+	detachTag,
+	deleteTag,
+
 	clearTodoCategories,
 	subscribe
 };

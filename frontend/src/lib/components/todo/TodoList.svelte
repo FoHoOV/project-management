@@ -188,7 +188,10 @@
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 	on:dropped={handleOnDrop}
-	class="relative flex max-h-full w-full rounded-xl transition-colors border {category.projects.length > 1 ? "border-warning" : "border-info"} border-opacity-5 hover:border-opacity-25"
+	class="relative flex max-h-full w-full rounded-xl border transition-colors {category.projects
+		.length > 1
+		? 'border-warning'
+		: 'border-info'} border-opacity-5 hover:border-opacity-25"
 >
 	<Spinner visible={state === 'calling-service'}></Spinner>
 	<DropZoneHelper
@@ -258,6 +261,8 @@
 						on:editTodoItem
 						on:createComment
 						on:editComment
+						on:addTag
+						on:editTag
 					></TodoItemComponent>
 				</div>
 			{/each}

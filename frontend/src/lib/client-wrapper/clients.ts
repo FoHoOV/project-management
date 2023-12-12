@@ -5,7 +5,8 @@ import {
 	TodoCategoryApi,
 	UserApi,
 	ProjectApi,
-	TodoItemCommentApi
+	TodoItemCommentApi,
+	TagApi
 } from '$lib/generated-client/apis';
 
 import {
@@ -69,6 +70,10 @@ export const TodoItemClient = (config: ConfigurationOptions = { isTokenRequired:
 
 export const TodoItemCommentClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
 	return generateClient(TodoItemCommentApi, config);
+};
+
+export const TagClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
+	return generateClient(TagApi, config);
 };
 
 export const TodoCategoryClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {

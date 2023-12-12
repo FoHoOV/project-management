@@ -49,14 +49,15 @@ class SearchTodoItemParams:
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
-class PartialTag(BaseModel):
+class TodoItemPartialTag(BaseModel):
     id: int
     name: str
+    project_id: int
 
 
 class TodoItem(TodoItemBase):
     id: int
-    tags: list[PartialTag]
+    tags: list[TodoItemPartialTag]
     order: NullableOrderedItem | None
 
     class Config:

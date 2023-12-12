@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import type { Feature as TodoCommentFeature } from './TodoComments.svelte';
-	export type Feature = TodoCommentFeature | 'edit-todo-item';
+	import type { Feature as TodoTagFeature } from './TodoTags.svelte';
+	export type Feature = TodoCommentFeature | TodoTagFeature | 'edit-todo-item';
 </script>
 
 <script lang="ts">
@@ -25,6 +26,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import TodoComments from './TodoComments.svelte';
 	import Modal from '$components/popups/Modal.svelte';
+	import TodoTags from './TodoTags.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory;
@@ -34,15 +36,21 @@
 		(feature) => feature == 'edit-comment' || feature == 'create-comment'
 	) ?? null) as TodoCommentFeature[] | null;
 
+	$: enabledTodoTagFeatures = (enabledFeatures?.filter(
+		(feature) => feature == 'edit-tag' || feature == 'add-tag'
+	) ?? null) as TodoTagFeature[] | null;
+
 	let state:
 		| 'drop-zone-top-activated'
 		| 'drop-zone-bottom-activated'
 		| 'calling-service'
 		| 'showing-todo-comments'
+		| 'showing-todo-tags'
 		| 'none' = 'none';
 	let apiErrorTitle: string | null;
 	let todoComments: TodoComments;
 	let todoCommentsModal: Modal;
+	let todoTagsModal: Modal;
 
 	const dispatch = createEventDispatcher<{
 		editTodoItem: { todo: TodoItem };
@@ -142,7 +150,7 @@
 </script>
 
 <div
-	class="shadow-xl card mt-4 max-h-full bg-base-200 transition-colors hover:bg-base-300"
+	class="card mt-4 max-h-full bg-base-200 shadow-xl transition-colors hover:bg-base-300"
 	use:dropzone={{
 		model: todo,
 		names: [TODO_ITEM_ORDER_DROP_ZONE],
@@ -193,8 +201,31 @@
 			</div>
 		</div>
 		<p class="truncate hover:text-clip">{todo.description}</p>
+
+		<div class="indicator">
+			<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
+			<button class="btn btn-info btn-outline">tags</button>
+		</div>
 	</div>
 </div>
+
+<Modal
+	class="cursor-default border border-success border-opacity-20"
+	wrapperClasses={state != 'showing-todo-tags' ? 'hidden' : ''}
+	title="Manage your tags here"
+	bind:this={todoTagsModal}
+	dialogProps={{
+		//@ts-ignore
+		//TODO: another ugly hack which will be solved by svelte5
+		ondragstart: 'event.preventDefault();event.stopPropagation();',
+		draggable: false
+	}}
+	on:opened={() => (state = 'showing-todo-tags')}
+	on:closed={() => (state = 'none')}
+>
+	<TodoTags slot="body" {todo} enabledFeatures={enabledTodoTagFeatures} on:addTag on:editTag
+	></TodoTags>
+</Modal>
 
 <Modal
 	class="cursor-default border border-success border-opacity-20"

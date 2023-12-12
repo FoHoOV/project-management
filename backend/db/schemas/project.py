@@ -55,7 +55,7 @@ class PartialTodoCategory(BaseModel):
         from_attributes = True
 
 
-class PartialTag(BaseModel):
+class ProjectPartialTag(BaseModel):
     id: int
     name: str
 
@@ -66,6 +66,6 @@ class Project(ProjectBase):
     description: str
     users: list[PartialUser]
     todo_categories: list[PartialTodoCategory]
-    tags: list[PartialTag]
+    tags: list[ProjectPartialTag]
     done_todos_count: int
     pending_todos_count: int

@@ -1,52 +1,47 @@
 <script lang="ts" context="module">
-	export type Feature = 'create-comment' | 'edit-comment';
+	export type Feature = 'add-tag' | 'edit-tag';
 </script>
 
 <script script lang="ts">
 	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
-	import { TodoItemCommentClient } from '$lib/client-wrapper/clients';
+	import { TagClient, TodoItemCommentClient } from '$lib/client-wrapper/clients';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 	import Fa from 'svelte-fa';
-	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faEdit,
+		faPenNib,
+		faPlus,
+		faPlusCircle,
+		faTrashCan
+	} from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
 	import todoComments from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
+	import type { TodoItem, TodoItemPartialTag } from '$lib/generated-client';
+	import todos from '$lib/stores/todos/todos';
 
-	export let todoId: number;
+	export let todo: TodoItem;
 	export let enabledFeatures: Feature[] | null = null;
-
-	export async function refreshComments() {
-		await callServiceInClient({
-			serviceCall: async () => {
-				const result = await TodoItemCommentClient({
-					token: $page.data.token
-				}).listTodoItemComment(todoId);
-				state = 'none';
-				todoComments.setOpenedTodoComments(result);
-			},
-			errorCallback: async (e) => {
-				apiErrorTitle = e.message;
-				state = 'none';
-			}
-		});
-	}
 
 	let state: 'calling-service' | 'none' = 'calling-service';
 	let apiErrorTitle: string | null = null;
 
 	const dispatch = createEventDispatcher<{
-		editComment: { comment: TodoComment };
-		createComment: { todoId: number };
+		editTag: { tag: TodoItemPartialTag };
+		addTag: { todo: TodoItem };
 	}>();
 
-	async function handleDeleteComment(comment: TodoComment) {
+	async function handleDetachTag(tag: TodoItemPartialTag) {
 		await callServiceInClient({
 			serviceCall: async () => {
-				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
-				todoComments.deleteComment(comment);
+				await TagClient({ token: $page.data.token }).detachFromTodoTag({
+					tag_id: tag.id,
+					todo_id: todo.id
+				});
+				todos.detachTag(todo.id, tag);
 				state = 'none';
 			},
 			errorCallback: async (e) => {
@@ -56,12 +51,26 @@
 		});
 	}
 
-	function handleCreateComment() {
-		dispatch('createComment', { todoId: todoId });
+	async function handleDeleteTag(tag: TodoItemPartialTag) {
+		await callServiceInClient({
+			serviceCall: async () => {
+				await TagClient({ token: $page.data.token }).deleteTag(tag);
+				todos.deleteTag(tag);
+				state = 'none';
+			},
+			errorCallback: async (e) => {
+				apiErrorTitle = e.message;
+				state = 'none';
+			}
+		});
 	}
 
-	function handleEditComment(comment: TodoComment) {
-		dispatch('editComment', { comment: comment });
+	function handleAddTag() {
+		dispatch('addTag', { todo: todo });
+	}
+
+	function handleEditTag(tag: TodoItemPartialTag) {
+		dispatch('editTag', { tag: tag });
 	}
 </script>
 
@@ -69,42 +78,42 @@
 	<Spinner visible={state === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
-		on:click={handleCreateComment}
+		on:click={handleAddTag}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!enabledFeatures?.includes('create-comment')}
+		class:hidden={!enabledFeatures?.includes('add-tag')}
 	>
 		<Fa icon={faPlus} />
-		<p>add comment</p>
+		<p>add tag</p>
 	</button>
-	{#if $todoComments.length == 0 || $todoComments[0].todo_id != todoId}
+	{#if todo.tags.length == 0}
 		<div class="my-5 flex flex-row items-center gap-2">
 			<Fa icon={faPlusCircle} />
-			<p class="break-words text-lg">create your first comments using the plus sign</p>
+			<p class="break-words text-lg">add tags using the plus sign above</p>
 		</div>
 	{:else}
-		{#each $todoComments as comment (comment.id)}
+		{#each todo.tags as tag (tag.id)}
 			<div
 				class="card mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
 				<div class="card-body">
 					<div class="card-actions justify-end">
-						<button
-							class="btn btn-square btn-error btn-sm"
-							on:click={() => handleDeleteComment(comment)}
-						>
+						<button class="btn btn-square btn-error btn-sm" on:click={() => handleDeleteTag(tag)}>
 							<Fa icon={faTrashCan}></Fa>
+						</button>
+						<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>
+							<Fa icon={faPenNib}></Fa>
 						</button>
 						<button
 							class="btn btn-square btn-info btn-sm"
-							class:hidden={!enabledFeatures?.includes('edit-comment')}
-							on:click={() => handleEditComment(comment)}
+							class:hidden={!enabledFeatures?.includes('edit-tag')}
+							on:click={() => handleEditTag(tag)}
 						>
 							<Fa icon={faEdit}></Fa>
 						</button>
 					</div>
 					<p class="whitespace-pre-wrap break-words font-bold">
-						{comment.message}
+						{tag.name}
 					</p>
 				</div>
 			</div>
