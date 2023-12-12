@@ -20,6 +20,16 @@ from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
 def create(db: Session, tag: TagCreate, user_id: int):
     validate_project_belongs_to_user(db, tag.project_id, user_id, user_id, True)
 
+    tag_already_exists = False
+    try:
+        validate_tag_belongs_to_user_by_name(db, tag.name, user_id)
+        tag_already_exists = True
+    except UserFriendlyError:
+        pass
+
+    if tag_already_exists:
+        raise UserFriendlyError("This tag already exists for this project")
+
     db_item = Tag(**tag.model_dump())
     db.add(db_item)
 
@@ -65,6 +75,7 @@ def delete(db: Session, tag: TagDelete, user_id: int):
 
 
 def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
+    validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
     validate_tag_belongs_to_user_by_id(db, association.tag_id, user_id)
 
     tag_already_exists_for_todo = (
@@ -91,6 +102,7 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
 
 
 def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: int):
+    validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
     validate_tag_belongs_to_user_by_id(db, association.tag_id, user_id)
 
     affected_columns = (
