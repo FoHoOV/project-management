@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
 from db.models.todo_item_comments import TodoItemComment
 from db.models.todo_item_order import TodoItemOrder
+from typing import List
 
 
 class TodoItem(BasesWithCreatedDate):
