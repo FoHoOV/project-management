@@ -159,6 +159,36 @@ const updateTag = (tag: TodoItemPartialTag) => {
 	});
 };
 
+const increaseTodoCommentsCounter = (todoId: number) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				if (todo.id !== todoId) {
+					return todo;
+				}
+				todo.comments_count += 1;
+				return todo;
+			});
+			return category;
+		});
+	});
+};
+
+const decreaseTodoCommentsCounter = (todoId: number) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				if (todo.id !== todoId) {
+					return todo;
+				}
+				todo.comments_count -= 1;
+				return todo;
+			});
+			return category;
+		});
+	});
+};
+
 const updateTodoSort = (
 	movingElement: TodoItem,
 	movingElementNewCategoryId: number,
@@ -290,6 +320,8 @@ export default {
 	updateTag,
 	updateTodoSort,
 	updateCategoriesSort,
+	increaseTodoCommentsCounter,
+	decreaseTodoCommentsCounter,
 
 	removeCategory,
 	removeTodo,

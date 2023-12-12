@@ -247,7 +247,7 @@
 				on:click={handleAttachToProject}
 			>
 				<Fa icon={faMapPin} />
-				Add to project
+				Attach to project
 			</button>
 		</div>
 		{#if category.items.length > 0}

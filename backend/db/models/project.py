@@ -48,7 +48,7 @@ class Project(BasesWithCreatedDate):
             select(Project)
             .join(Project.todo_categories)
             .join(TodoCategory.items)
-            .where(TodoItem.is_done == True)
+            .where(TodoItem.is_done == True, Project.id == cls.id)
         ).label("done_todos")
 
     @hybrid_property
@@ -71,5 +71,5 @@ class Project(BasesWithCreatedDate):
             select(Project)
             .join(Project.todo_categories)
             .join(TodoCategory.items)
-            .where(TodoItem.is_done == False)
+            .where(TodoItem.is_done == False, Project.id == cls.id)
         ).label("pending_todos")

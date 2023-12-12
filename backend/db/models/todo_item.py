@@ -1,10 +1,11 @@
-from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, String, func, select
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
 from db.models.todo_item_comments import TodoItemComment
 from db.models.todo_item_order import TodoItemOrder
+from sqlalchemy.ext.hybrid import hybrid_property
 from typing import List
 
 
@@ -23,7 +24,7 @@ class TodoItem(BasesWithCreatedDate):
         back_populates="items",
         single_parent=True,
     )
-    comments: Mapped[TodoItemComment] = relationship(
+    comments: Mapped[List[TodoItemComment]] = relationship(
         "TodoItemComment",
         foreign_keys=[TodoItemComment.todo_id],
         back_populates="todo",
@@ -39,3 +40,15 @@ class TodoItem(BasesWithCreatedDate):
         back_populates="todo",
         cascade="all, delete-orphan",
     )
+
+    @hybrid_property
+    def comments_count(self):  # type: ignore
+        return len(self.comments)
+
+    @comments_count.expression
+    def comments_count(cls):
+        return func.count(
+            select(TodoItem)
+            .join(TodoItem.comments)
+            .where(TodoItemComment.todo_id == cls.id)
+        ).label("done_todos")

@@ -204,10 +204,13 @@
 		<p class="truncate hover:text-clip">{todo.description}</p>
 
 		<div class="flex gap-2 self-end">
-			<button class="btn btn-info btn-outline btn-sm flex flex-row" on:click={handleShowComments}>
-				<Fa icon={faComment}></Fa>
-				<span>comments</span>
-			</button>
+			<div class="indicator self-end">
+				<span class="badge indicator-item badge-secondary">{todo.comments_count}</span>
+				<button class="btn btn-info btn-outline btn-sm" on:click={handleShowComments}>
+					<Fa icon={faComment}></Fa>
+					<span>comments</span>
+				</button>
+			</div>
 
 			<div class="indicator self-end">
 				<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>

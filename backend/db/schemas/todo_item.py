@@ -59,6 +59,7 @@ class TodoItem(TodoItemBase):
     id: int
     tags: list[TodoItemPartialTag]
     order: NullableOrderedItem | None
+    comments_count: int
 
     class Config:
         from_attributes = True
