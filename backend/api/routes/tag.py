@@ -69,4 +69,4 @@ def list(
     search: TagSearch = Depends(TagSearch),
     db: Session = Depends(get_db),
 ):
-    return tag_crud.list(db=db, search=search, user_id=current_user.id)
+    return tag_crud.search(db=db, search=search, user_id=current_user.id)

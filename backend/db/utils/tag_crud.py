@@ -29,7 +29,7 @@ def create(db: Session, tag: TagCreate, user_id: int):
     return db_item
 
 
-def list(db: Session, search: TagSearch, user_id: int):
+def search(db: Session, search: TagSearch, user_id: int):
     validate_tag_belongs_to_user_by_name(db, search.name, user_id)
 
     return (
