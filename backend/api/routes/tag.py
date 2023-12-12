@@ -39,7 +39,7 @@ def update(
     return tag_crud.edit(db=db, tag=tag, user_id=current_user.id)
 
 
-@router.post(path="/attach-to-todo", response_model=TagAttachToTodo)
+@router.post(path="/attach-to-todo", response_model=Tag)
 def attach_to_todo(
     current_user: Annotated[User, Depends(get_current_user)],
     association: TagAttachToTodo,

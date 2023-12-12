@@ -6,7 +6,10 @@ import type {
 	TodoCategoryCreate,
 	TodoCategoryAttachAssociation,
 	TodoCategoryUpdateItem,
-	TodoItemUpdateItem
+	TodoItemUpdateItem,
+	TagCreate,
+	TagUpdate,
+	TagAttachToTodo
 } from '$lib/generated-client';
 import type { TodoCommentDelete } from '../../../../lib/generated-client/zod/schemas';
 
@@ -67,3 +70,19 @@ export const createTodoCommentSchema = z.object({
 });
 
 ({}) as z.infer<typeof createTodoCommentSchema> satisfies TodoCommentCreate;
+
+export const addTagSchema = z.object({
+	name: z.string().min(1).max(30),
+	todo_id: z.number({ coerce: true }),
+	project_id: z.number({ coerce: true })
+});
+
+({}) as z.infer<typeof addTagSchema> satisfies TagCreate;
+({}) as z.infer<typeof addTagSchema> satisfies TagAttachToTodo;
+
+export const editTagSchema = z.object({
+	id: z.number({ coerce: true }),
+	name: z.string().min(1).max(30)
+});
+
+({}) as z.infer<typeof editTagSchema> satisfies TagUpdate;

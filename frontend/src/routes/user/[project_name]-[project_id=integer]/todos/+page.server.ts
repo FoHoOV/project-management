@@ -2,10 +2,12 @@ import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { convertFormDataToObject, namedActionResult, superFail } from '$lib/actions/form';
 import {
+	addTagSchema,
 	attachToProjectSchema,
 	createTodoCategorySchema,
 	createTodoCommentSchema,
 	createTodoItemSchema,
+	editTagSchema,
 	editTodoCategorySchema,
 	editTodoCommentSchema,
 	editTodoItemSchema
@@ -17,14 +19,24 @@ import {
 	TodoCategoryUpdateItem,
 	TodoItemUpdateItem,
 	TodoCommentCreate,
-	TodoCommentUpdate
+	TodoCommentUpdate,
+	TagCreate,
+	TagAttachToTodo,
+	TagUpdate
 } from '$lib/generated-client/zod/schemas';
-import { ErrorType, callService, callServiceInFormActions } from '$lib/client-wrapper';
+import {
+	ErrorType,
+	callService,
+	callServiceInFormActions,
+	superApplyAction
+} from '$lib/client-wrapper';
 import {
 	TodoItemClient,
 	TodoCategoryClient,
-	TodoItemCommentClient
+	TodoItemCommentClient,
+	TagClient
 } from '$lib/client-wrapper/clients';
+import { ErrorCode } from '$lib/generated-client/models';
 
 export const load = (async ({ locals, fetch, params }) => {
 	// https://github.com/sveltejs/kit/issues/9785
@@ -254,5 +266,75 @@ export const actions: Actions = {
 		});
 
 		return namedActionResult(result, 'editTodoComment');
+	},
+	addTag: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await addTagSchema.safeParseAsync(convertFormDataToObject(formData));
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TagClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).createTag({
+					...validationsResult.data
+				});
+			},
+			errorCallback: async (e) => {
+				if (
+					e.type == ErrorType.API_ERROR &&
+					e.code == ErrorCode.TagProjectAssociationAlreadyExists
+				) {
+					return await callServiceInFormActions({
+						serviceCall: async () => {
+							return await TagClient({
+								token: locals.token,
+								fetchApi: fetch
+							}).attachToTodoTag({
+								todo_id: validationsResult.data.todo_id,
+								name: validationsResult.data.name
+							});
+						},
+						errorSchema: TagAttachToTodo
+					});
+				}
+				return superApplyAction(e);
+			},
+			errorSchema: TagCreate
+		});
+
+		return namedActionResult(result, 'addTag');
+	},
+	editTag: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await editTagSchema.safeParseAsync(convertFormDataToObject(formData));
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TagClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).updateTag({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TagUpdate
+		});
+
+		return namedActionResult(result, 'editTag');
 	}
 } satisfies Actions;

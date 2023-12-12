@@ -16,7 +16,7 @@ class TagCreate(BaseModel):
 
 
 class TagAttachToTodo(BaseModel):
-    tag_id: int
+    name: str
     todo_id: int
 
 

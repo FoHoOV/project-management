@@ -79,13 +79,13 @@ def delete(db: Session, tag: TagDelete, user_id: int):
 
 def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
-    validate_tag_belongs_to_user_by_id(db, association.tag_id, user_id)
+    validate_tag_belongs_to_user_by_name(db, association.name, user_id)
 
     tag_already_exists_for_todo = (
-        db.query(TodoItem)
+        db.query(Tag)
+        .filter(Tag.name == association.name)
+        .join(Tag.todos)
         .filter(TodoItem.id == association.todo_id)
-        .join(TodoItem.tags)
-        .filter(Tag.id == association.tag_id)
         .count()
         > 0
     )
@@ -96,15 +96,25 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
             "this tag already belongs to this todo",
         )
 
-    db_item = TodoItemTagAssociation(
-        todo_id=association.todo_id, tag_id=association.tag_id
+    tag = (
+        db.query(Tag)
+        .filter(Tag.name == association.name)
+        .join(Tag.project)
+        .join(Project.users)
+        .filter(User.id == user_id)
+        .first()
     )
+
+    if tag is None:
+        raise
+
+    db_item = TodoItemTagAssociation(todo_id=association.todo_id, tag_id=tag.id)
     db.add(db_item)
 
     db.commit()
-    db.refresh(db_item)
+    db.refresh(tag)
 
-    return db_item
+    return tag
 
 
 def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: int):
