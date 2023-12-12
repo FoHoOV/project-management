@@ -67,6 +67,12 @@ def edit(db: Session, tag: TagUpdate, user_id: int):
     if db_item is None:
         raise
 
+    try:
+        validate_tag_belongs_to_user_by_name(db, tag.name, db_item.project_id, user_id)
+    except UserFriendlyError as ex:
+        if ex.code != ErrorCode.TAG_NOT_FOUND:
+            raise
+
     db_item.name = tag.name
 
     db.commit()
