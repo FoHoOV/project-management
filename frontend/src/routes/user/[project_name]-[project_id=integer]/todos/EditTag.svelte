@@ -4,13 +4,14 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
-	import { attachToProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
+	import { editTagSchema } from './validator';
 	import { page } from '$app/stores';
+	import type { TodoItemPartialTag } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import todos from '$lib/stores/todos';
 
 	export let form: ActionData;
-	export let categoryId: number;
+	export let tag: TodoItemPartialTag;
 
 	let formElement: HTMLFormElement;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
@@ -25,14 +26,11 @@
 </script>
 
 <form
-	action="{generateTodoListUrl(
-		$page.params.project_name,
-		$page.params.project_id
-	)}?/attachToProject"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTag"
 	use:superEnhance={{
-		validator: { schema: attachToProjectSchema },
+		validator: { schema: editTagSchema },
 		form: form,
-		action: 'attachToProject'
+		action: 'editTag'
 	}}
 	on:submitclienterror={(e) => {
 		formErrors = {
@@ -47,9 +45,8 @@
 	on:submitended={() => {
 		state = 'none';
 	}}
-	on:submitsucceeded={async () => {
-		// based on docs and on how invalidate works this doesn't do shit
-		await invalidate(`${generateTodoListUrl($page.params.project_name, $page.params.project_id)}`); // TODO: use stores/runes later
+	on:submitsucceeded={async (e) => {
+		todos.updateTag(e.detail.response);
 		resetForm();
 		state = 'submit-successful';
 	}}
@@ -61,23 +58,22 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'attached to project!' : ''}
+			message={state == 'submit-successful' ? 'tag edited!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput name="category_id" class="w-full" value={categoryId} errors={''} type="hidden" />
+		<FormInput class="hidden" type="hidden" name="id" value={tag.id} errors={''} />
 		<FormInput
-			name="project_id"
-			label="project id"
-			class="w-full"
+			name="name"
+			type="text"
 			autoFocus={true}
+			class="w-full"
+			value={tag.name}
 			hideLabel={true}
-			errors={typeof formErrors?.errors?.project_id === 'number'
-				? formErrors.errors.project_id.toString()
-				: formErrors?.errors?.project_id}
+			errors={formErrors?.errors?.message}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
-				text="add"
+				text="Edit"
 				class="btn-success flex-1"
 				type="submit"
 				loading={state == 'submitting'}

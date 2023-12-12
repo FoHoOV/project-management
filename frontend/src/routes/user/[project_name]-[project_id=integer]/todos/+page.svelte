@@ -14,11 +14,13 @@
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
 	import MultiModal from '$components/popups/MultiModal.svelte';
-	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
+	import type { TodoCategory, TodoItem, TodoItemPartialTag } from '$lib/generated-client/models';
 	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
 	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
-	
+	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
+	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
+
 	export let data: PageData;
 	export let form: ActionData;
 	export let state: 'loading' | 'none' = 'loading';
@@ -42,7 +44,9 @@
 			title: 'Edit todo category details'
 		},
 		{ component: EditTodoItem, name: 'edit-todo-item', title: 'Edit todo item' },
-		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' }
+		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' },
+		{ component: AddTag, name: 'add-tag', title: 'Add a new tag to this todo item' },
+		{ component: EditTag, name: 'edit-tag', title: "Edit this tag's name" }
 	] as const;
 
 	let selectedActionProps: ComponentProps<any> | null = null;
@@ -88,6 +92,16 @@
 		modals.show('edit-todo-comment');
 	}
 
+	function handleAddTag(e: CustomEvent<{ todo: TodoItem }>) {
+		selectedActionProps = { todoId: e.detail.todo.id };
+		modals.show('add-tag');
+	}
+
+	function handleEditTag(e: CustomEvent<{ tag: TodoItemPartialTag }>) {
+		selectedActionProps = { tag: e.detail.tag };
+		modals.show('edit-tag');
+	}
+
 	onMount(() => {
 		if (!data.response) {
 			state = 'none';
@@ -120,7 +134,9 @@
 							'edit-todo-category',
 							'edit-todo-item',
 							'create-comment',
-							'edit-comment'
+							'edit-comment',
+							'add-tag',
+							'edit-tag'
 						]}
 						on:createTodoItem={handleCreateTodoItem}
 						on:editTodoItem={handleEditTodoItem}
@@ -128,6 +144,8 @@
 						on:attachToProject={handleAttachToProject}
 						on:editComment={handleEditTodoComment}
 						on:createComment={handleCreateComment}
+						on:addTag={handleAddTag}
+						on:editTag={handleEditTag}
 					></TodoList>
 				</div>
 			{/each}
