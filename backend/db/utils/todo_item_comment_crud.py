@@ -63,10 +63,12 @@ def validate_todo_comment_belongs_to_user(
         db.query(TodoItemComment).filter(TodoItemComment.id == todo_comment_id).first()
     )
 
+    error = UserFriendlyError("todo comment not found or doesn't belong to user")
+
     if todo_comment is None:
-        raise UserFriendlyError("todo comment not found or doesn't belong to user")
+        raise error
 
     try:
         validate_todo_item_belongs_to_user(db, todo_comment.todo_id, user_id)
     except:
-        raise UserFriendlyError("todo comment not found or doesn't belong to user")
+        raise error
