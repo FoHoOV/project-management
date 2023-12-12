@@ -10,7 +10,7 @@ class Tag(BasesWithCreatedDate):
     __tablename__ = "tag"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title: Mapped[str] = mapped_column(String(50))
+    name: Mapped[str] = mapped_column(String(50))
     project_id: Mapped[int] = mapped_column(
         ForeignKey("project.id", ondelete="CASCADE")
     )
