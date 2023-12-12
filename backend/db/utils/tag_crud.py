@@ -69,6 +69,10 @@ def edit(db: Session, tag: TagUpdate, user_id: int):
 
     try:
         validate_tag_belongs_to_user_by_name(db, tag.name, db_item.project_id, user_id)
+        raise UserFriendlyError(
+            ErrorCode.TAG_PROJECT_ASSOCIATION_ALREADY_EXISTS,
+            "This tag already exists, either remove this tag and add the appropriate one, or delete the old and then retry renaming this one",
+        )
     except UserFriendlyError as ex:
         if ex.code != ErrorCode.TAG_NOT_FOUND:
             raise
