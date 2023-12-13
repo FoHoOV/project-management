@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "run open-api:generate:shared && vite build",
 		"preview": "vite preview --port 5174",
 		"test": "npm run test:integration && npm run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -13,12 +13,17 @@
 		"format": "prettier --plugin-search-dir . --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"open-api:generate:windows": "(rmdir /s /q .\\src\\lib\\generated-client || true) && npm run open-api:generate:shared && npm run open-api:zod:windows",
-		"open-api:zod:windows": "mkdir .\\src\\lib\\generated-client\\zod && npm run open-api:zod:shared",
-		"open-api:generate:linux": "rm -rf ./src/lib/generated-client && npm run open-api:generate:shared && npm run open-api:zod:linux",
-		"open-api:zod:linux": "mkdirp ./src/lib/generated-client/zod && npm run open-api:zod:shared",
-		"open-api:generate:shared": "openapi-generator-cli generate --generator-key typescript-fetch ",
-		"open-api:zod:shared": "typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js"
+		"open-api:generate:shared": "node generate-openapitools-json.js && -generator-cli generate --generator-key typescript-fetch",
+		"open-api:generate:linux:dev": "rm -rf ./src/lib/generated-client && npm run open-api:generate:shared && npm run open-api:zod:linux:dev",
+		"open-api:generate:linux:publish": "rm -rf ./src/lib/generated-client && npm run open-api:generate:shared && npm run open-api:zod:linux:publish",
+		"open-api:generate:windows:dev": "(rmdir /s /q .\\src\\lib\\generated-client || true) && npm run open-api:generate:shared && npm run open-api:zod:windows:dev",
+		"open-api:generate:windows:publish": "(rmdir /s /q .\\src\\lib\\generated-client || true) && npm run open-api:generate:shared && npm run open-api:zod:windows:publish",
+		"open-api:zod:shared:dev": "typed-openapi http://127.0.0.1:8080/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js",
+		"open-api:zod:shared:publish": "typed-openapi https://todos-service-qsvd.onrender.com/openapi.json -o ./src/lib/generated-client/zod/schemas.ts --runtime zod && node extract-zod.js",
+		"open-api:zod:linux:dev": "mkdirp ./src/lib/generated-client/zod && npm run open-api:zod:shared:dev",
+		"open-api:zod:linux:publish": "mkdirp ./src/lib/generated-client/zod && npm run open-api:zod:shared:publish",
+		"open-api:zod:windows:dev": "mkdir .\\src\\lib\\generated-client\\zod && npm run open-api:zod:shared:dev",
+		"open-api:zod:windows:publish": "mkdir .\\src\\lib\\generated-client\\zod && npm run open-api:zod:shared:publish"
 	},
 	"devDependencies": {
 		"@openapitools/openapi-generator-cli": "^2.7.0",

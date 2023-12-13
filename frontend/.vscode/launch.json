@@ -11,26 +11,14 @@
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate:linux",
-			"name": "npm:open-api:generate:linux",
+			"command": "npm run open-api:generate:linux:dev",
+			"name": "npm:open-api:generate:linux:dev",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate:windows",
-			"name": "npm:open-api:generate:windows",
-			"request": "launch",
-			"type": "node-terminal"
-		},
-		{
-			"command": "npm run open-api:zod:linux",
-			"name": "npm:open-api:zod:linux",
-			"request": "launch",
-			"type": "node-terminal"
-		},
-		{
-			"command": "npm run open-api:zod",
-			"name": "npm:open-api:zod:windows",
+			"command": "npm run open-api:generate:windows:dev",
+			"name": "npm:open-api:generate:windows:dev",
 			"request": "launch",
 			"type": "node-terminal"
 		},
