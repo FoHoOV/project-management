@@ -267,37 +267,32 @@ export function removeElementFromSortedList<T extends { id: number }>(
 	setLeftId(deletingElement, null);
 	setRightId(deletingElement, null);
 
-	let existingItemPointingToCurrent = elements.find(
-		(element) => getRightId(element) == deletingElementId
-	);
+	elements
+		.filter((element) => getRightId(element) == deletingElementId)
+		.forEach((element) => {
+			setRightId(element, deletingElementRightId);
+		});
 
-	if (existingItemPointingToCurrent) {
-		setRightId(existingItemPointingToCurrent, deletingElementRightId);
-	}
-
-	existingItemPointingToCurrent = elements.find(
-		(element) => getLeftId(element) == deletingElementId
-	);
-	if (existingItemPointingToCurrent) {
-		setLeftId(existingItemPointingToCurrent, deletingElementLeftId);
-	}
+	elements
+		.filter((element) => getLeftId(element) == deletingElementId)
+		.forEach((element) => {
+			setLeftId(element, deletingElementLeftId);
+		});
 
 	if (deletingElementLeftId !== null) {
-		const elementPointingToNewLeft = elements.find(
-			(element) => element.id == deletingElementLeftId
-		);
-		if (elementPointingToNewLeft) {
-			setRightId(elementPointingToNewLeft, deletingElementRightId);
-		}
+		elements
+			.filter((element) => element.id == deletingElementLeftId)
+			.forEach((element) => {
+				setRightId(element, deletingElementRightId);
+			});
 	}
 
 	if (deletingElementRightId !== null) {
-		const elementPointingToNewRight = elements.find(
-			(element) => element.id == deletingElementRightId
-		);
-		if (elementPointingToNewRight) {
-			setLeftId(elementPointingToNewRight, deletingElementLeftId);
-		}
+		elements
+			.filter((element) => element.id == deletingElementRightId)
+			.forEach((element) => {
+				setLeftId(element, deletingElementLeftId);
+			});
 	}
 
 	console.log(JSON.stringify(elements));
