@@ -234,7 +234,7 @@
 		<Alert type="error" message={apiErrorTitle} />
 
 		<div class="card-title flex w-full justify-between">
-			<div class="flex gap-2">
+			<div class="flex w-full gap-2">
 				<div class="tooltip" data-tip="todo id">
 					<span>#{todo.id}</span>
 				</div>
