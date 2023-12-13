@@ -274,7 +274,7 @@ def _validate_dependencies_are_resolved(db: Session, todo: TodoItem, user_id: in
         except UserFriendlyError as e:
             raise UserFriendlyError(
                 ErrorCode.TODO_NOT_FOUND,
-                f"One or more dependencies don't belong to you anymore, please consider removing the dependency: {dependency.todo_id}, {dependency.dependant_todo_title}",
+                f"One or more dependencies don't belong to you anymore, please consider removing the dependency: #{dependency.todo_id} - {dependency.dependant_todo_title}",
             )
         if not dependency.dependant_todo.is_done:
             raise UserFriendlyError(
