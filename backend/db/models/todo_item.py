@@ -4,6 +4,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
 from db.models.todo_item_comments import TodoItemComment
+from db.models.todo_item_dependency import TodoItemDependency
 from db.models.todo_item_order import TodoItemOrder
 from sqlalchemy.ext.hybrid import hybrid_property
 from typing import List
@@ -34,7 +35,7 @@ class TodoItem(BasesWithCreatedDate):
         secondary="todo_item_tag_association", back_populates="todos"
     )
     dependencies: Mapped[List["TodoItemDependency"]] = relationship(  # type: ignore
-        secondary="todo_item_dependency",
+        foreign_keys=[TodoItemDependency.todo_id],
         back_populates="todo",
         cascade="all, delete-orphan",
     )

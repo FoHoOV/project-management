@@ -114,7 +114,8 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         )
 
     if todo.is_done is not None:
-        _validate_dependencies_are_resolved(db_item)
+        if todo.is_done:
+            _validate_dependencies_are_resolved(db_item)
         db_item.is_done = todo.is_done
 
     if todo.description is not None:
@@ -242,6 +243,7 @@ def remove_todo_dependency(
     validate_todo_item_belongs_to_user(db, db_item.todo_id, user_id)
 
     db.delete(db_item)
+    db.commit()
 
 
 def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
@@ -263,7 +265,7 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
 
 def _validate_dependencies_are_resolved(todo: TodoItem):
     for dependency in todo.dependencies:
-        if not dependency.todo.is_done:
+        if not dependency.dependant_todo.is_done:
             raise UserFriendlyError(
                 ErrorCode.DEPENDENCIES_NOT_RESOLVED,
                 "Cannot change todo status, because dependant todos are not done yet",

@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 import { convertFormDataToObject, namedActionResult, superFail } from '$lib/actions/form';
 import {
 	addTagSchema,
+	addTodoItemDependencySchema,
 	attachToProjectSchema,
 	createTodoCategorySchema,
 	createTodoCommentSchema,
@@ -22,7 +23,8 @@ import {
 	TodoCommentUpdate,
 	TagCreate,
 	TagAttachToTodo,
-	TagUpdate
+	TagUpdate,
+	TodoItemAddDependency
 } from '$lib/generated-client/zod/schemas';
 import {
 	ErrorType,
@@ -314,5 +316,32 @@ export const actions: Actions = {
 		});
 
 		return namedActionResult(result, 'editTag');
+	},
+	addTodoItemDependency: async ({ request, locals, fetch }) => {
+		const formData = await request.formData();
+
+		const validationsResult = await addTodoItemDependencySchema.safeParseAsync(
+			convertFormDataToObject(formData)
+		);
+
+		if (!validationsResult.success) {
+			return superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			});
+		}
+		const result = await callServiceInFormActions({
+			serviceCall: async () => {
+				return await TodoItemClient({
+					token: locals.token,
+					fetchApi: fetch
+				}).addTodoItemDependencyTodoItem({
+					...validationsResult.data
+				});
+			},
+			errorSchema: TodoItemAddDependency
+		});
+
+		return namedActionResult(result, 'addTodoItemDependency');
 	}
 } satisfies Actions;

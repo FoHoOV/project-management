@@ -9,7 +9,7 @@ router = APIRouter(prefix="/error", tags=["error"])
 
 class UserFriendlyErrorSchema(BaseModel):
     code: ErrorCode
-    description: str
+    message: str
 
 
 # a hack just to include these types in the generated OpenApi json

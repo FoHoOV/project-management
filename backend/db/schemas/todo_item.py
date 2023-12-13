@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from db.schemas.base import NullableOrderedItem
 
@@ -53,12 +53,19 @@ class TodoItemAddDependency(BaseModel):
     todo_id: int
     dependant_todo_id: int
 
+    @model_validator(mode="after")
+    def check_todo_ids(self) -> "TodoItemAddDependency":
+        if self.todo_id == self.dependant_todo_id:
+            raise ValueError("todo id and dependant todo id cannot be the same")
+        return self
+
 
 class TodoItemRemoveDependency(BaseModel):
     dependency_id: int
 
 
 class TodoItemPartialDependency(BaseModel):
+    id: int
     dependant_todo_id: int
 
 

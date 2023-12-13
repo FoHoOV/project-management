@@ -3,7 +3,8 @@ import type {
 	NullableOrderedItem,
 	TodoItemPartialTag,
 	TodoCategory,
-	TodoItem
+	TodoItem,
+	TodoItemPartialDependency
 } from '$lib/generated-client/models';
 import {
 	getLastTodoCategoryInSortedListExceptCurrent,
@@ -94,6 +95,36 @@ const updateTodo = (todo: TodoItem) => {
 				return todo;
 			});
 			category.items = sortedTodos(category.items);
+			return category;
+		});
+	});
+};
+
+const addDependency = (todoId: number, dependency: TodoItemPartialDependency) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				if (todo.id !== todoId) {
+					return todo;
+				}
+				todo.dependencies.push(dependency);
+				return todo;
+			});
+			return category;
+		});
+	});
+};
+
+const removeDependency = (todoId: number, dependency: TodoItemPartialDependency) => {
+	_update((categories) => {
+		return categories.map((category) => {
+			category.items.forEach((todo) => {
+				if (todo.id !== todoId) {
+					return todo;
+				}
+				todo.dependencies = todo.dependencies.filter((value) => value.id != dependency.id);
+				return todo;
+			});
 			return category;
 		});
 	});
@@ -314,6 +345,7 @@ export default {
 	addTodo,
 	addTag,
 	addCategory,
+	addDependency,
 
 	updateCategory,
 	updateTodo,
@@ -327,6 +359,7 @@ export default {
 	removeTodo,
 	detachTag,
 	deleteTag,
+	removeDependency,
 
 	clearTodoCategories,
 	subscribe

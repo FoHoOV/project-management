@@ -20,6 +20,7 @@
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
+	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -46,7 +47,12 @@
 		{ component: EditTodoItem, name: 'edit-todo-item', title: 'Edit todo item' },
 		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' },
 		{ component: AddTag, name: 'add-tag', title: 'Add a new tag to this todo item' },
-		{ component: EditTag, name: 'edit-tag', title: "Edit this tag's name" }
+		{ component: EditTag, name: 'edit-tag', title: "Edit this tag's name" },
+		{
+			component: AddTodoItemDependency,
+			name: 'add-todo-item-dependency',
+			title: 'Add todo item dependency'
+		}
 	] as const;
 
 	let selectedActionProps: ComponentProps<any> | null = null;
@@ -102,6 +108,11 @@
 		modals.show('edit-tag');
 	}
 
+	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoItem }>) {
+		selectedActionProps = { todoId: e.detail.todo.id };
+		modals.show('add-todo-item-dependency');
+	}
+
 	onMount(() => {
 		if (!data.response) {
 			state = 'none';
@@ -137,7 +148,8 @@
 							'edit-comment',
 							'add-tag',
 							'edit-tag',
-							'update-todo-item-order'
+							'update-todo-item-order',
+							'add-dependency'
 						]}
 						on:createTodoItem={handleCreateTodoItem}
 						on:editTodoItem={handleEditTodoItem}
@@ -147,6 +159,7 @@
 						on:createComment={handleCreateComment}
 						on:addTag={handleAddTag}
 						on:editTag={handleEditTag}
+						on:addDependency={handleAddTodoItemDependency}
 					></TodoList>
 				</div>
 			{/each}

@@ -15,12 +15,15 @@ class TodoItemDependency(BasesWithCreatedDate):
         ForeignKey("todo_item.id", ondelete="CASCADE")
     )
 
-    todo: Mapped[List["TodoItem"]] = relationship(  # type: ignore
-        "TodoItem", back_populates="dependencies", foreign_keys=[todo_id]
+    todo: Mapped["TodoItem"] = relationship(  # type: ignore
+        "TodoItem",
+        back_populates="dependencies",
+        foreign_keys=[todo_id],
+        single_parent=True,
     )
 
-    dependant_todo: Mapped[List["TodoItem"]] = relationship(  # type: ignore
-        "TodoItem", foreign_keys=[dependant_todo_id]
+    dependant_todo: Mapped["TodoItem"] = relationship(  # type: ignore
+        "TodoItem", foreign_keys=[dependant_todo_id], single_parent=True
     )
 
     __table_args__ = (UniqueConstraint("todo_id", "dependant_todo_id"),)

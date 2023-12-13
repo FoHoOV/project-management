@@ -7,11 +7,10 @@ import type {
 	TodoCategoryAttachAssociation,
 	TodoCategoryUpdateItem,
 	TodoItemUpdateItem,
-	TagCreate,
 	TagUpdate,
-	TagAttachToTodo
+	TagAttachToTodo,
+	TodoItemAddDependency
 } from '$lib/generated-client';
-import type { TodoCommentDelete } from '../../../../lib/generated-client/zod/schemas';
 
 export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),
@@ -86,3 +85,10 @@ export const editTagSchema = z.object({
 });
 
 ({}) as z.infer<typeof editTagSchema> satisfies TagUpdate;
+
+export const addTodoItemDependencySchema = z.object({
+	todo_id: z.number({ coerce: true }),
+	dependant_todo_id: z.number({ coerce: true })
+});
+
+({}) as z.infer<typeof addTodoItemDependencySchema> satisfies TodoItemAddDependency;

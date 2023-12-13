@@ -52,7 +52,8 @@
 			feature == 'edit-todo-item' ||
 			feature == 'add-tag' ||
 			feature == 'edit-tag' ||
-			feature == 'update-todo-item-order'
+			feature == 'update-todo-item-order' ||
+			feature == 'add-dependency'
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';
@@ -268,6 +269,7 @@
 						on:editComment
 						on:addTag
 						on:editTag
+						on:addDependency
 					></TodoItemComponent>
 				</div>
 			{/each}
