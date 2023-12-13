@@ -87,18 +87,22 @@
 
 	async function handleChangeDoneStatus() {
 		state = 'calling-service';
+		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					...todo,
-					is_done: !todo.is_done
+					is_done: !savedTodoStatus
 				});
-				todo.is_done = !todo.is_done;
-				todos.updateTodo({ ...todo, is_done: !todo.is_done });
+				todo.is_done = !savedTodoStatus;
+				todos.updateTodo({ ...todo, is_done: !savedTodoStatus });
 				state = 'none';
 			},
 			errorCallback: async (e) => {
-				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
+				if (
+					e.type == ErrorType.API_ERROR &&
+					(e.code == ErrorCode.DependenciesNotResolved || e.code == ErrorCode.TodoNotFound)
+				) {
 					toasts.addToast({
 						type: 'error',
 						message: e.message,

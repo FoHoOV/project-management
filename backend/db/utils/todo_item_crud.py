@@ -115,7 +115,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
     if todo.is_done is not None:
         if todo.is_done:
-            _validate_dependencies_are_resolved(db_item)
+            _validate_dependencies_are_resolved(db, db_item, user_id)
         db_item.is_done = todo.is_done
 
     if todo.description is not None:
@@ -265,8 +265,17 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         )
 
 
-def _validate_dependencies_are_resolved(todo: TodoItem):
+def _validate_dependencies_are_resolved(db: Session, todo: TodoItem, user_id: int):
     for dependency in todo.dependencies:
+        try:
+            validate_todo_item_belongs_to_user(
+                db, dependency.dependant_todo_id, user_id
+            )
+        except UserFriendlyError as e:
+            raise UserFriendlyError(
+                ErrorCode.TODO_NOT_FOUND,
+                f"One or more dependencies don't belong to you anymore, please consider removing the dependency: {dependency.todo_id}, {dependency.dependant_todo_title}",
+            )
         if not dependency.dependant_todo.is_done:
             raise UserFriendlyError(
                 ErrorCode.DEPENDENCIES_NOT_RESOLVED,
