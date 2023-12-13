@@ -109,7 +109,7 @@
 	}
 
 	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoItem }>) {
-		selectedActionProps = { todoId: e.detail.todo.id };
+		selectedActionProps = { todo: e.detail.todo };
 		modals.show('add-todo-item-dependency');
 	}
 

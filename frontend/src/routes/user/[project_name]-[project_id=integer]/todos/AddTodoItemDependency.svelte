@@ -8,9 +8,10 @@
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import todos from '$lib/stores/todos/todos';
+	import type { TodoItem } from '$lib/generated-client/models';
 
 	export let form: ActionData;
-	export let todoId: number;
+	export let todo: TodoItem;
 
 	let formElement: HTMLFormElement;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
@@ -48,7 +49,7 @@
 		state = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		todos.addDependency(todoId, e.detail.response);
+		todos.addDependency(todo.id, e.detail.response);
 		resetForm();
 		state = 'submit-successful';
 	}}
@@ -60,14 +61,16 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'Dependency added!' : ''}
+			message={state == 'submit-successful'
+				? 'Dependency added! Note that current todo status changed to `UNDONE`'
+				: ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
 			name="todo_id"
 			class="w-full"
 			hideLabel={true}
-			value={todoId}
+			value={todo.id}
 			errors={''}
 			type="hidden"
 		/>

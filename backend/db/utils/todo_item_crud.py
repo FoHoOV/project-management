@@ -216,7 +216,9 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
             ErrorCode.TODO_ITEM_DEPENDENCY_ALREADY_EXISTS,
             "This todo item dependency already exists",
         )
-
+    db.query(TodoItem).filter(TodoItem.id == dependency.todo_id).update(
+        {"is_done": False}
+    )
     db_item = TodoItemDependency(**dependency.model_dump())
     db.add(db_item)
 
