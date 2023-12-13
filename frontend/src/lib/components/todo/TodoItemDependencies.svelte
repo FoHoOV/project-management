@@ -79,8 +79,11 @@
 					>
 						<Fa icon={faTrashCan}></Fa>
 					</button>
-					<p class="whitespace-pre-wrap break-words font-bold">
-						#{dependency.dependant_todo_id}
+					<p class="truncate whitespace-pre-wrap break-words">
+						<span class="text-lg font-bold">
+							#{dependency.dependant_todo_id}
+						</span>
+						{dependency.dependant_todo_title}
 					</p>
 				</div>
 			</div>

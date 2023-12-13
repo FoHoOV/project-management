@@ -71,6 +71,7 @@ class TodoItemRemoveDependency(BaseModel):
 class TodoItemPartialDependency(BaseModel):
     id: int
     dependant_todo_id: int
+    dependant_todo_title: str
 
 
 class TodoItemPartialTag(BaseModel):

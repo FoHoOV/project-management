@@ -1,9 +1,9 @@
-from typing import List
-from sqlalchemy import ForeignKey, String, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, func, select
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class TodoItemDependency(BasesWithCreatedDate):
@@ -27,3 +27,15 @@ class TodoItemDependency(BasesWithCreatedDate):
     )
 
     __table_args__ = (UniqueConstraint("todo_id", "dependant_todo_id"),)
+
+    @hybrid_property
+    def dependant_todo_title(self):  # type: ignore
+        return self.dependant_todo.title
+
+    @dependant_todo_title.expression
+    def dependant_todo_title(cls):
+        return (
+            select(TodoItemDependency.dependant_todo.title).where(
+                TodoItemDependency.id == cls.id
+            )
+        ).label("dependant_todo_title")

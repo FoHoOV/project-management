@@ -293,7 +293,7 @@
 		//@ts-ignore
 		//TODO: another ugly hack which will be solved by svelte5
 		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: false
+		draggable: true
 	}}
 	on:opened={() => (state = 'showing-todo-dependencies')}
 	on:closed={() => (state = 'none')}
@@ -315,7 +315,7 @@
 		//@ts-ignore
 		//TODO: another ugly hack which will be solved by svelte5
 		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: false
+		draggable: true
 	}}
 	on:opened={() => (state = 'showing-todo-tags')}
 	on:closed={() => (state = 'none')}
@@ -333,7 +333,7 @@
 		//@ts-ignore
 		//TODO: another ugly hack which will be solved by svelte5
 		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: false
+		draggable: true
 	}}
 	on:opened={() => (state = 'showing-todo-comments')}
 	on:closed={() => (state = 'none')}
