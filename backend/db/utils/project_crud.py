@@ -111,20 +111,15 @@ def delete_project(db: Session, project_id: int):
 
     # TODO: so what the fuck delete on cascade is for?? what da fak??
     # it doesn't work if i dont delete them myself! :|
-    categories_with_deleting_project_id_subquery = (
-        db.query(TodoCategory.id, TodoCategoryProjectAssociation.project_id)
+    categories_with_deleting_project_id = (
+        db.query(TodoCategory.id)
         .join(
             TodoCategoryProjectAssociation,
             TodoCategory.id == TodoCategoryProjectAssociation.category_id,
         )
+        .filter(TodoCategoryProjectAssociation.project_id == project_id)
         .group_by(TodoCategory.id)
         .having(func.count(TodoCategoryProjectAssociation.category_id) == 1)
-        .subquery()
-    )
-
-    categories_with_deleting_project_id = (
-        db.query(categories_with_deleting_project_id_subquery.c.id)
-        .filter(categories_with_deleting_project_id_subquery.c.project_id == project_id)
         .all()
     )
 
