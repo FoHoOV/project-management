@@ -135,7 +135,10 @@
 			<Empty text="Create your first todo list!" />
 		{:else}
 			{#each $todos as category (category.id)}
-				<div class="max-w-[27rem] shrink-0 basis-[27rem]" animate:flip={{ duration: 200 }}>
+				<div
+					class="max-w-[27rem] shrink-0 basis-[20rem] sm:basis-[27rem]"
+					animate:flip={{ duration: 200 }}
+				>
 					<TodoList
 						{category}
 						projectId={Number.parseInt($page.params.project_id)}
