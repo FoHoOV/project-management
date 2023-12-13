@@ -249,6 +249,7 @@ export async function callService<
 				});
 			}
 
+			// TODO: this is HTTPValidationError fix types based on this
 			const parsedApiError = await errorSchema?.strip().partial().safeParseAsync(response.detail);
 			if (parsedApiError?.success) {
 				return {
@@ -264,7 +265,7 @@ export async function callService<
 				};
 			}
 
-			const userFriendlyError = await UserFriendlyErrorSchema.safeParseAsync(response.detail);
+			const userFriendlyError = await UserFriendlyErrorSchema.safeParseAsync(response);
 			if (userFriendlyError.success) {
 				return {
 					success: false,
@@ -272,7 +273,7 @@ export async function callService<
 						type: ErrorType.API_ERROR,
 						status: e.response.status,
 						code: userFriendlyError.data.code,
-						message: userFriendlyError.data.description,
+						message: userFriendlyError.data.message,
 						response: response,
 						originalError: e
 					})

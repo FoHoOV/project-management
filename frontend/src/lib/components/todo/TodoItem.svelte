@@ -1,17 +1,25 @@
 <script lang="ts" context="module">
 	import type { Feature as TodoCommentFeature } from './TodoComments.svelte';
 	import type { Feature as TodoTagFeature } from './TodoTags.svelte';
+	import type { Feature as TodoDependencyFeature } from './TodoItemDependencies.svelte';
 	export type Feature =
 		| TodoCommentFeature
 		| TodoTagFeature
+		| TodoDependencyFeature
 		| 'edit-todo-item'
 		| 'update-todo-item-order';
 </script>
 
 <script lang="ts">
-	import { faComment, faEdit, faTags, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faComment,
+		faEdit,
+		faSitemap,
+		faTags,
+		faTrashCan
+	} from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
-	import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
+	import { ErrorCode, type TodoCategory, type TodoItem } from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
 	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -31,6 +39,9 @@
 	import TodoComments from './TodoComments.svelte';
 	import Modal from '$components/popups/Modal.svelte';
 	import TodoTags from './TodoTags.svelte';
+	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
+	import toasts from '$lib/stores/toasts/toasts';
+	import TodoItemDependencies from './TodoItemDependencies.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory | null = null;
@@ -52,17 +63,23 @@
 		(feature) => feature == 'edit-tag' || feature == 'add-tag'
 	) ?? null) as TodoTagFeature[] | null;
 
+	$: enabledTodoDependencyFeatures = (enabledFeatures?.filter(
+		(feature) => feature == 'add-dependency'
+	) ?? null) as TodoDependencyFeature[] | null;
+
 	let state:
 		| 'drop-zone-top-activated'
 		| 'drop-zone-bottom-activated'
 		| 'calling-service'
 		| 'showing-todo-comments'
 		| 'showing-todo-tags'
+		| 'showing-todo-dependencies'
 		| 'none' = 'none';
 	let apiErrorTitle: string | null;
 	let todoComments: TodoComments;
 	let todoCommentsModal: Modal;
 	let todoTagsModal: Modal;
+	let todoDependenciesModal: Modal;
 
 	const dispatch = createEventDispatcher<{
 		editTodoItem: { todo: TodoItem };
@@ -76,11 +93,21 @@
 					...todo,
 					is_done: !todo.is_done
 				});
+				todo.is_done = !todo.is_done;
 				todos.updateTodo({ ...todo, is_done: !todo.is_done });
 				state = 'none';
 			},
 			errorCallback: async (e) => {
-				apiErrorTitle = e.message;
+				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
+					toasts.addToast({
+						type: 'error',
+						message: e.message,
+						time: 6000
+					});
+					todo.is_done = false;
+				} else {
+					apiErrorTitle = e.message;
+				}
 				state = 'none';
 			}
 		});
@@ -169,6 +196,10 @@
 	function handleShowTags() {
 		todoTagsModal.show();
 	}
+
+	function handleShowDependencies() {
+		todoDependenciesModal.show();
+	}
 </script>
 
 <div
@@ -196,16 +227,19 @@
 		<Alert type="error" message={apiErrorTitle} />
 
 		<div class="card-title flex w-full justify-between">
-			<h1 class="truncate hover:text-clip">
-				{todo.title}
-			</h1>
+			<div class="flex gap-2">
+				<div class="tooltip" data-tip="todo id">
+					<span>#{todo.id}</span>
+				</div>
+				<h1 class="block max-w-full truncate hover:text-clip">{todo.title}</h1>
+			</div>
 			<div class="flex items-center justify-center gap-2">
 				<input
 					type="checkbox"
 					class="checkbox"
 					class:checkbox-success={todo.is_done}
 					class:checkbox-error={!todo.is_done}
-					checked={todo.is_done}
+					bind:checked={todo.is_done}
 					on:click={handleChangeDoneStatus}
 				/>
 				<button
@@ -238,8 +272,39 @@
 				</button>
 			</div>
 		</div>
+		<div class="flex gap-2 self-end">
+			<div class="indicator col-start-2 self-end">
+				<span class="badge indicator-item badge-secondary">{todo.dependencies.length}</span>
+				<button class="btn btn-info btn-outline btn-sm" on:click={handleShowDependencies}>
+					<Fa icon={faSitemap}></Fa>
+					<span>dependencies</span>
+				</button>
+			</div>
+		</div>
 	</div>
 </div>
+
+<Modal
+	class="cursor-default border border-success border-opacity-20"
+	wrapperClasses={state != 'showing-todo-dependencies' ? 'hidden' : ''}
+	title="Manage your dependencies here"
+	bind:this={todoDependenciesModal}
+	dialogProps={{
+		//@ts-ignore
+		//TODO: another ugly hack which will be solved by svelte5
+		ondragstart: 'event.preventDefault();event.stopPropagation();',
+		draggable: false
+	}}
+	on:opened={() => (state = 'showing-todo-dependencies')}
+	on:closed={() => (state = 'none')}
+>
+	<TodoItemDependencies
+		slot="body"
+		{todo}
+		enabledFeatures={enabledTodoDependencyFeatures}
+		on:addDependency
+	></TodoItemDependencies>
+</Modal>
 
 <Modal
 	class="cursor-default border border-success border-opacity-20"

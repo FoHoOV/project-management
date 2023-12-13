@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from enum import Enum
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from db.schemas.base import NullableOrderedItem
+from error.exceptions import ErrorCode, UserFriendlyError
 
 
 class SearchTodoStatus(Enum):
@@ -49,6 +50,29 @@ class SearchTodoItemParams:
     status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
+class TodoItemAddDependency(BaseModel):
+    todo_id: int
+    dependant_todo_id: int
+
+    @model_validator(mode="after")
+    def check_todo_ids(self) -> "TodoItemAddDependency":
+        if self.todo_id == self.dependant_todo_id:
+            raise UserFriendlyError(
+                ErrorCode.INVALID_INPUT,
+                "todo id and dependant todo id cannot be the same",
+            )
+        return self
+
+
+class TodoItemRemoveDependency(BaseModel):
+    dependency_id: int
+
+
+class TodoItemPartialDependency(BaseModel):
+    id: int
+    dependant_todo_id: int
+
+
 class TodoItemPartialTag(BaseModel):
     id: int
     name: str
@@ -58,6 +82,7 @@ class TodoItemPartialTag(BaseModel):
 class TodoItem(TodoItemBase):
     id: int
     tags: list[TodoItemPartialTag]
+    dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem | None
     comments_count: int
 

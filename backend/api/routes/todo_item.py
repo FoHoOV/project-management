@@ -4,13 +4,17 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from starlette.status import HTTP_200_OK
 
 from sqlalchemy.orm import Session
+from api import dependencies
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.todo_item import (
     SearchTodoItemParams,
     TodoItem,
+    TodoItemAddDependency,
     TodoItemCreate,
+    TodoItemPartialDependency,
+    TodoItemRemoveDependency,
     TodoItemUpdateItem,
     TodoItemDelete,
     TodoItemUpdateOrder,
@@ -58,6 +62,29 @@ def remove(
     db: Session = Depends(get_db),
 ):
     todo_item_crud.remove(db=db, todo=todo, user_id=current_user.id)
+    return Response(status_code=HTTP_200_OK)
+
+
+@router.post(path="/add-todo-dependency", response_model=TodoItemPartialDependency)
+def add_todo_item_dependency(
+    current_user: Annotated[User, Depends(get_current_user)],
+    dependency: TodoItemAddDependency,
+    db: Session = Depends(get_db),
+):
+    return todo_item_crud.add_todo_dependency(
+        db=db, dependency=dependency, user_id=current_user.id
+    )
+
+
+@router.delete(path="/remove-todo-dependency")
+def remove_todo_item_dependency(
+    current_user: Annotated[User, Depends(get_current_user)],
+    dependency: TodoItemRemoveDependency,
+    db: Session = Depends(get_db),
+):
+    todo_item_crud.remove_todo_dependency(
+        db=db, dependency=dependency, user_id=current_user.id
+    )
     return Response(status_code=HTTP_200_OK)
 
 

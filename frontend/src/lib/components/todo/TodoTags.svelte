@@ -34,6 +34,7 @@
 	}>();
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TagClient({ token: $page.data.token }).detachFromTodoTag({
@@ -51,6 +52,7 @@
 	}
 
 	async function handleDeleteTag(tag: TodoItemPartialTag) {
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TagClient({ token: $page.data.token }).deleteTag(tag);
