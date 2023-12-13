@@ -14,7 +14,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import todoComments from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
-	import Confirm from '$components/todo/Confirm.svelte';
+	import Confirm from '$components/Confirm.svelte';
 
 	export let todoId: number;
 	export let enabledFeatures: Feature[] | null = null;

@@ -42,6 +42,7 @@
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts/toasts';
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
+	import Confirm from '$components/Confirm.svelte';
 
 	export let todo: TodoItem;
 	export let category: TodoCategory | null = null;
@@ -80,6 +81,7 @@
 	let todoCommentsModal: Modal;
 	let todoTagsModal: Modal;
 	let todoDependenciesModal: Modal;
+	let confirmDeleteTodo: Confirm;
 
 	const dispatch = createEventDispatcher<{
 		editTodoItem: { todo: TodoItem };
@@ -227,6 +229,7 @@
 		visible={state === 'drop-zone-top-activated' || state === 'drop-zone-bottom-activated'}
 		direction={state === 'drop-zone-top-activated' ? 'top' : 'bottom'}
 	/>
+	<Confirm bind:this={confirmDeleteTodo} on:onConfirm={handleRemoveTodo}></Confirm>
 	<div class="card-body pb-4">
 		<Alert type="error" message={apiErrorTitle} />
 
@@ -252,7 +255,7 @@
 				>
 					<Fa icon={faEdit} class="text-success" />
 				</button>
-				<button on:click={handleRemoveTodo}>
+				<button on:click={() => confirmDeleteTodo.show()}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
 			</div>
