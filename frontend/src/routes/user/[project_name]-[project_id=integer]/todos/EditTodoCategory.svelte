@@ -74,6 +74,7 @@
 		/>
 		<FormInput
 			name="description"
+			label="description (Optional)"
 			class="w-full"
 			value={category.description}
 			hideLabel={true}

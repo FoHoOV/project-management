@@ -1,6 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import type { NumberRange, UnionToIntersection, ErrorMessage, StrictUnion } from '$lib/utils/types';
-import type * as Kit from '@sveltejs/kit';
+import type { NumberRange, ErrorMessage, StrictUnion } from '$lib/utils/types';
 
 export function convertFormDataToObject(formData: FormData): Record<string, FormDataEntryValue> {
 	const result: Record<string, FormDataEntryValue> = {};

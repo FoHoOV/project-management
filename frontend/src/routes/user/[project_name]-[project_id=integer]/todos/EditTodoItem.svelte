@@ -78,6 +78,7 @@
 		/>
 		<FormInput
 			name="description"
+			label="description (Optional)"
 			value={todo.description}
 			class="w-full"
 			hideLabel={true}

@@ -75,6 +75,7 @@
 		/>
 		<FormInput
 			name="description"
+			label="description (Optional)"
 			class="w-full"
 			hideLabel={true}
 			errors={formErrors?.errors?.description}

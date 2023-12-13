@@ -70,6 +70,7 @@
 		/>
 		<FormInput
 			name="description"
+			label="description (Optional)"
 			class="w-full"
 			value={project.description}
 			hideLabel={true}

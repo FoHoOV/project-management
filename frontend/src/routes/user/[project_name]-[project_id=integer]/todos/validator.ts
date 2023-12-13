@@ -12,10 +12,15 @@ import type {
 	TodoItemAddDependency
 } from '$lib/generated-client';
 
+const optionalDescriptionSchema = z
+	.string()
+	.transform((t) => (t.length > 0 ? t : '-'))
+	.pipe(z.string().min(1));
+
 export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),
-	title: z.string().nonempty().min(1),
-	description: z.string().nonempty().min(1),
+	title: z.string().min(2),
+	description: optionalDescriptionSchema,
 	is_done: z
 		.union([z.boolean(), z.literal('true'), z.literal('false')])
 		.transform((value) => value === true || value === 'true')
@@ -25,8 +30,8 @@ export const createTodoItemSchema = z.object({
 
 export const createTodoCategorySchema = z.object({
 	project_id: z.number({ coerce: true }),
-	title: z.string().nonempty().min(1),
-	description: z.string().nonempty().min(1)
+	title: z.string().min(2),
+	description: optionalDescriptionSchema
 });
 
 ({}) as z.infer<typeof createTodoCategorySchema> satisfies TodoCategoryCreate;
@@ -40,8 +45,8 @@ export const attachToProjectSchema = z.object({
 
 export const editTodoCategorySchema = z.object({
 	id: z.number({ coerce: true }),
-	title: z.string().nonempty().min(2),
-	description: z.string().nonempty().min(2)
+	title: z.string().min(2),
+	description: optionalDescriptionSchema
 });
 
 ({}) as z.infer<typeof editTodoCategorySchema> satisfies TodoCategoryUpdateItem;
@@ -49,8 +54,8 @@ export const editTodoCategorySchema = z.object({
 export const editTodoItemSchema = z.object({
 	id: z.number({ coerce: true }),
 	category_id: z.number({ coerce: true }),
-	title: z.string().nonempty().min(2),
-	description: z.string().nonempty().min(2)
+	title: z.string().min(2),
+	description: optionalDescriptionSchema
 });
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;
