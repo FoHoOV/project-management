@@ -14,6 +14,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import todoComments from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
+	import Confirm from '$components/todo/Confirm.svelte';
 
 	export let todoId: number;
 	export let enabledFeatures: Feature[] | null = null;
@@ -36,6 +37,7 @@
 
 	let state: 'calling-service' | 'none' = 'calling-service';
 	let apiErrorTitle: string | null = null;
+	let confirmDeleteComment: Confirm;
 
 	const dispatch = createEventDispatcher<{
 		editComment: { comment: TodoComment };
@@ -87,14 +89,16 @@
 	{:else}
 		{#each $todoComments as comment (comment.id)}
 			<div
-				class="card mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
+				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
+				<Confirm bind:this={confirmDeleteComment} on:onConfirm={() => handleDeleteComment(comment)}
+				></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">
 						<button
 							class="btn btn-square btn-error btn-sm"
-							on:click={() => handleDeleteComment(comment)}
+							on:click={() => confirmDeleteComment.show()}
 						>
 							<Fa icon={faTrashCan}></Fa>
 						</button>
