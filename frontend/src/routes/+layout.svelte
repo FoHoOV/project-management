@@ -54,7 +54,7 @@
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}
-							name={project.title}
+							name={project.title + ' (' + '#' + project.id + ')'}
 							on:click={closeDrawer}
 						/>
 					{/each}
