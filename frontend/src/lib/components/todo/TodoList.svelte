@@ -155,7 +155,7 @@
 					...event.detail.data,
 					new_category_id: category.id
 				});
-				todos.removeTodo(event.detail.data);
+				todos.removeTodo(event.detail.data, false);
 				todos.addTodo({ ...event.detail.data, category_id: category.id, order: null });
 				state = 'none';
 			},

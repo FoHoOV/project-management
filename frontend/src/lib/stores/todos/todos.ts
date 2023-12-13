@@ -57,9 +57,18 @@ const addTodo = (todo: TodoItem, skipSort = false): void => {
 	});
 };
 
-const removeTodo = (todo: TodoItem, skipSort = false) => {
+const removeTodo = (todo: TodoItem, removeDependencies = true, skipSort = false) => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
+			if (removeDependencies) {
+				category.items = category.items.map((item) => {
+					item.dependencies = item.dependencies.filter((dependency) => {
+						return dependency.dependant_todo_id !== todo.id;
+					});
+					return item;
+				});
+			}
+
 			if (category.id !== todo.category_id) {
 				return category;
 			}
@@ -228,7 +237,7 @@ const updateTodoSort = (
 	skipSort = false
 ) => {
 	if (movingElement.category_id !== movingElementNewCategoryId) {
-		removeTodo(movingElement);
+		removeTodo(movingElement, false);
 		addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
 		movingElement.category_id = movingElementNewCategoryId;
 	}
@@ -293,8 +302,19 @@ const updateCategory = (category: TodoCategory) => {
 	});
 };
 
-const removeCategory = (category: TodoCategory) => {
+const removeCategory = (category: TodoCategory, removeDependencies = true) => {
 	_update((categories) => {
+		if (removeDependencies) {
+			categories = categories.map((value) => {
+				value.items = value.items.map((item) => {
+					item.dependencies = item.dependencies.filter((dependency) => {
+						return category.items.some((item) => item.id == dependency.dependant_todo_id);
+					});
+					return item;
+				});
+				return value;
+			});
+		}
 		removeElementFromSortedList(
 			categories,
 			category.id,
