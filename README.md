@@ -12,6 +12,7 @@ features it has right now:
   7. you can sort todo categories or todo items in any arbitrary order and it will be saved on your user account (I'm storing this using linked list)
   8. each todo can have multiple tags (with add/edit/delete)
   9. you can search (all projects/project specific) by tag
+  10. adding todo dependencies which also works across projects (with add/delete) - for instance you can't mark a todo as `Done` unless all of its dependencies or dependencies of those dependencies are marked as `Done`
 
 # how to run
   1. goto the backend project and follow the steps of its README.md
