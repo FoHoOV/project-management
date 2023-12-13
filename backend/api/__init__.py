@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from api.routes import oath, tag, todo_item_comment
+from config import settings
 from db import init_db
 from error.exceptions import UserFriendlyError
 
@@ -36,12 +37,7 @@ def create_app():
         "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it
     )
 
-    origins = [
-        "http://localhost",
-        "http://localhost:4173",
-        "http://localhost:5173",
-        "http://localhost:5174",
-    ]
+    origins = settings.ALLOWED_ORIGINS
 
     app.add_middleware(
         CORSMiddleware,
