@@ -12,6 +12,15 @@ pip install -r requirements.txt
 ```
 * this project requires python 3.12 or greater
 
+## Add env variables
+All required env variables are in .env.raw file. Create a new .env file from that template and fill in your own variables
+For instance the final .env file in DEV mode would look like this (as of 2023/12/13):
+```bash
+# .env contents
+ALLOWED_ORIGINS = ["http://localhost", "http://localhost:4173", "http://localhost:5173", "http://localhost:5174"]
+IS_LOG_SQLALCHEMY_ENABLED = True
+```
+
 ## Running the project
 If you are using vscode you can simply use the run&debug to run the backend app after doing the mentioned steps. 
 You can also run the app manually with:
