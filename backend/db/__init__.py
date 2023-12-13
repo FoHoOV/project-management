@@ -4,18 +4,19 @@ from sqlalchemy.orm import sessionmaker
 
 from config import settings
 
+is_sqlite = settings.SQLALCHEMY_DATABASE_URL.startswith("sqlite:///")
 
 engine = create_engine(
     settings.SQLALCHEMY_DATABASE_URL,
     echo=settings.IS_LOG_SQLALCHEMY_ENABLED,
-    connect_args={"check_same_thread": False},
+    connect_args={"check_same_thread": False} if is_sqlite else None,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 if settings.IS_LOG_SQLALCHEMY_ENABLED:
     logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 
-if settings.SQLALCHEMY_DATABASE_URL.startswith("sqlite:///"):
+if is_sqlite:
     # https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#foreign-key-support
 
     @event.listens_for(Engine, "connect")
