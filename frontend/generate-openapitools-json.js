@@ -9,7 +9,7 @@ const openapitoolsJson = {
 		generators: {
 			'typescript-fetch': {
 				generatorName: 'typescript-fetch',
-				inputSpec: process.env.PUBLIC_API_URL,
+				inputSpec: `${process.env.PUBLIC_API_URL.trim()}`,
 				output: './src/lib/generated-client',
 				additionalProperties: {
 					modelPropertyNaming: 'original',
