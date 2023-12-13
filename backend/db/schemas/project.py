@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, constr, field_validator
+from pydantic import BaseModel, Field, constr, field_validator
 
 
 class ProjectBase(BaseModel):
@@ -12,8 +12,8 @@ class ProjectRead:
 
 
 class ProjectCreate(ProjectBase):
-    title: constr(max_length=100)  # type: ignore
-    description: constr(max_length=100)  # type: ignore
+    title: str = Field(min_length=2, max_length=100)
+    description: str = Field(min_length=1, max_length=100)
 
     @field_validator("title")
     @classmethod
@@ -33,7 +33,7 @@ class ProjectDetachAssociation(ProjectBase):
 
 class ProjectAttachAssociation(ProjectBase):
     project_id: int
-    username: constr(min_length=3)  # type: ignore
+    username: str = Field(min_length=3, max_length=100)
 
 
 class ProjectAttachAssociationResponse(ProjectBase):

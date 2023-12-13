@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TodoCommentBase(BaseModel):
     id: int
-    message: str
+    message: str = Field(min_length=1, max_length=5000)
 
 
 @dataclass
@@ -13,7 +13,7 @@ class TodoCommentSearch:
 
 
 class TodoCommentCreate(BaseModel):
-    message: str
+    message: str = Field(min_length=1, max_length=5000)
     todo_id: int
 
     class Config:

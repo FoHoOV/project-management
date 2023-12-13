@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from fastapi import Query
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 from db.schemas.base import NullableOrderedItem
 from error.exceptions import ErrorCode, UserFriendlyError
@@ -14,8 +14,8 @@ class SearchTodoStatus(Enum):
 
 
 class TodoItemBase(BaseModel):
-    title: str
-    description: str
+    title: str = Field(min_length=1, max_length=100)
+    description: str = Field(min_length=1, max_length=100)
     is_done: bool
     category_id: int
 
@@ -27,8 +27,8 @@ class TodoItemCreate(TodoItemBase):
 class TodoItemUpdateItem(TodoItemBase):
     id: int
     new_category_id: int | None = None
-    title: str | None = None
-    description: str | None = None
+    title: str | None = Field(min_length=1, max_length=100, default=None)
+    description: str | None = Field(min_length=1, max_length=100, default=None)
     is_done: bool | None = None
 
 

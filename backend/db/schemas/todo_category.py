@@ -5,8 +5,8 @@ from db.schemas.todo_item import TodoItem
 
 
 class TodoCategoryBase(BaseModel):
-    title: str
-    description: str
+    title: str = Field(min_length=1, max_length=100)
+    description: str = Field(min_length=1, max_length=100)
 
 
 class TodoCategoryCreate(TodoCategoryBase):
@@ -15,8 +15,8 @@ class TodoCategoryCreate(TodoCategoryBase):
 
 class TodoCategoryUpdateItem(TodoCategoryBase):
     id: int
-    title: str
-    description: str
+    title: str = Field(min_length=1, max_length=100)
+    description: str = Field(min_length=1, max_length=100)
 
 
 class TodoCategoryUpdateOrder(BaseModel):

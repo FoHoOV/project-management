@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 @dataclass
@@ -9,7 +9,7 @@ class TagSearch:
 
 
 class TagCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     project_id: int
 
     class Config:
@@ -17,7 +17,7 @@ class TagCreate(BaseModel):
 
 
 class TagAttachToTodo(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     todo_id: int
     project_id: int
     create_if_doesnt_exist: bool

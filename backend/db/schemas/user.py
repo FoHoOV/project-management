@@ -2,12 +2,12 @@ from pydantic import BaseModel, Field, constr, model_validator
 
 
 class UserBase(BaseModel):
-    username: str
+    username: str = Field(min_length=1, max_length=100)
 
 
 class UserCreate(UserBase):
-    password: constr(min_length=5, max_length=20)  # type: ignore
-    confirm_password: constr(min_length=5, max_length=20) = Field(exclude=True)  # type: ignore
+    password: str = Field(min_length=1, max_length=500)
+    confirm_password: str = Field(min_length=1, max_length=500, exclude=True)
 
     @model_validator(mode="after")
     def check_passwords_match(self) -> "UserCreate":
@@ -19,7 +19,7 @@ class UserCreate(UserBase):
 
 
 class UserAuthenticate(UserBase):
-    password: str
+    password: str = Field(min_length=1, max_length=500)
 
 
 class PartialProject(BaseModel):
