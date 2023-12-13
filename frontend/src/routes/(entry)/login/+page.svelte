@@ -7,7 +7,7 @@
 	import { schema } from './validators';
 
 	export let form: ActionData;
-	let isFormSubmitting: boolean = false;
+	let state: 'none' | 'submitting' = 'none';
 	$: formErrors = getFormErrors(form);
 </script>
 
@@ -23,12 +23,13 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
+		state = 'none';
 	}}
 	on:submitstarted={() => {
-		isFormSubmitting = true;
+		state = 'submitting';
 	}}
 	on:submitended={() => {
-		isFormSubmitting = false;
+		state = 'none';
 	}}
 	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 >
@@ -46,7 +47,7 @@
 			<LoadingButton
 				class="btn-primary mt-4 flex-grow"
 				text="login"
-				loading={isFormSubmitting}
+				loading={state === 'submitting'}
 				type="submit"
 			/>
 		</div>

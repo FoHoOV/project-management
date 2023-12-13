@@ -74,7 +74,7 @@
 		state = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'none';
+		state = 'submitting';
 	}}
 	on:submitended={() => {
 		state = 'none';
