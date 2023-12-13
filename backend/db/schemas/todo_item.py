@@ -4,6 +4,7 @@ from fastapi import Query
 from pydantic import BaseModel, model_validator
 
 from db.schemas.base import NullableOrderedItem
+from error.exceptions import ErrorCode, UserFriendlyError
 
 
 class SearchTodoStatus(Enum):
@@ -56,7 +57,10 @@ class TodoItemAddDependency(BaseModel):
     @model_validator(mode="after")
     def check_todo_ids(self) -> "TodoItemAddDependency":
         if self.todo_id == self.dependant_todo_id:
-            raise ValueError("todo id and dependant todo id cannot be the same")
+            raise UserFriendlyError(
+                ErrorCode.INVALID_INPUT,
+                "todo id and dependant todo id cannot be the same",
+            )
         return self
 
 
