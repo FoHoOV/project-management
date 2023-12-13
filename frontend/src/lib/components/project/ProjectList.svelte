@@ -7,6 +7,7 @@
 	import ProjectComponent from './Project.svelte';
 	import type { Project as ProjectType } from '$lib/generated-client/models';
 	import Empty from '$components/Empty.svelte';
+	import { flip } from 'svelte/animate';
 
 	export let projects: ProjectType[];
 	export let enabledFeatures: Feature[] | null = null;
@@ -16,9 +17,11 @@
 	<Empty text="Create your first project!" />
 {:else}
 	<div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
-		{#each projects as project}
-			<ProjectComponent {project} {enabledFeatures} on:attachToUser on:editProject
-			></ProjectComponent>
+		{#each projects as project (project.id)}
+			<div animate:flip={{ duration: 200 }}>
+				<ProjectComponent {project} {enabledFeatures} on:attachToUser on:editProject
+				></ProjectComponent>
+			</div>
 		{/each}
 	</div>
 {/if}

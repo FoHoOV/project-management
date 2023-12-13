@@ -21,12 +21,14 @@
 	import { flip } from 'svelte/animate';
 	import type { TodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos';
+	import Confirm from '$components/Confirm.svelte';
 
 	export let todo: TodoItem;
 	export let enabledFeatures: Feature[] | null = null;
 
 	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null = null;
+	let confirmDeleteTag: Confirm;
 
 	const dispatch = createEventDispatcher<{
 		editTag: { tag: TodoItemPartialTag };
@@ -97,12 +99,16 @@
 	{:else}
 		{#each todo.tags as tag (tag.id)}
 			<div
-				class="card mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
+				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
+				<Confirm bind:this={confirmDeleteTag} on:onConfirm={() => handleDeleteTag(tag)}></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">
-						<button class="btn btn-square btn-error btn-sm" on:click={() => handleDeleteTag(tag)}>
+						<button
+							class="btn btn-square btn-error btn-sm"
+							on:click={() => confirmDeleteTag.show()}
+						>
 							<Fa icon={faTrashCan}></Fa>
 						</button>
 						<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>

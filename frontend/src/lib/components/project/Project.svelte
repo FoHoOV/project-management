@@ -14,12 +14,15 @@
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import Confirm from '$components/Confirm.svelte';
 
 	export let project: Project;
 	export let enabledFeatures: Feature[] | null = null;
 
 	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null;
+	let confirmDetachProject: Confirm;
+
 	const dispatch = createEventDispatcher<{
 		editProject: { project: Project };
 		attachToUser: { project: Project };
@@ -52,11 +55,11 @@
 	}
 </script>
 
-<div class="card bg-base-300 text-base-content">
+<div class="card relative bg-base-300 text-base-content">
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
 		<Spinner visible={state === 'calling-service'}></Spinner>
-
+		<Confirm bind:this={confirmDetachProject} on:onConfirm={handleDetachProjectFromUser}></Confirm>
 		<div class="card-title justify-between">
 			<div class="flex gap-2">
 				<div class="tooltip" data-tip="project id">
@@ -105,7 +108,7 @@
 			>
 				Attach to user
 			</button>
-			<button class="btn btn-error flex-1" on:click={handleDetachProjectFromUser}>
+			<button class="btn btn-error flex-1" on:click={() => confirmDetachProject.show()}>
 				{#if project.users.length == 1}
 					Delete
 				{:else}

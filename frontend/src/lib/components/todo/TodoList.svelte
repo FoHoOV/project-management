@@ -39,6 +39,7 @@
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
 	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
+	import Confirm from '$components/Confirm.svelte';
 
 	export let category: TodoCategory;
 	export let projectId: number;
@@ -60,13 +61,15 @@
 	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
+	let confirmDeleteTodoCategory: Confirm;
+
 	const dispatch = createEventDispatcher<{
 		editTodoCategory: { category: TodoCategory };
 		createTodoItem: { category: TodoCategory };
 		attachToProject: { category: TodoCategory };
 	}>();
 
-	async function handleRemoveCategory() {
+	async function handleDeleteCategory() {
 		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
@@ -204,6 +207,7 @@
 		visible={state === 'drop-zone-left-activated' || state === 'drop-zone-right-activated'}
 		direction={state === 'drop-zone-right-activated' ? 'right' : 'left'}
 	/>
+	<Confirm bind:this={confirmDeleteTodoCategory} on:onConfirm={handleDeleteCategory}></Confirm>
 	<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
 		<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
 		<div class="flex w-full max-w-full flex-col self-start">
@@ -222,7 +226,7 @@
 					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
-					<button class="text-xl" on:click={handleRemoveCategory}>
+					<button class="text-xl" on:click={() => confirmDeleteTodoCategory.show()}>
 						<Fa icon={faTrashCan} class="text-red-400" />
 					</button>
 				</div>
