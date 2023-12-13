@@ -202,7 +202,9 @@ export function updateElementSort<T extends { id: number }>(
 	elements
 		.filter(
 			(element) =>
-				movingElementNewOrder.leftId != null && getLeftId(element) == movingElementNewOrder.leftId
+				movingElementNewOrder.leftId != null &&
+				getLeftId(element) == movingElementNewOrder.leftId &&
+				element.id !== movingElementId
 		)
 		.forEach((element) => {
 			setLeftId(element, movingElementId);
@@ -221,7 +223,8 @@ export function updateElementSort<T extends { id: number }>(
 		.filter(
 			(element) =>
 				movingElementNewOrder.rightId != null &&
-				getRightId(element) == movingElementNewOrder.rightId
+				getRightId(element) == movingElementNewOrder.rightId &&
+				element.id !== movingElementId
 		)
 		.forEach((element) => {
 			setRightId(element, movingElementId);
