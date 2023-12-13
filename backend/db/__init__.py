@@ -6,11 +6,15 @@ from config import settings
 
 is_sqlite = settings.SQLALCHEMY_DATABASE_URL.startswith("sqlite:///")
 
-engine = create_engine(
-    settings.SQLALCHEMY_DATABASE_URL,
-    echo=settings.IS_LOG_SQLALCHEMY_ENABLED,
-    connect_args={"check_same_thread": False} if is_sqlite else None,
-)
+engine_kwargs = {
+    "settings": settings.SQLALCHEMY_DATABASE_URL,
+    "echo": settings.IS_LOG_SQLALCHEMY_ENABLED,
+}
+
+if is_sqlite:
+    engine_kwargs["check_same_thread"] = True
+
+engine = create_engine(**engine_kwargs)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 if settings.IS_LOG_SQLALCHEMY_ENABLED:
