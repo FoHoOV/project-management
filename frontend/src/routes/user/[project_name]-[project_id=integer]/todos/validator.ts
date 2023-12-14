@@ -60,20 +60,20 @@ export const editTodoItemSchema = z.object({
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;
 
-export const editTodoCommentSchema = z.object({
-	id: z.number({ coerce: true }),
-	todo_id: z.number({ coerce: true }),
-	message: z.string().min(1).max(2000)
-});
-
-({}) as z.infer<typeof editTodoCommentSchema> satisfies TodoCommentUpdate;
-
 export const createTodoCommentSchema = z.object({
 	todo_id: z.number({ coerce: true }),
-	message: z.string().min(1).max(2000)
+	message: z.string().min(1).max(50000)
 });
 
 ({}) as z.infer<typeof createTodoCommentSchema> satisfies TodoCommentCreate;
+
+export const editTodoCommentSchema = z.object({
+	id: z.number({ coerce: true }),
+	todo_id: z.number({ coerce: true }),
+	message: z.string().min(1).max(50000)
+});
+
+({}) as z.infer<typeof editTodoCommentSchema> satisfies TodoCommentUpdate;
 
 export const addTagSchema = z.object({
 	name: z.string().min(1).max(30),

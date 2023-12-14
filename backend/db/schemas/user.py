@@ -1,8 +1,19 @@
 from pydantic import BaseModel, Field, constr, model_validator
 
+from error.exceptions import ErrorCode, UserFriendlyError
+
 
 class UserBase(BaseModel):
     username: str = Field(min_length=1, max_length=100)
+
+    @model_validator(mode="after")
+    def validate_username(self) -> "UserBase":
+        self.username = self.username.strip().lower()
+        if len(self.username.strip()) < 1:
+            raise UserFriendlyError(
+                ErrorCode.INVALID_INPUT, "username must at least have one character"
+            )
+        return self
 
 
 class UserCreate(UserBase):

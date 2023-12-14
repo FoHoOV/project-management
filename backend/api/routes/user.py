@@ -13,7 +13,7 @@ router = APIRouter(prefix="/user", tags=["user"])
 @router.post("/signup", response_model=User)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     db_user = user_crud.get_user_by_username(db, username=user.username)
-    if db_user:
+    if db_user is not None:
         raise HTTPException(
             status_code=400, detail={"username": "Username already registered"}
         )
