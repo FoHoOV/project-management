@@ -14,11 +14,12 @@ pip install -r requirements.txt
 
 ## Add env variables
 All required env variables are in .env.raw file. Create a new .env file from that template and fill in your own variables
-For instance the final .env file in DEV mode would look like this (as of 2023/12/13):
+For instance the final .env file in DEV mode would look like this (last update 2023/12/13):
 ```bash
 # .env contents
 ALLOWED_ORIGINS = ["http://localhost", "http://localhost:4173", "http://localhost:5173", "http://localhost:5174"]
-IS_LOG_SQLALCHEMY_ENABLED = True
+SQLALCHEMY_DATABASE_URL = "sqlite:///./todos.db" 
+IS_SQLALCHEMY_LOG_ENABLED = True
 ```
 
 ## Running the project
