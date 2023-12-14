@@ -7,6 +7,9 @@ class TagSearch:
     name: str
     project_id: int | None = None
 
+    def __post_init__(self):
+        self.name = self.name.strip().lower()
+
 
 class TagCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
@@ -14,6 +17,8 @@ class TagCreate(BaseModel):
 
     class Config:
         from_attributes = True
+        str_to_lower = True
+        str_strip_whitespace = True
 
 
 class TagAttachToTodo(BaseModel):
@@ -21,6 +26,10 @@ class TagAttachToTodo(BaseModel):
     todo_id: int
     project_id: int
     create_if_doesnt_exist: bool
+
+    class Config:
+        str_to_lower = True
+        str_strip_whitespace = True
 
 
 class TagDetachFromTodo(BaseModel):
@@ -34,6 +43,8 @@ class TagUpdate(BaseModel):
 
     class Config:
         from_attributes = True
+        str_to_lower = True
+        str_strip_whitespace = True
 
 
 class TagDelete(BaseModel):
