@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Project } from '$lib/generated-client/models';
+import { sortById } from '../todos/sort';
 
 const { subscribe, update: _update, set: _set } = writable<Project[]>([]);
 
@@ -13,12 +14,14 @@ const addProject = (project: Project) => {
 
 const updateProject = (project: Project) => {
 	_update((projects) => {
-		return projects.map((value) => {
+		projects = projects.map((value) => {
 			if (value.id != project.id) {
 				return value;
 			}
 			return project;
 		});
+		sortById(projects, true);
+		return projects;
 	});
 };
 

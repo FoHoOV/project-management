@@ -156,7 +156,13 @@ def get_project(db: Session, project: ProjectRead, user_id: int):
 
 
 def get_projects(db: Session, user_id: int):
-    result = db.query(Project).join(Project.users).filter(User.id == user_id).all()
+    result = (
+        db.query(Project)
+        .join(Project.users)
+        .filter(User.id == user_id)
+        .order_by(Project.id.asc())
+        .all()
+    )
 
     return result
 
