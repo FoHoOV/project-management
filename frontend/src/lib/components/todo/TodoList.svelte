@@ -197,9 +197,9 @@
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 	on:dropped={handleOnDrop}
-	class="relative flex max-h-full w-full rounded-xl border border-opacity-20 transition-colors hover:border-opacity-25 {category
+	class="relative flex max-h-full w-full rounded-xl border border-opacity-70 shadow-lg transition-colors hover:border-opacity-100 dark:border-opacity-30 dark:hover:border-opacity-50 {category
 		.projects.length > 1
-		? 'border-warning'
+		? 'border-dashed border-warning'
 		: 'border-info'}"
 >
 	<Spinner visible={state === 'calling-service'}></Spinner>
