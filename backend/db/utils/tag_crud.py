@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from db.models.project import Project
-from db.models.project_user_association import ProjectUserAssociation
 from db.models.tag import Tag
 from db.models.todo_category import TodoCategory
 from db.models.todo_item import TodoItem
@@ -58,7 +57,7 @@ def search(db: Session, search: TagSearch, user_id: int):
     )
 
     if search.project_id is not None:
-        query = query.filter(ProjectUserAssociation.project_id == search.project_id)
+        query = query.filter(Project.id == search.project_id)
 
     return query.all()
 
