@@ -108,31 +108,24 @@ def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id
 
 def delete_project(db: Session, project_id: int):
     # the validation that this project belongs to user is callers responsibility
-
-    # TODO: so what the fuck delete on cascade is for?? what da fak??
-    # it doesn't work if i dont delete them myself! :|
-    categories_with_deleting_project_id = (
-        db.query(TodoCategory.id)
-        .join(
-            TodoCategoryProjectAssociation,
-            TodoCategory.id == TodoCategoryProjectAssociation.category_id,
+    categories_with_one_or_less_bound_projects = (
+        db.query(
+            TodoCategoryProjectAssociation.category_id,
         )
-        .filter(TodoCategoryProjectAssociation.project_id == project_id)
-        .group_by(TodoCategory.id)
-        .having(func.count(TodoCategoryProjectAssociation.category_id) == 1)
-        .all()
+        .group_by(TodoCategoryProjectAssociation.category_id)
+        .having(func.count(TodoCategoryProjectAssociation.category_id) <= 1)
     )
 
-    db.query(TodoCategoryProjectAssociation).filter(
-        TodoCategoryProjectAssociation.project_id == project_id
-    ).delete()
-
-    db.query(Tag).filter(Tag.project_id == project_id).delete()
-
-    db.query(TodoCategoryOrder).filter(
-        TodoCategoryOrder.project_id == project_id
-    ).delete()
-
+    categories_with_deleting_project_id = (
+        db.query(TodoCategoryProjectAssociation.category_id)
+        .filter(
+            TodoCategoryProjectAssociation.project_id == project_id,
+            TodoCategoryProjectAssociation.category_id.in_(
+                categories_with_one_or_less_bound_projects
+            ),
+        )
+        .all()
+    )
     db.query(TodoCategory).filter(
         TodoCategory.id.in_(
             [row.tuple()[0] for row in categories_with_deleting_project_id]
