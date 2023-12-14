@@ -14,6 +14,9 @@ features it has right now:
   9. you can search (all projects/project specific) by tag
   10. adding todo dependencies which also works across projects (with add/delete) - for instance you can't mark a todo as `Done` unless all of its dependencies or dependencies of those dependencies are marked as `Done`
 
+# demo
+You can find the demo [this](https://todos-web-ten.vercel.app) url
+
 # how to run
   1. goto the backend project and follow the steps of its README.md
   2. goto the frontend project and follow the steps of its README.md
