@@ -13,7 +13,8 @@ features it has right now:
   8. each todo can have multiple tags (with add/edit/delete)
   9. you can search (all projects/project specific) by tag
   10. adding todo dependencies which also works across projects (with add/delete) - for instance you can't mark a todo as `Done` unless all of its dependencies or dependencies of those dependencies are marked as `Done`
-
+  11. creating projects from a default template
+      
 # demo
 You can find the demo at [this](https://todos-fohoov.vercel.app/) url (DO NOT USE AS YOUR DAILY DRIVER (which makes me very happy that you chose to do so ❤️), I MIGHT DELETE THE DB FROM TIME TO TIME)
 
