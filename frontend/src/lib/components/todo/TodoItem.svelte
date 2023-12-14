@@ -236,7 +236,7 @@
 		<div class="card-title flex w-full justify-between">
 			<div class="flex w-full gap-2">
 				<div class="tooltip" data-tip="todo id">
-					<span>#{todo.id}</span>
+					<span class="text-lg font-bold text-info">#{todo.id}</span>
 				</div>
 				<h1 class="block max-w-full truncate hover:text-clip">{todo.title}</h1>
 			</div>
