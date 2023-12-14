@@ -59,12 +59,13 @@
 		<p>add dependency</p>
 	</button>
 	{#if todo.dependencies.length == 0}
-		<div
-			class="my-5 flex flex-row items-center gap-2"
-			class:hidden={!enabledFeatures?.includes('add-dependency')}
-		>
-			<Fa icon={faPlusCircle} />
-			<p class="break-words text-lg">add dependencies using the plus sign above</p>
+		<div class="my-5 flex flex-row items-center gap-2">
+			{#if !enabledFeatures?.includes('add-dependency')}
+				No dependencies
+			{:else}
+				<Fa icon={faPlusCircle} />
+				<p class="break-words text-lg">add dependencies using the plus sign above</p>
+			{/if}
 		</div>
 	{:else}
 		{#each todo.dependencies as dependency (dependency.id)}

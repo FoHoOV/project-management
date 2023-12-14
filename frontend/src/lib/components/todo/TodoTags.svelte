@@ -89,12 +89,13 @@
 		<p>add tag</p>
 	</button>
 	{#if todo.tags.length == 0}
-		<div
-			class="my-5 flex flex-row items-center gap-2"
-			class:hidden={!enabledFeatures?.includes('add-tag')}
-		>
-			<Fa icon={faPlusCircle} />
-			<p class="break-words text-lg">add tags using the plus sign above</p>
+		<div class="my-5 flex flex-row items-center gap-2">
+			{#if !enabledFeatures?.includes('add-tag')}
+				No tags
+			{:else}
+				<Fa icon={faPlusCircle} />
+				<p class="break-words text-lg">add tags using the plus sign above</p>
+			{/if}
 		</div>
 	{:else}
 		{#each todo.tags as tag, i (tag.id)}
