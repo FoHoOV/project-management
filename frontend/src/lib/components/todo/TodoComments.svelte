@@ -45,6 +45,7 @@
 	}>();
 
 	async function handleDeleteComment(comment: TodoComment) {
+		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
@@ -67,7 +68,7 @@
 	}
 </script>
 
-<div class="relative flex flex-col">
+<div class="flex flex-col">
 	<Spinner visible={state === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
@@ -79,12 +80,13 @@
 		<p>add comment</p>
 	</button>
 	{#if $todoComments.length == 0 || $todoComments[0].todo_id != todoId}
-		<div
-			class="my-5 flex flex-row items-center gap-2"
-			class:hidden={!enabledFeatures?.includes('create-comment')}
-		>
-			<Fa icon={faPlusCircle} />
-			<p class="break-words text-lg">create your first comments using the plus sign</p>
+		<div class="my-5 flex flex-row items-center gap-2">
+			{#if !enabledFeatures?.includes('create-comment')}
+				No comments
+			{:else}
+				<Fa icon={faPlusCircle} />
+				<p class="break-words text-lg">create your first comments using the plus sign</p>
+			{/if}
 		</div>
 	{:else}
 		{#each $todoComments as comment, i (comment.id)}
