@@ -63,7 +63,7 @@
 		<div class="card-title justify-between">
 			<div class="flex gap-2">
 				<div class="tooltip" data-tip="project id">
-					<span>#{project.id}</span>
+					<span class="text-info">#{project.id}</span>
 				</div>
 				<span class="block max-w-full truncate hover:text-clip">{project.title}</span>
 			</div>
