@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from db.models.project import Project
+from db.models.project_user_association import ProjectUserAssociation
 from db.models.tag import Tag
+from db.models.todo_category import TodoCategory
 from db.models.todo_item import TodoItem
 from db.models.todo_item_tag_association import TodoItemTagAssociation
 from db.models.user import User
@@ -48,13 +50,15 @@ def search(db: Session, search: TagSearch, user_id: int):
     query = (
         db.query(TodoItem)
         .join(TodoItem.tags)
+        .join(TodoItem.category)
+        .join(TodoCategory.projects)
         .join(Project.users)
         .filter(User.id == user_id)
         .filter(Tag.name == search.name)
     )
 
     if search.project_id is not None:
-        query = query.filter(Tag.project_id == search.project_id)
+        query = query.filter(ProjectUserAssociation.project_id == search.project_id)
 
     return query.all()
 
@@ -168,15 +172,15 @@ def validate_tag_belongs_to_user_by_name(
     db: Session, tag_name: str, project_id: int | None, user_id: int
 ):
     query = (
-        db.query(Project)
+        db.query(Tag)
+        .join(Tag.project)
         .join(Project.users)
         .filter(User.id == user_id)
-        .join(Project.tags)
         .filter(Tag.name == tag_name)
     )
 
     if project_id is not None:
-        query = query.filter(Project.id == project_id)
+        query = query.filter(Tag.project_id == project_id)
 
     if query.count() == 0:
         raise UserFriendlyError(
@@ -186,10 +190,10 @@ def validate_tag_belongs_to_user_by_name(
 
 def validate_tag_belongs_to_user_by_id(db: Session, tag_id: int, user_id: int):
     result = (
-        db.query(Project)
+        db.query(Tag)
+        .join(Tag.project)
         .join(Project.users)
         .filter(User.id == user_id)
-        .join(Project.tags)
         .filter(Tag.id == tag_id)
         .count()
     )

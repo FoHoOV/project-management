@@ -48,7 +48,7 @@ def get_todos_for_user(
         query = query.filter(TodoItem.is_done == False)
 
     return (
-        query.join(TodoCategory)
+        query.join(TodoItem.category)
         .filter(TodoCategory.id == search_todo_params.category_id)
         .join(TodoCategory.projects)
         .filter(Project.id == search_todo_params.project_id)
@@ -252,7 +252,7 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
     if (
         db.query(TodoItem)
         .filter(TodoItem.id == todo_id)
-        .join(TodoCategory)
+        .join(TodoItem.category)
         .join(TodoCategory.projects)
         .join(Project.users)
         .filter(User.id == user_id)
