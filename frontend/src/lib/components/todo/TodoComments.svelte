@@ -37,7 +37,7 @@
 
 	let state: 'calling-service' | 'none' = 'calling-service';
 	let apiErrorTitle: string | null = null;
-	let confirmDeleteComment: Confirm;
+	let confirmsDeleteComment: Confirm[] = [];
 
 	const dispatch = createEventDispatcher<{
 		editComment: { comment: TodoComment };
@@ -87,18 +87,20 @@
 			<p class="break-words text-lg">create your first comments using the plus sign</p>
 		</div>
 	{:else}
-		{#each $todoComments as comment (comment.id)}
+		{#each $todoComments as comment, i (comment.id)}
 			<div
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
-				<Confirm bind:this={confirmDeleteComment} on:onConfirm={() => handleDeleteComment(comment)}
+				<Confirm
+					bind:this={confirmsDeleteComment[i]}
+					on:onConfirm={() => handleDeleteComment(comment)}
 				></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">
 						<button
 							class="btn btn-square btn-error btn-sm"
-							on:click={() => confirmDeleteComment.show()}
+							on:click={() => confirmsDeleteComment[i].show()}
 						>
 							<Fa icon={faTrashCan}></Fa>
 						</button>
