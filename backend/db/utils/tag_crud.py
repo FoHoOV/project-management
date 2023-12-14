@@ -54,7 +54,7 @@ def search(db: Session, search: TagSearch, user_id: int):
     )
 
     if search.project_id is not None:
-        query = query.filter(Project.id == search.project_id)
+        query = query.filter(Tag.project_id == search.project_id)
 
     return query.all()
 
@@ -112,10 +112,12 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
             user_id,
         )
 
+    tag_base_query = db.query(Tag).filter(
+        Tag.name == association.name, Tag.project_id == association.project_id
+    )
+
     tag_already_exists_for_todo = (
-        db.query(Tag)
-        .filter(Tag.name == association.name)
-        .join(Tag.todos)
+        tag_base_query.join(Tag.todos)
         .filter(TodoItem.id == association.todo_id)
         .count()
         > 0
@@ -127,14 +129,7 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
             "this tag already belongs to this todo",
         )
 
-    tag = (
-        db.query(Tag)
-        .filter(Tag.name == association.name)
-        .join(Tag.project)
-        .join(Project.users)
-        .filter(User.id == user_id)
-        .first()
-    )
+    tag = tag_base_query.first()
 
     if tag is None:
         raise
