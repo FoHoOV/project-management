@@ -8,7 +8,7 @@ is_sqlite = settings.SQLALCHEMY_DATABASE_URL.startswith("sqlite:///")
 
 engine_kwargs = {
     "url": settings.SQLALCHEMY_DATABASE_URL,
-    "echo": settings.IS_LOG_SQLALCHEMY_ENABLED,
+    "echo": settings.IS_SQLALCHEMY_LOG_ENABLED,
 }
 
 if is_sqlite:
@@ -17,7 +17,7 @@ if is_sqlite:
 engine = create_engine(**engine_kwargs)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-if settings.IS_LOG_SQLALCHEMY_ENABLED:
+if settings.IS_SQLALCHEMY_LOG_ENABLED:
     logging.getLogger("sqlalchemy.engine").setLevel(logging.DEBUG)
 
 if is_sqlite:

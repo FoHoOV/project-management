@@ -7,7 +7,7 @@ del .env
 rem Saved in .\.env
 @echo off
 echo ALLOWED_ORIGINS = ["http://localhost", "http://localhost:4173","http://localhost:5173", "http://localhost:5174"] > .\.env
-echo IS_LOG_SQLALCHEMY_ENABLED = True >> .\.env
+echo IS_SQLALCHEMY_LOG_ENABLED  = True >> .\.env
 echo SQLALCHEMY_DATABASE_URL = "sqlite:///./todos.db" >> .\.env
 start cmd.exe @cmd /k "venv\Scripts\python -m uvicorn main:app --reload --port 8080"
 cd ..

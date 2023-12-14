@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     SQLALCHEMY_DATABASE_URL: str
     ALLOWED_ORIGINS: list[str]
-    IS_LOG_SQLALCHEMY_ENABLED: bool
+    IS_SQLALCHEMY_LOG_ENABLED: bool
 
     model_config = SettingsConfigDict(env_file=".env")
 
