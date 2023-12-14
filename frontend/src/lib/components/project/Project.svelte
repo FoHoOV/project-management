@@ -55,7 +55,9 @@
 	}
 </script>
 
-<div class="card relative bg-base-300 text-base-content">
+<div
+	class="card relative border border-transparent border-opacity-10 bg-base-300 text-base-content transition-colors hover:border-primary"
+>
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
 		<Spinner visible={state === 'calling-service'}></Spinner>
