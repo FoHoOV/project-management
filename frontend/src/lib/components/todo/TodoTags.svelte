@@ -28,7 +28,7 @@
 
 	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null = null;
-	let confirmDeleteTag: Confirm;
+	let confirmsDeleteTag: Confirm[] = [];
 
 	const dispatch = createEventDispatcher<{
 		editTag: { tag: TodoItemPartialTag };
@@ -97,17 +97,18 @@
 			<p class="break-words text-lg">add tags using the plus sign above</p>
 		</div>
 	{:else}
-		{#each todo.tags as tag (tag.id)}
+		{#each todo.tags as tag, i (tag.id)}
 			<div
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
-				<Confirm bind:this={confirmDeleteTag} on:onConfirm={() => handleDeleteTag(tag)}></Confirm>
+				<Confirm bind:this={confirmsDeleteTag[i]} on:onConfirm={() => handleDeleteTag(tag)}
+				></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">
 						<button
 							class="btn btn-square btn-error btn-sm"
-							on:click={() => confirmDeleteTag.show()}
+							on:click={() => confirmsDeleteTag[i].show()}
 						>
 							<Fa icon={faTrashCan}></Fa>
 						</button>
