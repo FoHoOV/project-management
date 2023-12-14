@@ -14,6 +14,7 @@ class ProjectRead:
 class ProjectCreate(ProjectBase):
     title: str = Field(min_length=2, max_length=100)
     description: str = Field(min_length=1, max_length=100)
+    create_from_default_template: bool = Field(exclude=True, default=False)
 
     @field_validator("title")
     @classmethod

@@ -11,7 +11,8 @@ export const createProjectSchema = z.object({
 		.string()
 		.min(1)
 		.refine((title) => !title.includes('-'), "'-' is not allowed in the project title"),
-	description: optionalDescriptionSchema
+	description: optionalDescriptionSchema,
+	create_from_default_template: z.boolean({ coerce: true }).default(false)
 });
 
 ({}) as z.infer<typeof createProjectSchema> satisfies ProjectCreate;

@@ -16,6 +16,7 @@ from db.schemas.project import (
     ProjectUpdate,
 )
 from sqlalchemy.orm import Session
+from db.schemas.todo_category import TodoCategoryCreate
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.models.todo_category import TodoCategory
 
@@ -34,6 +35,9 @@ def create(db: Session, project: ProjectCreate, user_id: int):
     association = ProjectUserAssociation(user_id=user_id, project_id=db_item.id)
     db.add(association)
     db.commit()
+
+    if project.create_from_default_template:
+        add_default_template_categories(db, db_item.id, user_id)
 
     return db_item
 
@@ -165,6 +169,24 @@ def get_projects(db: Session, user_id: int):
     )
 
     return result
+
+
+def add_default_template_categories(db, project_id: int, user_id: int):
+    from .todo_category_crud import create as create_category
+
+    default_categories = [
+        {"title": "Pending", "description": "⌚"},
+        {"title": "Working on it", "description": "⚒️"},
+        {"title": "Stuck", "description": "😡"},
+        {"title": "Done", "description": "✅"},
+    ]
+
+    for category in default_categories:
+        create_category(
+            db,
+            TodoCategoryCreate.model_validate({**category, "project_id": project_id}),
+            user_id,
+        )
 
 
 def validate_project_belongs_to_user(

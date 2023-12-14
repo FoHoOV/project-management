@@ -71,6 +71,15 @@
 			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>
+		<FormInput
+			name="create_from_default_template"
+			label="Create from default template?"
+			type="checkbox"
+			value={true}
+			class="w-full !flex-row items-center !justify-start gap-3"
+			inputClasses="!checkbox !btn-square !checkbox-success"
+			errors={formErrors.errors?.create_from_default_template?.toString()}
+		/>
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
 				text="add"
