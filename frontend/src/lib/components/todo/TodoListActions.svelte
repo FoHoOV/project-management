@@ -4,10 +4,8 @@
 	import Alert from '$components/Alert.svelte';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
-	import { Action, ErrorCode, type TodoCategory } from '$lib/generated-client';
+	import { Action, type TodoCategory } from '$lib/generated-client';
 	import todos from '$lib/stores/todos';
-	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
-	import toasts from '$lib/stores/toasts';
 
 	export let category: TodoCategory;
 	let state: 'calling-service' | 'none' = 'none';
