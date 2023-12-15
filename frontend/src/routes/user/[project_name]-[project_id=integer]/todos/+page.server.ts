@@ -71,6 +71,9 @@ export const load = (async ({ locals, fetch, params }) => {
 			}).getForUserTodoCategory(Number.parseInt(params.project_id));
 		},
 		errorCallback: async (e) => {
+			if (e.status == 401) {
+				return; // allow default unauthenticated user handling
+			}
 			throw error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
 		}
 	});
