@@ -105,7 +105,7 @@ const _defaultUnAuthenticatedUserHandler = async <
 	errorCallback: Required<
 		ServiceCallOptions<never, TSchema, TErrorCallbackResult>
 	>['errorCallback'],
-	e: Extract<ServiceError<TSchema>, { type: ErrorType.UNAUTHORIZED }>
+	e: Extract<ServiceError<TSchema>, { type: ErrorType.NOT_AUTHENTICATED }>
 ): Promise<{
 	success: false;
 	error: Awaited<TErrorCallbackResult>;
@@ -126,7 +126,7 @@ export enum ErrorType {
 	PRE_REQUEST_FAILURE,
 	SERVICE_DOWN_ERROR,
 	UNKNOWN_ERROR,
-	UNAUTHORIZED
+	NOT_AUTHENTICATED
 }
 
 export type ServiceError<TErrorSchema extends z.AnyZodObject> =
@@ -167,7 +167,7 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 			originalError: unknown;
 	  }
 	| {
-			type: ErrorType.UNAUTHORIZED;
+			type: ErrorType.NOT_AUTHENTICATED;
 			message: ErrorMessage;
 			status: number;
 			data: unknown;
@@ -193,7 +193,7 @@ export async function callService<
 	serviceCall,
 	errorSchema,
 	errorCallback = (async (e) => {
-		if (e.type === ErrorType.UNAUTHORIZED) {
+		if (e.type === ErrorType.NOT_AUTHENTICATED) {
 			await handleUnauthenticatedUser();
 		}
 		return e;
@@ -248,7 +248,7 @@ export async function callService<
 
 			if (e.response.status === 401) {
 				return await _defaultUnAuthenticatedUserHandler(errorCallback, {
-					type: ErrorType.UNAUTHORIZED,
+					type: ErrorType.NOT_AUTHENTICATED,
 					status: e.response.status,
 					message: 'Invalid credentials!',
 					data: response,
@@ -302,7 +302,7 @@ export async function callService<
 
 		if (e instanceof TokenError) {
 			return await _defaultUnAuthenticatedUserHandler(errorCallback, {
-				type: ErrorType.UNAUTHORIZED,
+				type: ErrorType.NOT_AUTHENTICATED,
 				status: 403,
 				message: e.message,
 				data: { detail: 'Invalid token (client-side validations).' },

@@ -36,7 +36,7 @@ export const actions: Actions = {
 				throw redirect(303, '/user/projects');
 			},
 			errorCallback: async (e) => {
-				if (e.type === ErrorType.UNAUTHORIZED) {
+				if (e.type === ErrorType.NOT_AUTHENTICATED) {
 					e.preventDefaultHandler = true;
 					return superFail(400, {
 						message: (e.data as any).detail as string
