@@ -124,6 +124,7 @@ export enum ErrorType {
 	VALIDATION_ERROR,
 	API_ERROR,
 	PRE_REQUEST_FAILURE,
+	SERVICE_DOWN_ERROR,
 	UNKNOWN_ERROR,
 	UNAUTHORIZED
 }
@@ -146,9 +147,16 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 			originalError: ResponseError;
 	  }
 	| {
+			type: ErrorType.SERVICE_DOWN_ERROR;
+			message: 'Service is temporary down, please try again later';
+			status: 503;
+			data: never;
+			originalError: FetchError;
+	  }
+	| {
 			type: ErrorType.PRE_REQUEST_FAILURE;
 			message: ErrorMessage;
-			status: -1;
+			status: 400;
 			data: unknown;
 			originalError: FetchError | RequiredError;
 	  }
@@ -213,10 +221,10 @@ export async function callService<
 			return {
 				success: false,
 				error: await errorCallback({
-					type: ErrorType.PRE_REQUEST_FAILURE,
-					status: -1,
-					message: 'Server did not respond in time! try again later :(',
-					data: e,
+					type: ErrorType.SERVICE_DOWN_ERROR,
+					status: 503,
+					message: 'Service is temporary down, please try again later',
+					data: e as never,
 					originalError: e
 				})
 			};
@@ -227,7 +235,7 @@ export async function callService<
 				success: false,
 				error: await errorCallback({
 					type: ErrorType.PRE_REQUEST_FAILURE,
-					status: -1,
+					status: 400,
 					message: e.message,
 					data: e,
 					originalError: e
@@ -295,7 +303,7 @@ export async function callService<
 		if (e instanceof TokenError) {
 			return await _defaultUnAuthenticatedUserHandler(errorCallback, {
 				type: ErrorType.UNAUTHORIZED,
-				status: -1,
+				status: 403,
 				message: e.message,
 				data: { detail: 'Invalid token (client-side validations).' },
 				preventDefaultHandler: false,
@@ -307,7 +315,7 @@ export async function callService<
 			success: false,
 			error: await errorCallback({
 				type: ErrorType.UNKNOWN_ERROR,
-				status: -1,
+				status: 500,
 				message: 'An unknown error has occurred, please try again',
 				originalError: e
 			})
