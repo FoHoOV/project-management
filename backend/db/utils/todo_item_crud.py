@@ -234,9 +234,8 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
             "You can not add a new dependency to an item that is marked as done",
         )
 
-    db.query(TodoItem).filter(TodoItem.id == dependency.todo_id).update(
-        {"is_done": False}
-    )
+    todo.is_done = False
+
     db_item = TodoItemDependency(**dependency.model_dump())
     db.add(db_item)
 

@@ -116,7 +116,6 @@ const addDependency = (todoId: number, dependency: TodoItemPartialDependency) =>
 				if (todo.id !== todoId) {
 					return todo;
 				}
-				todo.is_done = false;
 				todo.dependencies.push(dependency);
 				return todo;
 			});

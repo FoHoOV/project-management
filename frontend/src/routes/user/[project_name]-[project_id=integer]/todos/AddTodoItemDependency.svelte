@@ -61,9 +61,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful'
-				? 'Dependency added! Note that current todo status changed to `UNDONE`'
-				: ''}
+			message={state == 'submit-successful' ? 'Dependency added!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
