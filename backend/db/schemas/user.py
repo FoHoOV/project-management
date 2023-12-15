@@ -1,10 +1,8 @@
-from pydantic import BaseModel, Field, constr, model_validator
-
-from error.exceptions import ErrorCode, UserFriendlyError
+from pydantic import BaseModel, Field, model_validator
 
 
 class UserBase(BaseModel):
-    username: str = Field(min_length=1, max_length=100)
+    username: str = Field(min_length=3, max_length=30)
 
     class Config:
         str_to_lower = True
@@ -12,8 +10,8 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: str = Field(min_length=1, max_length=500)
-    confirm_password: str = Field(min_length=1, max_length=500, exclude=True)
+    password: str = Field(min_length=5, max_length=100)
+    confirm_password: str = Field(min_length=5, max_length=100, exclude=True)
 
     @model_validator(mode="after")
     def check_passwords_match(self) -> "UserCreate":
@@ -25,7 +23,7 @@ class UserCreate(UserBase):
 
 
 class UserAuthenticate(UserBase):
-    password: str = Field(min_length=1, max_length=500)
+    password: str = Field(min_length=1, max_length=100)
 
 
 class PartialProject(BaseModel):
