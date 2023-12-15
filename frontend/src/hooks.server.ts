@@ -8,11 +8,18 @@ export const setAuthorizationToken: Handle = async ({ event, resolve }) => {
 	const token = event.cookies.get(KEYS.token);
 
 	if (token) {
-		let parsedToken: Token | undefined = JSON.parse(token) as Token;
-		if (!(await isTokenExpirationDateValidAsync(parsedToken.access_token))) {
+		let parsedToken: Token | undefined = undefined;
+
+		try {
+			parsedToken = JSON.parse(token) as Token;
+			if (!(await isTokenExpirationDateValidAsync(parsedToken.access_token))) {
+				event.cookies.delete(KEYS.token);
+				parsedToken = undefined;
+			}
+		} catch (e) {
 			event.cookies.delete(KEYS.token);
-			parsedToken = undefined;
 		}
+
 		event.locals.token = parsedToken;
 	}
 
