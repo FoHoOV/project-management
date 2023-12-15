@@ -152,7 +152,7 @@
 		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 		await callServiceInClient({
 			serviceCall: async () => {
-				await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
+				const result = await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: event.detail.data.id,
 					new_category_id: todo.category_id,
 					...generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
@@ -162,10 +162,20 @@
 					todo.category_id,
 					generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				);
+				todos.updateTodo(result);
 				state = 'none';
 			},
 			errorCallback: async (e) => {
-				apiErrorTitle = e.message;
+				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
+					toasts.addToast({
+						type: 'error',
+						message: e.message,
+						time: 6000
+					});
+					todo.is_done = false;
+				} else {
+					apiErrorTitle = e.message;
+				}
 				state = 'none';
 			}
 		});

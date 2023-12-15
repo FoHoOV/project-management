@@ -1,4 +1,5 @@
 from typing import List
+from db.models.todo_category_action import Action
 from db.models.todo_item_dependency import TodoItemDependency
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
@@ -115,7 +116,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
     if todo.is_done is not None:
         if todo.is_done:
-            _validate_dependencies_are_resolved(db, db_item, user_id)
+            _mark_todo_as_done(db, db_item, user_id)
         db_item.is_done = todo.is_done
 
     if todo.description is not None:
@@ -151,6 +152,7 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
         )
 
     if db_item.category_id != moving_item.new_category_id:
+        _perform_actions(db, db_item, moving_item.new_category_id, user_id)
         validate_todo_category_belongs_to_user(db, moving_item.new_category_id, user_id)
         delete_item_from_sorted_items(
             db,
@@ -179,6 +181,8 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
     )
 
     db.commit()
+    db.refresh(db_item)
+    return db_item
 
 
 def remove(db: Session, todo: TodoItemDelete, user_id: int):
@@ -263,6 +267,21 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
             ErrorCode.TODO_NOT_FOUND,
             "todo item doesn't exist or doesn't belong to user",
         )
+
+
+def _mark_todo_as_done(db, todo_item: TodoItem, user_id: int):
+    _validate_dependencies_are_resolved(db, todo_item, user_id)
+    todo_item.is_done = True
+
+
+def _perform_actions(db: Session, todo_item: TodoItem, category_id: int, user_id: int):
+    new_category = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
+    if not new_category:
+        raise
+    for action in new_category.actions:
+        match action.action:
+            case Action.AUTO_MARK_AS_DONE:
+                _mark_todo_as_done(db, todo_item, user_id)
 
 
 def _validate_dependencies_are_resolved(db: Session, todo: TodoItem, user_id: int):

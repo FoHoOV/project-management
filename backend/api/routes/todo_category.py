@@ -59,11 +59,11 @@ def update_item(
     category: TodoCategoryUpdateItem,
     db: Session = Depends(get_db),
 ):
-    db_items = todo_category_crud.update_item(
+    db_item = todo_category_crud.update_item(
         db=db, category=category, user_id=current_user.id
     )
 
-    return db_items
+    return db_item
 
 
 @router.patch(path="/update-order")

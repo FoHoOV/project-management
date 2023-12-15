@@ -24,6 +24,7 @@ class TodoItem(BasesWithCreatedDate):
         "TodoCategory",
         back_populates="items",
         single_parent=True,
+        cascade="all, delete-orphan",
     )
     comments: Mapped[List[TodoItemComment]] = relationship(
         "TodoItemComment",

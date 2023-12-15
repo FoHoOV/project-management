@@ -19,6 +19,11 @@ class TodoCategory(BasesWithCreatedDate):
         cascade="all, delete-orphan",
         order_by="desc(TodoItem.id), desc(TodoItem.is_done)",
     )
+    actions: Mapped[List["TodoCategoryAction"]] = relationship(  # type: ignore
+        "TodoCategoryAction",
+        back_populates="category",
+        cascade="all, delete-orphan",
+    )
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
         "Project",
         secondary="todo_category_project_association",

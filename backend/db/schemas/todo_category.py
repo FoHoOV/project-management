@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field, model_validator
+from db.models.todo_category_action import Action
 from db.schemas.base import NullableOrderedItem
 from db.schemas.todo_item import TodoItem
 
@@ -15,8 +16,9 @@ class TodoCategoryCreate(TodoCategoryBase):
 
 class TodoCategoryUpdateItem(TodoCategoryBase):
     id: int
-    title: str = Field(min_length=1, max_length=100)
-    description: str = Field(min_length=1, max_length=100)
+    title: str | None = Field(min_length=1, max_length=100, default=None)
+    description: str | None = Field(min_length=1, max_length=100, default=None)
+    actions: list[Action] = Field(exclude=True, default=[])
 
 
 class TodoCategoryUpdateOrder(BaseModel):
@@ -51,11 +53,16 @@ class PartialProject(BaseModel):
     description: str
 
 
+class PartialAction(BaseModel):
+    action: Action
+
+
 class TodoCategory(TodoCategoryBase):
     id: int
     orders: list[NullableOrderedItem]
     items: list[TodoItem]
     projects: list[PartialProject]
+    actions: list[PartialAction]
 
     class Config:
         from_attributes = True

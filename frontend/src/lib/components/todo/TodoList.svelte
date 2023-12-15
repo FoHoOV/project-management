@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-	import type { TodoItem, TodoCategory } from '$lib/generated-client';
+	import { type TodoItem, type TodoCategory, ErrorCode } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 	import TodoItemComponent from './TodoItem.svelte';
 	import { receive, send } from './transitions';
@@ -19,6 +19,7 @@
 		faEdit,
 		faInfoCircle,
 		faPaperclip,
+		faRuler,
 		faTrashCan
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
@@ -40,6 +41,10 @@
 	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
 	import Confirm from '$components/Confirm.svelte';
+	import Modal from '$components/popups/Modal.svelte';
+	import TodoListActions from '$components/todo/TodoListActions.svelte';
+	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
+	import toasts from '$lib/stores/toasts';
 
 	export let category: TodoCategory;
 	export let projectId: number;
@@ -58,10 +63,15 @@
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';
-	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
-		'none';
+	let state:
+		| 'drop-zone-left-activated'
+		| 'drop-zone-right-activated'
+		| 'showing-rules'
+		| 'calling-service'
+		| 'none' = 'none';
 	let apiErrorTitle: string | null;
 	let confirmDeleteTodoCategory: Confirm;
+	let manageActionsModal: Modal;
 
 	const dispatch = createEventDispatcher<{
 		editTodoCategory: { category: TodoCategory };
@@ -151,16 +161,25 @@
 		state = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
-				await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
-					...event.detail.data,
+				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
+					id: event.detail.data.id,
+					category_id: event.detail.data.category_id,
 					new_category_id: category.id
 				});
 				todos.removeTodo(event.detail.data, false);
-				todos.addTodo({ ...event.detail.data, category_id: category.id, order: null });
+				todos.addTodo(result);
 				state = 'none';
 			},
 			errorCallback: async (e) => {
-				apiErrorTitle = e.message;
+				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
+					toasts.addToast({
+						type: 'error',
+						message: e.message,
+						time: 6000
+					});
+				} else {
+					apiErrorTitle = e.message;
+				}
 				state = 'none';
 			}
 		});
@@ -226,6 +245,9 @@
 					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
+					<button class="text-xl" on:click={() => manageActionsModal.show()}>
+						<Fa icon={faRuler} class="text-info" />
+					</button>
 					<button class="text-xl" on:click={() => confirmDeleteTodoCategory.show()}>
 						<Fa icon={faTrashCan} class="text-red-400" />
 					</button>
@@ -282,3 +304,20 @@
 		{/if}
 	</div>
 </div>
+
+<Modal
+	class="cursor-default border border-success border-opacity-20"
+	wrapperClasses={state != 'showing-rules' ? 'hidden' : ''}
+	title="Manage category rules here"
+	bind:this={manageActionsModal}
+	dialogProps={{
+		//@ts-ignore
+		//TODO: another ugly hack which will be solved by svelte5
+		ondragstart: 'event.preventDefault();event.stopPropagation();',
+		draggable: true
+	}}
+	on:opened={() => (state = 'showing-rules')}
+	on:closed={() => (state = 'none')}
+>
+	<TodoListActions slot="body" {category}></TodoListActions>
+</Modal>

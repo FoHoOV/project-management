@@ -1,3 +1,4 @@
+from db.models.todo_category_action import Action, TodoCategoryAction
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
@@ -103,6 +104,28 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
     if category.title is not None:
         db_item.title = category.title
+
+    # TODO: refactor later to support multiple actions (extract to a function)
+    if (
+        len(list(filter(lambda x: x == Action.AUTO_MARK_AS_DONE, category.actions)))
+        >= 1
+    ):
+        if (
+            len(list(filter(lambda x: x == Action.AUTO_MARK_AS_DONE, db_item.actions)))
+            == 1
+        ):
+            raise UserFriendlyError(
+                ErrorCode.TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME,
+                "This action already exists for this category",
+            )
+        db.add(
+            TodoCategoryAction(category_id=category.id, action=Action.AUTO_MARK_AS_DONE)
+        )
+    else:
+        db.query(TodoCategoryAction).filter(
+            TodoCategoryAction.category_id == category.id,
+            TodoCategoryAction.action == Action.AUTO_MARK_AS_DONE,
+        ).delete()
 
     db.commit()
     db.refresh(db_item)

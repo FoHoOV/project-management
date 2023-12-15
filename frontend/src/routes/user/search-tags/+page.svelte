@@ -42,7 +42,8 @@
 					return value;
 				}),
 				orders: [],
-				projects: []
+				projects: [],
+				actions: []
 			}
 		]);
 	}

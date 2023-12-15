@@ -45,14 +45,13 @@ def update_item(
     return db_items
 
 
-@router.patch(path="/update-order")
+@router.patch(path="/update-order", response_model=TodoItem)
 def update_order(
     current_user: Annotated[User, Depends(get_current_user)],
     todo: TodoItemUpdateOrder,
     db: Session = Depends(get_db),
 ):
-    todo_item_crud.update_order(db=db, moving_item=todo, user_id=current_user.id)
-    return Response(status_code=HTTP_200_OK)
+    return todo_item_crud.update_order(db=db, moving_item=todo, user_id=current_user.id)
 
 
 @router.delete(path="/remove")
