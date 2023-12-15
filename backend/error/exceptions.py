@@ -20,6 +20,7 @@ class ErrorCode(StrEnum):
     DEPENDENCIES_NOT_RESOLVED = auto()
     TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME = auto()
     CANT_CHANGE_ACTION = auto()
+    ACTION_PREVENTED_TODO_UPDATE = auto()
 
 
 class UserFriendlyError(Exception):

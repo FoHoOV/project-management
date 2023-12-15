@@ -119,7 +119,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         if todo.is_done:
             _validate_dependencies_are_resolved(db, db_item, user_id)
         db_item.is_done = todo.is_done
-        _perform_actions(db, db_item, db_item.category_id, user_id)
+        _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
     if todo.description is not None:
         db_item.description = todo.description
@@ -154,7 +154,7 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
         )
 
     if db_item.category_id != moving_item.new_category_id:
-        _perform_actions(db, db_item, moving_item.new_category_id, user_id)
+        _perform_actions(db, db_item, moving_item.new_category_id, None, user_id)
         validate_todo_category_belongs_to_user(db, moving_item.new_category_id, user_id)
         delete_item_from_sorted_items(
             db,
@@ -282,13 +282,24 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         )
 
 
-def _perform_actions(db: Session, todo_item: TodoItem, category_id: int, user_id: int):
+def _perform_actions(
+    db: Session,
+    todo_item: TodoItem,
+    category_id: int,
+    new_done_status: bool | None,
+    user_id: int,
+):
     new_category = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
     if not new_category:
         raise
     for action in new_category.actions:
         match action.action:
             case Action.AUTO_MARK_AS_DONE:
+                if new_done_status is not None and new_done_status == False:
+                    raise UserFriendlyError(
+                        ErrorCode.ACTION_PREVENTED_TODO_UPDATE,
+                        "This category has an action that prevents you from marking this todo as `UNDONE`",
+                    )
                 _validate_dependencies_are_resolved(db, todo_item, user_id)
                 todo_item.is_done = True
 

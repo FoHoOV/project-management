@@ -101,8 +101,7 @@
 					toasts.addToast({
 						type: 'warning',
 						time: 9000,
-						message:
-							'This category has a rule that prevents this item from being marked as `UNDONE`'
+						message: 'This category has a rule that prevents this item being marked as `UNDONE`'
 					});
 				}
 				state = 'none';
@@ -121,6 +120,7 @@
 					todo.is_done = false;
 				} else {
 					apiErrorTitle = e.message;
+					todo.is_done = savedTodoStatus;
 				}
 				state = 'none';
 			}
