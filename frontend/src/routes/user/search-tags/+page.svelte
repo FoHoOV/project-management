@@ -79,6 +79,7 @@
 	}}
 	on:submitended={() => {
 		state = 'none';
+		todos.clearTodoCategories();
 	}}
 	on:submitsucceeded={(event) => handleShowResults(event.detail.response)}
 	bind:this={formElement}

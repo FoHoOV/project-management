@@ -298,7 +298,7 @@ def _perform_actions(
                 if new_done_status is not None and new_done_status == False:
                     raise UserFriendlyError(
                         ErrorCode.ACTION_PREVENTED_TODO_UPDATE,
-                        "This category has an action that prevents you from marking this todo as `UNDONE`",
+                        "This todo's category has an action that prevents you from marking this todo as `UNDONE`",
                     )
                 _validate_dependencies_are_resolved(db, todo_item, user_id)
                 todo_item.is_done = True
