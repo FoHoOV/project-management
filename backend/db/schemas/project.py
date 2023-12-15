@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, Field, constr, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class ProjectBase(BaseModel):
@@ -21,7 +21,7 @@ class ProjectCreate(ProjectBase):
     def title_should_not_contain_dash(cls, title: str) -> str:
         if title.find("-") != -1:
             raise ValueError("'-' is not allowed in the project title")
-        return title.title()
+        return title
 
 
 class ProjectUpdate(ProjectCreate):
