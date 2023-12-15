@@ -45,6 +45,7 @@
 				});
 				todos.detachTag(todo.id, tag);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
@@ -60,6 +61,7 @@
 				await TagClient({ token: $page.data.token }).deleteTag(tag);
 				todos.deleteTag(tag);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;

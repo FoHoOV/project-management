@@ -38,6 +38,7 @@
 				// based on docs invalidate("/user/projects") doesn't work
 				await invalidateAll(); // TODO: remove from projects store/runes
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;

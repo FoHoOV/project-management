@@ -106,6 +106,7 @@
 					});
 				}
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				if (
@@ -133,6 +134,7 @@
 				await TodoItemClient({ token: $page.data.token }).removeTodoItem(todo);
 				todos.removeTodo(todo);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
@@ -171,6 +173,7 @@
 				);
 				todos.updateTodo(result);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {

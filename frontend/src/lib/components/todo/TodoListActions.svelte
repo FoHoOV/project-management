@@ -23,8 +23,10 @@
 						actions: (event.target as HTMLInputElement).checked ? [Action.Done] : [Action.Undone]
 					}
 				);
+
 				todos.updateCategory(result);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;

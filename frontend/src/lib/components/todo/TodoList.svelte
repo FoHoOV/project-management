@@ -89,6 +89,7 @@
 				});
 				todos.removeCategory(category);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
@@ -141,6 +142,7 @@
 					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
 				);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
@@ -169,6 +171,7 @@
 				todos.removeTodo(event.detail.data, false);
 				todos.addTodo(result);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {

@@ -25,8 +25,10 @@
 				const result = await TodoItemCommentClient({
 					token: $page.data.token
 				}).listTodoItemComment(todoId);
-				state = 'none';
+
 				todoComments.setOpenedTodoComments(result);
+				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
@@ -51,6 +53,7 @@
 				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
 				todoComments.deleteComment(comment);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;

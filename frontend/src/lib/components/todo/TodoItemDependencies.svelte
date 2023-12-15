@@ -34,6 +34,7 @@
 				});
 				todos.removeDependency(todo.id, dependency);
 				state = 'none';
+				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
