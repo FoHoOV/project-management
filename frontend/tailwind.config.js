@@ -21,6 +21,7 @@ export default {
 		'flex-row-reverse',
 		'flex-row',
 		'flex-col',
-		'flex-col-reverse'
+		'flex-col-reverse',
+		'active'
 	]
 };
