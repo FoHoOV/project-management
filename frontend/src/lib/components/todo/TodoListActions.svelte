@@ -40,18 +40,15 @@
 <div class="relative">
 	<Spinner visible={state === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
-	<div
-		class="flex max-w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-info p-3"
+	<label
+		class="label flex max-w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-info p-3"
 	>
-		<label for="action-auto-mark-as-done" class="label flex-1 cursor-pointer">
-			Mark as done when dropped
-		</label>
+		<span> Mark as done when dropped </span>
 		<input
 			type="checkbox"
 			class="checkbox-warning checkbox"
-			id="action-auto-mark-as-done"
 			checked={category.actions.filter((action) => action.action == Action.Done).length > 0}
 			on:change={handleUpdateAction}
 		/>
-	</div>
+	</label>
 </div>
