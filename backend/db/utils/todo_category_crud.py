@@ -105,7 +105,8 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     if category.title is not None:
         db_item.title = category.title
 
-    _update_actions(db, db_item, category.actions)
+    if category.actions is not None:
+        _update_actions(db, db_item, category.actions)
 
     db.commit()
     db.refresh(db_item)
