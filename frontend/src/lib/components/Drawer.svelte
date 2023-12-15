@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Navbar from '$components/navbar/Navbar.svelte';
-	import { classManipulator } from '$lib/actions';
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
@@ -41,7 +40,6 @@
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul
 			class="menu box-border min-h-full w-80 rounded-md bg-base-300 bg-opacity-90 p-4 text-base-content backdrop-blur transition-shadow lg:shadow-2xl"
-			use:classManipulator={{ selector: 'a', classes: ['active'], event: 'click' }}
 		>
 			<slot name="drawer-side" {closeDrawer} />
 		</ul>

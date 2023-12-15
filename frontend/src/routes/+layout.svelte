@@ -8,8 +8,7 @@
 		faArrowRight,
 		faHome,
 		faProjectDiagram,
-		faSearch,
-		faTasks
+		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 	import Toasts from '$components/popups/Toasts.svelte';
 	import projects from '$lib/stores/projects/projects';
@@ -71,9 +70,9 @@
 
 	<svelte:fragment slot="drawer-navbar-end">
 		{#if data.token}
-			<NavbarItem href="/user/logout" name="logout" />
+			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
 		{:else}
-			<NavbarItem href="/login" name="login" />
+			<NavbarItem href="/login" name="login" setActiveClassOnClick={false} />
 		{/if}
 	</svelte:fragment>
 
