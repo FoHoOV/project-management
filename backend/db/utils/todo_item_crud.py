@@ -222,6 +222,18 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
             ErrorCode.TODO_ITEM_DEPENDENCY_ALREADY_EXISTS,
             "This todo item dependency already exists",
         )
+
+    todo = db.query(TodoItem).filter(TodoItem.id == dependency.todo_id).first()
+
+    if todo is None:
+        raise
+
+    if todo.is_done:
+        raise UserFriendlyError(
+            ErrorCode.INVALID_INPUT,
+            "You can not add a new dependency to an item that is marked as done",
+        )
+
     db.query(TodoItem).filter(TodoItem.id == dependency.todo_id).update(
         {"is_done": False}
     )
