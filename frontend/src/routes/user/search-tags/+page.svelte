@@ -16,8 +16,6 @@
 
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
 
-	let formElement: HTMLFormElement;
-
 	$: formErrors = getFormErrors(form);
 
 	function resetForm() {
@@ -57,6 +55,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>search by tag</title>
+</svelte:head>
+
 <form
 	class="px-1"
 	method="post"
@@ -82,7 +84,6 @@
 		todos.clearTodoCategories();
 	}}
 	on:submitsucceeded={(event) => handleShowResults(event.detail.response)}
-	bind:this={formElement}
 >
 	<Alert class="mb-1" type="error" message={formErrors?.message} />
 	<FormInput type="text" label="tag name" name="name" errors={formErrors.errors?.name}></FormInput>

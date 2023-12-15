@@ -74,7 +74,7 @@ export const load = (async ({ locals, fetch, params }) => {
 			if (e.type === ErrorType.UNAUTHORIZED) {
 				e.preventDefaultHandler = true;
 			}
-			return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
+			throw error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
 		}
 	});
 }) satisfies PageServerLoad;

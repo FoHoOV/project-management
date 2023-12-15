@@ -47,7 +47,7 @@ export function namedActionResult<T extends { success: true } | object, Key exte
 }
 
 export function superFail<T = never>(
-	status: NumberRange<400, 500>,
+	status: NumberRange<400, 600>,
 	{ message, error }: FailedActionProps<T>
 ) {
 	return fail(status, failedActionData({ message, error }));

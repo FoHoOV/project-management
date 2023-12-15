@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import { navigating, page } from '$app/stores';
+	import { navigating } from '$app/stores';
 	import type { PageData } from './$types';
 	import Drawer from '$components/Drawer.svelte';
 	import {
@@ -13,7 +13,7 @@
 	import Toasts from '$components/popups/Toasts.svelte';
 	import projects from '$lib/stores/projects/projects';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	export let data: PageData;
 	// beforeNavigate(async ({ to, cancel }) => {
@@ -28,9 +28,7 @@
 	// 	}
 	// });
 
-	onMount(() => {
-		projects.setProjects(data.projects);
-	});
+	$: browser && projects.setProjects(data.projects);
 </script>
 
 <Drawer

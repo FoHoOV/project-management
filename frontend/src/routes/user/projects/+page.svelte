@@ -49,6 +49,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>projects</title>
+</svelte:head>
+
 <ProjectList
 	projects={browser ? $projects : data.projects}
 	enabledFeatures={['attach-to-user', 'edit-project']}

@@ -21,10 +21,13 @@
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
+	import { browser } from '$app/environment';
 
 	export let data: PageData;
 	export let form: ActionData;
 	export let state: 'loading' | 'none' = 'loading';
+
+	$: browser && data.response && todos.setTodoCategories(data.response);
 
 	let actions = [
 		{ component: CreateTodoItem, name: 'create-todo-item', title: 'Create your todos here!' },
@@ -114,12 +117,10 @@
 	}
 
 	onMount(() => {
+		state = 'none';
 		if (!data.response) {
-			state = 'none';
 			throw new window.Error("couldn't load todo categories from server");
 		}
-		todos.setTodoCategories(data.response);
-		state = 'none';
 	});
 </script>
 
