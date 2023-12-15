@@ -303,7 +303,7 @@ export async function callService<
 		if (e instanceof TokenError) {
 			return await _defaultUnAuthenticatedUserHandler(errorCallback, {
 				type: ErrorType.NOT_AUTHENTICATED,
-				status: 403,
+				status: 401,
 				message: e.message,
 				data: { detail: 'Invalid token (client-side validations).' },
 				preventDefaultHandler: false,
