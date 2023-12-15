@@ -17,7 +17,7 @@ features it has right now:
   12. adding rules to todo categories (currently we only support `MARK_AS_DONE` action meaning when you move a todo item to a todo category, it will be automatically marked as `Done`)
       
 # demo
-You can find the demo at [this](https://todos-fohoov.vercel.app/) url (DO NOT USE AS YOUR DAILY DRIVER (which makes me very happy that you chose to do so ❤️), I MIGHT DELETE THE DB FROM TIME TO TIME)
+You can find the demo at [this](https://todos-fohoov.vercel.app/) url (DO NOT USE AS YOUR DAILY DRIVER (which makes me very happy that you chose to do so ❤️), I MIGHT DELETE THE DB FROM TIME TO TIME).
 
 # how to run
   1. goto the backend project and follow the steps of its README.md
@@ -25,3 +25,6 @@ You can find the demo at [this](https://todos-fohoov.vercel.app/) url (DO NOT US
 
 # IMPORTANT
 you might need to delete the database after an update. I'll not implement migrations until I'm completely happy with the project.
+
+# IDK what the title should be
+Please give this project a star if you liked it (●'◡'●). Oh, and also I would love any contributions or improvements to this hobby project ^_^
