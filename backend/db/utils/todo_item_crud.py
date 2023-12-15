@@ -113,11 +113,13 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
             ),
             user_id,
         )
+        db.refresh(db_item)
 
     if todo.is_done is not None:
         if todo.is_done:
-            _mark_todo_as_done(db, db_item, user_id)
+            _validate_dependencies_are_resolved(db, db_item, user_id)
         db_item.is_done = todo.is_done
+        _perform_actions(db, db_item, db_item.category_id, user_id)
 
     if todo.description is not None:
         db_item.description = todo.description
@@ -269,11 +271,6 @@ def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
         )
 
 
-def _mark_todo_as_done(db, todo_item: TodoItem, user_id: int):
-    _validate_dependencies_are_resolved(db, todo_item, user_id)
-    todo_item.is_done = True
-
-
 def _perform_actions(db: Session, todo_item: TodoItem, category_id: int, user_id: int):
     new_category = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
     if not new_category:
@@ -281,7 +278,8 @@ def _perform_actions(db: Session, todo_item: TodoItem, category_id: int, user_id
     for action in new_category.actions:
         match action.action:
             case Action.AUTO_MARK_AS_DONE:
-                _mark_todo_as_done(db, todo_item, user_id)
+                _validate_dependencies_are_resolved(db, todo_item, user_id)
+                todo_item.is_done = True
 
 
 def _validate_dependencies_are_resolved(db: Session, todo: TodoItem, user_id: int):

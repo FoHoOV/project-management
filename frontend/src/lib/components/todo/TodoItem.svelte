@@ -92,12 +92,19 @@
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
 			serviceCall: async () => {
-				await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
+				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					...todo,
 					is_done: !savedTodoStatus
 				});
-				todo.is_done = !savedTodoStatus;
-				todos.updateTodo({ ...todo, is_done: !savedTodoStatus });
+				todos.updateTodo({ ...result });
+				if (result.is_done == savedTodoStatus) {
+					toasts.addToast({
+						type: 'warning',
+						time: 9000,
+						message:
+							'This category has a rule that prevents this item from being marked as `UNDONE`'
+					});
+				}
 				state = 'none';
 			},
 			errorCallback: async (e) => {
