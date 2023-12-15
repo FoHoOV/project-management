@@ -105,27 +105,7 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     if category.title is not None:
         db_item.title = category.title
 
-    # TODO: refactor later to support multiple actions (extract to a function)
-    if (
-        len(list(filter(lambda x: x == Action.AUTO_MARK_AS_DONE, category.actions)))
-        >= 1
-    ):
-        if (
-            len(list(filter(lambda x: x == Action.AUTO_MARK_AS_DONE, db_item.actions)))
-            == 1
-        ):
-            raise UserFriendlyError(
-                ErrorCode.TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME,
-                "This action already exists for this category",
-            )
-        db.add(
-            TodoCategoryAction(category_id=category.id, action=Action.AUTO_MARK_AS_DONE)
-        )
-    else:
-        db.query(TodoCategoryAction).filter(
-            TodoCategoryAction.category_id == category.id,
-            TodoCategoryAction.action == Action.AUTO_MARK_AS_DONE,
-        ).delete()
+    _update_actions(db, db_item, category.actions)
 
     db.commit()
     db.refresh(db_item)
@@ -250,6 +230,35 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
             ErrorCode.TODO_CATEGORY_NOT_FOUND,
             "todo category doesn't exist or doesn't belong to user",
         )
+
+
+def _update_actions(
+    db: Session, todo_category: TodoCategory, new_actions: list[Action]
+):
+    def has_action(actions: list[Action], action: Action):
+        return len(list(filter(lambda x: x == action, actions))) >= 1
+
+    if has_action(new_actions, Action.AUTO_MARK_AS_DONE):
+        if has_action(todo_category.actions, Action.AUTO_MARK_AS_DONE):
+            raise UserFriendlyError(
+                ErrorCode.TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME,
+                "This action already exists for this category",
+            )
+        if len(list(filter(lambda x: not x.is_done, todo_category.items))) >= 1:
+            raise UserFriendlyError(
+                ErrorCode.TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME,
+                "Cannot add this rule at the moment, because this category contains items that are not done yet",
+            )
+        db.add(
+            TodoCategoryAction(
+                category_id=todo_category.id, action=Action.AUTO_MARK_AS_DONE
+            )
+        )
+    else:
+        db.query(TodoCategoryAction).filter(
+            TodoCategoryAction.category_id == todo_category.id,
+            TodoCategoryAction.action == Action.AUTO_MARK_AS_DONE,
+        ).delete()
 
 
 def _get_last_category_id_in_project_except_current(

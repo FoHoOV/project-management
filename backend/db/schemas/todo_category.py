@@ -18,7 +18,7 @@ class TodoCategoryUpdateItem(TodoCategoryBase):
     id: int
     title: str | None = Field(min_length=1, max_length=100, default=None)
     description: str | None = Field(min_length=1, max_length=100, default=None)
-    actions: list[Action] = Field(exclude=True, default=[])
+    actions: list[Action] = Field(exclude=True)
 
 
 class TodoCategoryUpdateOrder(BaseModel):

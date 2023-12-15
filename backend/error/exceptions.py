@@ -19,6 +19,7 @@ class ErrorCode(StrEnum):
     TODO_ITEM_DEPENDENCY_NOT_FOUND = auto()
     DEPENDENCIES_NOT_RESOLVED = auto()
     TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME = auto()
+    CANT_CHANGE_ACTION = auto()
 
 
 class UserFriendlyError(Exception):
