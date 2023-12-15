@@ -50,7 +50,7 @@
 </script>
 
 <ProjectList
-	projects={browser ? data.projects : $projects}
+	projects={browser ? $projects : data.projects}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}

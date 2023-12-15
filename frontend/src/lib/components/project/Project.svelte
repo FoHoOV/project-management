@@ -15,6 +15,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
+	import projects from '$lib/stores/projects/projects';
 
 	export let project: Project;
 	export let enabledFeatures: Feature[] | null = null;
@@ -35,8 +36,7 @@
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
-				// based on docs invalidate("/user/projects") doesn't work
-				await invalidateAll(); // TODO: remove from projects store/runes
+				projects.deleteProject(project);
 				state = 'none';
 				apiErrorTitle = null;
 			},

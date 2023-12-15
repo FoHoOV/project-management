@@ -26,8 +26,8 @@ const updateProject = (project: Project) => {
 };
 
 const deleteProject = (project: Project) => {
-	_update((comments) => {
-		return comments.filter((value) => value.id != project.id);
+	_update((projects) => {
+		return projects.filter((value) => value.id != project.id);
 	});
 };
 
