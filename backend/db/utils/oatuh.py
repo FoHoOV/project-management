@@ -8,7 +8,7 @@ from db.utils.user_crud import get_user_by_username, verify_password
 
 
 def authenticate_user(db: Session, username: str, password: str):
-    user = get_user_by_username(db, username)
+    user = get_user_by_username(db, username.strip().lower())
     if not user:
         return False
     if not verify_password(password, user.password):
