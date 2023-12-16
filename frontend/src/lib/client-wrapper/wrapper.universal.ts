@@ -134,6 +134,7 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 			type: ErrorType.VALIDATION_ERROR;
 			message: ErrorMessage;
 			status: number;
+			code: Extract<ErrorCode, "invalid_input">;
 			validationError: TErrorSchema extends z.AnyZodObject ? z.infer<TErrorSchema> : never;
 			response: Record<string, any>;
 			originalError: ResponseError;
@@ -265,6 +266,7 @@ export async function callService<
 					error: await errorCallback({
 						type: ErrorType.VALIDATION_ERROR,
 						status: e.response.status,
+						code: ErrorCode.InvalidInput,
 						message: e.message,
 						response: response,
 						validationError: parsedApiError.data as any,
