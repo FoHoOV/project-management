@@ -4,15 +4,11 @@
 	import Fa from 'svelte-fa';
 </script>
 
-<div>
-	<h1 class="mb-5 text-4xl font-bold">Whoops! an error has occurred!</h1>
+<div class="flex w-full flex-col items-center gap-3 pt-10">
+	<h1 class="text-9xl font-extrabold text-error">{$page.status}</h1>
+	<h2 class="mb-5 text-4xl font-bold">{$page.error?.message}</h2>
 	<div class="flex flex-row items-center gap-2">
-		<Fa icon={faWarning} />
-		<p class="text-lg">
-			Error <span class="text-xl font-bold">{$page.status}</span>
-		</p>
+		<Fa icon={faWarning} class="text-error" />
+		<p class="text-lg">An error has occurred, please try again</p>
 	</div>
-	<p class="text-lg">
-		{$page.error?.message}, Please try again!
-	</p>
 </div>

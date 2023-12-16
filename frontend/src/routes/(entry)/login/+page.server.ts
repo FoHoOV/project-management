@@ -1,4 +1,4 @@
-import { type Actions, redirect } from '@sveltejs/kit';
+import { type Actions, redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import KEYS from '$lib/constants/cookie';
 import { convertFormDataToObject, superFail } from '$lib/actions/form';
