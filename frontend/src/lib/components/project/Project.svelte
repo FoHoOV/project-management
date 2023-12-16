@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Alert from '$components/Alert.svelte';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -15,7 +14,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
-	import projects from '$lib/stores/projects/projects';
+	import projects from '$lib/stores/projects';
 
 	export let project: Project;
 	export let enabledFeatures: Feature[] | null = null;

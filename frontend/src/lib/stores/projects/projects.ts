@@ -9,7 +9,10 @@ const setProjects = (projects: Project[]) => {
 };
 
 const addProject = (project: Project) => {
-	_update((projects) => [project, ...projects]);
+	_update((projects) => {
+		projects.push(project);
+		return projects;
+	});
 };
 
 const updateProject = (project: Project) => {
