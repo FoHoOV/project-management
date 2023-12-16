@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, ForeignKey, String, func, select
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, func, null, select
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -20,6 +20,7 @@ class TodoItem(BasesWithCreatedDate):
     category_id: Mapped[int] = mapped_column(
         ForeignKey("todo_category.id", ondelete="CASCADE")
     )
+    due_date: Mapped[DateTime] = mapped_column(DateTime(), nullable=True)
     category: Mapped["TodoCategory"] = relationship(  # type: ignore
         "TodoCategory",
         back_populates="items",

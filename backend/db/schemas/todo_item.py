@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from datetime import date
+import datetime
 from enum import Enum
 from fastapi import Query
 from pydantic import BaseModel, Field, model_validator
@@ -18,6 +20,7 @@ class TodoItemBase(BaseModel):
     description: str = Field(min_length=1, max_length=100)
     is_done: bool
     category_id: int
+    due_date: datetime.datetime = Field(default=None)
 
 
 class TodoItemCreate(TodoItemBase):

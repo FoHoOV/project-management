@@ -82,6 +82,11 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
         ),
         user_id,
     )
+    _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
+
+    db.commit()
+    db.refresh(db_item)
+
     return db_item
 
 
@@ -119,13 +124,17 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         if todo.is_done:
             _validate_dependencies_are_resolved(db, db_item, user_id)
         db_item.is_done = todo.is_done
-        _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
     if todo.description is not None:
         db_item.description = todo.description
 
     if todo.title is not None:
         db_item.title = todo.title
+
+    if todo.due_date is not None:
+        db_item.due_date = todo.due_date
+
+    _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
     db.commit()
     db.refresh(db_item)
