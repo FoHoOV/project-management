@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 	import type { PageData } from './$types';
 	import Drawer from '$components/Drawer.svelte';
 	import {
@@ -39,7 +39,7 @@
 >
 	<svelte:fragment slot="drawer-side" let:closeDrawer>
 		<NavbarItem icon={faHome} href="/" name="Home" on:click={closeDrawer} />
-		{#if data.token}
+		{#if $page.data.token}
 			<NavbarItem
 				icon={faProjectDiagram}
 				href="/user/projects"
@@ -47,7 +47,7 @@
 				on:click={closeDrawer}
 			>
 				<ul>
-					{#each data.projects as project (project.id)}
+					{#each (browser ? $projects : data.projects) as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}
@@ -67,7 +67,7 @@
 	</svelte:fragment>
 
 	<svelte:fragment slot="drawer-navbar-end">
-		{#if data.token}
+		{#if $page.data.token}
 			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
 		{:else}
 			<NavbarItem href="/login" name="login" setActiveClassOnClick={false} />
