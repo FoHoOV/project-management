@@ -13,11 +13,11 @@ export const setAuthorizationToken: Handle = async ({ event, resolve }) => {
 		try {
 			parsedToken = JSON.parse(token) as Token;
 			if (!(await isTokenExpirationDateValidAsync(parsedToken.access_token))) {
-				event.cookies.delete(KEYS.token);
+				event.cookies.delete(KEYS.token, { path: '/' });
 				parsedToken = undefined;
 			}
 		} catch (e) {
-			event.cookies.delete(KEYS.token);
+			event.cookies.delete(KEYS.token, { path: '/' });
 		}
 
 		event.locals.token = parsedToken;

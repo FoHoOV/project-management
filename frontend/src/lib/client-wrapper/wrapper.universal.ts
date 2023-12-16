@@ -94,7 +94,7 @@ export const handleUnauthenticatedUser = async () => {
 		await goto('/user/logout?session-expired=true');
 		return;
 	} else {
-		throw redirect(303, '/user/logout?session-expired=true');
+		redirect(303, '/user/logout?session-expired=true');
 	}
 };
 
@@ -134,7 +134,7 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 			type: ErrorType.VALIDATION_ERROR;
 			message: ErrorMessage;
 			status: number;
-			code: Extract<ErrorCode, "invalid_input">;
+			code: Extract<ErrorCode, 'invalid_input'>;
 			validationError: TErrorSchema extends z.AnyZodObject ? z.infer<TErrorSchema> : never;
 			response: Record<string, any>;
 			originalError: ResponseError;

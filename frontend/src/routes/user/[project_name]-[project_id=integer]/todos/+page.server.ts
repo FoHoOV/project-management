@@ -39,12 +39,13 @@ import {
 	TagClient
 } from '$lib/client-wrapper/clients';
 import { ErrorCode } from '$lib/generated-client/models';
+import { convertNumberToHttpStatusCode } from '$lib';
 
 export const load = (async ({ locals, fetch, params }) => {
 	// https://github.com/sveltejs/kit/issues/9785
 	// if we reject or throw a redirect in streamed promises it doesn't work for now and crashes the server
 	// we have to wait for a fix or handle the error and make it an expected error :(
-	// even returning an error (which is an expected error) still results in a server crash :(
+	// even throwing an error (which is an expected error) still results in a server crash :(
 	// return {
 	// 	streamed: {
 	// 		todos: callService({
@@ -58,7 +59,7 @@ export const load = (async ({ locals, fetch, params }) => {
 	// 				if (e.type === ErrorType.UNAUTHORIZED) {
 	// 					e.preventDefaultHandler = true;
 	// 				}
-	// 				return error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
+	// 				throw error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
 	// 			}
 	// 		})
 	// 	}
@@ -74,7 +75,7 @@ export const load = (async ({ locals, fetch, params }) => {
 			if (e.status == 401) {
 				return; // allow default unauthenticated user handling
 			}
-			throw error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
+			error(convertNumberToHttpStatusCode(e.status), { message: 'Error fetching your todos!' });
 		}
 	});
 }) satisfies PageServerLoad;

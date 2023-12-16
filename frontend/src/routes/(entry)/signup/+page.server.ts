@@ -28,7 +28,7 @@ export const actions: Actions = {
 					isTokenRequired: false,
 					fetchApi: fetch
 				}).signupUser(validationsResult.data);
-				throw redirect(303, '/login');
+				redirect(303, '/login');
 			},
 			errorSchema: UserCreate
 		});

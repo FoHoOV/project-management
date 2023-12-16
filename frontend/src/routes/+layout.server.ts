@@ -3,6 +3,7 @@ import { callService } from '$lib/client-wrapper';
 import { ProjectClient } from '$lib/client-wrapper/clients';
 import type { Project } from '$lib/generated-client/models';
 import { error } from '@sveltejs/kit';
+import { convertNumberToHttpStatusCode } from '$lib';
 export const load = (async ({ locals }) => {
 	let result: Project[] = [];
 	if (locals.token) {
@@ -12,7 +13,7 @@ export const load = (async ({ locals }) => {
 			}
 		});
 		if (!projects.success) {
-			throw error(projects.error.status, projects.error.message);
+			error(convertNumberToHttpStatusCode(projects.error.status), projects.error.message);
 		}
 		result = projects.response;
 	}

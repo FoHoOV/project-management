@@ -4,7 +4,7 @@ import KEYS from '$lib/constants/cookie';
 
 function logout(cookies: Cookies) {
 	cookies.delete(KEYS.token, { path: '/' });
-	throw redirect(307, '/login');
+	redirect(307, '/login');
 }
 
 export const load = (async ({ cookies, url }) => {

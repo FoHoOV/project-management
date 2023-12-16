@@ -33,7 +33,7 @@ export const actions: Actions = {
 					validationsResult.data.password
 				);
 				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
-				throw redirect(303, '/user/projects');
+				redirect(303, '/user/projects');
 			},
 			errorCallback: async (e) => {
 				if (e.type === ErrorType.NOT_AUTHENTICATED) {

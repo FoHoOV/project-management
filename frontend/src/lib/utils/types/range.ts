@@ -1,4 +1,3 @@
-
 // TODO: how the fuck does this work?
 export type Enumerate<Start extends number, End extends number[] = []> = End['length'] extends Start
 	? End[number]
