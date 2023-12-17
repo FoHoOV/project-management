@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+import datetime
 from pydantic import BaseModel, Field, model_validator
 from db.models.todo_category_action import Action
 from db.schemas.base import NullableOrderedItem
-from db.schemas.todo_item import TodoItem
+from db.schemas.todo_item import TodoItem, TodoItemPartialDependency, TodoItemPartialTag
 
 
 class TodoCategoryBase(BaseModel):
@@ -47,22 +48,38 @@ class TodoCategoryDelete(BaseModel):
     id: int
 
 
-class PartialProject(BaseModel):
+class TodoCategoryPartialProject(BaseModel):
     id: int
     title: str
     description: str
 
 
-class PartialAction(BaseModel):
+class TodoCategoryPartialAction(BaseModel):
     action: Action
+
+
+class TodoCategoryPartialTodoItem(BaseModel):
+    id: int
+    title: str
+    description: str
+    is_done: bool
+    category_id: int
+    due_date: datetime.datetime | None
+    tags: list[TodoItemPartialTag]
+    dependencies: list[TodoItemPartialDependency]
+    order: NullableOrderedItem | None
+    comments_count: int
+
+    class Config:
+        from_attributes = True
 
 
 class TodoCategory(TodoCategoryBase):
     id: int
     orders: list[NullableOrderedItem]
-    items: list[TodoItem]
-    projects: list[PartialProject]
-    actions: list[PartialAction]
+    items: list[TodoCategoryPartialTodoItem]
+    projects: list[TodoCategoryPartialProject]
+    actions: list[TodoCategoryPartialAction]
 
     class Config:
         from_attributes = True

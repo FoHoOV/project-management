@@ -12,17 +12,20 @@
 	import { faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import type { TodoItem, TodoItemPartialDependency } from '$lib/generated-client';
+	import type {
+		TodoCategoryPartialTodoItem,
+		TodoItemPartialDependency
+	} from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos';
 
-	export let todo: TodoItem;
+	export let todo: TodoCategoryPartialTodoItem;
 	export let enabledFeatures: Feature[] | null = null;
 
 	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null = null;
 
 	const dispatch = createEventDispatcher<{
-		addDependency: { todo: TodoItem };
+		addDependency: { todo: TodoCategoryPartialTodoItem };
 	}>();
 
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {

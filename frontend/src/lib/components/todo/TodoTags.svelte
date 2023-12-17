@@ -19,11 +19,11 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import type { TodoItem, TodoItemPartialTag } from '$lib/generated-client';
+	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos';
 	import Confirm from '$components/Confirm.svelte';
 
-	export let todo: TodoItem;
+	export let todo: TodoCategoryPartialTodoItem;
 	export let enabledFeatures: Feature[] | null = null;
 
 	let state: 'calling-service' | 'none' = 'none';
@@ -32,7 +32,7 @@
 
 	const dispatch = createEventDispatcher<{
 		editTag: { tag: TodoItemPartialTag };
-		addTag: { todo: TodoItem };
+		addTag: { todo: TodoCategoryPartialTodoItem };
 	}>();
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {

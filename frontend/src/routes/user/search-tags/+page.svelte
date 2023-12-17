@@ -5,7 +5,7 @@
 	import type { TodoItem as TodoItemModel } from '$lib/generated-client/models';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
-	import type { PageData, ActionData } from './$types';
+	import type { ActionData } from './$types';
 	import { onDestroy, onMount } from 'svelte';
 	import todos from '$lib/stores/todos/todos';
 	import TodoItem from '$components/todo/TodoItem.svelte';

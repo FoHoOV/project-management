@@ -1,8 +1,12 @@
-import type { TodoCategory, TodoItem, Project } from '$lib/generated-client/models';
+import type {
+	TodoCategory,
+	TodoCategoryPartialTodoItem,
+	Project
+} from '$lib/generated-client/models';
 
 export function generateNewOrderForTodoItem(
-	target: TodoItem,
-	movingItem: TodoItem,
+	target: TodoCategoryPartialTodoItem,
+	movingItem: TodoCategoryPartialTodoItem,
 	moveItemToLeftOfTarget: boolean,
 	category: TodoCategory
 ) {

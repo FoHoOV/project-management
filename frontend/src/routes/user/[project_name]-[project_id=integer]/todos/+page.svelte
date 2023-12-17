@@ -14,7 +14,11 @@
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
 	import MultiModal from '$components/popups/MultiModal.svelte';
-	import type { TodoCategory, TodoItem, TodoItemPartialTag } from '$lib/generated-client/models';
+	import type {
+		TodoCategory,
+		TodoCategoryPartialTodoItem,
+		TodoItemPartialTag
+	} from '$lib/generated-client/models';
 	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
 	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
@@ -81,7 +85,7 @@
 		modals.show('attach-to-project');
 	}
 
-	function handleEditTodoItem(e: CustomEvent<{ todo: TodoItem }>) {
+	function handleEditTodoItem(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
 		selectedActionProps = { todo: e.detail.todo };
 		modals.show('edit-todo-item');
 	}
@@ -101,7 +105,7 @@
 		modals.show('edit-todo-comment');
 	}
 
-	function handleAddTag(e: CustomEvent<{ todo: TodoItem }>) {
+	function handleAddTag(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
 		selectedActionProps = { todoId: e.detail.todo.id };
 		modals.show('add-tag');
 	}
@@ -111,7 +115,7 @@
 		modals.show('edit-tag');
 	}
 
-	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoItem }>) {
+	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
 		selectedActionProps = { todo: e.detail.todo };
 		modals.show('add-todo-item-dependency');
 	}
@@ -137,7 +141,7 @@
 		{:else}
 			{#each $todos as category (category.id)}
 				<div
-					class="xs:basis-[26rem] max-w-[27rem] shrink-0 basis-[20rem] sm:basis-[27rem]"
+					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] sm:basis-[27rem]"
 					animate:flip={{ duration: 200 }}
 				>
 					<TodoList

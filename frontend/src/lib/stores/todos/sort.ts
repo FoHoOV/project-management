@@ -1,18 +1,18 @@
-import type { TodoCategory, TodoItem } from '$lib/generated-client/models';
+import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 
-export function getTodoItemLeftId(todo: TodoItem) {
+export function getTodoItemLeftId(todo: TodoCategoryPartialTodoItem) {
 	return todo.order?.left_id ?? null;
 }
 
-export function setTodoItemLeftId(todo: TodoItem, leftId: number | null) {
+export function setTodoItemLeftId(todo: TodoCategoryPartialTodoItem, leftId: number | null) {
 	todo.order = { right_id: null, ...todo.order, left_id: leftId };
 }
 
-export function getTodoItemRightId(todo: TodoItem) {
+export function getTodoItemRightId(todo: TodoCategoryPartialTodoItem) {
 	return todo.order?.right_id ?? null;
 }
 
-export function setTodoItemRightId(todo: TodoItem, rightId: number | null) {
+export function setTodoItemRightId(todo: TodoCategoryPartialTodoItem, rightId: number | null) {
 	todo.order = { left_id: null, ...todo.order, right_id: rightId };
 }
 
@@ -32,7 +32,7 @@ export function setTodoCategoryRightId(todoCategory: TodoCategory, rightId: numb
 	const existingOrder = todoCategory.orders.length > 0 ? { ...todoCategory.orders[0] } : {};
 	todoCategory.orders = [{ left_id: null, ...existingOrder, right_id: rightId }];
 }
-export function sortedTodos(todos: TodoItem[]) {
+export function sortedTodos(todos: TodoCategoryPartialTodoItem[]) {
 	sortById(todos, false);
 	return sortByCustomOrder(todos, getTodoItemLeftId, getTodoItemRightId);
 }
@@ -298,7 +298,10 @@ export function removeElementFromSortedList<T extends { id: number }>(
 	console.log(JSON.stringify(elements));
 }
 
-export function getLastTodoItemInSortedListExceptCurrent(items: TodoItem[], currentTodoId: number) {
+export function getLastTodoItemInSortedListExceptCurrent(
+	items: TodoCategoryPartialTodoItem[],
+	currentTodoId: number
+) {
 	const lastItemInList = items.find(
 		(item) => item.id !== currentTodoId && getTodoItemRightId(item) === null
 	);

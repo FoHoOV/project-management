@@ -22,7 +22,12 @@
 		faTrashCan
 	} from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
-	import { ErrorCode, type TodoCategory, type TodoItem } from '$lib/generated-client/models';
+	import {
+		ErrorCode,
+		type TodoCategory,
+		type TodoCategoryPartialTodoItem,
+		type TodoItem
+	} from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
 	import Fa from 'svelte-fa';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -36,7 +41,7 @@
 	} from '$components/todo/constants';
 	import Spinner from '$components/Spinner.svelte';
 	import DropZoneHelper from '$components/todo/DropZoneHelper.svelte';
-	import { cursorOnElementPositionY } from '$lib/utils';
+	import { cursorOnElementPositionY, type StrictUnion } from '$lib/utils';
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
 	import TodoComments from './TodoComments.svelte';
@@ -47,7 +52,7 @@
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
-	export let todo: TodoItem;
+	export let todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
 	export let category: TodoCategory | null = null;
 	export let enabledFeatures: Feature[] | null = null;
 
@@ -87,7 +92,7 @@
 	let confirmDeleteTodo: Confirm;
 
 	const dispatch = createEventDispatcher<{
-		editTodoItem: { todo: TodoItem };
+		editTodoItem: { todo: TodoCategoryPartialTodoItem };
 	}>();
 
 	async function handleChangeDoneStatus() {
@@ -146,7 +151,7 @@
 		});
 	}
 
-	async function handleUpdateTodoItemOrder(event: DropEvent<TodoItem>) {
+	async function handleUpdateTodoItemOrder(event: DropEvent<TodoCategoryPartialTodoItem>) {
 		if (event.detail.data.id == todo.id) {
 			state = 'none';
 			return;

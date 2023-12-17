@@ -3,7 +3,7 @@ import type {
 	NullableOrderedItem,
 	TodoItemPartialTag,
 	TodoCategory,
-	TodoItem,
+	TodoCategoryPartialTodoItem,
 	TodoItemPartialDependency
 } from '$lib/generated-client/models';
 import {
@@ -27,7 +27,7 @@ import {
 
 const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
 
-const addTodo = (todo: TodoItem, skipSort = false): void => {
+const addTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false): void => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
@@ -57,7 +57,11 @@ const addTodo = (todo: TodoItem, skipSort = false): void => {
 	});
 };
 
-const removeTodo = (todo: TodoItem, removeDependencies = true, skipSort = false) => {
+const removeTodo = (
+	todo: TodoCategoryPartialTodoItem,
+	removeDependencies = true,
+	skipSort = false
+) => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
 			if (removeDependencies) {
@@ -91,7 +95,7 @@ const removeTodo = (todo: TodoItem, removeDependencies = true, skipSort = false)
 	});
 };
 
-const updateTodo = (todo: TodoItem) => {
+const updateTodo = (todo: TodoCategoryPartialTodoItem) => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
@@ -230,9 +234,9 @@ const decreaseTodoCommentsCounter = (todoId: number) => {
 };
 
 const updateTodoSort = (
-	movingElement: TodoItem,
+	movingElement: TodoCategoryPartialTodoItem,
 	movingElementNewCategoryId: number,
-	newOrder: NonNullable<TodoItem['order']>,
+	newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
 	skipSort = false
 ) => {
 	if (movingElement.category_id !== movingElementNewCategoryId) {
