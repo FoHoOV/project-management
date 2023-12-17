@@ -87,7 +87,7 @@
 			label="Due date (Optional)"
 			class="w-full"
 			type="date"
-			value={todo.due_date.toLocaleDateString()}
+			value={todo.due_date?.toLocaleDateString()}
 			errors={formErrors?.errors?.due_date}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">

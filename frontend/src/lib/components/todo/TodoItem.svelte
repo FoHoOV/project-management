@@ -227,6 +227,19 @@
 	function handleShowDependencies() {
 		todoDependenciesModal.show();
 	}
+
+	function _getDueDateClass(date: Date | null) {
+		if (!date) {
+			return '';
+		}
+		if (Date.now() > date.getTime()) {
+			return 'text-error';
+		} else if (date.getTime() - Date.now() < 1 * 24 * 60 * 60 * 1000) {
+			return 'text-warning';
+		} else {
+			return 'text-success';
+		}
+	}
 </script>
 
 <div
@@ -285,9 +298,9 @@
 		<p class="truncate hover:text-clip">{todo.description}</p>
 
 		<div class="flex items-center gap-2 py-2">
-			<Fa icon={faCalendarCheck} class="text-warning"></Fa>
+			<Fa icon={faCalendarCheck} class={_getDueDateClass(todo.due_date)}></Fa>
 			{#if todo.due_date}
-				<span>{todo.due_date.toLocaleDateString()}</span>
+				<span class={_getDueDateClass(todo.due_date)}>{todo.due_date.toLocaleDateString()}</span>
 			{:else}
 				<span>-</span>
 			{/if}
