@@ -102,7 +102,7 @@ class TodoItemPartialUser(BaseModel):
 
 class TodoItem(TodoItemBase):
     id: int
-    category: TodoItemPartialCategory | None
+    category: TodoItemPartialCategory
     tags: list[TodoItemPartialTag]
     dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem | None
