@@ -15,3 +15,6 @@ class User(BasesWithCreatedDate):
     projects: Mapped[List["Project"]] = relationship(  # type: ignore
         "Project", secondary="project_user_association", back_populates="users"
     )
+    done_todos: Mapped[list["TodoItem"]] = relationship(  # type: ignore
+        "TodoItem", back_populates="marked_as_done_by"
+    )

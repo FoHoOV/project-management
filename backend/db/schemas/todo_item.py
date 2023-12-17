@@ -95,6 +95,11 @@ class TodoItemPartialCategory(BaseModel):
     projects: list[TodoItemPartialProject]
 
 
+class TodoItemPartialUser(BaseModel):
+    id: int
+    username: str
+
+
 class TodoItem(TodoItemBase):
     id: int
     category: TodoItemPartialCategory | None
@@ -102,6 +107,7 @@ class TodoItem(TodoItemBase):
     dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem | None
     comments_count: int
+    marked_as_done_by: TodoItemPartialUser | None
 
     class Config:
         from_attributes = True

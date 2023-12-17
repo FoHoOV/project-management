@@ -85,6 +85,9 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
     )
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
+    if db_item.is_done:
+        db_item.marked_as_done_by_user_id = user_id
+
     db.commit()
     db.refresh(db_item)
 
@@ -138,6 +141,11 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         db_item.due_date = todo.due_date if todo.due_date.year != 1 else None
 
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
+
+    if db_item.is_done and db_item.marked_as_done_by_user_id is None:
+        db_item.marked_as_done_by_user_id = user_id
+    elif db_item.is_done == False:
+        db_item.marked_as_done_by_user_id = None
 
     db.commit()
     db.refresh(db_item)

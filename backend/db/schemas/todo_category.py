@@ -58,6 +58,11 @@ class TodoCategoryPartialAction(BaseModel):
     action: Action
 
 
+class TodoCategoryPartialUser(BaseModel):
+    id: int
+    username: str
+
+
 class TodoCategoryPartialTodoItem(BaseModel):
     id: int
     title: str
@@ -69,6 +74,7 @@ class TodoCategoryPartialTodoItem(BaseModel):
     dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem | None
     comments_count: int
+    marked_as_done_by: TodoCategoryPartialUser | None
 
     class Config:
         from_attributes = True

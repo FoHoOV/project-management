@@ -28,6 +28,7 @@ class TodoItem(BasesWithCreatedDate):
         single_parent=True,
         cascade="all, delete-orphan",
     )
+    marked_as_done_by_user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     comments: Mapped[List[TodoItemComment]] = relationship(
         "TodoItemComment",
         foreign_keys=[TodoItemComment.todo_id],
@@ -48,6 +49,12 @@ class TodoItem(BasesWithCreatedDate):
         uselist=False,
         back_populates="todo",
         cascade="all, delete-orphan",
+    )
+
+    marked_as_done_by: Mapped["User" | None] = relationship(  # type: ignore
+        "User",
+        uselist=False,
+        back_populates="done_todos",
     )
 
     @hybrid_property
