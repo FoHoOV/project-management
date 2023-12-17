@@ -7,7 +7,9 @@
 		| TodoTagFeature
 		| TodoDependencyFeature
 		| 'edit-todo-item'
-		| 'update-todo-item-order';
+		| 'update-todo-item-order'
+		| 'show-project-id'
+		| 'show-category-title';
 </script>
 
 <script lang="ts">
@@ -305,6 +307,21 @@
 				<span>-</span>
 			{/if}
 		</div>
+
+		{#if enabledFeatures?.includes('show-project-id')}
+			<div>
+				<span>in projects: </span>
+				<span class="font-bold text-info">{category?.projects.map((project) => project.title)}</span
+				>
+			</div>
+		{/if}
+
+		{#if enabledFeatures?.includes('show-category-title')}
+			<div>
+				<span> in category: </span>
+				<span class="font-bold text-info">{category?.title}</span>
+			</div>
+		{/if}
 
 		<div class="flex gap-2 self-end">
 			<div class="indicator self-end">

@@ -51,6 +51,7 @@
 	export { className as class };
 	export let enabledFeatures: Feature[] | null = null;
 
+	// until svelte5 comes out i have to do this shit, otherwise I could simply cast the type :|
 	$: todoItemEnabledFeatures = (enabledFeatures?.filter(
 		(feature) =>
 			feature == 'edit-comment' ||
@@ -59,7 +60,9 @@
 			feature == 'add-tag' ||
 			feature == 'edit-tag' ||
 			feature == 'update-todo-item-order' ||
-			feature == 'add-dependency'
+			feature == 'add-dependency' ||
+			feature == 'show-category-title' ||
+			feature == 'show-project-id'
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';
