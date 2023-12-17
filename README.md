@@ -15,6 +15,7 @@ features it has right now:
   10. adding todo dependencies which also works across projects (with add/delete) - for instance you can't mark a todo as `Done` unless all of its dependencies or dependencies of those dependencies are marked as `Done`
   11. creating projects from a default template
   12. adding rules to todo categories (currently we only support `MARK_AS_DONE` action meaning when you move a todo item to a todo category, it will be automatically marked as `Done`)
+  13. Setting due dates for each todoitem (with add/edit/remove)
       
 # demo
 You can find the demo at [this](https://todos-fohoov.vercel.app/) url (DO NOT USE AS YOUR DAILY DRIVER (which makes me very happy that you chose to do so ❤️), I MIGHT DELETE THE DB FROM TIME TO TIME).
