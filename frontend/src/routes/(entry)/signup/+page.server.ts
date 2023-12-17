@@ -1,6 +1,6 @@
 import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { convertFormDataToObject, superFail } from '$lib/actions/form';
+import { convertFormDataToObject, superFail, validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
 import { UserCreate } from '$lib/generated-client/zod/schemas';
 import { callServiceInFormActions } from '$lib/client-wrapper';
@@ -12,14 +12,10 @@ export const load = (async () => {
 
 export const actions: Actions = {
 	default: async ({ request, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, schema);
 
-		const validationsResult = await schema.safeParseAsync(convertFormDataToObject(formData));
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
 
 		return await callServiceInFormActions({
@@ -27,7 +23,7 @@ export const actions: Actions = {
 				await UserClient({
 					isTokenRequired: false,
 					fetchApi: fetch
-				}).signupUser(validationsResult.data);
+				}).signupUser(validation.data);
 				redirect(303, '/login');
 			},
 			errorSchema: UserCreate
