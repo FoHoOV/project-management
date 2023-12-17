@@ -8,7 +8,7 @@ from db.models.todo_item_comments import TodoItemComment
 from db.models.todo_item_dependency import TodoItemDependency
 from db.models.todo_item_order import TodoItemOrder
 from sqlalchemy.ext.hybrid import hybrid_property
-from typing import List
+from typing import List, Optional
 
 
 class TodoItem(BasesWithCreatedDate):
@@ -28,7 +28,9 @@ class TodoItem(BasesWithCreatedDate):
         single_parent=True,
         cascade="all, delete-orphan",
     )
-    marked_as_done_by_user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    marked_as_done_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("user.id"), nullable=True
+    )
     comments: Mapped[List[TodoItemComment]] = relationship(
         "TodoItemComment",
         foreign_keys=[TodoItemComment.todo_id],
@@ -51,7 +53,7 @@ class TodoItem(BasesWithCreatedDate):
         cascade="all, delete-orphan",
     )
 
-    marked_as_done_by: Mapped["User" | None] = relationship(  # type: ignore
+    marked_as_done_by: Mapped[Optional["User"]] = relationship(  # type: ignore
         "User",
         uselist=False,
         back_populates="done_todos",

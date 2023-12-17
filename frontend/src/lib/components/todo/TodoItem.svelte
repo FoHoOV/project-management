@@ -19,7 +19,8 @@
 		faEdit,
 		faSitemap,
 		faTags,
-		faTrashCan
+		faTrashCan,
+		faUser
 	} from '@fortawesome/free-solid-svg-icons';
 	import todos from '$lib/stores/todos';
 	import {
@@ -51,7 +52,6 @@
 	import toasts from '$lib/stores/toasts/toasts';
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
-	import projects from '$lib/stores/projects';
 
 	export let todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
 	export let category: TodoCategory | null = null;
@@ -105,7 +105,7 @@
 					...todo,
 					is_done: !savedTodoStatus
 				});
-				todos.updateTodo({ ...result });
+				todos.updateTodo(result);
 				if (result.is_done == savedTodoStatus) {
 					toasts.addToast({
 						type: 'warning',
@@ -117,20 +117,16 @@
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
-				if (
-					e.type == ErrorType.API_ERROR &&
-					(e.code == ErrorCode.DependenciesNotResolved || e.code == ErrorCode.TodoNotFound)
-				) {
+				if (e.type == ErrorType.API_ERROR) {
 					toasts.addToast({
 						type: 'error',
 						message: e.message,
 						time: 6000
 					});
-					todo.is_done = false;
 				} else {
 					apiErrorTitle = e.message;
-					todo.is_done = savedTodoStatus;
 				}
+				todo.is_done = savedTodoStatus;
 				state = 'none';
 			}
 		});
@@ -185,13 +181,15 @@
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
-				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
+				if (e.type == ErrorType.API_ERROR) {
 					toasts.addToast({
 						type: 'error',
 						message: e.message,
 						time: 6000
 					});
-					todo.is_done = false;
+					if (e.code == ErrorCode.DependenciesNotResolved) {
+						todo.is_done = false;
+					}
 				} else {
 					apiErrorTitle = e.message;
 				}
@@ -337,7 +335,20 @@
 			</div>
 		{/if}
 
-		<div class="flex gap-2 self-end">
+		{#if todo.marked_as_done_by}
+			<div class="flex items-center gap-2 self-end">
+				<span>Completed by: </span>
+				<div class="flex flex-row items-center gap-1.5">
+					<span class="block rounded-full border border-dashed border-warning p-1.5">
+						<Fa icon={faUser} />
+					</span>
+
+					<span class="text font-semibold text-success">{todo.marked_as_done_by?.username}</span>
+				</div>
+			</div>
+		{/if}
+
+		<div class="flex gap-2 self-end py-1">
 			<div class="indicator self-end">
 				<span class="badge indicator-item badge-secondary">{todo.comments_count}</span>
 				<button class="btn btn-info btn-outline btn-sm" on:click={handleShowComments}>
@@ -354,6 +365,7 @@
 				</button>
 			</div>
 		</div>
+
 		<div class="flex gap-2 self-end">
 			<div class="indicator col-start-2 self-end">
 				<span class="badge indicator-item badge-secondary">{todo.dependencies.length}</span>

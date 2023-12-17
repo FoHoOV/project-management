@@ -2,7 +2,7 @@
 	import LoadingButton from '$components/buttons/LoadingButton.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Alert from '$components/Alert.svelte';
-	import type { TodoItem as TodoItemModel } from '$lib/generated-client/models';
+	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client/models';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import type { ActionData } from './$types';
@@ -29,21 +29,24 @@
 			todos.clearTodoCategories();
 			return;
 		}
-		todos.setTodoCategories([
-			{
-				id: -1,
-				title: '',
-				description: '',
-				items: result.map((value) => {
-					value.category_id = -1;
-					value.order = null;
-					return value;
-				}),
-				orders: [],
-				projects: [],
-				actions: []
+		const categories: TodoCategory[] = [];
+		result.forEach((todo) => {
+			let index = categories.findIndex((category) => category.id == todo.id);
+			if (index >= 0) {
+				categories[index].items.push(todo);
+			} else {
+				categories.push({
+					id: todo.category_id,
+					title: '',
+					description: '',
+					items: [todo],
+					orders: [],
+					projects: [],
+					actions: []
+				});
 			}
-		]);
+		});
+		todos.setTodoCategories(categories);
 	}
 
 	onMount(() => {
@@ -106,8 +109,10 @@
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
 	{#if $todos.length > 0}
-		{#each $todos[0].items as todo (todo.id)}
-			<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
+		{#each $todos as category (category.id)}
+			{#each category.items as todo (todo.id)}
+				<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
+			{/each}
 		{/each}
 	{:else}
 		<div

@@ -21,6 +21,7 @@ class ErrorCode(StrEnum):
     TODO_CATEGORY_ACTION_IS_ALREADY_THE_SAME = auto()
     CANT_CHANGE_ACTION = auto()
     ACTION_PREVENTED_TODO_UPDATE = auto()
+    PERMISSION_DENIED = auto()
 
 
 class UserFriendlyError(Exception):

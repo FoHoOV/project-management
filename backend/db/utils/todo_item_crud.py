@@ -1,4 +1,5 @@
 import datetime
+from types import NoneType
 from typing import List
 from db.models.todo_category_action import Action
 from db.models.todo_item_dependency import TodoItemDependency
@@ -83,7 +84,8 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
         ),
         user_id,
     )
-    _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
+
+    _perform_actions(db, db_item, db_item.category_id, None, user_id)
 
     if db_item.is_done:
         db_item.marked_as_done_by_user_id = user_id
@@ -129,6 +131,14 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     if todo.is_done is not None:
         if todo.is_done:
             _validate_dependencies_are_resolved(db, db_item, user_id)
+        elif (
+            db_item.marked_as_done_by_user_id is not None
+            and db_item.marked_as_done_by_user_id != user_id
+        ):
+            raise UserFriendlyError(
+                ErrorCode.PERMISSION_DENIED,
+                "you cannot change the status of this todo item because it is already marked as done by another user. Only that user can change the status",
+            )
         db_item.is_done = todo.is_done
 
     if todo.description is not None:

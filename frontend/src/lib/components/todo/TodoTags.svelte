@@ -140,9 +140,16 @@
 							</button>
 						</div>
 					</div>
-					<p class="whitespace-pre-wrap break-words font-bold">
-						{tag.name}
-					</p>
+
+					<div class="flex items-center gap-2">
+						<span>tag name:</span>
+						<span class="whitespace-pre-wrap break-words font-bold">{tag.name}</span>
+					</div>
+
+					<div class="flex items-center gap-2">
+						<span>project id:</span>
+						<span class="whitespace-pre-wrap break-words font-bold">{tag.project_id}</span>
+					</div>
 				</div>
 			</div>
 		{/each}
