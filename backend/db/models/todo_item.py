@@ -21,7 +21,7 @@ class TodoItem(BasesWithCreatedDate):
     category_id: Mapped[int] = mapped_column(
         ForeignKey("todo_category.id", ondelete="CASCADE")
     )
-    due_date: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+    due_date: Mapped[datetime | None] = mapped_column(DateTime(), nullable=True)
     category: Mapped["TodoCategory"] = relationship(  # type: ignore
         "TodoCategory",
         back_populates="items",

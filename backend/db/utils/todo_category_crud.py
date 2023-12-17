@@ -38,7 +38,7 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
         )
         .join(TodoCategory.projects)
         .filter(Project.id == filter.project_id)
-        .order_by(TodoCategory.id.desc())
+        .order_by(TodoCategory.id.asc())
         .options(
             lazyload(
                 TodoCategory.orders.and_(

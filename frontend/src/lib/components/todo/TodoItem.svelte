@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import {
+		faCalendarCheck,
 		faComment,
 		faEdit,
 		faSitemap,
@@ -280,7 +281,17 @@
 				</button>
 			</div>
 		</div>
+
 		<p class="truncate hover:text-clip">{todo.description}</p>
+
+		<div class="flex items-center gap-2 py-2">
+			<Fa icon={faCalendarCheck} class="text-warning"></Fa>
+			{#if todo.due_date}
+				<span>{todo.due_date.toLocaleDateString()}</span>
+			{:else}
+				<span>-</span>
+			{/if}
+		</div>
 
 		<div class="flex gap-2 self-end">
 			<div class="indicator self-end">
