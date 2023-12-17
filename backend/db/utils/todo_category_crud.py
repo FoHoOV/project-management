@@ -45,7 +45,7 @@ def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: i
                     TodoCategoryOrder.project_id == filter.project_id
                 )
             )
-        )  # TODO: see why the fuck do we need this to exist
+        )  # TODO: see why the goblin do we need this to exist
         .all()
     )
 

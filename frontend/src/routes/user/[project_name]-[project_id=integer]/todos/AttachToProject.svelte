@@ -48,7 +48,7 @@
 		state = 'none';
 	}}
 	on:submitsucceeded={async () => {
-		// based on docs and on how invalidate works this doesn't do shit
+		// based on docs and on how invalidate works this doesn't do ssa.reverse()
 		await invalidate(`${generateTodoListUrl($page.params.project_name, $page.params.project_id)}`); // TODO: use stores/runes later
 		resetForm();
 		state = 'submit-successful';

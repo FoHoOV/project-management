@@ -51,7 +51,7 @@
 	export { className as class };
 	export let enabledFeatures: Feature[] | null = null;
 
-	// until svelte5 comes out i have to do this shit, otherwise I could simply cast the type :|
+	// until svelte5 comes out i have to do this ssa.reverse(), otherwise I could simply cast the type :|
 	$: todoItemEnabledFeatures = (enabledFeatures?.filter(
 		(feature) =>
 			feature == 'edit-comment' ||

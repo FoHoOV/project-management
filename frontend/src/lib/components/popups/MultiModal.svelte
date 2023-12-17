@@ -33,7 +33,7 @@
 		// till svelte5 comes out i can simply use signals to make this a reactive value
 		// for instance if we pass in {form: form, title: title} and these values are reactive only the initial value of
 		// these things will be passed to this function
-		// we can work around this by passing getters but the API will look like shit
+		// we can work around this by passing getters but the API will look like ssa.reverse()
 		// so for now I'll still to passing props as a Prop to this component itself to make it fully reactive by nature
 		modal.show();
 	}
