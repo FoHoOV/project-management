@@ -318,9 +318,12 @@
 			<div>
 				<span>in projects: </span>
 				{#each todo.category?.projects || [] as project}
-					<div class="inline-block max-w-full overflow-y-auto px-1">
-						<span class="text-lg font-bold text-info">(#{project.id}</span>
-						<span class="max-w-full font-bold text-info">{project.title})</span>
+					<div class="inline-flex flex-row items-center gap-1 overflow-y-auto px-1">
+						(
+						<span class="text-lg font-bold text-info">#{project.id}</span>
+						-
+						<span class="max-w-full font-bold text-info">{project.title}</span>
+						)
 					</div>
 				{/each}
 			</div>
