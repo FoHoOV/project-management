@@ -31,7 +31,8 @@
 		}
 		const categories: TodoCategory[] = [];
 		result.forEach((todo) => {
-			let index = categories.findIndex((category) => category.id == todo.id);
+			todo = { ...todo, order: null };
+			let index = categories.findIndex((category) => category.id == todo.category_id);
 			if (index >= 0) {
 				categories[index].items.push(todo);
 			} else {
