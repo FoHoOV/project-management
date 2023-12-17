@@ -1,5 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import type { NumberRange, ErrorMessage, StrictUnion } from '$lib/utils/types';
+import type { ZodTypeAny, z } from 'zod';
+import type { ValidatorErrorsType } from '.';
 
 export function convertFormDataToObject(formData: FormData): Record<string, FormDataEntryValue> {
 	const result: Record<string, FormDataEntryValue> = {};
@@ -44,6 +46,32 @@ export function namedActionResult<T extends { success: true } | object, Key exte
 		return { [key]: result } as any;
 	}
 	return result as any;
+}
+
+export async function validateFormActionRequest<TSchema extends ZodTypeAny>(
+	request: Request,
+	schema: TSchema
+): Promise<
+	| { success: true; data: z.infer<TSchema> }
+	| { success: false; failure: ReturnType<typeof superFail<ValidatorErrorsType<TSchema>>> }
+> {
+	const formData = await request.formData();
+
+	const validationsResult = await schema.safeParseAsync(convertFormDataToObject(formData));
+
+	if (!validationsResult.success) {
+		return {
+			success: false,
+			failure: superFail(400, {
+				message: 'Invalid form, please review your inputs',
+				error: validationsResult.error.flatten().fieldErrors
+			})
+		};
+	}
+	return {
+		success: true,
+		data: validationsResult.data
+	};
 }
 
 export function superFail<T = never>(
