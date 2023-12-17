@@ -202,6 +202,13 @@ export const actions: Actions = {
 				error: validationsResult.error.flatten().fieldErrors
 			});
 		}
+
+		if (!validationsResult.data.due_date) {
+			const date = new Date(0);
+			date.setFullYear(1, 0, 1);
+			validationsResult.data.due_date = date;
+		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoItemClient({

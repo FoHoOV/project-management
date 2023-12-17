@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 from db.models.todo_category_action import Action
 from db.models.todo_item_dependency import TodoItemDependency
@@ -91,6 +92,8 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
 
 
 def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
+    # in order to reset due_date pass a date with year=1
+
     validate_todo_item_belongs_to_user(db, todo.id, user_id)
 
     db_item = (
@@ -132,7 +135,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         db_item.title = todo.title
 
     if todo.due_date is not None:
-        db_item.due_date = todo.due_date
+        db_item.due_date = todo.due_date if todo.due_date.year != 1 else None
 
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
