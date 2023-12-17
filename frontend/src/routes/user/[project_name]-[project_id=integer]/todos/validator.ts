@@ -23,7 +23,8 @@ export const createTodoItemSchema = z.object({
 	description: optionalDescriptionSchema,
 	is_done: z
 		.union([z.boolean(), z.literal('true'), z.literal('false')])
-		.transform((value) => value === true || value === 'true')
+		.transform((value) => value === true || value === 'true'),
+	due_date: z.date().optional()
 });
 
 ({}) as z.infer<typeof createTodoItemSchema> satisfies TodoItemCreate;
@@ -55,7 +56,8 @@ export const editTodoItemSchema = z.object({
 	id: z.number({ coerce: true }),
 	category_id: z.number({ coerce: true }),
 	title: z.string().min(2),
-	description: optionalDescriptionSchema
+	description: optionalDescriptionSchema,
+	due_date: z.date().optional()
 });
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;

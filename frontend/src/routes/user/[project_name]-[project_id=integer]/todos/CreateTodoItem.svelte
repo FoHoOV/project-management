@@ -12,10 +12,11 @@
 	export let form: ActionData;
 	export let categoryId: number;
 
+	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
+	let showDatePicker: boolean = false;
 	let formElement: HTMLFormElement;
 
 	$: formErrors = getFormErrors(form);
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
 
 	function resetForm() {
 		formElement.reset();
@@ -75,6 +76,13 @@
 			class="w-full"
 			hideLabel={true}
 			errors={formErrors?.errors?.description}
+		/>
+		<FormInput
+			name="due_date"
+			class="w-full"
+			type="date"
+			label={Date.UTC(Date.now()).toLocaleString()}
+			errors={formErrors?.errors?.due_date}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton

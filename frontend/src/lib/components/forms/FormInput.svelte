@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Alert from '$components/Alert.svelte';
+	import DatePicker from '$components/forms/DatePicker.svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
 	export let name: string;
@@ -59,6 +60,9 @@
 			{value}
 			autofocus={autoFocus}
 		/>
+		{#if type == 'date'}
+			<DatePicker {input}></DatePicker>
+		{/if}
 	{/if}
 
 	<Alert type="error" message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
