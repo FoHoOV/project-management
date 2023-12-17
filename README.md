@@ -25,7 +25,7 @@ You can find the demo at [this](https://todos-fohoov.vercel.app/) url (DO NOT US
   2. goto the frontend project and follow the steps of its README.md
 
 # IMPORTANT
-you might need to delete the database after an update. I'll not implement migrations until I'm completely happy with the project.
+you might need to delete the database after an update. I'll not implement migrations until I'm completely happy with the project. If you are required to delete the db after an update I'll mention it in the release notes (*/ω＼*)
 
 # IDK what the title should be
 Please give this project a star if you liked it (●'◡'●). Oh, and also I would love any contributions or improvements to this hobby project ^_^
