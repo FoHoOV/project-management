@@ -36,9 +36,15 @@
 	<div class="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0">
 		<Alert type="error" message={formErrors?.message} />
 
-		<FormInput name="username" class="w-full" errors={formErrors?.errors?.username} />
+		<FormInput
+			name="username"
+			autoComplete="username"
+			class="w-full"
+			errors={formErrors?.errors?.username}
+		/>
 		<FormInput
 			name="password"
+			autoComplete="current-password"
 			class="w-full"
 			type="password"
 			errors={formErrors?.errors?.password}

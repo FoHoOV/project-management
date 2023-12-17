@@ -13,6 +13,7 @@
 		| (typeof type extends 'text-area' ? never : boolean)
 		| undefined = '';
 	export let autoFocus: boolean | null = null;
+	export let autoComplete: HTMLInputAttributes['autocomplete'] | null = null;
 	export { wrapperClasses as class };
 	export { inputClasses as inputClasses };
 
@@ -39,6 +40,7 @@
 			bind:this={input}
 			id={name}
 			{name}
+			autocomplete={autoComplete}
 			placeholder={label}
 			class="textarea w-full {inputClasses}"
 			value={value?.toString()}
@@ -49,6 +51,7 @@
 		<input
 			bind:this={input}
 			{type}
+			autocomplete={autoComplete}
 			id={name}
 			{name}
 			placeholder={label}
