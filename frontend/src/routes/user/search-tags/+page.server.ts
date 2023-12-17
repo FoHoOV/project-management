@@ -1,9 +1,4 @@
-import {
-	callServiceInFormActions,
-	convertFormDataToObject,
-	namedActionResult,
-	superFail
-} from '$lib';
+import { callServiceInFormActions, namedActionResult, validateFormActionRequest } from '$lib';
 import { TagClient } from '$lib/client-wrapper/clients';
 import type { Actions, PageServerLoad } from './$types';
 import { searchTagSchema } from './validator';
@@ -14,31 +9,24 @@ export const load = (async () => {
 
 export const actions = {
 	search: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, searchTagSchema);
 
-		const validationsResult = await searchTagSchema.safeParseAsync({
-			...convertFormDataToObject(formData)
-		});
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
 
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
-				if (validationsResult.data.projectId) {
+				if (validation.data.projectId) {
 					return await TagClient({
 						token: locals.token,
 						fetchApi: fetch
-					}).searchTag(validationsResult.data.name, validationsResult.data.projectId);
+					}).searchTag(validation.data.name, validation.data.projectId);
 				} else {
 					return await TagClient({
 						token: locals.token,
 						fetchApi: fetch
-					}).searchTag(validationsResult.data.name);
+					}).searchTag(validation.data.name);
 				}
 			},
 			errorSchema: searchTagSchema

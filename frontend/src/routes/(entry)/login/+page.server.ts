@@ -1,7 +1,7 @@
-import { type Actions, redirect, error } from '@sveltejs/kit';
+import { type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import KEYS from '$lib/constants/cookie';
-import { convertFormDataToObject, superFail } from '$lib/actions/form';
+import { superFail, validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
 import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
 import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper';
@@ -13,14 +13,10 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 export const actions: Actions = {
 	default: async ({ request, cookies, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, schema);
 
-		const validationsResult = await schema.safeParseAsync(convertFormDataToObject(formData));
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
 
 		return await callServiceInFormActions({
@@ -28,10 +24,7 @@ export const actions: Actions = {
 				const token = await OAuthClient({
 					isTokenRequired: false,
 					fetchApi: fetch
-				}).loginForAccessTokenOAuth(
-					validationsResult.data.username,
-					validationsResult.data.password
-				);
+				}).loginForAccessTokenOAuth(validation.data.username, validation.data.password);
 				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
 				redirect(303, '/user/projects');
 			},

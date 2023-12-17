@@ -1,6 +1,6 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { convertFormDataToObject, namedActionResult, superFail } from '$lib/actions/form';
+import { validateFormActionRequest, namedActionResult, superFail } from '$lib/actions/form';
 import {
 	addTagSchema,
 	addTodoItemDependencySchema,
@@ -21,24 +21,17 @@ import {
 	TodoItemUpdateItem,
 	TodoCommentCreate,
 	TodoCommentUpdate,
-	TagCreate,
 	TagAttachToTodo,
 	TagUpdate,
 	TodoItemAddDependency
 } from '$lib/generated-client/zod/schemas';
-import {
-	ErrorType,
-	callService,
-	callServiceInFormActions,
-	superApplyAction
-} from '$lib/client-wrapper';
+import { callService, callServiceInFormActions } from '$lib/client-wrapper';
 import {
 	TodoItemClient,
 	TodoCategoryClient,
 	TodoItemCommentClient,
 	TagClient
 } from '$lib/client-wrapper/clients';
-import { ErrorCode } from '$lib/generated-client/models';
 import { convertNumberToHttpStatusCode } from '$lib';
 
 export const load = (async ({ locals, fetch, params }) => {
@@ -80,18 +73,14 @@ export const load = (async ({ locals, fetch, params }) => {
 	});
 }) satisfies PageServerLoad;
 
+// TODO: probably should separate these to their own routes (todo/[edit|create] or category/[edit]/create, ...)
+// with the new shallow routing I can separate the associated components as well (but i'll w8 for the svelte5 for the big refactor)
 export const actions: Actions = {
 	addTodo: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
-		const validationsResult = await createTodoItemSchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
+		const validation = await validateFormActionRequest(request, createTodoItemSchema);
 
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
 
 		const result = await callServiceInFormActions({
@@ -100,7 +89,7 @@ export const actions: Actions = {
 					token: locals.token,
 					fetchApi: fetch
 				}).createForUserTodoItem({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoItemCreate
@@ -109,25 +98,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'addTodo');
 	},
 	createCategory: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, createTodoCategorySchema);
 
-		const validationsResult = await createTodoCategorySchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).createForUserTodoCategory({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoCategoryCreate
@@ -136,25 +119,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'createCategory');
 	},
 	attachToProject: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, attachToProjectSchema);
 
-		const validationsResult = await attachToProjectSchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).attachToProjectTodoCategory({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoCategoryAttachAssociation
@@ -163,25 +140,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'attachToProject');
 	},
 	editTodoCategory: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, editTodoCategorySchema);
 
-		const validationsResult = await editTodoCategorySchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).updateItemTodoCategory({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoCategoryUpdateItem
@@ -190,23 +161,16 @@ export const actions: Actions = {
 		return namedActionResult(result, 'editTodoCategory');
 	},
 	editTodoItem: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, editTodoItemSchema);
 
-		const validationsResult = await editTodoItemSchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
 
-		if (!validationsResult.data.due_date) {
+		if (!validation.data.due_date) {
 			const date = new Date(0);
 			date.setFullYear(1, 0, 1);
-			validationsResult.data.due_date = date;
+			validation.data.due_date = date;
 		}
 
 		const result = await callServiceInFormActions({
@@ -215,7 +179,7 @@ export const actions: Actions = {
 					token: locals.token,
 					fetchApi: fetch
 				}).updateItemTodoItem({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoItemUpdateItem
@@ -224,25 +188,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'editTodoItem');
 	},
 	createTodoComment: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, createTodoCommentSchema);
 
-		const validationsResult = await createTodoCommentSchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoItemCommentClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).createTodoItemComment({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoCommentCreate
@@ -251,25 +209,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'createTodoComment');
 	},
 	editTodoComment: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, editTodoCommentSchema);
 
-		const validationsResult = await editTodoCommentSchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoItemCommentClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).updateTodoItemComment({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoCommentUpdate
@@ -278,22 +230,18 @@ export const actions: Actions = {
 		return namedActionResult(result, 'editTodoComment');
 	},
 	addTag: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, addTagSchema);
 
-		const validationsResult = await addTagSchema.safeParseAsync(convertFormDataToObject(formData));
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).attachToTodoTag({ ...validationsResult.data, create_if_doesnt_exist: true });
+				}).attachToTodoTag({ ...validation.data, create_if_doesnt_exist: true });
 			},
 			errorSchema: TagAttachToTodo
 		});
@@ -301,23 +249,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'addTag');
 	},
 	editTag: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, editTagSchema);
 
-		const validationsResult = await editTagSchema.safeParseAsync(convertFormDataToObject(formData));
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).updateTag({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TagUpdate
@@ -326,25 +270,19 @@ export const actions: Actions = {
 		return namedActionResult(result, 'editTag');
 	},
 	addTodoItemDependency: async ({ request, locals, fetch }) => {
-		const formData = await request.formData();
+		const validation = await validateFormActionRequest(request, addTodoItemDependencySchema);
 
-		const validationsResult = await addTodoItemDependencySchema.safeParseAsync(
-			convertFormDataToObject(formData)
-		);
-
-		if (!validationsResult.success) {
-			return superFail(400, {
-				message: 'Invalid form, please review your inputs',
-				error: validationsResult.error.flatten().fieldErrors
-			});
+		if (!validation.success) {
+			return validation.failure;
 		}
+
 		const result = await callServiceInFormActions({
 			serviceCall: async () => {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
 				}).addTodoItemDependencyTodoItem({
-					...validationsResult.data
+					...validation.data
 				});
 			},
 			errorSchema: TodoItemAddDependency
