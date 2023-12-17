@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, HandleServerError } from '@sveltejs/kit';
 import type { Token } from '$lib/generated-client';
 import KEYS from '$lib/constants/cookie';
 import { sequence } from '@sveltejs/kit/hooks';
@@ -24,6 +24,13 @@ export const setAuthorizationToken: Handle = async ({ event, resolve }) => {
 	}
 
 	return await resolve(event);
+};
+
+export const handleUnexpectedError: HandleServerError = async ({ status }) => {
+	return {
+		message: 'Whoops! an unknown error has occurred, please try again later',
+		status: status
+	};
 };
 
 export const handle: Handle = sequence(setAuthorizationToken);
