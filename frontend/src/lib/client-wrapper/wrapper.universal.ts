@@ -245,7 +245,26 @@ export async function callService<
 		}
 
 		if (e instanceof ResponseError) {
-			const response = await e.response.clone().json();
+			let response: any;
+
+			try {
+				response = await e.response.clone().json();
+			} catch {
+				return {
+					success: false,
+					error: await errorCallback({
+						type: ErrorType.API_ERROR,
+						status: e.response.status < 400 ? 500 : e.response.status,
+						code: ErrorCode.UnknownError,
+						message:
+							e.response.status < 400
+								? 'Service response was in an unexpected format'
+								: e.response.statusText,
+						response: response,
+						originalError: e
+					})
+				};
+			}
 
 			if (e.response.status === 401) {
 				return await _defaultUnAuthenticatedUserHandler(errorCallback, {
