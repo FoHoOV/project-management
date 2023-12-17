@@ -17,6 +17,20 @@ const optionalDescriptionSchema = z
 	.transform((t) => (t.length > 0 ? t : '-'))
 	.pipe(z.string().min(1));
 
+const dateSchema = z.string().transform((value, ctx) => {
+	if (value.length == 0) {
+		return undefined;
+	}
+	const parsedDate = z.date({ coerce: true }).safeParse(value);
+	if (!parsedDate.success) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.invalid_date
+		});
+		return undefined;
+	}
+	return parsedDate.data;
+});
+
 export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),
 	title: z.string().min(2),
@@ -24,7 +38,7 @@ export const createTodoItemSchema = z.object({
 	is_done: z
 		.union([z.boolean(), z.literal('true'), z.literal('false')])
 		.transform((value) => value === true || value === 'true'),
-	due_date: z.date().optional()
+	due_date: dateSchema.optional()
 });
 
 ({}) as z.infer<typeof createTodoItemSchema> satisfies TodoItemCreate;
@@ -57,7 +71,7 @@ export const editTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }),
 	title: z.string().min(2),
 	description: optionalDescriptionSchema,
-	due_date: z.date().optional()
+	due_date: dateSchema.optional().optional()
 });
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;

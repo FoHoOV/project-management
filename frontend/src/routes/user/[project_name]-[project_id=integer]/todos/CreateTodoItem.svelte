@@ -63,25 +63,18 @@
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
 		<FormInput class="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
-		<FormInput
-			name="title"
-			autoFocus={true}
-			class="w-full"
-			hideLabel={true}
-			errors={formErrors?.errors?.title}
-		/>
+		<FormInput name="title" autoFocus={true} class="w-full" errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"
 			label="description (Optional)"
 			class="w-full"
-			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>
 		<FormInput
 			name="due_date"
+			label="Due date (Optional)"
 			class="w-full"
 			type="date"
-			label={Date.UTC(Date.now()).toLocaleString()}
 			errors={formErrors?.errors?.due_date}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
