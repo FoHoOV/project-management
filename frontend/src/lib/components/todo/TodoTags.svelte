@@ -108,23 +108,37 @@
 				<Confirm bind:this={confirmsDeleteTag[i]} on:onConfirm={() => handleDeleteTag(tag)}
 				></Confirm>
 				<div class="card-body">
-					<div class="card-actions justify-end">
-						<button
-							class="btn btn-square btn-error btn-sm"
-							on:click={() => confirmsDeleteTag[i].show()}
+					<div class="card-actions box-border justify-end">
+						<div
+							class="tooltip tooltip-warning tooltip-top tooltip-left"
+							data-tip="delete tag from this project"
 						>
-							<Fa icon={faTrashCan}></Fa>
-						</button>
-						<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>
-							<Fa icon={faUnlink}></Fa>
-						</button>
-						<button
-							class="btn btn-square btn-info btn-sm"
+							<button
+								class="btn btn-square btn-error btn-sm"
+								on:click={() => confirmsDeleteTag[i].show()}
+							>
+								<Fa icon={faTrashCan}></Fa>
+							</button>
+						</div>
+
+						<div
+							class="tooltip tooltip-warning tooltip-top tooltip-left"
+							data-tip="detach tag from this item"
+						>
+							<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>
+								<Fa icon={faUnlink} class="text-error-content"></Fa>
+							</button>
+						</div>
+
+						<div
 							class:hidden={!enabledFeatures?.includes('edit-tag')}
-							on:click={() => handleEditTag(tag)}
+							class="tooltip tooltip-info tooltip-top tooltip-left"
+							data-tip="edit tag name"
 						>
-							<Fa icon={faEdit}></Fa>
-						</button>
+							<button class="btn btn-square btn-info btn-sm" on:click={() => handleEditTag(tag)}>
+								<Fa icon={faEdit} class="text-info-content"></Fa>
+							</button>
+						</div>
 					</div>
 					<p class="whitespace-pre-wrap break-words font-bold">
 						{tag.name}

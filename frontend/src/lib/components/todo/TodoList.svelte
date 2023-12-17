@@ -239,6 +239,12 @@
 			<div class="flex w-full justify-between">
 				<div class="flex max-w-full items-center">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
+					<div
+						class="tooltip tooltip-info tooltip-bottom pr-2 text-lg font-bold"
+						data-tip="category id"
+					>
+						<span class="text-info">#{category.id}</span>
+					</div>
 					<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
 						>{category.title}</span
 					>
