@@ -62,7 +62,8 @@
 			feature == 'update-todo-item-order' ||
 			feature == 'add-dependency' ||
 			feature == 'show-category-title' ||
-			feature == 'show-project-id'
+			feature == 'show-project-id' ||
+			feature == 'sort-on-update-status'
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';
@@ -240,7 +241,7 @@
 				<div class="flex max-w-full items-center">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
 					<div
-						class="tooltip tooltip-info tooltip-bottom pr-2 text-lg font-bold"
+						class="tooltip tooltip-bottom tooltip-info pr-2 text-lg font-bold"
 						data-tip="category id"
 					>
 						<span class="text-info">#{category.id}</span>

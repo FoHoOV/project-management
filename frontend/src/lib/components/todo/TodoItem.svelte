@@ -9,7 +9,8 @@
 		| 'edit-todo-item'
 		| 'update-todo-item-order'
 		| 'show-project-id'
-		| 'show-category-title';
+		| 'show-category-title'
+		| 'sort-on-update-status';
 </script>
 
 <script lang="ts">
@@ -105,7 +106,7 @@
 					...todo,
 					is_done: !savedTodoStatus
 				});
-				todos.updateTodo(result);
+				todos.updateTodo(result, !enabledFeatures?.includes('sort-on-update-status'));
 				if (result.is_done == savedTodoStatus) {
 					toasts.addToast({
 						type: 'warning',

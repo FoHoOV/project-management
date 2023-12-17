@@ -95,7 +95,7 @@ const removeTodo = (
 	});
 };
 
-const updateTodo = (todo: TodoCategoryPartialTodoItem) => {
+const updateTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false) => {
 	_update((categories) => {
 		return categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
@@ -107,7 +107,11 @@ const updateTodo = (todo: TodoCategoryPartialTodoItem) => {
 				}
 				return todo;
 			});
-			category.items = sortedTodos(category.items);
+
+			if (!skipSort) {
+				category.items = sortedTodos(category.items);
+			}
+
 			return category;
 		});
 	});

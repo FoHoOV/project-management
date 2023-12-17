@@ -157,7 +157,8 @@
 							'add-tag',
 							'edit-tag',
 							'update-todo-item-order',
-							'add-dependency'
+							'add-dependency',
+							'sort-on-update-status'
 						]}
 						on:createTodoItem={handleCreateTodoItem}
 						on:editTodoItem={handleEditTodoItem}
