@@ -57,18 +57,11 @@
 			message={state == 'submit-successful' ? 'project created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput
-			name="title"
-			class="w-full"
-			autoFocus={true}
-			hideLabel={true}
-			errors={formErrors?.errors?.title}
-		/>
+		<FormInput name="title" class="w-full" autoFocus={true} errors={formErrors?.errors?.title} />
 		<FormInput
 			name="description"
 			label="description (Optional)"
 			class="w-full"
-			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>
 		<FormInput

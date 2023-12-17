@@ -68,7 +68,6 @@
 			autoFocus={true}
 			class="w-full"
 			value={tag.name}
-			hideLabel={true}
 			errors={formErrors?.errors?.message}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">

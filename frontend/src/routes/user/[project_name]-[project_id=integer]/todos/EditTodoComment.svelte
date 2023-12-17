@@ -74,7 +74,6 @@
 			class="w-full"
 			inputClasses="min-h-16"
 			value={comment.message}
-			hideLabel={true}
 			errors={formErrors?.errors?.message}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">

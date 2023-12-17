@@ -73,7 +73,6 @@
 			autoFocus={true}
 			value={todo.title}
 			class="w-full"
-			hideLabel={true}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
@@ -81,8 +80,14 @@
 			label="description (Optional)"
 			value={todo.description}
 			class="w-full"
-			hideLabel={true}
 			errors={formErrors?.errors?.description}
+		/>
+		<FormInput
+			name="due_date"
+			label="Due date (Optional)"
+			class="w-full"
+			type="date"
+			errors={formErrors?.errors?.due_date}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton

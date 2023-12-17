@@ -70,7 +70,6 @@
 			label="project id"
 			class="w-full"
 			autoFocus={true}
-			hideLabel={true}
 			errors={typeof formErrors?.errors?.project_id === 'number'
 				? formErrors.errors.project_id.toString()
 				: formErrors?.errors?.project_id}

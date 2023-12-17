@@ -77,7 +77,7 @@ export const editTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }),
 	title: z.string().min(2),
 	description: optionalDescriptionSchema,
-	due_date: dateSchema.optional().optional()
+	due_date: dateSchema.optional()
 });
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;

@@ -77,7 +77,6 @@
 			label="depends on (todo id)"
 			class="w-full"
 			autoFocus={true}
-			hideLabel={true}
 			errors={formErrors.errors?.dependant_todo_id?.toString()}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">

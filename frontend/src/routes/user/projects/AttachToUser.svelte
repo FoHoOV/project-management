@@ -67,12 +67,7 @@
 			errors={''}
 			type="hidden"
 		/>
-		<FormInput
-			name="username"
-			class="w-full"
-			hideLabel={true}
-			errors={formErrors?.errors?.username}
-		/>
+		<FormInput name="username" class="w-full" errors={formErrors?.errors?.username} />
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
 				text="add"

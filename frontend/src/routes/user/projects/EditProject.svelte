@@ -65,7 +65,6 @@
 			autoFocus={true}
 			class="w-full"
 			value={project.title}
-			hideLabel={true}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
@@ -73,7 +72,6 @@
 			label="description (Optional)"
 			class="w-full"
 			value={project.description}
-			hideLabel={true}
 			errors={formErrors?.errors?.description}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">

@@ -76,14 +76,7 @@
 			type="hidden"
 			errors={''}
 		/>
-		<FormInput
-			name="name"
-			label="name"
-			class="w-full"
-			autoFocus={true}
-			hideLabel={true}
-			errors={''}
-		/>
+		<FormInput name="name" label="name" class="w-full" autoFocus={true} errors={''} />
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton
 				text="add"
