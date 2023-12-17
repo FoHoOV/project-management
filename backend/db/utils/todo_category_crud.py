@@ -169,12 +169,28 @@ def attach_to_project(
         db.add(association_db_item)
         db.commit()
         db.refresh(association_db_item)
-        return association_db_item
     except IntegrityError:
         raise UserFriendlyError(
             ErrorCode.CATEGORY_PROJECT_ASSOCIATION_ALREADY_EXISTS,
             "this category already belongs to this project",
         )
+
+    update_order(
+        db,
+        TodoCategoryUpdateOrder.model_validate(
+            {
+                "id": association.category_id,
+                "left_id": None,
+                "right_id": _get_first_category_id_in_project_except_current(
+                    db, association.category_id, association.project_id, user_id
+                ),
+                "project_id": association.project_id,
+            }
+        ),
+        user_id,
+    )
+
+    return association_db_item
 
 
 def detach_from_project(
@@ -278,12 +294,39 @@ def _get_last_category_id_in_project_except_current(
     if last_item_in_the_list is not None:
         return last_item_in_the_list.category_id
 
-    last_item_in_the_list = get_categories_for_project(
+    categories = get_categories_for_project(
         db, TodoCategoryRead(project_id=project_id), user_id
     )
-    if len(last_item_in_the_list) > 0:
-        if last_item_in_the_list[0].id != current_category_id:
-            return last_item_in_the_list[0].id
-        return last_item_in_the_list[1].id if len(last_item_in_the_list) > 1 else None
+    if len(categories) > 0:
+        if categories[-1].id != current_category_id:
+            return categories[-1].id
+        return categories[-2].id if len(categories) > 1 else None
+
+    return None
+
+
+def _get_first_category_id_in_project_except_current(
+    db: Session, current_category_id: int, project_id: int, user_id: int
+):
+    first_item_in_the_list = (
+        db.query(TodoCategoryOrder)
+        .filter(
+            TodoCategoryOrder.project_id == project_id,
+            TodoCategoryOrder.left_id == None,
+            TodoCategoryOrder.category_id != current_category_id,
+        )
+        .first()
+    )
+
+    if first_item_in_the_list is not None:
+        return first_item_in_the_list.category_id
+
+    categories = get_categories_for_project(
+        db, TodoCategoryRead(project_id=project_id), user_id
+    )
+    if len(categories) > 0:
+        if categories[0].id != current_category_id:
+            return categories[0].id
+        return categories[1].id if len(categories) > 1 else None
 
     return None
