@@ -311,15 +311,16 @@
 		{#if enabledFeatures?.includes('show-project-id')}
 			<div>
 				<span>in projects: </span>
-				<span class="font-bold text-info">{category?.projects.map((project) => project.title)}</span
-				>
+				<span class="font-bold text-info">
+					{todo.category?.projects.map((project) => project.title).join(', ')}
+				</span>
 			</div>
 		{/if}
 
 		{#if enabledFeatures?.includes('show-category-title')}
 			<div>
-				<span> in category: </span>
-				<span class="font-bold text-info">{category?.title}</span>
+				<span>in category: </span>
+				<span class="font-bold text-info">{todo.category?.title}</span>
 			</div>
 		{/if}
 

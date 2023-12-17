@@ -104,10 +104,10 @@
 	</div>
 </form>
 
-<div class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+<div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
 	{#if $todos.length > 0}
 		{#each $todos[0].items as todo (todo.id)}
-			<TodoItem {todo}></TodoItem>
+			<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
 		{/each}
 	{:else}
 		<div

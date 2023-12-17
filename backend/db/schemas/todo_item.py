@@ -83,8 +83,21 @@ class TodoItemPartialTag(BaseModel):
     project_id: int
 
 
+class TodoItemPartialProject(BaseModel):
+    id: int
+    title: str
+
+
+class TodoItemPartialCategory(BaseModel):
+    id: int
+    title: str
+    description: str
+    projects: list[TodoItemPartialProject]
+
+
 class TodoItem(TodoItemBase):
     id: int
+    category: TodoItemPartialCategory | None
     tags: list[TodoItemPartialTag]
     dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem | None
