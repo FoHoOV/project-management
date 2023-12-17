@@ -12,7 +12,7 @@
 	import { type TodoItem, type TodoCategory, ErrorCode } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 	import TodoItemComponent from './TodoItem.svelte';
-	import { receive, send } from './transitions';
+	import { receive, send } from '$lib/animations/transfer';
 	import {
 		faArrowCircleRight,
 		faCirclePlus,

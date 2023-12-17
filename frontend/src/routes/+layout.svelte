@@ -47,7 +47,7 @@
 				on:click={closeDrawer}
 			>
 				<ul>
-					{#each (browser ? $projects : data.projects) as project (project.id)}
+					{#each browser ? $projects : data.projects as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}

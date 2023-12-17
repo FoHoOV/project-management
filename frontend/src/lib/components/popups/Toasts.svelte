@@ -1,7 +1,9 @@
 <script lang="ts">
 	import toasts from '$lib/stores/toasts';
 	import type { Toast } from '$lib/stores/toasts/toasts';
-	import { fade, slide } from 'svelte/transition';
+	import { faClose } from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa';
+	import { fade, slide } from '$lib/animations';
 
 	function getToastTypeClass(toast: Toast): string {
 		switch (toast.type) {
@@ -18,13 +20,24 @@
 </script>
 
 <div class="toast toast-end">
-	{#each $toasts as toast (toast.id)}
+	{#each $toasts as toast, i (toast.id)}
 		<div
-			class="alert {getToastTypeClass(toast)}"
-			in:fade={{ duration: 200 }}
-			out:slide={{ axis: 'x', duration: 200 }}
+			class="alert flex flex-row {getToastTypeClass(toast)}"
+			in:fade={{ duration: 1000, classes: ['group', '-animation-activated'] }}
+			out:slide={{ axis: 'x', duration: 500, classes: ['group', '-animation-activated'] }}
 		>
-			<span>{toast.message}</span>
+			<span class="whitespace-normal text-start group-[.-animation-activated]:whitespace-nowrap"
+				>{toast.message}
+			</span>
+
+			<button
+				class="btn btn-square btn-sm"
+				on:click={() => {
+					toasts.removeToast(toast);
+				}}
+			>
+				<Fa icon={faClose}></Fa>
+			</button>
 		</div>
 	{/each}
 </div>

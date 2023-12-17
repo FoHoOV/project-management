@@ -3,4 +3,5 @@ export * from './actions';
 export * from './generated-client';
 export * from './client-wrapper';
 export * from './constants';
+export * from './animations';
 export * from './utils';
