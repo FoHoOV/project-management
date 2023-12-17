@@ -14,6 +14,8 @@
 		| undefined = '';
 	export let autoFocus: boolean | null = null;
 	export let autoComplete: HTMLInputAttributes['autocomplete'] | null = null;
+	export let pattern: HTMLInputAttributes['pattern'] | null = null;
+
 	export { wrapperClasses as class };
 	export { inputClasses as inputClasses };
 
@@ -58,6 +60,7 @@
 			class="input input-bordered w-full {inputClasses}"
 			{value}
 			autofocus={autoFocus}
+			{pattern}
 		/>
 	{/if}
 

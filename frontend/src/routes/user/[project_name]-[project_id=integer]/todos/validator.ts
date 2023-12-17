@@ -21,10 +21,16 @@ const dateSchema = z.string().transform((value, ctx) => {
 	if (value.length == 0) {
 		return undefined;
 	}
-	const parsedDate = z.date({ coerce: true }).safeParse(value);
+	const parsedDate = z
+		.date({ coerce: true })
+		.min(
+			new Date(new Date().setDate(new Date(Date.now()).getDate() - 1)),
+			'Due date must be something in the future'
+		)
+		.safeParse(value);
 	if (!parsedDate.success) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.invalid_date
+		parsedDate.error.issues.forEach((issue) => {
+			ctx.addIssue(issue);
 		});
 		return undefined;
 	}
