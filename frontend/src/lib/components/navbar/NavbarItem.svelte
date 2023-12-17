@@ -13,7 +13,7 @@
 	let className: string = '';
 </script>
 
-<li>
+<li class="max-w-full overflow-y-auto">
 	<a
 		on:click
 		class="text-xl normal-case {className}"

@@ -51,6 +51,7 @@
 	import toasts from '$lib/stores/toasts/toasts';
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
+	import projects from '$lib/stores/projects';
 
 	export let todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
 	export let category: TodoCategory | null = null;
@@ -302,7 +303,7 @@
 			</div>
 		</div>
 
-		<p class="truncate hover:text-clip">{todo.description}</p>
+		<p class="whitespace-normal hover:text-clip">{todo.description}</p>
 
 		<div class="flex items-center gap-2 py-2">
 			<Fa icon={faCalendarCheck} class={_getDueDateClass(todo.due_date)}></Fa>
@@ -316,16 +317,20 @@
 		{#if enabledFeatures?.includes('show-project-id')}
 			<div>
 				<span>in projects: </span>
-				<span class="font-bold text-info">
-					{todo.category?.projects.map((project) => project.title).join(', ')}
-				</span>
+				{#each todo.category?.projects || [] as project}
+					<div class="inline-block max-w-full overflow-y-auto px-1">
+						<span class="text-lg font-bold text-info">(#{project.id}</span>
+						<span class="max-w-full font-bold text-info">{project.title})</span>
+					</div>
+				{/each}
 			</div>
 		{/if}
 
 		{#if enabledFeatures?.includes('show-category-title')}
-			<div>
+			<div class="flex flex-row items-center gap-2 overflow-y-auto">
 				<span>in category: </span>
-				<span class="font-bold text-info">{todo.category?.title}</span>
+				<span class="text-lg font-bold text-info">#{todo.category?.id}</span>
+				<span class="whitespace-normal font-bold text-info">{todo.category?.title}</span>
 			</div>
 		{/if}
 

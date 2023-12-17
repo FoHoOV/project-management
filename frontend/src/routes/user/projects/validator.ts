@@ -9,7 +9,7 @@ const optionalDescriptionSchema = z
 export const createProjectSchema = z.object({
 	title: z
 		.string()
-		.min(1)
+		.min(2)
 		.refine((title) => !title.includes('-'), "'-' is not allowed in the project title"),
 	description: optionalDescriptionSchema,
 	create_from_default_template: z.boolean({ coerce: true }).default(false)
