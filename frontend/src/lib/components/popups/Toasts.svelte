@@ -23,7 +23,7 @@
 	{#each $toasts as toast, i (toast.id)}
 		<div
 			class="alert flex flex-row {getToastTypeClass(toast)}"
-			in:fade={{ duration: 1000, classes: ['group', '-animation-activated'] }}
+			in:fade={{ duration: 150, classes: ['group', '-animation-activated'] }}
 			out:slide={{ axis: 'x', duration: 500, classes: ['group', '-animation-activated'] }}
 		>
 			<span class="whitespace-normal text-start group-[.-animation-activated]:whitespace-nowrap"
