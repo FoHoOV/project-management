@@ -67,7 +67,9 @@
 				<div class="tooltip tooltip-info" data-tip="project id">
 					<span class="text-info">#{project.id}</span>
 				</div>
-				<span class="block max-w-full whitespace-normal break-all">{project.title}</span>
+				<span class="break-words-legacy block max-w-full whitespace-normal break-words"
+					>{project.title}</span
+				>
 			</div>
 			<button
 				on:click={handleEditProject}

@@ -246,7 +246,9 @@
 					>
 						<span class="text-info">#{category.id}</span>
 					</div>
-					<span class="block max-w-full whitespace-normal break-all text-lg font-bold">
+					<span
+						class="break-words-legacy block max-w-full whitespace-normal break-words text-lg font-bold"
+					>
 						{category.title}
 					</span>
 				</div>
@@ -268,7 +270,9 @@
 			</div>
 			<div class="flex max-w-full items-baseline">
 				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
-				<span class="block max-w-full whitespace-normal break-all text-lg font-bold">
+				<span
+					class="break-words-legacy block max-w-full whitespace-normal break-words text-lg font-bold"
+				>
 					{category.description}
 				</span>
 			</div>

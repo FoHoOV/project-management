@@ -13,7 +13,7 @@
 	let className: string = '';
 </script>
 
-<li class="max-w-full whitespace-normal break-all">
+<li class="break-words-legacy max-w-full whitespace-normal break-words">
 	<a
 		on:click
 		class="text-xl normal-case {className}"

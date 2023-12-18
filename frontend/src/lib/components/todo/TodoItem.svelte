@@ -279,7 +279,9 @@
 				<div class="tooltip tooltip-info" data-tip="todo id">
 					<span class="text-lg font-bold text-info">#{todo.id}</span>
 				</div>
-				<h1 class="block max-w-full whitespace-normal break-all">{todo.title}</h1>
+				<h1 class="break-words-legacy block max-w-full whitespace-normal break-words">
+					{todo.title}
+				</h1>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<input
@@ -302,7 +304,7 @@
 			</div>
 		</div>
 
-		<p class="whitespace-normal break-all">{todo.description}</p>
+		<p class="break-words-legacy whitespace-normal break-words">{todo.description}</p>
 
 		<div class="flex items-center gap-2 py-2">
 			<Fa icon={faCalendarCheck} class={_getDueDateClass(todo.due_date)}></Fa>

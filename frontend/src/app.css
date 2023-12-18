@@ -2,18 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+	.break-words-legacy {
+		word-break: break-word;
+	}
+}
+
 *::-webkit-scrollbar-track {
-    border-radius: 8px;
-    background-color: transparent;
+	border-radius: 8px;
+	background-color: transparent;
 }
 
 *::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-    background-color: rgba(245, 245, 245, 0.3);
+	width: 10px;
+	height: 10px;
+	background-color: rgba(245, 245, 245, 0.3);
 }
 
 *::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #8d92c6;
+	border-radius: 10px;
+	background-color: #8d92c6;
 }
