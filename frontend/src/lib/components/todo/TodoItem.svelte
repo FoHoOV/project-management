@@ -275,11 +275,11 @@
 		<Alert type="error" message={apiErrorTitle} />
 
 		<div class="card-title flex w-full justify-between">
-			<div class="flex w-full gap-2">
+			<div class="flex w-full items-baseline gap-2">
 				<div class="tooltip tooltip-info" data-tip="todo id">
 					<span class="text-lg font-bold text-info">#{todo.id}</span>
 				</div>
-				<h1 class="block max-w-full truncate hover:text-clip">{todo.title}</h1>
+				<h1 class="block max-w-full whitespace-normal break-all">{todo.title}</h1>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<input
@@ -302,7 +302,7 @@
 			</div>
 		</div>
 
-		<p class="whitespace-normal hover:text-clip">{todo.description}</p>
+		<p class="whitespace-normal break-all">{todo.description}</p>
 
 		<div class="flex items-center gap-2 py-2">
 			<Fa icon={faCalendarCheck} class={_getDueDateClass(todo.due_date)}></Fa>

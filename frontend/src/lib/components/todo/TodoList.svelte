@@ -238,7 +238,7 @@
 		<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
 		<div class="flex w-full max-w-full flex-col self-start">
 			<div class="flex w-full justify-between">
-				<div class="flex max-w-full items-center">
+				<div class="flex max-w-full items-baseline">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
 					<div
 						class="tooltip tooltip-bottom tooltip-info pr-2 text-lg font-bold"
@@ -246,9 +246,9 @@
 					>
 						<span class="text-info">#{category.id}</span>
 					</div>
-					<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
-						>{category.title}</span
-					>
+					<span class="block max-w-full whitespace-normal break-all text-lg font-bold">
+						{category.title}
+					</span>
 				</div>
 				<div class="flex gap-2">
 					<button
@@ -266,11 +266,11 @@
 					</button>
 				</div>
 			</div>
-			<div class="flex max-w-full items-center">
+			<div class="flex max-w-full items-baseline">
 				<Fa icon={faArrowCircleRight} class="mx-2 inline" />
-				<span class="block max-w-full truncate text-lg font-bold hover:text-clip"
-					>{category.description}</span
-				>
+				<span class="block max-w-full whitespace-normal break-all text-lg font-bold">
+					{category.description}
+				</span>
 			</div>
 		</div>
 		<div class="mt-2 flex w-full gap-2">

@@ -63,11 +63,11 @@
 		<Spinner visible={state === 'calling-service'}></Spinner>
 		<Confirm bind:this={confirmDetachProject} on:onConfirm={handleDetachProjectFromUser}></Confirm>
 		<div class="card-title justify-between">
-			<div class="flex gap-2">
+			<div class="flex items-baseline gap-2">
 				<div class="tooltip tooltip-info" data-tip="project id">
 					<span class="text-info">#{project.id}</span>
 				</div>
-				<span class="block max-w-full truncate hover:text-clip">{project.title}</span>
+				<span class="block max-w-full whitespace-normal break-all">{project.title}</span>
 			</div>
 			<button
 				on:click={handleEditProject}
