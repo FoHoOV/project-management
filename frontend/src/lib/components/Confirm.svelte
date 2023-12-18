@@ -21,16 +21,6 @@
 	class:hidden={!visible}
 >
 	<button
-		class="btn btn-warning"
-		on:click={() => {
-			hide();
-			dispatcher('onConfirm', {});
-		}}
-	>
-		{confirmText}
-	</button>
-
-	<button
 		class="btn btn-neutral"
 		on:click={() => {
 			hide();
@@ -38,5 +28,15 @@
 		}}
 	>
 		{cancelText}
+	</button>
+
+	<button
+		class="btn btn-warning"
+		on:click={() => {
+			hide();
+			dispatcher('onConfirm', {});
+		}}
+	>
+		{confirmText}
 	</button>
 </div>

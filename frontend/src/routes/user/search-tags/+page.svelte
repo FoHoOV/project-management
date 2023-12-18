@@ -15,10 +15,12 @@
 	export let form: ActionData;
 
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
+	let formElement: HTMLFormElement;
 
 	$: formErrors = getFormErrors(form);
 
 	function resetForm() {
+		formElement.reset();
 		formErrors = { errors: undefined, message: undefined };
 		state = 'none';
 	}
@@ -64,6 +66,7 @@
 </svelte:head>
 
 <form
+	bind:this={formElement}
 	class="px-1"
 	method="post"
 	action="/user/search-tags?/search"

@@ -78,13 +78,13 @@
 			errors={formErrors?.errors?.due_date}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
+			<LoadingButton text="reset" class="btn-warning  flex-1" type="button" on:click={resetForm} />
 			<LoadingButton
-				text="add"
+				text="create"
 				class="btn-success flex-1"
 				type="submit"
 				loading={state == 'submitting'}
 			/>
-			<LoadingButton text="reset" class="btn-warning  flex-1" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>

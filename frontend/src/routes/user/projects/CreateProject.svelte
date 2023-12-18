@@ -74,13 +74,13 @@
 			errors={formErrors.errors?.create_from_default_template?.toString()}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
+			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 			<LoadingButton
 				text="add"
 				class="btn-success flex-1"
 				type="submit"
 				loading={state == 'submitting'}
 			/>
-			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 		</div>
 	</div>
 </form>
