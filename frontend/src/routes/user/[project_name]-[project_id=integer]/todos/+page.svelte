@@ -141,7 +141,7 @@
 		{:else}
 			{#each $todos as category (category.id)}
 				<div
-					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] sm:basis-[27rem]"
+					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 					animate:flip={{ duration: 200 }}
 				>
 					<TodoList
