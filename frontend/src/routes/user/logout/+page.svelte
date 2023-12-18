@@ -21,8 +21,8 @@
 		on:submitended={() => (status = 'none')}
 	>
 		<LoadingButton
-			class="btn-warning mt-2"
-			text="Yes, I'm a nerd :|"
+			class="btn-warning btn-wide mt-2"
+			text="Yes 👋🏾"
 			loading={status === 'submitting'}
 			type="submit"
 		/>
