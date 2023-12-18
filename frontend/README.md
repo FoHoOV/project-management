@@ -1,12 +1,12 @@
 ## Building
 
 You first need to run the backend project because we use the OpenApi schema of that project to create clients/zod-schemas for this one.
-After that, copy and paste the ip/port of the backend app into the openapitools.json file and package.jsonopen-api:zod run command
-then execute this:
+After that, copy and paste the ip/port of the backend app into the package.json/open-api:generate:[linux|windows]:shared:dev and open-api:zod:shared:dev run command
+then execute this (if the backend is running on 127.0.0.1:8080 you don't need to change anything in the package.json file):
 
 ```bash
 # create the clients and zod schemas
-npm run open-api:generate:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
+npm run open-api:generate:dev:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
 ```
 * OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
 
@@ -38,6 +38,3 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-## Known bugs
-1. Custom orders doesn't work when dragging/dropping from one todo category to another one, you will have to first move the todo to category B then update the order (it works for categories tho)
