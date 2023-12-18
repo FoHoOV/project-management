@@ -24,7 +24,7 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 			return (await handleUnauthenticatedUser()) as never;
 		case ErrorType.PRE_REQUEST_FAILURE:
 		case ErrorType.SERVICE_DOWN_ERROR:
-			return superFail(e.status, { message: e.message, error: e.originalError });
+			return superFail(e.status, { message: e.message });
 		default:
 			throw e.originalError;
 	}
