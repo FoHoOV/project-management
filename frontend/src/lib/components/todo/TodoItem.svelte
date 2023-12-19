@@ -236,7 +236,7 @@
 	}
 
 	function _getDueDateClass(date: Date | null) {
-		if (!date) {
+		if (!date || todo.is_done) {
 			return '';
 		}
 
