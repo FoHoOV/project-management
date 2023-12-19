@@ -68,7 +68,7 @@
 		"jose": "^4.14.4",
 		"js-cookie": "^3.0.5",
 		"theme-change": "^2.5.0",
-		"typed-openapi": "^0.1.4",
+		"typed-openapi": "^0.3.0",
 		"zod": "^3.21.4"
 	}
 }
