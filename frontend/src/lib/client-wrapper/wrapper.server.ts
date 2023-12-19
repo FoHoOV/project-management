@@ -26,6 +26,9 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 		case ErrorType.SERVICE_DOWN_ERROR:
 			return superFail(e.status, { message: e.message });
 		default:
+			// we rethrow the error here
+			// error could be a redirect exception or an error(...)
+			// this is why we return the original error in these cases
 			throw e.originalError;
 	}
 }
