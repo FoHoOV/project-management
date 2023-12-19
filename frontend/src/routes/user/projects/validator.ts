@@ -4,12 +4,13 @@ import type { ProjectAttachAssociation, ProjectCreate, ProjectUpdate } from '$li
 const optionalDescriptionSchema = z
 	.string()
 	.transform((t) => (t.length > 0 ? t : '-'))
-	.pipe(z.string().min(1));
+	.pipe(z.string().min(1).max(100));
 
 export const createProjectSchema = z.object({
 	title: z
 		.string()
 		.min(2)
+		.max(100)
 		.refine((title) => !title.includes('-'), "'-' is not allowed in the project title"),
 	description: optionalDescriptionSchema,
 	create_from_default_template: z.boolean({ coerce: true }).default(false)

@@ -15,7 +15,9 @@ import type {
 const optionalDescriptionSchema = z
 	.string()
 	.transform((t) => (t.length > 0 ? t : '-'))
-	.pipe(z.string().min(1));
+	.pipe(z.string().min(1).max(100));
+
+const titleSchema = z.string().min(1).max(100);
 
 const dateSchema = z.string().transform((value, ctx) => {
 	if (value.length == 0) {
@@ -39,7 +41,7 @@ const dateSchema = z.string().transform((value, ctx) => {
 
 export const createTodoItemSchema = z.object({
 	category_id: z.number({ coerce: true }).min(0),
-	title: z.string().min(2),
+	title: titleSchema,
 	description: optionalDescriptionSchema,
 	is_done: z
 		.union([z.boolean(), z.literal('true'), z.literal('false')])
@@ -51,7 +53,7 @@ export const createTodoItemSchema = z.object({
 
 export const createTodoCategorySchema = z.object({
 	project_id: z.number({ coerce: true }),
-	title: z.string().min(2),
+	title: titleSchema,
 	description: optionalDescriptionSchema
 });
 
@@ -66,7 +68,7 @@ export const attachToProjectSchema = z.object({
 
 export const editTodoCategorySchema = z.object({
 	id: z.number({ coerce: true }),
-	title: z.string().min(2),
+	title: titleSchema,
 	description: optionalDescriptionSchema
 });
 
@@ -75,7 +77,7 @@ export const editTodoCategorySchema = z.object({
 export const editTodoItemSchema = z.object({
 	id: z.number({ coerce: true }),
 	category_id: z.number({ coerce: true }),
-	title: z.string().min(2),
+	title: titleSchema,
 	description: optionalDescriptionSchema,
 	due_date: dateSchema.optional()
 });
