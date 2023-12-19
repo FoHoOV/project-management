@@ -3,7 +3,7 @@ import { goto, invalidateAll } from '$app/navigation';
 import { PUBLIC_API_URL } from '$env/static/public';
 import { redirect } from '@sveltejs/kit';
 import type { z } from 'zod';
-import type { ErrorMessage } from '$lib/utils/types';
+import type { ErrorMessage, NumberRange } from '$lib/utils/types';
 import { RequiredError, FetchError, ResponseError } from '$lib/generated-client/runtime';
 import { TokenError } from '$lib/utils/token';
 import { UserFriendlyErrorSchema } from '$lib/generated-client/zod/schemas';
@@ -133,7 +133,7 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 	| {
 			type: ErrorType.VALIDATION_ERROR;
 			message: ErrorMessage;
-			status: number;
+			status: NumberRange<400, 600>;
 			code: Extract<ErrorCode, 'invalid_input'>;
 			validationError: TErrorSchema extends z.AnyZodObject ? z.infer<TErrorSchema> : never;
 			response: Record<string, any>;
@@ -142,7 +142,7 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 	| {
 			type: ErrorType.API_ERROR;
 			message: string;
-			status: number;
+			status: NumberRange<400, 600>;
 			code: ErrorCode;
 			response: Record<string, any>;
 			originalError: ResponseError;
@@ -164,13 +164,13 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 	| {
 			type: ErrorType.UNKNOWN_ERROR;
 			message: ErrorMessage;
-			status: number;
+			status: NumberRange<400, 600>;
 			originalError: unknown;
 	  }
 	| {
 			type: ErrorType.NOT_AUTHENTICATED;
 			message: ErrorMessage;
-			status: number;
+			status: NumberRange<400, 600>;
 			data: unknown;
 			preventDefaultHandler: boolean;
 			originalError: ResponseError | TokenError;
@@ -254,7 +254,7 @@ export async function callService<
 					success: false,
 					error: await errorCallback({
 						type: ErrorType.API_ERROR,
-						status: e.response.status < 400 ? 500 : e.response.status,
+						status: _getResponseErrorCode(e.response.status),
 						code: ErrorCode.UnknownError,
 						message:
 							e.response.status < 400
@@ -269,7 +269,7 @@ export async function callService<
 			if (e.response.status === 401) {
 				return await _defaultUnAuthenticatedUserHandler(errorCallback, {
 					type: ErrorType.NOT_AUTHENTICATED,
-					status: e.response.status,
+					status: _getResponseErrorCode(e.response.status),
 					message: 'Invalid credentials!',
 					data: response,
 					preventDefaultHandler: false,
@@ -284,7 +284,7 @@ export async function callService<
 					success: false,
 					error: await errorCallback({
 						type: ErrorType.VALIDATION_ERROR,
-						status: e.response.status,
+						status: _getResponseErrorCode(e.response.status),
 						code: ErrorCode.InvalidInput,
 						message: e.message,
 						response: response,
@@ -300,7 +300,7 @@ export async function callService<
 					success: false,
 					error: await errorCallback({
 						type: ErrorType.API_ERROR,
-						status: e.response.status,
+						status: _getResponseErrorCode(e.response.status),
 						code: userFriendlyError.data.code,
 						message: userFriendlyError.data.message,
 						response: response,
@@ -312,9 +312,9 @@ export async function callService<
 				success: false,
 				error: await errorCallback({
 					type: ErrorType.API_ERROR,
-					status: e.response.status,
+					status: _getResponseErrorCode(e.response.status),
 					code: ErrorCode.UnknownError,
-					message: response?.message ?? e.message,
+					message: response?.message ?? response?.detail ?? e.message,
 					response: response,
 					originalError: e
 				})
@@ -342,4 +342,14 @@ export async function callService<
 			})
 		};
 	}
+}
+
+function _getResponseErrorCode(status: number): NumberRange<400, 600> {
+	if (status < 400) {
+		return 500;
+	}
+	if (status > 599) {
+		return 500;
+	}
+	return status as NumberRange<400, 600>;
 }

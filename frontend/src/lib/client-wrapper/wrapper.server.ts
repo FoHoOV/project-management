@@ -14,7 +14,7 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 ) {
 	switch (e.type) {
 		case ErrorType.API_ERROR:
-			return superFail(404, {
+			return superFail(e.status, {
 				message: e.message,
 				error: { code: e.code, message: e.message }
 			});
