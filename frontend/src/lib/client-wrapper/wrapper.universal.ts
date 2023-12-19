@@ -6,8 +6,9 @@ import type { z } from 'zod';
 import type { ErrorMessage, NumberRange } from '$lib/utils/types';
 import { RequiredError, FetchError, ResponseError } from '$lib/generated-client/runtime';
 import { TokenError } from '$lib/utils/token';
-import { UserFriendlyErrorSchema } from '$lib/generated-client/zod/schemas';
+import { HTTPValidationError, UserFriendlyErrorSchema } from '$lib/generated-client/zod/schemas';
 import { ErrorCode } from '$lib/generated-client/models';
+import { extractKeys as extractKeysFromZod } from '$lib/utils/zod';
 
 export const createRequest = (url: string, token?: string): Request => {
 	const request = new Request(url);
@@ -277,21 +278,35 @@ export async function callService<
 				});
 			}
 
-			// TODO: this is HTTPValidationError fix types based on this
-			const parsedApiError = await errorSchema?.strip().partial().safeParseAsync(response.detail);
-			if (parsedApiError?.success) {
-				return {
-					success: false,
-					error: await errorCallback({
-						type: ErrorType.VALIDATION_ERROR,
-						status: _getResponseErrorCode(e.response.status),
-						code: ErrorCode.InvalidInput,
-						message: e.message,
-						response: response,
-						validationError: parsedApiError.data as any,
-						originalError: e
-					})
-				};
+			if (e.response.status == 422 && errorSchema) {
+				const validationErrors = await _convertHttpValidationErrorToZodError(errorSchema, response);
+
+				if (!validationErrors) {
+					return {
+						success: false,
+						error: await errorCallback({
+							type: ErrorType.API_ERROR,
+							status: _getResponseErrorCode(e.response.status),
+							code: ErrorCode.UnknownError,
+							message: 'Some validation errors has ocurred, please review you inputs',
+							response: response,
+							originalError: e
+						})
+					};
+				} else {
+					return {
+						success: false,
+						error: await errorCallback({
+							type: ErrorType.VALIDATION_ERROR,
+							status: _getResponseErrorCode(e.response.status),
+							code: ErrorCode.InvalidInput,
+							message: 'Some validation errors has ocurred, please review you inputs',
+							response: response,
+							validationError: validationErrors as any, // TODO: why do we need to cast here?
+							originalError: e
+						})
+					};
+				}
 			}
 
 			const userFriendlyError = await UserFriendlyErrorSchema.safeParseAsync(response);
@@ -352,4 +367,51 @@ function _getResponseErrorCode(status: number): NumberRange<400, 600> {
 		return 500;
 	}
 	return status as NumberRange<400, 600>;
+}
+
+async function _convertHttpValidationErrorToZodError<TErrorSchema extends z.AnyZodObject>(
+	schema: TErrorSchema,
+	validationError: HTTPValidationError
+): Promise<z.infer<TErrorSchema> | null> {
+	// if there were multiple errors in `loc` this function only return the first one
+
+	const parsedValidationError = await HTTPValidationError.safeParseAsync(validationError);
+
+	if (!parsedValidationError.success || !parsedValidationError.data.detail) {
+		return null;
+	}
+
+	const keys = extractKeysFromZod(schema);
+
+	if (keys.length == 0) {
+		return null;
+	}
+
+	const constructedErrors: Record<string, string> = {};
+
+	parsedValidationError.data.detail.forEach((error) => {
+		let key: string | null = null;
+		error.loc.some((errorKey) => {
+			keys.forEach((_key) => {
+				if (_key === errorKey) {
+					key = errorKey;
+				}
+			});
+
+			// prevent more iterations
+			return key != null;
+		});
+
+		if (!key) {
+			return;
+		}
+
+		constructedErrors[key] = error.msg;
+	});
+
+	if (Object.keys(constructedErrors).length == 0) {
+		return null;
+	}
+
+	return constructedErrors;
 }
