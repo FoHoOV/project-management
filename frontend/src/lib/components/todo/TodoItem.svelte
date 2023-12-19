@@ -239,9 +239,12 @@
 		if (!date) {
 			return '';
 		}
-		if (Date.now() > date.getTime()) {
+
+		const dueDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+
+		if (Date.now() > dueDate.getTime()) {
 			return 'text-error';
-		} else if (date.getTime() - Date.now() < 1 * 24 * 60 * 60 * 1000) {
+		} else if (dueDate.getTime() - Date.now() < 1 * 24 * 60 * 60 * 1000) {
 			return 'text-warning';
 		} else {
 			return 'text-success';

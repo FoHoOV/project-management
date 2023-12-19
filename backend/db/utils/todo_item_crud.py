@@ -65,6 +65,10 @@ def get_todos_for_user(
 def create(db: Session, todo: TodoItemCreate, user_id: int):
     validate_todo_category_belongs_to_user(db, todo.category_id, user_id)
 
+    todo.due_date = (
+        todo.due_date.astimezone(datetime.UTC) if todo.due_date is not None else None
+    )
+
     db_item = TodoItem(**todo.model_dump())
     db.add(db_item)
     db.commit()
@@ -148,7 +152,9 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         db_item.title = todo.title
 
     if todo.due_date is not None:
-        db_item.due_date = todo.due_date if todo.due_date.year != 1 else None
+        db_item.due_date = (
+            todo.due_date.astimezone(datetime.UTC) if todo.due_date.year != 1 else None
+        )
 
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
