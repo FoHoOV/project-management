@@ -133,17 +133,7 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         db.refresh(db_item)
 
     if todo.is_done is not None:
-        if todo.is_done:
-            _validate_dependencies_are_resolved(db, db_item, user_id)
-        elif (
-            db_item.marked_as_done_by_user_id is not None
-            and db_item.marked_as_done_by_user_id != user_id
-        ):
-            raise UserFriendlyError(
-                ErrorCode.PERMISSION_DENIED,
-                "you cannot change the status of this todo item because it is already marked as done by another user. Only that user can change the status",
-            )
-        db_item.is_done = todo.is_done
+        _update_done_status(db, db_item, todo.is_done, user_id)
 
     if todo.description is not None:
         db_item.description = todo.description
@@ -157,11 +147,6 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
         )
 
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
-
-    if db_item.is_done and db_item.marked_as_done_by_user_id is None:
-        db_item.marked_as_done_by_user_id = user_id
-    elif db_item.is_done == False:
-        db_item.marked_as_done_by_user_id = None
 
     db.commit()
     db.refresh(db_item)
@@ -325,6 +310,7 @@ def _perform_actions(
     new_done_status: bool | None,
     user_id: int,
 ):
+    # this does not commit the changes, caller needs to commit the changes
     new_category = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
     if not new_category:
         raise
@@ -336,8 +322,33 @@ def _perform_actions(
                         ErrorCode.ACTION_PREVENTED_TODO_UPDATE,
                         "This todo's category has an action that prevents you from marking this todo as `UNDONE`",
                     )
-                _validate_dependencies_are_resolved(db, todo_item, user_id)
-                todo_item.is_done = True
+                _update_done_status(db, todo_item, True, user_id)
+
+
+def _update_done_status(
+    db: Session, todo_item: TodoItem, new_status: bool, user_id: int
+):
+    if todo_item.is_done == new_status:
+        return
+
+    # this does not commit the changes, caller needs to commit the changes
+    if new_status == True:
+        _validate_dependencies_are_resolved(db, todo_item, user_id)
+
+    if (
+        todo_item.marked_as_done_by_user_id is not None
+        and todo_item.marked_as_done_by_user_id != user_id
+    ):
+        raise UserFriendlyError(
+            ErrorCode.PERMISSION_DENIED,
+            "you cannot change the status of this todo item because it is already marked as done by another user. Only that user can change the status",
+        )
+
+    todo_item.is_done = new_status
+    if todo_item.is_done and todo_item.marked_as_done_by_user_id is None:
+        todo_item.marked_as_done_by_user_id = user_id
+    elif todo_item.is_done == False:
+        todo_item.marked_as_done_by_user_id = None
 
 
 def _validate_dependencies_are_resolved(db: Session, todo: TodoItem, user_id: int):
