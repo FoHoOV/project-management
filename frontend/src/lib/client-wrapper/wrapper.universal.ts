@@ -150,7 +150,7 @@ export type ServiceError<TErrorSchema extends z.AnyZodObject> =
 	  }
 	| {
 			type: ErrorType.SERVICE_DOWN_ERROR;
-			message: 'Service is temporarily down, please try again later';
+			message: string;
 			status: 503;
 			data: never;
 			originalError: FetchError;
@@ -225,7 +225,10 @@ export async function callService<
 				error: await errorCallback({
 					type: ErrorType.SERVICE_DOWN_ERROR,
 					status: 503,
-					message: 'Service is temporarily down, please try again later',
+					message:
+						e.cause instanceof DOMException && e.cause.name == 'AbortError'
+							? 'Request timed out, please try again'
+							: 'Service is temporarily down, please try again later',
 					data: e as never,
 					originalError: e
 				})

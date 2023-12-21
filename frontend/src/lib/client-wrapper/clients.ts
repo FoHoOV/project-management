@@ -13,7 +13,8 @@ import {
 	BaseAPI,
 	Configuration,
 	type ConfigurationParameters,
-	type RequestContext
+	type RequestContext,
+	type FetchAPI
 } from '$lib/generated-client/runtime';
 import type { Token } from '$lib/generated-client/models';
 import { TokenError, isTokenExpirationDateValidAsync } from '$lib/utils/token';
@@ -50,6 +51,11 @@ export const generateClient = <T extends typeof BaseAPI>(
 	ApiClass: T,
 	config?: ConfigurationOptions
 ): InstanceType<T> => {
+	config = {
+		...config,
+		fetchApi: addTimeoutToFetchIfNotExists(config?.fetchApi ?? fetch, 15 * 1000)
+	};
+
 	return new ApiClass(
 		new Configuration({
 			basePath: PUBLIC_API_URL,
@@ -86,4 +92,22 @@ export const ProjectClient = (config: ConfigurationOptions = { isTokenRequired: 
 
 export const UserClient = (config?: ConfigurationOptions) => {
 	return generateClient(UserApi, config);
+};
+
+/**
+ *  @param timeout timeout in milliseconds
+ */
+export const addTimeoutToFetchIfNotExists = (fetch: FetchAPI, timeout: number) => {
+	return (input: RequestInfo | URL, init?: RequestInit | undefined) => {
+		if (!init?.signal) {
+			const controller = new AbortController();
+			setTimeout(() => {
+				controller.abort();
+			}, timeout);
+
+			init = { ...init, signal: controller.signal };
+		}
+
+		return fetch(input, init);
+	};
 };
