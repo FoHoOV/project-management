@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class UserBase(BaseModel):
@@ -33,5 +33,4 @@ class User(UserBase):
     id: int
     projects: list[PartialProject] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

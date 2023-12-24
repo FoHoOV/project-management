@@ -22,7 +22,7 @@ from db.models.todo_category import TodoCategory
 
 
 def create(db: Session, project: ProjectCreate, user_id: int):
-    if db.query(User).filter(User.id == user_id).count() == 0:
+    if db.query(_entity=User).filter(User.id == user_id).count() == 0:
         raise UserFriendlyError(
             ErrorCode.USER_NOT_FOUND, "requested user doesn't exist"
         )

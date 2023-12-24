@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import datetime
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from db.models.todo_category_action import Action
 from db.schemas.base import NullableOrderedItem
 from db.schemas.todo_item import TodoItem, TodoItemPartialDependency, TodoItemPartialTag
@@ -76,8 +76,7 @@ class TodoCategoryPartialTodoItem(BaseModel):
     comments_count: int
     marked_as_done_by: TodoCategoryPartialUser | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TodoCategory(TodoCategoryBase):
@@ -87,5 +86,4 @@ class TodoCategory(TodoCategoryBase):
     projects: list[TodoCategoryPartialProject]
     actions: list[TodoCategoryPartialAction]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

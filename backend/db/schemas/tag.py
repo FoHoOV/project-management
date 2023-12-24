@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 @dataclass
@@ -15,10 +15,9 @@ class TagCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     project_id: int
 
-    class Config:
-        from_attributes = True
-        str_to_lower = True
-        str_strip_whitespace = True
+    model_config = ConfigDict(
+        from_attributes=True, str_to_lower=True, str_strip_whitespace=True
+    )
 
 
 class TagAttachToTodo(BaseModel):
@@ -27,9 +26,7 @@ class TagAttachToTodo(BaseModel):
     project_id: int
     create_if_doesnt_exist: bool
 
-    class Config:
-        str_to_lower = True
-        str_strip_whitespace = True
+    model_config = ConfigDict(str_to_lower=True, str_strip_whitespace=True)
 
 
 class TagDetachFromTodo(BaseModel):
@@ -41,10 +38,9 @@ class TagUpdate(BaseModel):
     id: int
     name: str
 
-    class Config:
-        from_attributes = True
-        str_to_lower = True
-        str_strip_whitespace = True
+    model_config = ConfigDict(
+        from_attributes=True, str_to_lower=True, str_strip_whitespace=True
+    )
 
 
 class TagDelete(BaseModel):
@@ -65,5 +61,4 @@ class Tag(BaseModel):
     project_id: int
     todos: list[PartialTodo]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

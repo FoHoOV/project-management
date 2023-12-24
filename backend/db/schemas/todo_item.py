@@ -3,7 +3,7 @@ from datetime import date
 import datetime
 from enum import Enum
 from fastapi import Query
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from db.schemas.base import NullableOrderedItem
 from error.exceptions import ErrorCode, UserFriendlyError
@@ -109,5 +109,4 @@ class TodoItem(TodoItemBase):
     comments_count: int
     marked_as_done_by: TodoItemPartialUser | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TodoCommentBase(BaseModel):
@@ -16,15 +16,13 @@ class TodoCommentCreate(BaseModel):
     message: str = Field(min_length=1, max_length=50000)
     todo_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TodoCommentUpdate(TodoCommentBase):
     todo_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TodoCommentDelete(BaseModel):
@@ -34,5 +32,4 @@ class TodoCommentDelete(BaseModel):
 class TodoComment(TodoCommentBase):
     todo_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
