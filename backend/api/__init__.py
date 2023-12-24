@@ -1,16 +1,19 @@
-from fastapi import FastAPI, HTTPException, Request
+from re import I
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from api.routes import tag, todo_item_comment
 from api.routes.oauth import oath
 from .routes.user import user
 from .routes.project import project
+from .routes.todo_category import todo_category
+from .routes.todo_item import todo_item
+from .routes.tag import tag
+from .routes.todo_item_comment import todo_item_comment
+from .routes import error
 from config import settings
 from db import init_db
 from error.exceptions import UserFriendlyError
-
-from .routes import todo_item, todo_category, error
 
 
 def db_excepted_exception_handler(request: Request, ex: UserFriendlyError):

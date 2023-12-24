@@ -105,7 +105,7 @@ class TodoItem(TodoItemBase):
     category: TodoItemPartialCategory
     tags: list[TodoItemPartialTag]
     dependencies: list[TodoItemPartialDependency]
-    order: NullableOrderedItem | None
+    order: NullableOrderedItem
     comments_count: int
     marked_as_done_by: TodoItemPartialUser | None
 

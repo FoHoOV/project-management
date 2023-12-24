@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from api.test import TEST_USER, app
 
 
-client = TestClient(app, base_url="http://testserver/oauth")
+client = TestClient(app)
 
 
 def test_login():

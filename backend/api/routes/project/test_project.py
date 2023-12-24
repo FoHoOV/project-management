@@ -3,7 +3,7 @@ from api.test import TEST_USER, get_access_token, app
 from db.schemas.project import Project
 
 
-client = TestClient(app, base_url="http://testserver/project")
+client = TestClient(app)
 
 
 def test_create_project_without_template():
