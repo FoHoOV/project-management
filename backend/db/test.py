@@ -1,12 +1,10 @@
 from config import settings
 from db.db import get_db_params, init_database
 
-params = get_db_params(
-    settings.SQLALCHEMY_DATABASE_URL, settings.IS_SQLALCHEMY_LOG_ENABLED
-)
+params = get_db_params(settings.SQLALCHEMY_TEST_DATABASE_URL, True)
 
 engine = params["engine"]
-SessionLocal = params["session"]
+SessionLocalTest = params["session"]
 
 
 def init_db():
