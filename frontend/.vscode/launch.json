@@ -29,6 +29,18 @@
 			"type": "node-terminal"
 		},
 		{
+			"command": "npm run test:integration",
+			"name": "npm:test:integration",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
+			"command": "npm run test:unit",
+			"name": "npm:test:unit",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
 			"type": "chrome",
 			"request": "launch",
 			"name": "chrome:dev",
