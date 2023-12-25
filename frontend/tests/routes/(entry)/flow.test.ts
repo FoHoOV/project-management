@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import crypto from 'crypto';
 
-test('test login/signup flow', async ({ page }, testInfo) => {
+test('signup then login flow', async ({ page }, testInfo) => {
 	testInfo.setTimeout(60 * 1000);
 
 	// goto signup page
@@ -20,7 +20,7 @@ test('test login/signup flow', async ({ page }, testInfo) => {
 	await page.locator('input[name="confirm_password"]').fill(password);
 	await page.getByRole('button', { name: 'signup' }).click();
 
-	// page should be redirected to login again
+	// page should be redirected to login
 	await expect(page, 'after a successful signup page should be redirected to login').toHaveURL(
 		'/login'
 	);
@@ -33,10 +33,11 @@ test('test login/signup flow', async ({ page }, testInfo) => {
 
 	await page.getByRole('button', { name: 'login' }).click();
 
+	// expect a successful login
 	await expect(page, 'after logging page should be on /projects').toHaveURL('/user/projects');
 });
 
-test('test incorrect login attempt flow', async ({ page }) => {
+test('incorrect login attempt flow', async ({ page }) => {
 	// goto login page
 	await page.goto('/login');
 

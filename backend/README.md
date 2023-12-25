@@ -31,3 +31,7 @@ python -m uvicorn main:app --reload --port 8080
 After running the project goto 
 http://127.0.0.1:8080/docs 
 for a web based swagger docs.
+
+## Tests
+For tests to work you need to create an exact copy of `.env` file and rename it to `.env.integration`. In this file change the database
+connection string to a test database.

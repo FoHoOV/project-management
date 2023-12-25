@@ -27,6 +27,9 @@ npm run dev
 npm run dev -- --open
 ```
 
+## Testing
+For this to work you need to create an exact copy of your `.env` file then rename it to `.env.integration`. After that change the values to connect to our test backend service which should connect to a test database (the default configured port is 8090 - see backend/README.md).
+
 ## Production
 
 To create a production version of your app:
