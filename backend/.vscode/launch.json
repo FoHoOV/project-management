@@ -14,6 +14,16 @@
       "justMyCode": true
     },
     {
+      "name": "Python: FastAPI - integration",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["main:app", "--reload", "--port", "8090"],
+      "envFile": "${workspaceFolder}/.env.integration",
+      "jinja": true,
+      "justMyCode": true
+    },
+    {
       "name": "Python: Tests",
       "type": "python",
       "request": "launch",
