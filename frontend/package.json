@@ -68,6 +68,7 @@
 		"daisyui": "^3.5.1",
 		"jose": "^4.14.4",
 		"js-cookie": "^3.0.5",
+		"jsdom": "^23.0.1",
 		"theme-change": "^2.5.0",
 		"typed-openapi": "^0.3.0",
 		"zod": "^3.21.4"

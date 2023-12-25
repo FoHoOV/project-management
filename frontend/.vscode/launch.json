@@ -41,6 +41,12 @@
 			"type": "node-terminal"
 		},
 		{
+			"command": "npx playwright codegen",
+			"name": "npm:playwright:codegen",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
 			"type": "chrome",
 			"request": "launch",
 			"name": "chrome:dev",

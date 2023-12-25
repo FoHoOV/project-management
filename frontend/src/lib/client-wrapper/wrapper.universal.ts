@@ -218,7 +218,6 @@ export async function callService<
 			response: await serviceCall()
 		};
 	} catch (e) {
-		console.error(e);
 		if (e instanceof FetchError) {
 			return {
 				success: false,
