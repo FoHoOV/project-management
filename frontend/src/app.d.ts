@@ -3,6 +3,7 @@
 
 import type { Token } from '$lib/generated-client/models';
 
+import 'vitest-dom/extend-expect';
 declare global {
 	namespace App {
 		interface Error {
