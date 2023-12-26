@@ -13,4 +13,6 @@ def test_login():
     )
 
     assert response.status_code == 200
-    assert "access_token" in response.json()
+    assert (
+        "access_token" in response.json()
+    ), "after a successful login we should get an access_token"

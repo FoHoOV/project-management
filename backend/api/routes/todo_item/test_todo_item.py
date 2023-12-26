@@ -26,10 +26,13 @@ def test_create_todo_item_not_belonging_to_user():
 
     assert response.status_code == 400
     assert "code" in response.json()
-    assert response.json()["code"] == ErrorCode.TODO_CATEGORY_NOT_FOUND
+    assert (
+        response.json()["code"] == ErrorCode.TODO_CATEGORY_NOT_FOUND
+    ), "when inserting into a category that does not belong to user, we should encounter an TODO_CATEGORY_NOT_FOUND error"
 
 
 def test_list_all_todos():
+    # create a project
     project = Project.model_validate(
         client.post(
             "project/create",
@@ -38,6 +41,8 @@ def test_list_all_todos():
         ).json(),
         strict=True,
     )
+
+    # add a category to the newly created project
     category = TodoCategory.model_validate(
         client.post(
             "todo-category/create",
@@ -47,6 +52,7 @@ def test_list_all_todos():
         strict=True,
     )
 
+    # add {number_of_todos_to_create} todos to the created category
     number_of_todos_to_create = 10
     for i in range(number_of_todos_to_create):
         response = client.post(
@@ -62,6 +68,7 @@ def test_list_all_todos():
 
         assert response.status_code == 200
 
+    # query all todos for this category
     todos_response = client.get(
         "/todo-item/list",
         params={"project_id": project.id, "category_id": category.id},
@@ -69,8 +76,11 @@ def test_list_all_todos():
     )
 
     assert todos_response.status_code == 200
-    assert len(list(todos_response.json())) == number_of_todos_to_create
+    assert (
+        len(list(todos_response.json())) == number_of_todos_to_create
+    ), "number of todos in a new category should equal to the number of created todos for that category (excluding the dnd scenario)"
 
+    # convert them to TodoItem model
     todos = [
         TodoItem.model_validate(x, strict=True)
         for x in client.get(
@@ -85,13 +95,18 @@ def test_list_all_todos():
         if i == len(todos) - 1:
             assert todo.order.left_id is None
         else:
-            assert todo.order.left_id == todos[i + 1].id
+            assert (
+                todo.order.left_id == todos[i + 1].id
+            ), "todo items should by default be sorted from oldest to newest"
 
         if i > 0:
-            assert todo.order.right_id == todos[i - 1].id
+            assert (
+                todo.order.right_id == todos[i - 1].id
+            ), "todo items should by default be sorted from oldest to newest"
 
 
 def test_reorder_todos():
+    # create a project
     project = Project.model_validate(
         client.post(
             "project/create",
@@ -100,6 +115,8 @@ def test_reorder_todos():
         ).json(),
         strict=True,
     )
+
+    # add a category to the newly created project
     category = TodoCategory.model_validate(
         client.post(
             "todo-category/create",
@@ -113,6 +130,7 @@ def test_reorder_todos():
         strict=True,
     )
 
+    # add {number_of_todos_to_create} todos to the created category
     number_of_todos_to_create = 10
     for i in range(number_of_todos_to_create):
         response = client.post(
@@ -128,6 +146,7 @@ def test_reorder_todos():
 
         assert response.status_code == 200
 
+    # query all todos for this category
     todos = [
         TodoItem.model_validate(x, strict=True)
         for x in client.get(
@@ -137,6 +156,7 @@ def test_reorder_todos():
         ).json()
     ]
 
+    # move last item to the left-side of the first item (which makes it the first item in the list)
     reorder_response = client.patch(
         "/todo-item/update-order",
         json={
@@ -159,7 +179,16 @@ def test_reorder_todos():
         ).json()
     ]
 
-    assert todos[-1].order.right_id == todos[-2].id
-    assert todos[-1].order.left_id == todos[0].id
-    assert todos[0].order.right_id == todos[-1].id
-    assert todos[0].order.left_id == None
+    # check the order
+    assert (
+        todos[-1].order.right_id == todos[-2].id
+    ), "after reorder, newest todo should still be on the left-side of the second newest todo"
+    assert (
+        todos[-1].order.left_id == todos[0].id
+    ), "after reorder, newest todo must on the right-side of the oldest todo"
+    assert (
+        todos[0].order.right_id == todos[-1].id
+    ), "after reorder, oldest todo must be on left-side of the newest todo"
+    assert (
+        todos[0].order.left_id == None
+    ), "after reorder, oldest todo must be the first one in the list"

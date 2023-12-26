@@ -17,11 +17,22 @@ def test_create_project_without_template():
 
     project = Project.model_validate(response.json(), strict=True)
 
-    assert len(project.users) == 1
-    assert project.users[0].username == TEST_USER["username"]
-    assert len(project.todo_categories) == 0
-    assert project.done_todos_count == 0
-    assert project.pending_todos_count == 0
+    assert (
+        len(project.users) == 1
+    ), "new project should be associated to only one user (the creator of this project)"
+
+    assert (
+        project.users[0].username == TEST_USER["username"]
+    ), "owner of the created project should be the user who created it"
+
+    assert (
+        len(project.todo_categories) == 0
+    ), "an empty project should have no categories"
+    assert project.done_todos_count == 0, "an empty project should have no done todos"
+
+    assert (
+        project.pending_todos_count == 0
+    ), "an empty project should have no pending todos"
 
 
 def test_create_project_with_template():
@@ -39,8 +50,22 @@ def test_create_project_with_template():
 
     project = Project.model_validate(response.json(), strict=True)
 
-    assert len(project.users) == 1
-    assert project.users[0].username == TEST_USER["username"]
-    assert len(project.todo_categories) == 4
-    assert project.done_todos_count == 0
-    assert project.pending_todos_count == 0
+    assert (
+        len(project.users) == 1
+    ), "new project should be associated to only one user (the creator of this project)"
+
+    assert (
+        project.users[0].username == TEST_USER["username"]
+    ), "owner of the created project should be the user who created it"
+
+    assert (
+        len(project.todo_categories) == 4
+    ), "a new project made from the template should have 4 categories"
+
+    assert (
+        project.done_todos_count == 0
+    ), "a new project made from the template should have no done todos"
+
+    assert (
+        project.pending_todos_count == 0
+    ), "a new project made from the template should have no pending todos"

@@ -8,7 +8,7 @@
     "sqlalchemy",
     "todos"
   ],
-  "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "test_*.py"],
-  "python.testing.pytestEnabled": false,
-  "python.testing.unittestEnabled": true
+  "python.testing.pytestArgs": ["."],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
