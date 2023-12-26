@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     # these configurations read from the .env file that you have to create
     SECRET_KEY: str
     SQLALCHEMY_DATABASE_URL: str
-    SQLALCHEMY_TEST_DATABASE_URL: str
     ALLOWED_ORIGINS: list[str]
     IS_SQLALCHEMY_LOG_ENABLED: bool
 
