@@ -5,7 +5,8 @@ import { expect, test } from 'vitest';
 test('has text when loading is false', async () => {
 	render(LoadingButton, { text: 'test', loading: false });
 	const button = screen.getByRole('button');
-	expect(button, 'expected to have test but loading state was shown').toHaveTextContent('test');
+
+	expect(button, 'expected to have button with text=test').toHaveTextContent('test');
 });
 
 test('has loading state when loading is true', async () => {
