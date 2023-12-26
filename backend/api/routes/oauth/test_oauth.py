@@ -8,19 +8,23 @@ client = TestClient(app)
 
 
 def test_login():
-    for _ in range(10):
+    username_lower_case = TEST_USER["username"].lower()
+    username_upper_case = TEST_USER["username"].upper()
+
+    for username in [username_lower_case, username_upper_case]:
         response = client.post(
             "/oauth/token",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={
-                "username": "".join(
-                    choice((str.upper, str.lower))(c) for c in TEST_USER["username"]
-                ),
+                "username": username,
                 "password": TEST_USER["password"],
             },
         )
 
-        assert response.status_code == 200
+        assert (
+            response.status_code == 200
+        ), "login should work and it should be case-insensitive"
+
         assert (
             "access_token" in response.json()
-        ), "after a successful login we should get an access_token"
+        ), "after a successful login (case-insensitive) we should get an access_token"
