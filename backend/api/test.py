@@ -9,7 +9,9 @@ from sqlalchemy.orm import Session
 
 from db.utils.user_crud import create_user
 
-TEST_USER = {"username": "test_username", "password": "test_password"}
+
+TestUserType = TypedDict("TestUserType", {"username": str, "password": str})
+TEST_USER: TestUserType = {"username": "test_username", "password": "test_password"}
 
 
 def create_test_app():

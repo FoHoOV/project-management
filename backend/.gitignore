@@ -1,12 +1,8 @@
 #auto generated
 venv
 __pycache__
-node_modules
-package-lock.json
-*tsbuildinfo
 dist
-samsteelsina/server_static_files/databases
-ts-out
+.pytest_cache
 
 # local configs
 .env*
@@ -25,3 +21,4 @@ uploads
 !.vscode/extensions.json
 
 todos.db
+todos_test.db

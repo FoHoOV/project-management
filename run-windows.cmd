@@ -20,10 +20,7 @@ echo SECRET_KEY = "933bd8fa378e6e90ed4841d81986906b8d3eaa72fcc4fc8b0c452b3139164
 REM creating the .env.integration file
 del .env.integration
 @echo off
-echo ALLOWED_ORIGINS = ["http://localhost", "http://localhost:4173","http://localhost:5173", "http://localhost:5174"] > .\.env.integration
-echo IS_SQLALCHEMY_LOG_ENABLED  = True >> .\.env.integration
 echo SQLALCHEMY_DATABASE_URL = "sqlite:///./todos_test.db" >> .\.env.integration
-echo SECRET_KEY = "933bd8fa378e6e90ed4841d81986906b8d3eaa72fcc4fc8b0c452b3139164126" >> .\.env.integration
 
 REM starting the backend server on port 8080
 start cmd.exe @cmd /k "venv\Scripts\python -m uvicorn main:app --reload --port 8080"

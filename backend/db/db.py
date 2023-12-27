@@ -38,5 +38,4 @@ def get_db_params(connection_string: str, enable_logging: bool) -> DbPrams:
 def init_database(engine: Engine):
     from db.models.base import Base
 
-    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)

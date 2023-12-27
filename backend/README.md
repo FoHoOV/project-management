@@ -33,5 +33,6 @@ http://127.0.0.1:8080/docs
 for a web based swagger docs.
 
 ## Tests
-For tests to work you need to create an exact copy of `.env` file and rename it to `.env.integration`. In this file change the database
-connection string to a test database.
+For tests to work you need to create a `.env.integration` file. In this file override the database connection string to a test database.
+UI tests connect should connect to an instance running in port `8090` for instance which 
+connects to the test database instead. 
