@@ -1,4 +1,4 @@
-import { PUBLIC_API_URL } from '$env/static/public';
+import { PUBLIC_API_REQUEST_TIMEOUT_MS, PUBLIC_API_URL } from '$env/static/public';
 import {
 	OAuthApi,
 	TodoItemApi,
@@ -53,7 +53,10 @@ export const generateClient = <T extends typeof BaseAPI>(
 ): InstanceType<T> => {
 	config = {
 		...config,
-		fetchApi: addTimeoutToFetchIfNotExists(config?.fetchApi ?? fetch, 15 * 1000)
+		fetchApi: addTimeoutToFetchIfNotExists(
+			config?.fetchApi ?? fetch,
+			parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS)
+		)
 	};
 
 	return new ApiClass(

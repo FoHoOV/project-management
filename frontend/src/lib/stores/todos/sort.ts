@@ -5,7 +5,7 @@ export function getTodoItemLeftId(todo: TodoCategoryPartialTodoItem) {
 }
 
 export function setTodoItemLeftId(todo: TodoCategoryPartialTodoItem, leftId: number | null) {
-	todo.order = { right_id: null, ...todo.order, left_id: leftId };
+	todo.order = { ...todo.order, left_id: leftId };
 }
 
 export function getTodoItemRightId(todo: TodoCategoryPartialTodoItem) {
@@ -13,7 +13,7 @@ export function getTodoItemRightId(todo: TodoCategoryPartialTodoItem) {
 }
 
 export function setTodoItemRightId(todo: TodoCategoryPartialTodoItem, rightId: number | null) {
-	todo.order = { left_id: null, ...todo.order, right_id: rightId };
+	todo.order = { ...todo.order, right_id: rightId };
 }
 
 export function getTodoCategoryLeftId(todoCategory: TodoCategory) {

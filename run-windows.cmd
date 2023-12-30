@@ -33,6 +33,7 @@ REM creating the .env file
 del .env
 @echo off
 echo PUBLIC_API_URL = http://127.0.0.1:8080 > .\.env
+echo PUBLIC_API_REQUEST_TIMEOUT_MS = 10000 >> .\.env
 
 REM creating the .env.integration file
 del .env.integration
