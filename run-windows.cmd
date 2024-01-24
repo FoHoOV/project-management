@@ -41,7 +41,7 @@ echo PUBLIC_API_URL = http://127.0.0.1:8090 > .\.env.integration
 
 REM installing dependencies
 call npm i
-call npm run open-api:generate:windows:dev
+call npm run open-api:generate:windows
 call npm run build
 call npm run preview
 
