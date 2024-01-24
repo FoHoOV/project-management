@@ -11,14 +11,14 @@
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate:linux:dev",
-			"name": "npm:open-api:generate:linux:dev",
+			"command": "npm run open-api:generate:linux",
+			"name": "npm:open-api:generate:linux",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate:windows:dev",
-			"name": "npm:open-api:generate:windows:dev",
+			"command": "npm run open-api:generate:windows",
+			"name": "npm:open-api:generate:windows",
 			"request": "launch",
 			"type": "node-terminal"
 		},
