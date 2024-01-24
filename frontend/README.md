@@ -7,7 +7,7 @@ PUBLIC_API_URL = http://127.0.0.1:<port> # port defaults to 8080 if you have fol
 ```
 
 You first need to run the backend project because we use the OpenApi schema of that project to create clients/zod-schemas for this one.
-execute this (if the backend is running on 127.0.0.1:8080 you don't need to change anything in the package.json file) to generate the clients/schemas:
+execute this to generate the clients/schemas:
 
 ```bash
 # create the clients and zod schemas
