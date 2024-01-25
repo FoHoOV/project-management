@@ -41,10 +41,11 @@
 	import { generateNewOrderForTodoCategory as generateNewOrderForMovingTodoCategory } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
 	import Confirm from '$components/Confirm.svelte';
-	import Modal from '$components/popups/Modal.svelte';
 	import TodoListActions from '$components/todo/TodoListActions.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts';
+	import multiModal from '$lib/stores/multi-modal';
+	import { readable } from 'svelte/store';
 
 	export let category: TodoCategory;
 	export let projectId: number;
@@ -67,15 +68,10 @@
 	) ?? null) as TodoItemFeature[] | null;
 
 	let className: string = '';
-	let state:
-		| 'drop-zone-left-activated'
-		| 'drop-zone-right-activated'
-		| 'showing-rules'
-		| 'calling-service'
-		| 'none' = 'none';
+	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
+		'none';
 	let apiErrorTitle: string | null;
 	let confirmDeleteTodoCategory: Confirm;
-	let manageActionsModal: Modal;
 
 	const dispatch = createEventDispatcher<{
 		editTodoCategory: { category: TodoCategory };
@@ -207,6 +203,18 @@
 	function handleDragLeft() {
 		state = 'none';
 	}
+
+	function handleShowManageActions(
+		event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }
+	) {
+		multiModal.add({
+			component: TodoListActions,
+			props: readable({ category: category }, (set) => {
+				set({ category: category });
+			}),
+			title: 'Enable/Disable rules for this todo category here'
+		});
+	}
 </script>
 
 <div
@@ -241,7 +249,7 @@
 				<div class="flex max-w-full items-baseline">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
 					<div
-						class="tooltip tooltip-bottom tooltip-info pr-2 text-lg font-bold"
+						class="tooltip tooltip-info tooltip-bottom pr-2 text-lg font-bold"
 						data-tip="category id"
 					>
 						<span class="text-info">#{category.id}</span>
@@ -260,7 +268,7 @@
 					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
-					<button class="text-xl" on:click={() => manageActionsModal.show()}>
+					<button class="text-xl" on:click={handleShowManageActions}>
 						<Fa icon={faRuler} class="text-info" />
 					</button>
 					<button class="text-xl" on:click={() => confirmDeleteTodoCategory.show()}>
@@ -321,20 +329,3 @@
 		{/if}
 	</div>
 </div>
-
-<Modal
-	class="cursor-default border border-success border-opacity-20"
-	wrapperClasses={state != 'showing-rules' ? 'hidden' : ''}
-	title="Manage category rules here"
-	bind:this={manageActionsModal}
-	dialogProps={{
-		//@ts-ignore
-		//TODO: another ugly hack which will be solved by svelte5
-		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: true
-	}}
-	on:opened={() => (state = 'showing-rules')}
-	on:closed={() => (state = 'none')}
->
-	<TodoListActions slot="body" {category}></TodoListActions>
-</Modal>
