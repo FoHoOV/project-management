@@ -34,7 +34,7 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <dialog
-	class="modal modal-bottom cursor-default backdrop-blur-sm backdrop-brightness-50 sm:modal-middle {wrapperClasses}"
+	class="modal modal-bottom sm:modal-middle cursor-default backdrop-blur-sm backdrop-brightness-50 {wrapperClasses}"
 	{...dialogProps}
 	on:keyup={handleKeyupEvent}
 	on:close={close}
@@ -45,6 +45,7 @@
 		<slot name="body" {show} {close} />
 		<div class="modal-action">
 			<form method="dialog">
+				<slot name="actions" />
 				<!-- if there is a button in form, it will close the modal -->
 				<button class="btn">Close</button>
 			</form>

@@ -10,10 +10,9 @@
 	import Empty from '$components/Empty.svelte';
 	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
-	import { onMount, type ComponentProps } from 'svelte';
+	import { onMount } from 'svelte';
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
-	import MultiModal from '$components/popups/MultiModal.svelte';
 	import type {
 		TodoCategory,
 		TodoCategoryPartialTodoItem,
@@ -26,6 +25,8 @@
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
 	import { browser } from '$app/environment';
+	import multiModal from '$lib/stores/multi-modal';
+	import { readable } from 'svelte/store';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -33,91 +34,195 @@
 
 	$: browser && data.response && todos.setTodoCategories(data.response);
 
-	let actions = [
-		{ component: CreateTodoItem, name: 'create-todo-item', title: 'Create your todos here!' },
-		{
-			component: CreateTodoComment,
-			name: 'create-todo-comment',
-			title: 'Create todo comments here!'
-		},
-		{ component: EditTodoComment, name: 'edit-todo-comment', title: 'Edit comment' },
-		{
-			component: CreateTodoCategory,
-			name: 'create-todo-category',
-			title: 'Create todo categories here!'
-		},
-		{
-			component: EditTodoCategory,
-			name: 'edit-todo-category',
-			title: 'Edit todo category details'
-		},
-		{ component: EditTodoItem, name: 'edit-todo-item', title: 'Edit todo item' },
-		{ component: AttachToProject, name: 'attach-to-project', title: 'Attach to another project' },
-		{ component: AddTag, name: 'add-tag', title: 'Add a new tag to this todo item' },
-		{ component: EditTag, name: 'edit-tag', title: "Edit this tag's name" },
-		{
-			component: AddTodoItemDependency,
-			name: 'add-todo-item-dependency',
-			title: 'Add todo item dependency'
-		}
-	] as const;
-
-	let selectedActionProps: ComponentProps<any> | null = null;
-
-	let modals: MultiModal<typeof actions>;
-
-	$: selectedActionProps = { ...selectedActionProps, form };
-
 	function handleCreateTodoCategory(e: MouseEvent) {
-		selectedActionProps = {
-			projectId: parseInt($page.params.projectId)
-		};
-		modals.show('create-todo-category');
+		multiModal.add({
+			component: CreateTodoCategory,
+			props: readable(
+				{
+					form: form,
+					projectId: parseInt($page.params.projectId)
+				},
+				(set) => {
+					set({
+						form: form,
+						projectId: parseInt($page.params.projectId)
+					});
+				}
+			),
+			title: 'Create todo categories'
+		});
 	}
 
 	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
-		selectedActionProps = { category: e.detail.category };
-		modals.show('edit-todo-category');
+		multiModal.add({
+			component: EditTodoCategory,
+			props: readable(
+				{
+					form: form,
+					category: e.detail.category
+				},
+				(set) => {
+					set({
+						form: form,
+						category: e.detail.category
+					});
+				}
+			),
+			title: "Edit this todo category's details"
+		});
 	}
 
 	function handleAttachToProject(e: CustomEvent<{ category: TodoCategory }>) {
-		selectedActionProps = { categoryId: e.detail.category.id };
-		modals.show('attach-to-project');
+		multiModal.add({
+			component: AttachToProject,
+			props: readable(
+				{
+					form: form,
+					categoryId: e.detail.category.id
+				},
+				(set) => {
+					set({
+						form: form,
+						categoryId: e.detail.category.id
+					});
+				}
+			),
+			title: 'Attach this todo category to another project'
+		});
 	}
 
 	function handleEditTodoItem(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
-		selectedActionProps = { todo: e.detail.todo };
-		modals.show('edit-todo-item');
+		multiModal.add({
+			component: EditTodoItem,
+			props: readable(
+				{
+					form: form,
+					todo: e.detail.todo
+				},
+				(set) => {
+					set({
+						form: form,
+						todo: e.detail.todo
+					});
+				}
+			),
+			title: "Edit this todo item's details"
+		});
 	}
 
 	function handleCreateTodoItem(e: CustomEvent<{ category: TodoCategory }>) {
-		selectedActionProps = { categoryId: e.detail.category.id };
-		modals.show('create-todo-item');
+		multiModal.add({
+			component: CreateTodoItem,
+			props: readable(
+				{
+					form: form,
+					categoryId: e.detail.category.id
+				},
+				(set) => {
+					set({
+						form: form,
+						categoryId: e.detail.category.id
+					});
+				}
+			),
+			title: 'Create a new todo item'
+		});
 	}
 
 	function handleCreateComment(e: CustomEvent<{ todoId: number }>) {
-		selectedActionProps = { todoId: e.detail.todoId };
-		modals.show('create-todo-comment');
+		multiModal.add({
+			component: CreateTodoComment,
+			props: readable(
+				{
+					form: form,
+					todoId: e.detail.todoId
+				},
+				(set) => {
+					set({
+						form: form,
+						todoId: e.detail.todoId
+					});
+				}
+			),
+			title: 'Add a comment to the selected todo item'
+		});
 	}
 
 	function handleEditTodoComment(e: CustomEvent<{ comment: TodoComment }>) {
-		selectedActionProps = { comment: e.detail.comment };
-		modals.show('edit-todo-comment');
+		multiModal.add({
+			component: EditTodoComment,
+			props: readable(
+				{
+					form: form,
+					comment: e.detail.comment
+				},
+				(set) => {
+					set({
+						form: form,
+						comment: e.detail.comment
+					});
+				}
+			),
+			title: 'Edit comments'
+		});
 	}
 
 	function handleAddTag(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
-		selectedActionProps = { todoId: e.detail.todo.id };
-		modals.show('add-tag');
+		multiModal.add({
+			component: AddTag,
+			props: readable(
+				{
+					form: form,
+					todoId: e.detail.todo.id
+				},
+				(set) => {
+					set({
+						form: form,
+						todoId: e.detail.todo.id
+					});
+				}
+			),
+			title: 'Add tags to this todo item'
+		});
 	}
 
 	function handleEditTag(e: CustomEvent<{ tag: TodoItemPartialTag }>) {
-		selectedActionProps = { tag: e.detail.tag };
-		modals.show('edit-tag');
+		multiModal.add({
+			component: EditTag,
+			props: readable(
+				{
+					form: form,
+					tag: e.detail.tag
+				},
+				(set) => {
+					set({
+						form: form,
+						tag: e.detail.tag
+					});
+				}
+			),
+			title: "Edit this tag's details"
+		});
 	}
 
 	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
-		selectedActionProps = { todo: e.detail.todo };
-		modals.show('add-todo-item-dependency');
+		multiModal.add({
+			component: AddTodoItemDependency,
+			props: readable(
+				{
+					form: form,
+					todo: e.detail.todo
+				},
+				(set) => {
+					set({
+						form: form,
+						todo: e.detail.todo
+					});
+				}
+			),
+			title:
+				'Add todo dependencies here, this todo cannot be marked as done unless all of its dependencies are marked as done'
+		});
 	}
 
 	onMount(() => {
@@ -180,10 +285,3 @@
 		on:click={handleCreateTodoCategory}
 	/>
 {/if}
-
-<MultiModal
-	bind:this={modals}
-	class="border border-success border-opacity-20"
-	{actions}
-	{selectedActionProps}
-></MultiModal>

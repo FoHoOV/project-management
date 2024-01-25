@@ -14,6 +14,7 @@
 	import projects from '$lib/stores/projects/projects';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { browser } from '$app/environment';
+	import MultiModal from '$components/popups/MultiModal.svelte';
 
 	export let data: PageData;
 	// beforeNavigate(async ({ to, cancel }) => {
@@ -84,6 +85,7 @@
 				<div class="mx-auto h-full overflow-y-auto">
 					<slot />
 					<Toasts></Toasts>
+					<MultiModal class="border-success border border-opacity-20"></MultiModal>
 				</div>
 			{/if}
 		</div>

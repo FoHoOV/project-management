@@ -1,54 +1,35 @@
-<script context="module" lang="ts">
-	export type Action<TName, TComponentType extends SvelteComponent> = {
-		component: TComponentType;
-		name: TName;
-		title: string;
-	};
-
-	type ActionsAny = readonly Action<any, any>[];
-</script>
-
-<script lang="ts" generics="TActions extends ActionsAny">
+<script lang="ts">
 	import Modal from '$components/popups/Modal.svelte';
-	import type { ComponentProps, SvelteComponent } from 'svelte';
+	import multiModal from '$lib/stores/multi-modal';
 
-	export let actions: TActions;
-	export let selectedActionProps: ComponentProps<any> | null = null;
-	export { wrapperClasses as class };
+	export { _wrapperClasses as class };
 
-	let wrapperClasses: string = '';
-	let selectedAction: Action<any, any> | null;
-
+	let wrapperClasses: string | undefined = undefined;
 	let modal: Modal;
 
-	type ExtractComponentType<
-		TAction extends Action<any, any>,
-		Name extends TActions[number]['name']
-	> = TAction extends { name: Name } ? TAction['component'] : never;
+	$: currentStep =
+		$multiModal.steps.length > 0 ? $multiModal.steps[$multiModal.steps.length - 1] : null;
+	$: props = currentStep?.props;
 
-	export function show<TName extends TActions[number]['name']>(name: TName) {
-		selectedAction = actions.find((action) => action.name === name) ?? null;
-		//selectedActionProps = props ?? null;
-		// props was a param that i removed for now
-		// till svelte5 comes out i can simply use signals to make this a reactive value
-		// for instance if we pass in {form: form, title: title} and these values are reactive only the initial value of
-		// these things will be passed to this function
-		// we can work around this by passing getters but the API will look like ssa.reverse()
-		// so for now I'll still to passing props as a Prop to this component itself to make it fully reactive by nature
-		modal.show();
+	function handleClose() {
+		multiModal.clear();
 	}
 
-	function handleCloseModal() {
-		selectedAction = null;
+	function handleGoBack() {
+		multiModal.pop();
+	}
+
+	$: if ($multiModal.show) {
+		modal.show();
 	}
 </script>
 
-<Modal
-	title={selectedAction?.title}
-	class={wrapperClasses}
-	bind:this={modal}
-	on:closed={handleCloseModal}
->
-	<svelte:component this={selectedAction?.component} slot="body" {...selectedActionProps}
-	></svelte:component>
+<Modal title={currentStep?.title} class={wrapperClasses} on:closed={handleClose} bind:this={modal}>
+	<svelte:component this={currentStep?.component} slot="body" {...$props}></svelte:component>
+
+	<slot name="actions">
+		<button class="btn btn-primary" class:hidden={!currentStep} on:click={handleGoBack}>
+			go back
+		</button>
+	</slot>
 </Modal>

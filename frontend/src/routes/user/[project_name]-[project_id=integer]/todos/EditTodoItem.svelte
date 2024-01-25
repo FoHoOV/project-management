@@ -8,10 +8,10 @@
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import type { TodoItem } from '$lib/generated-client/models';
+	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 
 	export let form: ActionData;
-	export let todo: TodoItem;
+	export let todo: TodoCategoryPartialTodoItem;
 
 	let formElement: HTMLFormElement;
 	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
