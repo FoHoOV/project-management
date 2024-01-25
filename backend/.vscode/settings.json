@@ -6,10 +6,12 @@
     "pydantic",
     "sessionmaker",
     "sqlalchemy",
-    "todos"
+    "todos",
+    "venv"
   ],
   "python.testing.pytestArgs": ["."],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.envFile": ""
+  "python.envFile": "",
+  "editor.defaultFormatter": "ms-python.black-formatter"
 }

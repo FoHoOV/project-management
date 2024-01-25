@@ -8,10 +8,8 @@
     }
   ],
   "settings": {
-    "editor.defaultFormatter": "ms-python.black-formatter",
     "python.analysis.autoImportCompletions": true,
     "python.analysis.typeCheckingMode": "basic",
-    "cSpell.words": ["venv"],
     "[postcss]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
