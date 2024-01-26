@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import crypto from 'crypto';
 
 test('signup then login flow', async ({ page }, testInfo) => {
 	testInfo.setTimeout(60 * 1000);
@@ -8,7 +7,7 @@ test('signup then login flow', async ({ page }, testInfo) => {
 	await page.goto('/signup');
 
 	// new user credentials
-	const username = 'test' + crypto.getRandomValues(new Uint32Array(1)).join('');
+	const username = 'test' + crypto.getRandomValues(new Uint32Array(1)).join(''); // TODO: crypto is not known, a bug maybe?
 	const password = username;
 
 	// create an account
