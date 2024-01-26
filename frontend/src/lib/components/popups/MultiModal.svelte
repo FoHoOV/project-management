@@ -27,9 +27,13 @@
 <Modal title={currentStep?.title} class={wrapperClasses} on:closed={handleClose} bind:this={modal}>
 	<svelte:component this={currentStep?.component} slot="body" {...$props}></svelte:component>
 
-	<slot name="actions">
-		<button class="btn btn-primary" class:hidden={!currentStep} on:click={handleGoBack}>
-			go back
-		</button>
-	</slot>
+	<button
+		slot="actions"
+		type="button"
+		class="btn btn-neutral m-auto"
+		class:hidden={$multiModal.steps.length <= 1}
+		on:click={handleGoBack}
+	>
+		go back
+	</button>
 </Modal>
