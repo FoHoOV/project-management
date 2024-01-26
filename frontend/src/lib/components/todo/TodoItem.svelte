@@ -27,6 +27,12 @@
 	} & TodoCommentsDispatcherEventTypes &
 		TodoTagsDispatcherEventTypes &
 		TodoItemDependenciesDispatcherEventTypes;
+
+	export type Props = {
+		todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
+		category?: TodoCategory | null;
+		enabledFeatures?: Feature[] | null;
+	};
 </script>
 
 <script lang="ts">
@@ -73,27 +79,27 @@
 	import Confirm from '$components/Confirm.svelte';
 	import multiModal from '$lib/stores/multi-modal';
 	import { readable } from 'svelte/store';
-	export let todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
-	export let category: TodoCategory | null = null;
-	export let enabledFeatures: Feature[] | null = null;
 
-	$: {
+	const { todo, category = null, enabledFeatures = null, ...restProps } = $props<Props>();
+
+	let componentState = $state<
+		'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none'
+	>('none');
+	let apiErrorTitle = $state<string | null>(null);
+	let confirmDeleteTodo = $state<Confirm | null>(null);
+
+	const dispatch = createEventDispatcher<DispatcherEventTypes>();
+
+	$effect(() => {
 		if (enabledFeatures?.includes('update-todo-item-order') && !category) {
 			throw new Error(
 				'If you want the todo-item to be able to update its order please provide the TodoCategory associated with it'
 			);
 		}
-	}
-
-	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
-		'none';
-	let apiErrorTitle: string | null;
-	let confirmDeleteTodo: Confirm;
-
-	const dispatch = createEventDispatcher<DispatcherEventTypes>();
+	});
 
 	async function handleChangeDoneStatus() {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
 			serviceCall: async () => {
@@ -109,7 +115,7 @@
 						message: 'This category has a rule that prevents this item being marked as `UNDONE`'
 					});
 				}
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
@@ -123,30 +129,30 @@
 					apiErrorTitle = e.message;
 				}
 				todo.is_done = savedTodoStatus;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
 	async function handleRemoveTodo() {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItem(todo);
 				todos.removeTodo(todo);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoCategoryPartialTodoItem>) {
 		if (event.detail.data.id == todo.id) {
-			state = 'none';
+			componentState = 'none';
 			return;
 		}
 
@@ -156,9 +162,9 @@
 
 		const cachedCategory = category;
 
-		const moveUp = state == 'drop-zone-top-activated';
+		const moveUp = componentState == 'drop-zone-top-activated';
 
-		state = 'calling-service';
+		componentState = 'calling-service';
 		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 		await callServiceInClient({
 			serviceCall: async () => {
@@ -173,7 +179,7 @@
 					generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				);
 				todos.updateTodo(result);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
@@ -189,7 +195,7 @@
 				} else {
 					apiErrorTitle = e.message;
 				}
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 
@@ -206,11 +212,11 @@
 			y: event.detail.originalEvent.clientY
 		});
 
-		state = position == 'top' ? 'drop-zone-top-activated' : 'drop-zone-bottom-activated';
+		componentState = position == 'top' ? 'drop-zone-top-activated' : 'drop-zone-bottom-activated';
 	}
 
 	function handleDragLeft() {
-		state = 'none';
+		componentState = 'none';
 	}
 
 	function handleEditTodoItem() {
@@ -287,21 +293,23 @@
 	use:dropzone={{
 		model: todo,
 		names: [TODO_ITEM_ORDER_DROP_ZONE],
-		disabled: state === 'calling-service'
+		disabled: componentState === 'calling-service'
 	}}
 	use:draggable={{
 		data: todo,
 		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE],
-		disabled: state === 'calling-service' || !enabledFeatures?.includes('update-todo-item-order')
+		disabled:
+			componentState === 'calling-service' || !enabledFeatures?.includes('update-todo-item-order')
 	}}
 	on:dropped={handleUpdateTodoItemOrder}
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 >
-	<Spinner visible={state === 'calling-service'}></Spinner>
+	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<DropZoneHelper
-		visible={state === 'drop-zone-top-activated' || state === 'drop-zone-bottom-activated'}
-		direction={state === 'drop-zone-top-activated' ? 'top' : 'bottom'}
+		visible={componentState === 'drop-zone-top-activated' ||
+			componentState === 'drop-zone-bottom-activated'}
+		direction={componentState === 'drop-zone-top-activated' ? 'top' : 'bottom'}
 	/>
 	<Confirm bind:this={confirmDeleteTodo} on:onConfirm={handleRemoveTodo}></Confirm>
 	<div class="card-body pb-4">
@@ -331,7 +339,7 @@
 				>
 					<Fa icon={faEdit} class="text-success" />
 				</button>
-				<button on:click={() => confirmDeleteTodo.show()}>
+				<button on:click={() => confirmDeleteTodo?.show()}>
 					<Fa icon={faTrashCan} class="text-red-400" />
 				</button>
 			</div>
