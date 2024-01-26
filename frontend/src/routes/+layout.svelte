@@ -16,7 +16,7 @@
 	import { browser } from '$app/environment';
 	import MultiModal from '$components/popups/MultiModal.svelte';
 
-	const { data } = $props();
+	const { data, children } = $props();
 	// beforeNavigate(async ({ to, cancel }) => {
 	// 	if (browser && isRouteProtected(to?.route.id!) && !$page.data.token) {
 	// 		// because if the client-side router kicks in and page does NOT
@@ -87,7 +87,7 @@
 				/>
 			{:else}
 				<div class="mx-auto h-full overflow-y-auto">
-					<slot />
+					{@render children()}
 					<Toasts></Toasts>
 					<MultiModal class="border border-success border-opacity-20"></MultiModal>
 				</div>

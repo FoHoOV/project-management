@@ -1,10 +1,12 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
+
+	const {children} = $props();
 </script>
 
 <div class="flex items-center gap-5 rounded-2xl bg-base-200 shadow-md">
 	<div class="flex-1">
-		<slot />
+		{@render children()}
 	</div>
 	<div class="hidden flex-1 md:block lg:text-center">
 		<h1 class="text-5xl font-bold text-info">Account management</h1>
