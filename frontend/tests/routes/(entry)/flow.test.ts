@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import crypto from 'crypto';
 
 test('signup then login flow', async ({ page }, testInfo) => {
 	testInfo.setTimeout(60 * 1000);
