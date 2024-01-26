@@ -206,22 +206,10 @@
 		todoComments.refreshComments();
 		multiModal.add({
 			component: TodoComments,
-			props: readable(
-				{
-					todoId: todo.id,
-					enabledFeatures: (enabledFeatures?.filter(
-						(feature) => feature == 'edit-comment' || feature == 'create-comment'
-					) ?? null) as TodoCommentFeature[] | null
-				},
-				(set) => {
-					set({
-						todoId: todo.id,
-						enabledFeatures: (enabledFeatures?.filter(
-							(feature) => feature == 'edit-comment' || feature == 'create-comment'
-						) ?? null) as TodoCommentFeature[] | null
-					});
-				}
-			),
+			props: readable({
+				todoId: todo.id,
+				enabledFeatures: enabledFeatures as TodoCommentFeature[] | null
+			}),
 			title: 'Manage todo comments here'
 		});
 	}
@@ -229,22 +217,10 @@
 	function handleShowTags() {
 		multiModal.add({
 			component: TodoTags,
-			props: readable(
-				{
-					todo: todo,
-					enabledFeatures: (enabledFeatures?.filter(
-						(feature) => feature == 'edit-tag' || feature == 'add-tag'
-					) ?? null) as TodoTagFeature[] | null
-				},
-				(set) => {
-					set({
-						todo: todo,
-						enabledFeatures: (enabledFeatures?.filter(
-							(feature) => feature == 'edit-tag' || feature == 'add-tag'
-						) ?? null) as TodoTagFeature[] | null
-					});
-				}
-			),
+			props: readable({
+				todo: todo,
+				enabledFeatures: enabledFeatures as TodoTagFeature[] | null
+			}),
 			title: 'Manage your todo tags here'
 		});
 	}
@@ -252,20 +228,10 @@
 	function handleShowDependencies() {
 		multiModal.add({
 			component: TodoItemDependencies,
-			props: readable(
-				{
-					todo: todo,
-					enabledFeatures: (enabledFeatures?.filter((feature) => feature == 'add-dependency') ??
-						null) as TodoDependencyFeature[] | null
-				},
-				(set) => {
-					set({
-						todo: todo,
-						enabledFeatures: (enabledFeatures?.filter((feature) => feature == 'add-dependency') ??
-							null) as TodoDependencyFeature[] | null
-					});
-				}
-			),
+			props: readable({
+				todo: todo,
+				enabledFeatures: enabledFeatures as TodoDependencyFeature[] | null
+			}),
 			title: 'Manage your dependencies here'
 		});
 	}

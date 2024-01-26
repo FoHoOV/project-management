@@ -209,9 +209,7 @@
 	) {
 		multiModal.add({
 			component: TodoListActions,
-			props: readable({ category: category }, (set) => {
-				set({ category: category });
-			}),
+			props: readable({ category: category }),
 			title: 'Enable/Disable rules for this todo category here'
 		});
 	}

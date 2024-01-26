@@ -18,9 +18,7 @@
 	function handleCreateProject() {
 		multiModal.add({
 			component: CreateProject,
-			props: readable({ form: form }, (set) => {
-				set({ form: form });
-			}),
+			props: readable({ form: form }),
 			title: 'Create a new project'
 		});
 	}
@@ -28,9 +26,7 @@
 	function handleAttachToUser(e: CustomEvent<{ project: Project }>) {
 		multiModal.add({
 			component: AttachToUser,
-			props: readable({ form: form, projectId: e.detail.project.id }, (set) => {
-				set({ form: form, projectId: e.detail.project.id });
-			}),
+			props: readable({ form: form, projectId: e.detail.project.id }),
 			title: 'Share this project to another user'
 		});
 	}
@@ -38,9 +34,7 @@
 	function handleEditProject(e: CustomEvent<{ project: Project }>) {
 		multiModal.add({
 			component: EditProject,
-			props: readable({ form: form, project: e.detail.project }, (set) => {
-				set({ form: form, project: e.detail.project });
-			}),
+			props: readable({ form: form, project: e.detail.project }),
 			title: 'Edit this project details'
 		});
 	}
