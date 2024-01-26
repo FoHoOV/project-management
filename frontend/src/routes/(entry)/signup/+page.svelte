@@ -8,7 +8,11 @@
 
 	const { form } = $props();
 	let componentState = $state<'none' | 'submitting'>('none');
-	let formErrors = $state(getFormErrors(form)); // TODO: check if form errors work (should we be using derived state or effect?)
+	let formErrors = $state(getFormErrors(form));
+
+	$effect(() => {
+		formErrors = getFormErrors(form);
+	});
 </script>
 
 <svelte:head>

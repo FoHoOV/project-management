@@ -23,6 +23,10 @@
 
 	let formErrors = $state(getFormErrors(form));
 
+	$effect(() => {
+		formErrors = getFormErrors(form);
+	});
+
 	function resetForm() {
 		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };

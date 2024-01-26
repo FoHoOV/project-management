@@ -9,6 +9,10 @@
 
 	let componentState = $state<'none' | 'submitting'>('none');
 	let formErrors = $state(getFormErrors(form));
+
+	$effect(() => {
+		formErrors = getFormErrors(form);
+	});
 </script>
 
 <svelte:head>
