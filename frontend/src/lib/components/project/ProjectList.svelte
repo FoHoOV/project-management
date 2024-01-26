@@ -1,6 +1,11 @@
 <script lang="ts" context="module">
 	import type { Feature as ProjectFeature } from './Project.svelte';
+
 	export type Feature = ProjectFeature;
+	export type Props = {
+		projects: ProjectType[];
+		enabledFeatures?: Feature[] | null;
+	};
 </script>
 
 <script lang="ts">
@@ -9,8 +14,7 @@
 	import Empty from '$components/Empty.svelte';
 	import { flip } from 'svelte/animate';
 
-	export let projects: ProjectType[];
-	export let enabledFeatures: Feature[] | null = null;
+	const { projects, enabledFeatures = null } = $props<Props>();
 </script>
 
 {#if projects.length == 0}

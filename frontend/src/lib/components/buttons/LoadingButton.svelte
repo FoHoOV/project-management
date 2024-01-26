@@ -1,13 +1,17 @@
-<script lang="ts">
-	export let text: string;
-	export let loading: boolean = false;
-	export let type: "submit" | "button" = "button";
-	export {className as class};
-
-	let className: string = '';
+<script lang="ts" context="module">
+	export type Props = {
+		text: string;
+		loading?: boolean;
+		type?: 'submit' | 'button';
+		class?: string;
+	};
 </script>
 
-<button on:click class="btn disabled:cursor-not-allowed {className}" disabled={loading} type={type}>
+<script lang="ts">
+	const { text, loading = false, type = 'button', class: className = '' } = $props<Props>();
+</script>
+
+<button on:click class="btn disabled:cursor-not-allowed {className}" disabled={loading} {type}>
 	{#if loading}
 		<span class="loading loading-dots loading-sm" />
 	{:else}

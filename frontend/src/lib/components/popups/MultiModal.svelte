@@ -1,15 +1,21 @@
+<script lang="ts" context="module">
+	export type Props = {
+		class?: string;
+	};
+</script>
+
 <script lang="ts">
 	import Modal from '$components/popups/Modal.svelte';
 	import multiModal from '$lib/stores/multi-modal';
 
-	export { _wrapperClasses as class };
+	const { class: className = '' } = $props<Props>();
 
-	let wrapperClasses: string | undefined = undefined;
-	let modal: Modal;
+	let modal = $state<Modal | null>(null);
 
-	$: currentStep =
-		$multiModal.steps.length > 0 ? $multiModal.steps[$multiModal.steps.length - 1] : null;
-	$: props = currentStep?.props();
+	const currentStep = $derived(
+		$multiModal.steps.length > 0 ? $multiModal.steps[$multiModal.steps.length - 1] : null
+	);
+	const componentProps = $derived(currentStep?.props());
 
 	function handleClose() {
 		multiModal.clear();
@@ -19,13 +25,16 @@
 		multiModal.pop();
 	}
 
-	$: if ($multiModal.show) {
-		modal.show();
-	}
+	$effect(() => {
+		if ($multiModal.show) {
+			modal?.show();
+		}
+	});
 </script>
 
-<Modal title={currentStep?.title} class={wrapperClasses} on:closed={handleClose} bind:this={modal}>
-	<svelte:component this={currentStep?.component} slot="body" {...props}></svelte:component>
+<Modal title={currentStep?.title} class={className} on:closed={handleClose} bind:this={modal}>
+	<svelte:component this={currentStep?.component} slot="body" {...componentProps}
+	></svelte:component>
 
 	<button
 		slot="actions"

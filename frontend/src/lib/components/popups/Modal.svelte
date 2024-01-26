@@ -1,25 +1,34 @@
+<script lang="ts" context="module">
+	export type Props = {
+		title?: string;
+		dialogProps?: Partial<HTMLAttributes<HTMLDialogElement>>;
+		wrapperClasses?: string;
+		class?: string;
+	};
+</script>
+
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	export let title: string = '';
-	export let dialogProps: Partial<HTMLAttributes<HTMLDialogElement>> = {};
-	export { wrapperClasses as wrapperClasses };
-	export { modalBodyClasses as class };
-
-	let wrapperClasses: string = '';
-	let modalBodyClasses: string = '';
+	const {
+		title = '',
+		dialogProps = {},
+		wrapperClasses = '',
+		class: modalBodyClasses = ''
+	} = $props<Props>();
 
 	const dispatch = createEventDispatcher<{ closed: {}; opened: {} }>();
-	let modalElement: HTMLDialogElement;
+
+	let modalElement = $state<HTMLDialogElement | null>(null);
 
 	export function show() {
-		modalElement.show();
+		modalElement?.show();
 		dispatch('opened', {});
 	}
 
 	export function close() {
-		modalElement.close();
+		modalElement?.close();
 		dispatch('closed', {});
 	}
 

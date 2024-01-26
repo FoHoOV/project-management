@@ -1,5 +1,9 @@
 <script lang="ts" context="module">
 	export type Feature = 'edit-project' | 'attach-to-user';
+	export type Props = {
+		project: Project;
+		enabledFeatures?: Feature[] | null;
+	};
 </script>
 
 <script lang="ts">
@@ -16,12 +20,11 @@
 	import Confirm from '$components/Confirm.svelte';
 	import projects from '$lib/stores/projects';
 
-	export let project: Project;
-	export let enabledFeatures: Feature[] | null = null;
+	const { project, enabledFeatures = null } = $props<Props>();
 
-	let state: 'calling-service' | 'none' = 'none';
-	let apiErrorTitle: string | null;
-	let confirmDetachProject: Confirm;
+	let componentState = $state<'calling-service' | 'none'>('none');
+	let apiErrorTitle = $state<string | null>(null);
+	let confirmDetachProject = $state<Confirm | null>(null);
 
 	const dispatch = createEventDispatcher<{
 		editProject: { project: Project };
@@ -29,19 +32,19 @@
 	}>();
 
 	async function handleDetachProjectFromUser() {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
 				projects.deleteProject(project);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
@@ -60,7 +63,7 @@
 >
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
-		<Spinner visible={state === 'calling-service'}></Spinner>
+		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<Confirm bind:this={confirmDetachProject} on:onConfirm={handleDetachProjectFromUser}></Confirm>
 		<div class="card-title justify-between">
 			<div class="flex items-baseline gap-2">
@@ -112,7 +115,7 @@
 			>
 				Attach to user
 			</button>
-			<button class="btn btn-error flex-1" on:click={() => confirmDetachProject.show()}>
+			<button class="btn btn-error flex-1" on:click={() => confirmDetachProject?.show()}>
 				{#if project.users.length == 1}
 					Delete
 				{:else}

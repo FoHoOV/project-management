@@ -1,16 +1,26 @@
+<script lang="ts" context="module">
+	export type Props = {
+		name: string;
+		href: string;
+		icon?: IconDefinition | null;
+		setActiveClassOnClick?: boolean;
+		class?: string;
+	};
+</script>
+
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { toggleClass } from '$lib/actions';
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
-	export let name: string;
-	export let href: string;
-	export let icon: IconDefinition | null = null;
-	export let setActiveClassOnClick: boolean = true;
-	export { className as class };
-
-	let className: string = '';
+	const {
+		name,
+		href,
+		icon = null,
+		setActiveClassOnClick = true,
+		class: className = ''
+	} = $props<Props>();
 </script>
 
 <li class="break-words-legacy max-w-full whitespace-normal break-words">

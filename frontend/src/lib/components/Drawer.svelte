@@ -1,14 +1,20 @@
+<script context="module" lang="ts">
+	export type Props = {
+		id: string;
+		startDrawerOpened?: boolean;
+		navbarTitle?: string;
+		navbarTitleHref?: string;
+	};
+</script>
+
 <script lang="ts">
 	import Navbar from '$components/navbar/Navbar.svelte';
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
-	export let id: string;
-	export let startDrawerOpened: boolean = false;
-	export let navbarTitle: string = '';
-	export let navbarTitleHref: string = '';
+	const { id, startDrawerOpened = false, navbarTitle = '', navbarTitleHref = '' } = $props<Props>();
 
-	let showDrawer = false;
+	let showDrawer = $state<boolean>(false);
 
 	let closeDrawer = () => {
 		showDrawer = false;

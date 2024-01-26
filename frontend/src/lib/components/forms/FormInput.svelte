@@ -1,31 +1,48 @@
+<script lang="ts" context="module">
+	export type Props = (
+		| {
+				type?: 'text-area';
+				value?: string | number | undefined;
+		  }
+		| {
+				type?: HTMLInputAttributes['type'];
+				value?: string | boolean | number | undefined;
+		  }
+	) & {
+		name: string;
+		label?: string;
+		errors?: string | string[] | null | undefined | (string | null)[];
+		hideLabel?: boolean;
+		autoFocus?: boolean;
+		pattern?: HTMLInputAttributes['pattern'];
+		autoComplete?: HTMLInputAttributes['autocomplete'] | null;
+		class?: string;
+		inputClasses?: string;
+	};
+</script>
+
 <script lang="ts">
 	import Alert from '$components/Alert.svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
-	export let name: string;
-	export let label: string = name;
-	export let errors: string | string[] | null | undefined | (string | null)[];
-	export let hideLabel: boolean = false;
-	export let type: HTMLInputAttributes['type'] | 'text-area' = 'text';
-	export let value:
-		| string
-		| number
-		| (typeof type extends 'text-area' ? never : boolean)
-		| undefined = '';
-	export let autoFocus: boolean | null = null;
-	export let autoComplete: HTMLInputAttributes['autocomplete'] | null = null;
-	export let pattern: HTMLInputAttributes['pattern'] | null = null;
+	const {
+		name,
+		value = '',
+		label = name,
+		errors = null,
+		hideLabel = false,
+		type = '',
+		autoFocus = null,
+		autoComplete = null,
+		pattern = null,
+		class: wrapperClasses = '',
+		inputClasses = ''
+	} = $props<Props>();
 
-	export { wrapperClasses as class };
-	export { inputClasses as inputClasses };
-
-	let wrapperClasses: string = '';
-	let inputClasses: string = '';
-
-	let input: HTMLInputElement | HTMLTextAreaElement;
+	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
 	export function focus() {
-		input.focus();
+		input?.focus();
 	}
 </script>
 

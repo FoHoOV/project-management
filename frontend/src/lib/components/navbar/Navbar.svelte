@@ -1,11 +1,15 @@
+<script lang="ts" context="module">
+	export type Props = {
+		title: string;
+		titleHref: string;
+		class?: string;
+	};
+</script>
+
 <script lang="ts">
 	import DarkModeSwitch from '$components/DarkModeSwitch.svelte';
 
-	export let title: string;
-	export let titleHref: string;
-	export { className as class };
-
-	let className: string = '';
+	const { title, titleHref, class: className = '' } = $props<Props>();
 </script>
 
 <div class="lg:p-2">

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import TodoList from '$lib/components/todo/TodoList.svelte';
-	import type { ActionData, PageData } from './$types';
 	import todos from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
 	import CreateTodoItem from './CreateTodoItem.svelte';

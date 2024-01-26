@@ -1,8 +1,14 @@
+<script context="module" lang="ts">
+	export type Props = {
+		confirmText?: string;
+		cancelText?: string;
+	};
+</script>
+
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	export let confirmText: string = 'confirm';
-	export let cancelText: string = 'cancel';
+	const { confirmText = 'confirm', cancelText = 'cancel' } = $props<Props>();
 
 	export function show() {
 		visible = true;
@@ -12,7 +18,7 @@
 		visible = false;
 	}
 
-	let visible: boolean = false;
+	let visible = $state<boolean>(false);
 	const dispatcher = createEventDispatcher<{ onConfirm: {}; onCancel: {} }>();
 </script>
 

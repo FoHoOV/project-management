@@ -4,7 +4,7 @@
 	import Alert from '$components/Alert.svelte';
 	import { superEnhance } from '$lib/actions/form';
 
-	let status: 'submitting' | 'none' = 'none';
+	let status = $state<'submitting' | 'none'>('none');
 </script>
 
 <svelte:head>

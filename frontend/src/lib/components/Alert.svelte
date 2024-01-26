@@ -1,31 +1,33 @@
+<script context="module" lang="ts">
+	export type Props = {
+		message?: string | null;
+		type?: 'success' | 'error' | 'info';
+		class?: string;
+	};
+</script>
+
 <script lang="ts">
 	import Fa from 'svelte-fa';
 	import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
-	export let message: string | undefined | null = null;
-	export let type: 'success' | 'error' | 'info';
-	export { className as class };
+	const { type, message = null, class: className = '' } = $props<Props>();
 
-	let className: string = '';
-
-	let _alertClassName = '';
-	switch (type) {
-		case 'success':
-			_alertClassName = 'success';
-			break;
-		case 'error':
-			_alertClassName = 'error';
-			break;
-		case 'info':
-			_alertClassName = 'info';
-			break;
-		default:
-			_alertClassName = 'info';
-	}
+	let _getAlertClassName = $derived(() => {
+		switch (type) {
+			case 'success':
+				return 'success';
+			case 'error':
+				return 'error';
+			case 'info':
+				return 'info';
+			default:
+				return 'info';
+		}
+	});
 </script>
 
 {#if message}
-	<div class="alert alert-{_alertClassName} rounded-md {className}">
+	<div class="alert alert-{_getAlertClassName()} rounded-md {className}">
 		<Fa icon={faExclamationCircle} />
 		<span>{message}</span>
 	</div>

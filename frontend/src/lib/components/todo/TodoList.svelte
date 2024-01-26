@@ -15,6 +15,13 @@
 		createTodoItem: { category: TodoCategory };
 		attachToProject: { category: TodoCategory };
 	} & TodoItemDispatcherEventTypes;
+
+	export type Props = {
+		category: TodoCategory;
+		projectId: number;
+		enabledFeatures?: Feature[] | null;
+		class?: string;
+	};
 </script>
 
 <script lang="ts">
@@ -54,38 +61,19 @@
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts';
 	import multiModal from '$lib/stores/multi-modal';
-	import { readable } from 'svelte/store';
 
-	export let category: TodoCategory;
-	export let projectId: number;
-	export { className as class };
-	export let enabledFeatures: Feature[] | null = null;
+	const { category, projectId, class: className = '', enabledFeatures = null } = $props<Props>();
 
-	// until svelte5 comes out i have to do this ssa.reverse(), otherwise I could simply cast the type :|
-	$: todoItemEnabledFeatures = (enabledFeatures?.filter(
-		(feature) =>
-			feature == 'edit-comment' ||
-			feature == 'create-comment' ||
-			feature == 'edit-todo-item' ||
-			feature == 'add-tag' ||
-			feature == 'edit-tag' ||
-			feature == 'update-todo-item-order' ||
-			feature == 'add-dependency' ||
-			feature == 'show-category-title' ||
-			feature == 'show-project-id' ||
-			feature == 'sort-on-update-status'
-	) ?? null) as TodoItemFeature[] | null;
-
-	let className: string = '';
-	let state: 'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none' =
-		'none';
-	let apiErrorTitle: string | null;
-	let confirmDeleteTodoCategory: Confirm;
+	let componentState = $state<
+		'drop-zone-left-activated' | 'drop-zone-right-activated' | 'calling-service' | 'none'
+	>('none');
+	let apiErrorTitle = $state<string | null>(null);
+	let confirmDeleteTodoCategory = $state<Confirm | null>();
 
 	const dispatch = createEventDispatcher<DispatcherEventTypes>();
 
 	async function handleDeleteCategory() {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
@@ -93,12 +81,12 @@
 					project_id: projectId
 				});
 				todos.removeCategory(category);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
@@ -127,13 +115,13 @@
 
 	async function handleUpdateCategoryOrder(event: DropEvent<TodoCategory>) {
 		if (event.detail.data.id == category.id) {
-			state = 'none';
+			componentState = 'none';
 			return;
 		}
 
-		const moveLeft = state == 'drop-zone-left-activated';
+		const moveLeft = componentState == 'drop-zone-left-activated';
 
-		state = 'calling-service';
+		componentState = 'calling-service';
 
 		await callServiceInClient({
 			serviceCall: async () => {
@@ -146,12 +134,12 @@
 					event.detail.data,
 					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
 				);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
@@ -161,11 +149,11 @@
 			category.items.find((todo) => event.detail.data.id == todo.id) ||
 			event.detail.getCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM)
 		) {
-			state = 'none';
+			componentState = 'none';
 			return;
 		}
 
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
@@ -175,7 +163,7 @@
 				});
 				todos.removeTodo(event.detail.data, false);
 				todos.addTodo(result);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
@@ -188,7 +176,7 @@
 				} else {
 					apiErrorTitle = e.message;
 				}
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
@@ -202,11 +190,11 @@
 			y: event.detail.originalEvent.clientY
 		});
 
-		state = position == 'right' ? 'drop-zone-right-activated' : 'drop-zone-left-activated';
+		componentState = position == 'right' ? 'drop-zone-right-activated' : 'drop-zone-left-activated';
 	}
 
 	function handleDragLeft() {
-		state = 'none';
+		componentState = 'none';
 	}
 
 	function handleShowManageActions(
@@ -226,12 +214,12 @@
 	use:dropzone={{
 		model: {},
 		names: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_CATEGORY_ORDER_DROP_ZONE],
-		disabled: state === 'calling-service'
+		disabled: componentState === 'calling-service'
 	}}
 	use:draggable={{
 		data: category,
 		targetDropZoneNames: [TODO_CATEGORY_ORDER_DROP_ZONE],
-		disabled: state === 'calling-service'
+		disabled: componentState === 'calling-service'
 	}}
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
@@ -241,10 +229,11 @@
 		? 'border-dashed border-warning'
 		: 'border-info'}"
 >
-	<Spinner visible={state === 'calling-service'}></Spinner>
+	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<DropZoneHelper
-		visible={state === 'drop-zone-left-activated' || state === 'drop-zone-right-activated'}
-		direction={state === 'drop-zone-right-activated' ? 'right' : 'left'}
+		visible={componentState === 'drop-zone-left-activated' ||
+			componentState === 'drop-zone-right-activated'}
+		direction={componentState === 'drop-zone-right-activated' ? 'right' : 'left'}
 	/>
 	<Confirm bind:this={confirmDeleteTodoCategory} on:onConfirm={handleDeleteCategory}></Confirm>
 	<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
@@ -276,7 +265,7 @@
 					<button class="text-xl" on:click={handleShowManageActions}>
 						<Fa icon={faRuler} class="text-info" />
 					</button>
-					<button class="text-xl" on:click={() => confirmDeleteTodoCategory.show()}>
+					<button class="text-xl" on:click={() => confirmDeleteTodoCategory?.show()}>
 						<Fa icon={faTrashCan} class="text-red-400" />
 					</button>
 				</div>
@@ -319,7 +308,7 @@
 					<TodoItemComponent
 						{todo}
 						{category}
-						enabledFeatures={todoItemEnabledFeatures}
+						enabledFeatures={enabledFeatures as TodoItemFeature[] | null}
 						on:editTodoItem
 						on:createComment
 						on:editComment

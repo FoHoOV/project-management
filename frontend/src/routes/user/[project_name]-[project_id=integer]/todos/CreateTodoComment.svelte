@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	type Props = {
+	export type Props = {
 		form: ActionData;
 		todoId: number;
 	};

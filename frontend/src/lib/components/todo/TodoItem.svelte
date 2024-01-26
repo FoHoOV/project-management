@@ -50,7 +50,6 @@
 		ErrorCode,
 		type TodoCategory,
 		type TodoCategoryPartialTodoItem,
-		type TodoComment,
 		type TodoItem
 	} from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
@@ -78,7 +77,6 @@
 	} from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
 	import multiModal from '$lib/stores/multi-modal';
-	import { readable } from 'svelte/store';
 
 	const { todo, category = null, enabledFeatures = null, ...restProps } = $props<Props>();
 

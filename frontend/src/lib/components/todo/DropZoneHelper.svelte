@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+	export type Props = {
+		visible?: boolean;
+		direction: 'top' | 'bottom' | 'right' | 'left';
+	};
+</script>
+
 <script lang="ts">
 	import {
 		faArrowDown,
@@ -8,30 +15,31 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
-	export let visible: boolean = false;
-	export let direction: 'top' | 'bottom' | 'right' | 'left';
+	const { visible = false, direction } = $props<Props>();
 
-	let icon: IconDefinition;
-	let flexDirection: string;
+	let icon = $state<IconDefinition | null>(null);
+	let flexDirection = $state<string>('');
 
-	$: switch (direction) {
-		case 'top':
-			icon = faArrowUp;
-			flexDirection = 'flex-col';
-			break;
-		case 'bottom':
-			icon = faArrowDown;
-			flexDirection = 'flex-col-reverse';
-			break;
-		case 'right':
-			icon = faArrowRight;
-			flexDirection = 'flex-row-reverse';
-			break;
-		case 'left':
-			icon = faArrowLeft;
-			flexDirection = 'flex-row';
-			break;
-	}
+	$effect(() => {
+		switch (direction) {
+			case 'top':
+				icon = faArrowUp;
+				flexDirection = 'flex-col';
+				break;
+			case 'bottom':
+				icon = faArrowDown;
+				flexDirection = 'flex-col-reverse';
+				break;
+			case 'right':
+				icon = faArrowRight;
+				flexDirection = 'flex-row-reverse';
+				break;
+			case 'left':
+				icon = faArrowLeft;
+				flexDirection = 'flex-row';
+				break;
+		}
+	});
 </script>
 
 <div

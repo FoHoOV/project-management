@@ -1,12 +1,15 @@
+<script context="module" lang="ts">
+	export type Props = {
+		text?: string;
+		class?: string;
+	};
+</script>
+
 <script lang="ts">
 	import { faFolderBlank } from '@fortawesome/free-solid-svg-icons';
-
 	import Fa from 'svelte-fa';
 
-	export let text = 'Nothing to see here!';
-	export { className as class };
-
-	let className: string = '';
+	const { text = 'Nothing to see here', class: className = '' } = $props();
 </script>
 
 <div class="flex items-start align-top {className}">

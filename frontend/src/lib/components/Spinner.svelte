@@ -1,5 +1,11 @@
+<script context="module" lang="ts">
+	export type Props = {
+		visible?: boolean;
+	};
+</script>
+
 <script lang="ts">
-	export let visible: boolean = false;
+	const { visible = false } = $props<Props>();
 	// it will position absolutely to the nearest position: relative parent.
 </script>
 
