@@ -68,7 +68,7 @@ export const load = (async ({ locals, fetch, params }) => {
 			if (e.status == 401) {
 				return; // allow default unauthenticated user handling
 			}
-			error(convertNumberToHttpStatusCode(e.status), { message: 'Error fetching your todos!' });
+			error(convertNumberToHttpStatusCode(e.status), { message: 'An error occurred while fetching your todos!' });
 		}
 	});
 }) satisfies PageServerLoad;

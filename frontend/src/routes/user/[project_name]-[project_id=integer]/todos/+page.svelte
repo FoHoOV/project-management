@@ -227,9 +227,6 @@
 
 	onMount(() => {
 		state = 'none';
-		if (!data.response) {
-			throw new window.Error("couldn't load todo categories from server");
-		}
 	});
 </script>
 
