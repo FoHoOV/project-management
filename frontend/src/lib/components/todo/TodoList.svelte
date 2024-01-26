@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
 	import type {
 		Feature as TodoItemFeature,
-		DispatcherEventTypes as TodoItemEventTypes
+		DispatcherEventTypes as TodoItemDispatcherEventTypes
 	} from './TodoItem.svelte';
 
 	export type Feature =
@@ -14,7 +14,7 @@
 		editTodoCategory: { category: TodoCategory };
 		createTodoItem: { category: TodoCategory };
 		attachToProject: { category: TodoCategory };
-	} & TodoItemEventTypes;
+	} & TodoItemDispatcherEventTypes;
 </script>
 
 <script lang="ts">

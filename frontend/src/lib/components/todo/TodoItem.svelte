@@ -1,15 +1,15 @@
 <script lang="ts" context="module">
 	import type {
 		Feature as TodoCommentFeature,
-		DispatcherEventTypes as TodoCommentsEventTypes
+		DispatcherEventTypes as TodoCommentsDispatcherEventTypes
 	} from './TodoComments.svelte';
 	import type {
 		Feature as TodoTagFeature,
-		DispatcherEventTypes as TodoTagsEventTypes
+		DispatcherEventTypes as TodoTagsDispatcherEventTypes
 	} from './TodoTags.svelte';
 	import type {
 		Feature as TodoDependencyFeature,
-		DispatcherEventTypes as TodoItemDependenciesEventTypes
+		DispatcherEventTypes as TodoItemDependenciesDispatcherEventTypes
 	} from './TodoItemDependencies.svelte';
 
 	export type Feature =
@@ -24,9 +24,9 @@
 
 	export type DispatcherEventTypes = {
 		editTodoItem: { todo: TodoCategoryPartialTodoItem };
-	} & TodoCommentsEventTypes &
-		TodoTagsEventTypes &
-		TodoItemDependenciesEventTypes;
+	} & TodoCommentsDispatcherEventTypes &
+		TodoTagsDispatcherEventTypes &
+		TodoItemDependenciesDispatcherEventTypes;
 </script>
 
 <script lang="ts">
