@@ -1,8 +1,15 @@
 <script lang="ts" context="module">
 	export type Feature = 'add-dependency';
-	export type EventTypes = {
+	export type DispatcherEventTypes = {
 		addDependency: { todo: TodoCategoryPartialTodoItem };
 	};
+
+	export type CallBackEventTypes = DispatcherToCallbackEvent<DispatcherEventTypes>;
+
+	export type Props = {
+		todo: TodoCategoryPartialTodoItem;
+		enabledFeatures: Feature[] | null;
+	} & Partial<CallBackEventTypes>;
 </script>
 
 <script script lang="ts">
@@ -13,47 +20,44 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import Fa from 'svelte-fa';
 	import { faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-	import { createEventDispatcher } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import type {
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialDependency
 	} from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos';
+	import type { DispatcherToCallbackEvent } from '$lib/utils/types';
 
-	export let todo: TodoCategoryPartialTodoItem;
-	export let enabledFeatures: Feature[] | null = null;
+	const { todo, enabledFeatures = null, ...restProps } = $props<Props>();
 
-	let state: 'calling-service' | 'none' = 'none';
-	let apiErrorTitle: string | null = null;
-
-	const dispatch = createEventDispatcher<EventTypes>();
+	let componentState = $state<'calling-service' | 'none'>('none');
+	let apiErrorTitle = $state<string | null>(null);
 
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItemDependencyTodoItem({
 					dependency_id: dependency.id
 				});
 				todos.removeDependency(todo.id, dependency);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
 	function handleCreateDependency() {
-		dispatch('addDependency', { todo: todo });
+		restProps?.onAddDependency?.({ todo: todo });
 	}
 </script>
 
 <div class="relative flex flex-col">
-	<Spinner visible={state === 'calling-service'}></Spinner>
+	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
 		on:click={handleCreateDependency}

@@ -1,15 +1,15 @@
 <script lang="ts" context="module">
 	import type {
 		Feature as TodoCommentFeature,
-		EventTypes as TodoCommentsEventTypes
+		DispatcherEventTypes as TodoCommentsEventTypes
 	} from './TodoComments.svelte';
 	import type {
 		Feature as TodoTagFeature,
-		EventTypes as TodoTagsEventTypes
+		DispatcherEventTypes as TodoTagsEventTypes
 	} from './TodoTags.svelte';
 	import type {
 		Feature as TodoDependencyFeature,
-		EventTypes as TodoItemDependenciesEventTypes
+		DispatcherEventTypes as TodoItemDependenciesEventTypes
 	} from './TodoItemDependencies.svelte';
 
 	export type Feature =
@@ -22,7 +22,7 @@
 		| 'show-category-title'
 		| 'sort-on-update-status';
 
-	export type EventTypes = {
+	export type DispatcherEventTypes = {
 		editTodoItem: { todo: TodoCategoryPartialTodoItem };
 	} & TodoCommentsEventTypes &
 		TodoTagsEventTypes &
@@ -45,8 +45,7 @@
 		type TodoCategory,
 		type TodoCategoryPartialTodoItem,
 		type TodoComment,
-		type TodoItem,
-		type TodoItemPartialTag
+		type TodoItem
 	} from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
 	import Fa from 'svelte-fa';
@@ -64,15 +63,16 @@
 	import { cursorOnElementPositionY, type StrictUnion } from '$lib/utils';
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
-	import TodoComments from './TodoComments.svelte';
-	import TodoTags from './TodoTags.svelte';
+	import TodoComments, { type Props as TodoCommentsProps } from './TodoComments.svelte';
+	import TodoTags, { type Props as TodoTagsProps } from './TodoTags.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts/toasts';
-	import TodoItemDependencies from './TodoItemDependencies.svelte';
+	import TodoItemDependencies, {
+		type Props as TodoDependenciesProps
+	} from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
 	import multiModal from '$lib/stores/multi-modal';
 	import { readable } from 'svelte/store';
-
 	export let todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
 	export let category: TodoCategory | null = null;
 	export let enabledFeatures: Feature[] | null = null;
@@ -88,10 +88,9 @@
 	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
 		'none';
 	let apiErrorTitle: string | null;
-	let todoComments: TodoComments;
 	let confirmDeleteTodo: Confirm;
 
-	const dispatch = createEventDispatcher<EventTypes>();
+	const dispatch = createEventDispatcher<DispatcherEventTypes>();
 
 	async function handleChangeDoneStatus() {
 		state = 'calling-service';
@@ -219,13 +218,18 @@
 	}
 
 	function handleShowComments() {
-		todoComments.refreshComments();
 		multiModal.add({
 			component: TodoComments,
 			props: readable({
 				todoId: todo.id,
-				enabledFeatures: enabledFeatures as TodoCommentFeature[] | null
-			}),
+				enabledFeatures: enabledFeatures as TodoCommentFeature[] | null,
+				onCreateComment: (e) => {
+					dispatch('createComment', e);
+				},
+				onEditComment: (e) => {
+					dispatch('editComment', e);
+				}
+			} satisfies TodoCommentsProps),
 			title: 'Manage todo comments here'
 		});
 	}
@@ -235,8 +239,14 @@
 			component: TodoTags,
 			props: readable({
 				todo: todo,
-				enabledFeatures: enabledFeatures as TodoTagFeature[] | null
-			}),
+				enabledFeatures: enabledFeatures as TodoTagFeature[] | null,
+				onAddTag: (e) => {
+					dispatch('addTag', e);
+				},
+				onEditTag: (e) => {
+					dispatch('editTag', e);
+				}
+			} satisfies TodoTagsProps),
 			title: 'Manage your todo tags here'
 		});
 	}
@@ -246,8 +256,11 @@
 			component: TodoItemDependencies,
 			props: readable({
 				todo: todo,
-				enabledFeatures: enabledFeatures as TodoDependencyFeature[] | null
-			}),
+				enabledFeatures: enabledFeatures as TodoDependencyFeature[] | null,
+				onAddDependency: (e) => {
+					dispatch('addDependency', e);
+				}
+			} satisfies TodoDependenciesProps),
 			title: 'Manage your dependencies here'
 		});
 	}

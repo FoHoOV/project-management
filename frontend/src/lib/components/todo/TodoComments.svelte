@@ -1,9 +1,16 @@
 <script lang="ts" context="module">
 	export type Feature = 'create-comment' | 'edit-comment';
-	export type EventTypes = {
+	export type DispatcherEventTypes = {
 		editComment: { comment: TodoComment };
 		createComment: { todoId: number };
 	};
+
+	export type CallBackEventTypes = DispatcherToCallbackEvent<DispatcherEventTypes>;
+
+	export type Props = {
+		todoId: number;
+		enabledFeatures: Feature[] | null;
+	} & Partial<CallBackEventTypes>;
 </script>
 
 <script script lang="ts">
@@ -15,15 +22,16 @@
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-	import { createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import todoComments from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
 	import Confirm from '$components/Confirm.svelte';
+	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
 
-	export let todoId: number;
-	export let enabledFeatures: Feature[] | null = null;
+	const { todoId, enabledFeatures = null, ...restProps } = $props<Props>();
 
 	export async function refreshComments() {
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				const result = await TodoItemCommentClient({
@@ -31,49 +39,51 @@
 				}).listTodoItemComment(todoId);
 
 				todoComments.setOpenedTodoComments(result);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
-	let state: 'calling-service' | 'none' = 'calling-service';
-	let apiErrorTitle: string | null = null;
-	let confirmsDeleteComment: Confirm[] = [];
-
-	const dispatch = createEventDispatcher<EventTypes>();
+	let componentState = $state<'calling-service' | 'none'>('none');
+	let apiErrorTitle = $state<string | null>(null);
+	let deleteCommentConfirms = $state<Confirm[]>([]);
 
 	async function handleDeleteComment(comment: TodoComment) {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
 				todoComments.deleteComment(comment);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
 	function handleCreateComment() {
-		dispatch('createComment', { todoId: todoId });
+		restProps?.onCreateComment?.({ todoId: todoId });
 	}
 
 	function handleEditComment(comment: TodoComment) {
-		dispatch('editComment', { comment: comment });
+		restProps?.onEditComment?.({ comment: comment });
 	}
+
+	onMount(() => {
+		refreshComments();
+	});
 </script>
 
 <div class="flex flex-col">
-	<Spinner visible={state === 'calling-service'}></Spinner>
+	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
 		on:click={handleCreateComment}
@@ -99,14 +109,14 @@
 				animate:flip={{ duration: 200 }}
 			>
 				<Confirm
-					bind:this={confirmsDeleteComment[i]}
+					bind:this={deleteCommentConfirms[i]}
 					on:onConfirm={() => handleDeleteComment(comment)}
 				></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">
 						<button
 							class="btn btn-square btn-error btn-sm"
-							on:click={() => confirmsDeleteComment[i].show()}
+							on:click={() => deleteCommentConfirms[i].show()}
 						>
 							<Fa icon={faTrashCan}></Fa>
 						</button>

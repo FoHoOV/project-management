@@ -1,9 +1,16 @@
 <script lang="ts" context="module">
 	export type Feature = 'add-tag' | 'edit-tag';
-	export type EventTypes = {
+	export type DispatcherEventTypes = {
 		editTag: { tag: TodoItemPartialTag };
 		addTag: { todo: TodoCategoryPartialTodoItem };
 	};
+
+	export type CallBackEventTypes = DispatcherToCallbackEvent<DispatcherEventTypes>;
+
+	export type Props = {
+		todo: TodoCategoryPartialTodoItem;
+		enabledFeatures: Feature[] | null;
+	} & Partial<CallBackEventTypes>;
 </script>
 
 <script script lang="ts">
@@ -15,29 +22,25 @@
 	import Fa from 'svelte-fa';
 	import {
 		faEdit,
-		faPenNib,
 		faPlus,
 		faPlusCircle,
 		faTrashCan,
 		faUnlink
 	} from '@fortawesome/free-solid-svg-icons';
-	import { createEventDispatcher } from 'svelte';
 	import { flip } from 'svelte/animate';
 	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos';
 	import Confirm from '$components/Confirm.svelte';
+	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
 
-	export let todo: TodoCategoryPartialTodoItem;
-	export let enabledFeatures: Feature[] | null = null;
+	const { todo, enabledFeatures = null, ...restProps } = $props<Props>();
 
-	let state: 'calling-service' | 'none' = 'none';
-	let apiErrorTitle: string | null = null;
-	let confirmsDeleteTag: Confirm[] = [];
-
-	const dispatch = createEventDispatcher<EventTypes>();
+	let componentState = $state<'calling-service' | 'none'>('none');
+	let apiErrorTitle = $state<string | null>(null);
+	let deleteTagConfirms = $state<Confirm[]>([]);
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TagClient({ token: $page.data.token }).detachFromTodoTag({
@@ -45,43 +48,43 @@
 					todo_id: todo.id
 				});
 				todos.detachTag(todo.id, tag);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
 	async function handleDeleteTag(tag: TodoItemPartialTag) {
-		state = 'calling-service';
+		componentState = 'calling-service';
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TagClient({ token: $page.data.token }).deleteTag(tag);
 				todos.deleteTag(tag);
-				state = 'none';
+				componentState = 'none';
 				apiErrorTitle = null;
 			},
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
-				state = 'none';
+				componentState = 'none';
 			}
 		});
 	}
 
 	function handleAddTag() {
-		dispatch('addTag', { todo: todo });
+		restProps?.onAddTag?.({ todo: todo });
 	}
 
 	function handleEditTag(tag: TodoItemPartialTag) {
-		dispatch('editTag', { tag: tag });
+		restProps?.onEditTag?.({ tag: tag });
 	}
 </script>
 
 <div class="relative flex flex-col">
-	<Spinner visible={state === 'calling-service'}></Spinner>
+	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
 		on:click={handleAddTag}
@@ -106,7 +109,7 @@
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
-				<Confirm bind:this={confirmsDeleteTag[i]} on:onConfirm={() => handleDeleteTag(tag)}
+				<Confirm bind:this={deleteTagConfirms[i]} on:onConfirm={() => handleDeleteTag(tag)}
 				></Confirm>
 				<div class="card-body">
 					<div class="card-actions box-border justify-end">
@@ -116,7 +119,7 @@
 						>
 							<button
 								class="btn btn-square btn-error btn-sm"
-								on:click={() => confirmsDeleteTag[i].show()}
+								on:click={() => deleteTagConfirms[i].show()}
 							>
 								<Fa icon={faTrashCan}></Fa>
 							</button>

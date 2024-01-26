@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
 	import type {
 		Feature as TodoItemFeature,
-		EventTypes as TodoItemEventTypes
+		DispatcherEventTypes as TodoItemEventTypes
 	} from './TodoItem.svelte';
 
 	export type Feature =
@@ -10,7 +10,7 @@
 		| 'create-todo-item'
 		| 'attach-to-project';
 
-	export type EventTypes = {
+	export type DispatcherEventTypes = {
 		editTodoCategory: { category: TodoCategory };
 		createTodoItem: { category: TodoCategory };
 		attachToProject: { category: TodoCategory };
@@ -82,7 +82,7 @@
 	let apiErrorTitle: string | null;
 	let confirmDeleteTodoCategory: Confirm;
 
-	const dispatch = createEventDispatcher<EventTypes>();
+	const dispatch = createEventDispatcher<DispatcherEventTypes>();
 
 	async function handleDeleteCategory() {
 		state = 'calling-service';
