@@ -3,12 +3,12 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import Alert from '$components/Alert.svelte';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import type { ActionData } from './$types';
 	import { schema } from './validators';
 
-	export let form: ActionData;
-	let state: 'none' | 'submitting' = 'none';
-	$: formErrors = getFormErrors(form);
+	const { form } = $props();
+
+	let componentState = $state<'none' | 'submitting'>('none');
+	let formErrors = $state(getFormErrors(form));
 </script>
 
 <svelte:head>
@@ -23,13 +23,13 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 	}}
 	class="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 >
@@ -53,7 +53,7 @@
 			<LoadingButton
 				class="btn-primary mt-4 flex-grow"
 				text="login"
-				loading={state === 'submitting'}
+				loading={componentState === 'submitting'}
 				type="submit"
 			/>
 		</div>

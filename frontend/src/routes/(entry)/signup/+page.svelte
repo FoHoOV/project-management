@@ -7,9 +7,9 @@
 	import toasts from '$lib/stores/toasts';
 	import { schema } from './validators';
 
-	export let form: ActionData;
-	let state: 'none' | 'submitting' = 'none';
-	$: formErrors = getFormErrors(form);
+	const { form } = $props();
+	let componentState = $state<'none' | 'submitting'>('none');
+	let formErrors = $state(getFormErrors(form)); // TODO: check if form errors work (should we be using derived state or effect?)
 </script>
 
 <svelte:head>
@@ -24,10 +24,10 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
-	on:submitstarted={() => (state = 'submitting')}
-	on:submitended={() => (state = 'none')}
+	on:submitstarted={() => (componentState = 'submitting')}
+	on:submitended={() => (componentState = 'none')}
 	on:submitredirected={() => {
 		toasts.addToast({ time: 5000, message: 'account successfully created', type: 'success' });
 	}}
@@ -60,7 +60,7 @@
 			<LoadingButton
 				class="btn-primary mt-4 flex-grow"
 				text="signup"
-				loading={state === 'submitting'}
+				loading={componentState === 'submitting'}
 				type="submit"
 			/>
 		</div>

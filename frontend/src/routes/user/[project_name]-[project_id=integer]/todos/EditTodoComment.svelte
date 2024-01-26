@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+	type Props = {
+		form: ActionData;
+		comment: TodoComment;
+	};
+</script>
+
 <script lang="ts">
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
@@ -6,23 +13,22 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { editTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
-	import { invalidateAll } from '$app/navigation';
 	import type { TodoComment } from '$lib/generated-client/models';
 	import todoComments from '$lib/stores/todo-comments/todo-comments';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 
-	export let form: ActionData;
-	export let comment: TodoComment;
+	const { form, comment } = $props<Props>();
 
-	let formElement: HTMLFormElement;
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
+	let formElement = $state<HTMLFormElement | null>(null);
 
-	$: formErrors = getFormErrors(form);
+	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+
+	let formErrors = $state(getFormErrors(form));
 
 	function resetForm() {
-		formElement.reset();
+		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
-		state = 'none';
+		componentState = 'none';
 	}
 </script>
 
@@ -41,18 +47,18 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
 		todoComments.updateComment(e.detail.response);
 		resetForm();
-		state = 'submit-successful';
+		componentState = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -62,7 +68,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'comment edited!' : ''}
+			message={componentState == 'submit-successful' ? 'comment edited!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput class="hidden" type="hidden" name="id" value={comment?.id} errors={''} />
@@ -82,7 +88,7 @@
 				text="edit"
 				class="btn-success flex-1"
 				type="submit"
-				loading={state == 'submitting'}
+				loading={componentState == 'submitting'}
 			/>
 		</div>
 	</div>

@@ -1,3 +1,9 @@
+<script context="module" lang="ts">
+	type Props = {
+		form: ActionData;
+	};
+</script>
+
 <script lang="ts">
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
@@ -7,17 +13,18 @@
 	import { createProjectSchema } from './validator';
 	import projects from '$lib/stores/projects';
 
-	export let form: ActionData;
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
+	const { form } = $props<Props>();
 
-	let formElement: HTMLFormElement;
+	let formElement = $state<HTMLFormElement | null>(null);
 
-	$: formErrors = getFormErrors(form);
+	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+
+	let formErrors = $state(getFormErrors(form));
 
 	function resetForm() {
-		formElement.reset();
+		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
-		state = 'none';
+		componentState = 'none';
 	}
 </script>
 
@@ -33,18 +40,18 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
 		projects.addProject(e.detail.response);
 		resetForm();
-		state = 'submit-successful';
+		componentState = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -54,7 +61,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'project created!' : ''}
+			message={componentState == 'submit-successful' ? 'project created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput name="title" class="w-full" autoFocus={true} errors={formErrors?.errors?.title} />
@@ -79,7 +86,7 @@
 				text="create"
 				class="btn-success flex-1"
 				type="submit"
-				loading={state == 'submitting'}
+				loading={componentState == 'submitting'}
 			/>
 		</div>
 	</div>

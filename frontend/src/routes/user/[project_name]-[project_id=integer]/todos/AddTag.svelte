@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+	type Props = {
+		form: ActionData;
+		todoId: number;
+	};
+</script>
+
 <script lang="ts">
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
@@ -9,18 +16,18 @@
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import todos from '$lib/stores/todos/todos';
 
-	export let form: ActionData;
-	export let todoId: number;
+	const { form, todoId } = $props<Props>();
 
-	let formElement: HTMLFormElement;
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
+	let formElement = $state<HTMLFormElement | null>(null);
 
-	$: formErrors = getFormErrors(form);
+	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+
+	let formErrors = $state(getFormErrors(form));
 
 	function resetForm() {
-		formElement.reset();
+		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
-		state = 'none';
+		componentState = 'none';
 	}
 </script>
 
@@ -36,18 +43,18 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
 		todos.addTag(todoId, e.detail.response);
 		resetForm();
-		state = 'submit-successful';
+		componentState = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -57,7 +64,9 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'your tag has been added to this todo item' : ''}
+			message={componentState == 'submit-successful'
+				? 'your tag has been added to this todo item'
+				: ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
@@ -83,7 +92,7 @@
 				text="add"
 				class="btn-success flex-1"
 				type="submit"
-				loading={state == 'submitting'}
+				loading={componentState == 'submitting'}
 			/>
 		</div>
 	</div>

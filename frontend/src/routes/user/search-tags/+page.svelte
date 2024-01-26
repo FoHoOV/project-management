@@ -12,21 +12,21 @@
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
-	export let form: ActionData;
+	const { form } = $props();
 
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
-	let formElement: HTMLFormElement;
+	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+	let formElement = $state<HTMLFormElement | null>(null);
 
-	$: formErrors = getFormErrors(form);
+	let formErrors = $state(getFormErrors(form));
 
 	function resetForm() {
-		formElement.reset();
+		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
-		state = 'none';
+		componentState = 'none';
 	}
 
 	function handleShowResults(result: TodoItemModel[]) {
-		state = 'submit-successful';
+		componentState = 'submit-successful';
 		if (result.length == 0) {
 			todos.clearTodoCategories();
 			return;
@@ -81,13 +81,13 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 		todos.clearTodoCategories();
 	}}
 	on:submitsucceeded={(event) => handleShowResults(event.detail.response)}
@@ -105,7 +105,7 @@
 			text="Search"
 			class="btn-success flex-1"
 			type="submit"
-			loading={state == 'submitting'}
+			loading={componentState == 'submitting'}
 		/>
 		<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 	</div>
@@ -121,7 +121,7 @@
 	{:else}
 		<div
 			class="mt-5 flex items-center gap-2 text-lg font-bold text-warning"
-			class:hidden={state !== 'submit-successful'}
+			class:hidden={componentState !== 'submit-successful'}
 		>
 			<Fa icon={faCircleNotch}></Fa>
 			<span>no results</span>

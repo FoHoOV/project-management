@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+	type Props = {
+		form: ActionData;
+		categoryId: number;
+	};
+</script>
+
 <script lang="ts">
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
@@ -9,19 +16,18 @@
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 
-	export let form: ActionData;
-	export let categoryId: number;
+	const { form, categoryId } = $props<Props>();
 
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
-	let showDatePicker: boolean = false;
-	let formElement: HTMLFormElement;
+	let formElement = $state<HTMLFormElement | null>(null);
 
-	$: formErrors = getFormErrors(form);
+	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+
+	let formErrors = $state(getFormErrors(form));
 
 	function resetForm() {
-		formElement.reset();
+		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
-		state = 'none';
+		componentState = 'none';
 	}
 </script>
 
@@ -37,18 +43,18 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitsucceeded={(e) => {
 		todos.addTodo(e.detail.response);
 		resetForm();
-		state = 'submit-successful';
+		componentState = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -58,7 +64,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'todo created!' : ''}
+			message={componentState == 'submit-successful' ? 'todo created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
@@ -83,7 +89,7 @@
 				text="create"
 				class="btn-success flex-1"
 				type="submit"
-				loading={state == 'submitting'}
+				loading={componentState == 'submitting'}
 			/>
 		</div>
 	</div>

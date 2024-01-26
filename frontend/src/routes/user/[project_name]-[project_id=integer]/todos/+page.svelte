@@ -26,21 +26,26 @@
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
 	import { browser } from '$app/environment';
 	import multiModal from '$lib/stores/multi-modal';
-	import { readable } from 'svelte/store';
 
-	export let data: PageData;
-	export let form: ActionData;
-	export let state: 'loading' | 'none' = 'loading';
+	const { data, form } = $props();
 
-	$: browser && data.response && todos.setTodoCategories(data.response);
+	let componentState = $state<'loading' | 'none'>('loading');
+
+	$effect(() => {
+		if (browser && data.response) {
+			todos.setTodoCategories(data.response);
+		}
+	});
 
 	function handleCreateTodoCategory(e: MouseEvent) {
 		multiModal.add({
 			component: CreateTodoCategory,
-			props: readable({
-				form: form,
-				projectId: parseInt($page.params.projectId)
-			}),
+			props: () => {
+				return {
+					form: form,
+					projectId: parseInt($page.params.projectId)
+				};
+			},
 			title: 'Create todo categories'
 		});
 	}
@@ -48,10 +53,12 @@
 	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
 		multiModal.add({
 			component: EditTodoCategory,
-			props: readable({
-				form: form,
-				category: e.detail.category
-			}),
+			props: () => {
+				return {
+					form: form,
+					category: e.detail.category
+				};
+			},
 			title: "Edit this todo category's details"
 		});
 	}
@@ -59,10 +66,12 @@
 	function handleAttachToProject(e: CustomEvent<{ category: TodoCategory }>) {
 		multiModal.add({
 			component: AttachToProject,
-			props: readable({
-				form: form,
-				categoryId: e.detail.category.id
-			}),
+			props: () => {
+				return {
+					form: form,
+					categoryId: e.detail.category.id
+				};
+			},
 			title: 'Attach this todo category to another project'
 		});
 	}
@@ -70,10 +79,12 @@
 	function handleEditTodoItem(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
 		multiModal.add({
 			component: EditTodoItem,
-			props: readable({
-				form: form,
-				todo: e.detail.todo
-			}),
+			props: () => {
+				return {
+					form: form,
+					todo: e.detail.todo
+				};
+			},
 			title: "Edit this todo item's details"
 		});
 	}
@@ -81,10 +92,12 @@
 	function handleCreateTodoItem(e: CustomEvent<{ category: TodoCategory }>) {
 		multiModal.add({
 			component: CreateTodoItem,
-			props: readable({
-				form: form,
-				categoryId: e.detail.category.id
-			}),
+			props: () => {
+				return {
+					form: form,
+					categoryId: e.detail.category.id
+				};
+			},
 			title: 'Create a new todo item'
 		});
 	}
@@ -92,10 +105,12 @@
 	function handleCreateComment(e: CustomEvent<{ todoId: number }>) {
 		multiModal.add({
 			component: CreateTodoComment,
-			props: readable({
-				form: form,
-				todoId: e.detail.todoId
-			}),
+			props: () => {
+				return {
+					form: form,
+					todoId: e.detail.todoId
+				};
+			},
 			title: 'Add a comment to the selected todo item'
 		});
 	}
@@ -103,10 +118,12 @@
 	function handleEditTodoComment(e: CustomEvent<{ comment: TodoComment }>) {
 		multiModal.add({
 			component: EditTodoComment,
-			props: readable({
-				form: form,
-				comment: e.detail.comment
-			}),
+			props: () => {
+				return {
+					form: form,
+					comment: e.detail.comment
+				};
+			},
 			title: 'Edit comments'
 		});
 	}
@@ -114,10 +131,12 @@
 	function handleAddTag(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
 		multiModal.add({
 			component: AddTag,
-			props: readable({
-				form: form,
-				todoId: e.detail.todo.id
-			}),
+			props: () => {
+				return {
+					form: form,
+					todoId: e.detail.todo.id
+				};
+			},
 			title: 'Add tags to this todo item'
 		});
 	}
@@ -125,10 +144,12 @@
 	function handleEditTag(e: CustomEvent<{ tag: TodoItemPartialTag }>) {
 		multiModal.add({
 			component: EditTag,
-			props: readable({
-				form: form,
-				tag: e.detail.tag
-			}),
+			props: () => {
+				return {
+					form: form,
+					tag: e.detail.tag
+				};
+			},
 			title: "Edit this tag's details"
 		});
 	}
@@ -136,17 +157,19 @@
 	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
 		multiModal.add({
 			component: AddTodoItemDependency,
-			props: readable({
-				form: form,
-				todo: e.detail.todo
-			}),
+			props: () => {
+				return {
+					form: form,
+					todo: e.detail.todo
+				};
+			},
 			title:
 				'Add todo dependencies here, this todo cannot be marked as done unless all of its dependencies are marked as done'
 		});
 	}
 
 	onMount(() => {
-		state = 'none';
+		componentState = 'none';
 	});
 </script>
 
@@ -154,7 +177,7 @@
 	<title>todos</title>
 </svelte:head>
 
-{#if state === 'loading'}
+{#if componentState === 'loading'}
 	<span class="loading loading-ring m-auto block" />
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">

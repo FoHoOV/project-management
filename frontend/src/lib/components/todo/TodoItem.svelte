@@ -226,16 +226,18 @@
 	function handleShowComments() {
 		multiModal.add({
 			component: TodoComments,
-			props: readable({
-				todoId: todo.id,
-				enabledFeatures: enabledFeatures as TodoCommentFeature[] | null,
-				onCreateComment: (e) => {
-					dispatch('createComment', e);
-				},
-				onEditComment: (e) => {
-					dispatch('editComment', e);
-				}
-			} satisfies TodoCommentsProps),
+			props: () => {
+				return {
+					todoId: todo.id,
+					enabledFeatures: enabledFeatures as TodoCommentFeature[] | null,
+					onCreateComment: (e) => {
+						dispatch('createComment', e);
+					},
+					onEditComment: (e) => {
+						dispatch('editComment', e);
+					}
+				} satisfies TodoCommentsProps;
+			},
 			title: 'Manage todo comments here'
 		});
 	}
@@ -243,16 +245,18 @@
 	function handleShowTags() {
 		multiModal.add({
 			component: TodoTags,
-			props: readable({
-				todo: todo,
-				enabledFeatures: enabledFeatures as TodoTagFeature[] | null,
-				onAddTag: (e) => {
-					dispatch('addTag', e);
-				},
-				onEditTag: (e) => {
-					dispatch('editTag', e);
-				}
-			} satisfies TodoTagsProps),
+			props: () => {
+				return {
+					todo: todo,
+					enabledFeatures: enabledFeatures as TodoTagFeature[] | null,
+					onAddTag: (e) => {
+						dispatch('addTag', e);
+					},
+					onEditTag: (e) => {
+						dispatch('editTag', e);
+					}
+				} satisfies TodoTagsProps;
+			},
 			title: 'Manage your todo tags here'
 		});
 	}
@@ -260,13 +264,15 @@
 	function handleShowDependencies() {
 		multiModal.add({
 			component: TodoItemDependencies,
-			props: readable({
-				todo: todo,
-				enabledFeatures: enabledFeatures as TodoDependencyFeature[] | null,
-				onAddDependency: (e) => {
-					dispatch('addDependency', e);
-				}
-			} satisfies TodoDependenciesProps),
+			props: () => {
+				return {
+					todo: todo,
+					enabledFeatures: enabledFeatures as TodoDependencyFeature[] | null,
+					onAddDependency: (e) => {
+						dispatch('addDependency', e);
+					}
+				} satisfies TodoDependenciesProps;
+			},
 			title: 'Manage your dependencies here'
 		});
 	}

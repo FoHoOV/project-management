@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+	type Props = {
+		form: ActionData;
+		category: TodoCategory;
+	};
+</script>
+
 <script lang="ts">
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
@@ -10,17 +17,18 @@
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import type { TodoCategory } from '$lib/generated-client/models';
 
-	export let form: ActionData;
-	export let category: TodoCategory;
+	const { form, category } = $props<Props>();
 
-	let formElement: HTMLFormElement;
-	let state: 'submitting' | 'submit-successful' | 'none' = 'none';
-	$: formErrors = getFormErrors(form);
+	let formElement = $state<HTMLFormElement | null>(null);
+
+	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+
+	let formErrors = $state(getFormErrors(form));
 
 	function resetForm() {
-		formElement.reset();
+		formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
-		state = 'none';
+		componentState = 'none';
 	}
 </script>
 
@@ -39,18 +47,18 @@
 			errors: e.detail,
 			message: 'Invalid form, please review your inputs'
 		};
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitstarted={() => {
-		state = 'submitting';
+		componentState = 'submitting';
 	}}
 	on:submitended={() => {
-		state = 'none';
+		componentState = 'none';
 	}}
 	on:submitsucceeded={(e) => {
 		todos.updateCategory(e.detail.response);
 		resetForm();
-		state = 'submit-successful';
+		componentState = 'submit-successful';
 	}}
 	bind:this={formElement}
 	method="post"
@@ -60,7 +68,7 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={state == 'submit-successful' ? 'todo category info updated!' : ''}
+			message={componentState == 'submit-successful' ? 'todo category info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput class="hidden" type="hidden" name="id" value={category.id} errors={''} />
@@ -84,7 +92,7 @@
 				text="edit"
 				class="btn-success flex-1"
 				type="submit"
-				loading={state === 'submitting'}
+				loading={componentState === 'submitting'}
 			/>
 		</div>
 	</div>

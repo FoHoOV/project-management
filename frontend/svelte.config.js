@@ -17,6 +17,9 @@ const config = {
 			$routes: 'src/routes',
 			$params: 'src/params'
 		}
+	},
+	compilerOptions: {
+		runes: true
 	}
 };
 

@@ -1,9 +1,9 @@
 import type { ComponentProps, SvelteComponent } from 'svelte';
-import { writable, type readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 type MultiModalStep<TComponent extends SvelteComponent> = {
 	component: new (...args: any[]) => TComponent;
-	props: ReturnType<typeof readable<ComponentProps<TComponent>>>;
+	props: () => ReturnType<ComponentProps<TComponent>>;
 	title: string;
 };
 

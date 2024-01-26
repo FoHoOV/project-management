@@ -9,7 +9,7 @@
 
 	$: currentStep =
 		$multiModal.steps.length > 0 ? $multiModal.steps[$multiModal.steps.length - 1] : null;
-	$: props = currentStep?.props;
+	$: props = currentStep?.props();
 
 	function handleClose() {
 		multiModal.clear();
@@ -25,7 +25,7 @@
 </script>
 
 <Modal title={currentStep?.title} class={wrapperClasses} on:closed={handleClose} bind:this={modal}>
-	<svelte:component this={currentStep?.component} slot="body" {...$props}></svelte:component>
+	<svelte:component this={currentStep?.component} slot="body" {...props}></svelte:component>
 
 	<button
 		slot="actions"

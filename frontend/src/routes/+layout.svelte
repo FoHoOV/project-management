@@ -16,7 +16,7 @@
 	import { browser } from '$app/environment';
 	import MultiModal from '$components/popups/MultiModal.svelte';
 
-	export let data: PageData;
+	const { data } = $props();
 	// beforeNavigate(async ({ to, cancel }) => {
 	// 	if (browser && isRouteProtected(to?.route.id!) && !$page.data.token) {
 	// 		// because if the client-side router kicks in and page does NOT
@@ -29,7 +29,11 @@
 	// 	}
 	// });
 
-	$: browser && projects.setProjects(data.projects);
+	$effect(() => {
+		if (browser) {
+			projects.setProjects(data.projects);
+		}
+	});
 </script>
 
 <Drawer
@@ -85,7 +89,7 @@
 				<div class="mx-auto h-full overflow-y-auto">
 					<slot />
 					<Toasts></Toasts>
-					<MultiModal class="border-success border border-opacity-20"></MultiModal>
+					<MultiModal class="border border-success border-opacity-20"></MultiModal>
 				</div>
 			{/if}
 		</div>
