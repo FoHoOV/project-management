@@ -5,6 +5,7 @@
 		icon?: IconDefinition | null;
 		setActiveClassOnClick?: boolean;
 		class?: string;
+		children?: Snippet;
 	};
 </script>
 
@@ -12,6 +13,7 @@
 	import { page } from '$app/stores';
 	import { toggleClass } from '$lib/actions';
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+	import type { Snippet } from 'svelte';
 	import Fa from 'svelte-fa';
 
 	const {
@@ -19,7 +21,8 @@
 		href,
 		icon = null,
 		setActiveClassOnClick = true,
-		class: className = ''
+		class: className = '',
+		children
 	} = $props<Props>();
 </script>
 
@@ -38,5 +41,8 @@
 		{/if}
 		{name}
 	</a>
-	<slot />
+	
+	{#if children}
+		{@render children()}
+	{/if}
 </li>
