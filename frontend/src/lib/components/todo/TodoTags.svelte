@@ -1,5 +1,9 @@
 <script lang="ts" context="module">
 	export type Feature = 'add-tag' | 'edit-tag';
+	export type EventTypes = {
+		editTag: { tag: TodoItemPartialTag };
+		addTag: { todo: TodoCategoryPartialTodoItem };
+	};
 </script>
 
 <script script lang="ts">
@@ -30,10 +34,7 @@
 	let apiErrorTitle: string | null = null;
 	let confirmsDeleteTag: Confirm[] = [];
 
-	const dispatch = createEventDispatcher<{
-		editTag: { tag: TodoItemPartialTag };
-		addTag: { todo: TodoCategoryPartialTodoItem };
-	}>();
+	const dispatch = createEventDispatcher<EventTypes>();
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
 		state = 'calling-service';

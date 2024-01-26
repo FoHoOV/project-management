@@ -1,5 +1,9 @@
 <script lang="ts" context="module">
 	export type Feature = 'create-comment' | 'edit-comment';
+	export type EventTypes = {
+		editComment: { comment: TodoComment };
+		createComment: { todoId: number };
+	};
 </script>
 
 <script script lang="ts">
@@ -41,10 +45,7 @@
 	let apiErrorTitle: string | null = null;
 	let confirmsDeleteComment: Confirm[] = [];
 
-	const dispatch = createEventDispatcher<{
-		editComment: { comment: TodoComment };
-		createComment: { todoId: number };
-	}>();
+	const dispatch = createEventDispatcher<EventTypes>();
 
 	async function handleDeleteComment(comment: TodoComment) {
 		state = 'calling-service';

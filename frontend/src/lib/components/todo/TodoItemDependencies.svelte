@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
 	export type Feature = 'add-dependency';
+	export type EventTypes = {
+		addDependency: { todo: TodoCategoryPartialTodoItem };
+	};
 </script>
 
 <script script lang="ts">
@@ -24,9 +27,7 @@
 	let state: 'calling-service' | 'none' = 'none';
 	let apiErrorTitle: string | null = null;
 
-	const dispatch = createEventDispatcher<{
-		addDependency: { todo: TodoCategoryPartialTodoItem };
-	}>();
+	const dispatch = createEventDispatcher<EventTypes>();
 
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {
 		state = 'calling-service';

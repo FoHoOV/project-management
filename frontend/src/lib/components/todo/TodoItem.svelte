@@ -1,7 +1,17 @@
 <script lang="ts" context="module">
-	import type { Feature as TodoCommentFeature } from './TodoComments.svelte';
-	import type { Feature as TodoTagFeature } from './TodoTags.svelte';
-	import type { Feature as TodoDependencyFeature } from './TodoItemDependencies.svelte';
+	import type {
+		Feature as TodoCommentFeature,
+		EventTypes as TodoCommentsEventTypes
+	} from './TodoComments.svelte';
+	import type {
+		Feature as TodoTagFeature,
+		EventTypes as TodoTagsEventTypes
+	} from './TodoTags.svelte';
+	import type {
+		Feature as TodoDependencyFeature,
+		EventTypes as TodoItemDependenciesEventTypes
+	} from './TodoItemDependencies.svelte';
+
 	export type Feature =
 		| TodoCommentFeature
 		| TodoTagFeature
@@ -11,6 +21,12 @@
 		| 'show-project-id'
 		| 'show-category-title'
 		| 'sort-on-update-status';
+
+	export type EventTypes = {
+		editTodoItem: { todo: TodoCategoryPartialTodoItem };
+	} & TodoCommentsEventTypes &
+		TodoTagsEventTypes &
+		TodoItemDependenciesEventTypes;
 </script>
 
 <script lang="ts">
@@ -28,7 +44,9 @@
 		ErrorCode,
 		type TodoCategory,
 		type TodoCategoryPartialTodoItem,
-		type TodoItem
+		type TodoComment,
+		type TodoItem,
+		type TodoItemPartialTag
 	} from '$lib/generated-client/models';
 	import Alert from '$components/Alert.svelte';
 	import Fa from 'svelte-fa';
@@ -73,9 +91,7 @@
 	let todoComments: TodoComments;
 	let confirmDeleteTodo: Confirm;
 
-	const dispatch = createEventDispatcher<{
-		editTodoItem: { todo: TodoCategoryPartialTodoItem };
-	}>();
+	const dispatch = createEventDispatcher<EventTypes>();
 
 	async function handleChangeDoneStatus() {
 		state = 'calling-service';
