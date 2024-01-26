@@ -47,20 +47,17 @@
 	import { generateNewOrderForTodoItem as generateNewOrderForMovingTodoItem } from '$components/todo/utils';
 	import { createEventDispatcher } from 'svelte';
 	import TodoComments from './TodoComments.svelte';
-	import Modal from '$components/popups/Modal.svelte';
 	import TodoTags from './TodoTags.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts/toasts';
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
+	import multiModal from '$lib/stores/multi-modal';
+	import { readable } from 'svelte/store';
 
 	export let todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
 	export let category: TodoCategory | null = null;
 	export let enabledFeatures: Feature[] | null = null;
-
-	$: enabledTodoCommentFeatures = (enabledFeatures?.filter(
-		(feature) => feature == 'edit-comment' || feature == 'create-comment'
-	) ?? null) as TodoCommentFeature[] | null;
 
 	$: {
 		if (enabledFeatures?.includes('update-todo-item-order') && !category) {
@@ -70,27 +67,10 @@
 		}
 	}
 
-	$: enabledTodoTagFeatures = (enabledFeatures?.filter(
-		(feature) => feature == 'edit-tag' || feature == 'add-tag'
-	) ?? null) as TodoTagFeature[] | null;
-
-	$: enabledTodoDependencyFeatures = (enabledFeatures?.filter(
-		(feature) => feature == 'add-dependency'
-	) ?? null) as TodoDependencyFeature[] | null;
-
-	let state:
-		| 'drop-zone-top-activated'
-		| 'drop-zone-bottom-activated'
-		| 'calling-service'
-		| 'showing-todo-comments'
-		| 'showing-todo-tags'
-		| 'showing-todo-dependencies'
-		| 'none' = 'none';
+	let state: 'drop-zone-top-activated' | 'drop-zone-bottom-activated' | 'calling-service' | 'none' =
+		'none';
 	let apiErrorTitle: string | null;
 	let todoComments: TodoComments;
-	let todoCommentsModal: Modal;
-	let todoTagsModal: Modal;
-	let todoDependenciesModal: Modal;
 	let confirmDeleteTodo: Confirm;
 
 	const dispatch = createEventDispatcher<{
@@ -224,15 +204,70 @@
 
 	function handleShowComments() {
 		todoComments.refreshComments();
-		todoCommentsModal.show();
+		multiModal.add({
+			component: TodoComments,
+			props: readable(
+				{
+					todoId: todo.id,
+					enabledFeatures: (enabledFeatures?.filter(
+						(feature) => feature == 'edit-comment' || feature == 'create-comment'
+					) ?? null) as TodoCommentFeature[] | null
+				},
+				(set) => {
+					set({
+						todoId: todo.id,
+						enabledFeatures: (enabledFeatures?.filter(
+							(feature) => feature == 'edit-comment' || feature == 'create-comment'
+						) ?? null) as TodoCommentFeature[] | null
+					});
+				}
+			),
+			title: 'Manage todo comments here'
+		});
 	}
 
 	function handleShowTags() {
-		todoTagsModal.show();
+		multiModal.add({
+			component: TodoTags,
+			props: readable(
+				{
+					todo: todo,
+					enabledFeatures: (enabledFeatures?.filter(
+						(feature) => feature == 'edit-tag' || feature == 'add-tag'
+					) ?? null) as TodoTagFeature[] | null
+				},
+				(set) => {
+					set({
+						todo: todo,
+						enabledFeatures: (enabledFeatures?.filter(
+							(feature) => feature == 'edit-tag' || feature == 'add-tag'
+						) ?? null) as TodoTagFeature[] | null
+					});
+				}
+			),
+			title: 'Manage your todo tags here'
+		});
 	}
 
 	function handleShowDependencies() {
-		todoDependenciesModal.show();
+		multiModal.add({
+			component: TodoItemDependencies,
+			props: readable(
+				{
+					todo: todo,
+					enabledFeatures: (enabledFeatures?.filter((feature) => feature == 'add-dependency') ??
+						null) as TodoDependencyFeature[] | null
+				},
+				(set) => {
+					set({
+						todo: todo,
+						enabledFeatures: (enabledFeatures?.filter((feature) => feature == 'add-dependency') ??
+							null) as TodoDependencyFeature[] | null
+					});
+				}
+			),
+			title: 'Manage your dependencies here'
+		});
 	}
 
 	function _getDueDateClass(date: Date | null) {
@@ -383,67 +418,3 @@
 		</div>
 	</div>
 </div>
-
-<Modal
-	class="cursor-default border border-success border-opacity-20"
-	wrapperClasses={state != 'showing-todo-dependencies' ? 'hidden' : ''}
-	title="Manage your dependencies here"
-	bind:this={todoDependenciesModal}
-	dialogProps={{
-		//@ts-ignore
-		//TODO: another ugly hack which will be solved by svelte5
-		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: true
-	}}
-	on:opened={() => (state = 'showing-todo-dependencies')}
-	on:closed={() => (state = 'none')}
->
-	<TodoItemDependencies
-		slot="body"
-		{todo}
-		enabledFeatures={enabledTodoDependencyFeatures}
-		on:addDependency
-	></TodoItemDependencies>
-</Modal>
-
-<Modal
-	class="cursor-default border border-success border-opacity-20"
-	wrapperClasses={state != 'showing-todo-tags' ? 'hidden' : ''}
-	title="Manage your tags here"
-	bind:this={todoTagsModal}
-	dialogProps={{
-		//@ts-ignore
-		//TODO: another ugly hack which will be solved by svelte5
-		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: true
-	}}
-	on:opened={() => (state = 'showing-todo-tags')}
-	on:closed={() => (state = 'none')}
->
-	<TodoTags slot="body" {todo} enabledFeatures={enabledTodoTagFeatures} on:addTag on:editTag
-	></TodoTags>
-</Modal>
-
-<Modal
-	class="cursor-default border border-success border-opacity-20"
-	wrapperClasses={state != 'showing-todo-comments' ? 'hidden' : ''}
-	title="Manage your todo comments here"
-	bind:this={todoCommentsModal}
-	dialogProps={{
-		//@ts-ignore
-		//TODO: another ugly hack which will be solved by svelte5
-		ondragstart: 'event.preventDefault();event.stopPropagation();',
-		draggable: true
-	}}
-	on:opened={() => (state = 'showing-todo-comments')}
-	on:closed={() => (state = 'none')}
->
-	<TodoComments
-		bind:this={todoComments}
-		slot="body"
-		todoId={todo.id}
-		enabledFeatures={enabledTodoCommentFeatures}
-		on:createComment
-		on:editComment
-	></TodoComments>
-</Modal>
