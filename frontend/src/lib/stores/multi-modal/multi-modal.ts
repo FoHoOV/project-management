@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 
 type MultiModalStep<TComponent extends SvelteComponent> = {
 	component: new (...args: any[]) => TComponent;
-	props: () => ReturnType<ComponentProps<TComponent>>;
+	props: () => ComponentProps<TComponent>;
 	title: string;
 };
 
