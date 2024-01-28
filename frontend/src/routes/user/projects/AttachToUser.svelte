@@ -13,6 +13,7 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { attachProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
+	import { untrack } from 'svelte';
 
 	const { form, projectId } = $props<Props>();
 
@@ -23,7 +24,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 
 	function resetForm() {

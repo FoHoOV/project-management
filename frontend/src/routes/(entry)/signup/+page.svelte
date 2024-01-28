@@ -5,13 +5,17 @@
 	import { superEnhance, getFormErrors } from '$lib/actions/form';
 	import toasts from '$lib/stores/toasts';
 	import { schema } from './validators';
+	import { untrack } from 'svelte';
 
 	const { form } = $props();
 	let componentState = $state<'none' | 'submitting'>('none');
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 </script>
 

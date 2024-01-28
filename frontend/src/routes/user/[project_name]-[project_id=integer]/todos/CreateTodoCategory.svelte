@@ -14,6 +14,7 @@
 	import { createTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { untrack } from 'svelte';
 
 	const { form } = $props<Props>();
 
@@ -23,7 +24,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 
 	function resetForm() {

@@ -16,6 +16,7 @@
 	import type { TodoComment } from '$lib/generated-client/models';
 	import todoComments from '$lib/stores/todo-comments/todo-comments';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { untrack } from 'svelte';
 
 	const { form, comment } = $props<Props>();
 
@@ -26,7 +27,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 
 	function resetForm() {

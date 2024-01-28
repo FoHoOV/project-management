@@ -9,7 +9,7 @@
 	import Empty from '$components/Empty.svelte';
 	import { page } from '$app/stores';
 	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
 	import type {
@@ -23,7 +23,6 @@
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
-	import { browser } from '$app/environment';
 	import multiModal from '$lib/stores/multi-modal';
 
 	const { data, form } = $props();
@@ -31,9 +30,12 @@
 	let componentState = $state<'loading' | 'none'>('loading');
 
 	$effect(() => {
-		if (browser && data.response) {
-			todos.setTodoCategories(data.response);
-		}
+		data;
+		untrack(() => {
+			if (data.response) {
+				todos.setTodoCategories(data.response);
+			}
+		});
 	});
 
 	function handleCreateTodoCategory(e: MouseEvent) {

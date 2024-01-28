@@ -16,6 +16,7 @@
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import type { TodoCategory } from '$lib/generated-client/models';
+	import { untrack } from 'svelte';
 
 	const { form, category } = $props<Props>();
 
@@ -26,7 +27,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 
 	function resetForm() {

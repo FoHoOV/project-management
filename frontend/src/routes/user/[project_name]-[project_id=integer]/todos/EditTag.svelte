@@ -16,6 +16,7 @@
 	import type { TodoItemPartialTag } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import todos from '$lib/stores/todos';
+	import { untrack } from 'svelte';
 
 	const { form, tag } = $props<Props>();
 
@@ -26,7 +27,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 
 	function resetForm() {

@@ -4,6 +4,7 @@
 	import Alert from '$components/Alert.svelte';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import { schema } from './validators';
+	import { untrack } from 'svelte';
 
 	const { form } = $props();
 
@@ -11,7 +12,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 </script>
 

@@ -14,6 +14,7 @@
 	import type { Project } from '$lib/generated-client/models';
 	import { editProjectSchema } from './validator';
 	import projects from '$lib/stores/projects';
+	import { untrack } from 'svelte';
 
 	const { form, project } = $props<Props>();
 
@@ -24,7 +25,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(() => {
+			formErrors = getFormErrors(form);
+		});
 	});
 
 	function resetForm() {

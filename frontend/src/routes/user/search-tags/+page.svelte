@@ -5,7 +5,7 @@
 	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client/models';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import todos from '$lib/stores/todos/todos';
 	import TodoItem from '$components/todo/TodoItem.svelte';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
@@ -19,7 +19,10 @@
 	let formErrors = $state(getFormErrors(form));
 
 	$effect(() => {
-		formErrors = getFormErrors(form);
+		form;
+		untrack(()=>{
+			formErrors = getFormErrors(form);
+		})
 	});
 
 	function resetForm() {
