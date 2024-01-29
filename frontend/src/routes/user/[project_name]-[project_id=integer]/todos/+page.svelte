@@ -43,8 +43,7 @@
 			component: CreateTodoCategory,
 			props: () => {
 				return {
-					form: form,
-					projectId: parseInt($page.params.projectId)
+					form: form
 				};
 			},
 			title: 'Create todo categories'

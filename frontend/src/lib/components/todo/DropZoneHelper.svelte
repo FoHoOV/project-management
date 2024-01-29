@@ -11,35 +11,43 @@
 		faArrowLeft,
 		faArrowRight,
 		faArrowUp,
-		type IconDefinition
+		faCross
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
 	const { visible = false, direction } = $props<Props>();
 
-	let icon = $state<IconDefinition | null>(null);
-	let flexDirection = $state<string>('');
+	const { icon, flexDirection } = $derived(getIconAndDirection());
 
-	$effect(() => {
+	function getIconAndDirection() {
 		switch (direction) {
 			case 'top':
-				icon = faArrowUp;
-				flexDirection = 'flex-col';
-				break;
+				return {
+					icon: faArrowUp,
+					flexDirection: 'flex-col'
+				};
 			case 'bottom':
-				icon = faArrowDown;
-				flexDirection = 'flex-col-reverse';
-				break;
+				return {
+					icon: faArrowDown,
+					flexDirection: 'flex-col-reverse'
+				};
 			case 'right':
-				icon = faArrowRight;
-				flexDirection = 'flex-row-reverse';
-				break;
+				return {
+					icon: faArrowRight,
+					flexDirection: 'flex-row-reverse'
+				};
 			case 'left':
-				icon = faArrowLeft;
-				flexDirection = 'flex-row';
-				break;
+				return {
+					icon: faArrowLeft,
+					flexDirection: 'flex-row'
+				};
+			default:
+				return {
+					icon: faCross,
+					flexDirection: 'flex-row'
+				};
 		}
-	});
+	}
 </script>
 
 <div

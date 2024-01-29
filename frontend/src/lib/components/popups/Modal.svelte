@@ -11,8 +11,10 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 
+	// had to remove the default value for this because of this weird issue
+	// TODO: upstream issue i've created: https://github.com/sveltejs/svelte/issues/10321
 	const {
-		title = '',
+		title,
 		dialogProps = {},
 		wrapperClasses = '',
 		class: modalBodyClasses = ''
