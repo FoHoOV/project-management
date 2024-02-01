@@ -1,3 +1,3 @@
-import * as todos from './todos';
+import * as todos from './todos.svelte';
 
-export default { ...todos.default };
+export default todos.default;

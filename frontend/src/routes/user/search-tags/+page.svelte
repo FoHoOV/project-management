@@ -6,7 +6,7 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import { onDestroy, onMount, untrack } from 'svelte';
-	import todos from '$lib/stores/todos/todos';
+	import todos from '$lib/stores/todos/todos.svelte.js';
 	import TodoItem from '$components/todo/TodoItem.svelte';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
@@ -20,9 +20,9 @@
 
 	$effect(() => {
 		form;
-		untrack(()=>{
+		untrack(() => {
 			formErrors = getFormErrors(form);
-		})
+		});
 	});
 
 	function resetForm() {
@@ -118,8 +118,8 @@
 </form>
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-	{#if $todos.length > 0}
-		{#each $todos as category (category.id)}
+	{#if todos.length > 0}
+		{#each todos.categories as category (category.id)}
 			{#each category.items as todo (todo.id)}
 				<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
 			{/each}

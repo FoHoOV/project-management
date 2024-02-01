@@ -29,7 +29,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { flip } from 'svelte/animate';
 	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
-	import todos from '$lib/stores/todos/todos';
+	import todos from '$lib/stores/todos/todos.svelte';
 	import Confirm from '$components/Confirm.svelte';
 	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
 
@@ -114,7 +114,7 @@
 				<div class="card-body">
 					<div class="card-actions box-border justify-end">
 						<div
-							class="tooltip tooltip-warning tooltip-top tooltip-left"
+							class="tooltip tooltip-top tooltip-left tooltip-warning"
 							data-tip="delete tag from this project"
 						>
 							<button
@@ -126,7 +126,7 @@
 						</div>
 
 						<div
-							class="tooltip tooltip-warning tooltip-top tooltip-left"
+							class="tooltip tooltip-top tooltip-left tooltip-warning"
 							data-tip="detach tag from this item"
 						>
 							<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>
@@ -136,7 +136,7 @@
 
 						<div
 							class:hidden={!enabledFeatures?.includes('edit-tag')}
-							class="tooltip tooltip-info tooltip-top tooltip-left"
+							class="tooltip tooltip-top tooltip-left tooltip-info"
 							data-tip="edit tag name"
 						>
 							<button class="btn btn-square btn-info btn-sm" on:click={() => handleEditTag(tag)}>

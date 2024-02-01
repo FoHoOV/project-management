@@ -1,4 +1,3 @@
-import { writable } from 'svelte/store';
 import type {
 	NullableOrderedItem,
 	TodoItemPartialTag,
@@ -25,11 +24,15 @@ import {
 	removeElementFromSortedList
 } from './sort';
 
-const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
+export class Todos {
+	private _categories = $state<TodoCategory[]>([]);
 
-const addTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false): void => {
-	_update((categories) => {
-		return categories.map<TodoCategory>((category) => {
+	constructor(categories: TodoCategory[]) {
+		this._categories = categories;
+	}
+
+	addTodo(todo: TodoCategoryPartialTodoItem, skipSort = false): void {
+		this._categories = this._categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
@@ -54,16 +57,10 @@ const addTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false): void => {
 
 			return category;
 		});
-	});
-};
+	}
 
-const removeTodo = (
-	todo: TodoCategoryPartialTodoItem,
-	removeDependencies = true,
-	skipSort = false
-) => {
-	_update((categories) => {
-		return categories.map<TodoCategory>((category) => {
+	removeTodo(todo: TodoCategoryPartialTodoItem, removeDependencies = true, skipSort = false) {
+		this._categories = this._categories.map<TodoCategory>((category) => {
 			if (removeDependencies) {
 				category.items = category.items.map((item) => {
 					item.dependencies = item.dependencies.filter((dependency) => {
@@ -92,12 +89,10 @@ const removeTodo = (
 
 			return category;
 		});
-	});
-};
+	}
 
-const updateTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false) => {
-	_update((categories) => {
-		return categories.map<TodoCategory>((category) => {
+	updateTodo(todo: TodoCategoryPartialTodoItem, skipSort = false) {
+		this._categories = this._categories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
@@ -114,12 +109,10 @@ const updateTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false) => {
 
 			return category;
 		});
-	});
-};
+	}
 
-const addDependency = (todoId: number, dependency: TodoItemPartialDependency) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	addDependency(todoId: number, dependency: TodoItemPartialDependency) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -129,12 +122,10 @@ const addDependency = (todoId: number, dependency: TodoItemPartialDependency) =>
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const removeDependency = (todoId: number, dependency: TodoItemPartialDependency) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	removeDependency(todoId: number, dependency: TodoItemPartialDependency) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -144,12 +135,9 @@ const removeDependency = (todoId: number, dependency: TodoItemPartialDependency)
 			});
 			return category;
 		});
-	});
-};
-
-const addTag = (todoId: number, tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	}
+	addTag(todoId: number, tag: TodoItemPartialTag) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -159,12 +147,10 @@ const addTag = (todoId: number, tag: TodoItemPartialTag) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const detachTag = (todoId: number, tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	detachTag(todoId: number, tag: TodoItemPartialTag) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -174,24 +160,20 @@ const detachTag = (todoId: number, tag: TodoItemPartialTag) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const deleteTag = (tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	deleteTag(tag: TodoItemPartialTag) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
 				return todo;
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const updateTag = (tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	updateTag(tag: TodoItemPartialTag) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.map((value) => {
 					if (value.id !== tag.id) {
@@ -204,12 +186,11 @@ const updateTag = (tag: TodoItemPartialTag) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const increaseTodoCommentsCounter = (todoId: number) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	// TODO: todo should be its own state and counter is a derived state of comments count
+	increaseTodoCommentsCounter(todoId: number) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -219,12 +200,11 @@ const increaseTodoCommentsCounter = (todoId: number) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const decreaseTodoCommentsCounter = (todoId: number) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	// TODO: todo should be its own state and counter is a derived state of comments count
+	decreaseTodoCommentsCounter(todoId: number) {
+		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -234,22 +214,21 @@ const decreaseTodoCommentsCounter = (todoId: number) => {
 			});
 			return category;
 		});
-	});
-};
-
-const updateTodoSort = (
-	movingElement: TodoCategoryPartialTodoItem,
-	movingElementNewCategoryId: number,
-	newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
-	skipSort = false
-) => {
-	if (movingElement.category_id !== movingElementNewCategoryId) {
-		removeTodo(movingElement, false);
-		addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
-		movingElement.category_id = movingElementNewCategoryId;
 	}
-	_update((categories) => {
-		categories = categories.map<TodoCategory>((category) => {
+
+	updateTodoSort(
+		movingElement: TodoCategoryPartialTodoItem,
+		movingElementNewCategoryId: number,
+		newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
+		skipSort = false
+	) {
+		if (movingElement.category_id !== movingElementNewCategoryId) {
+			this.removeTodo(movingElement, false);
+			this.addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
+			movingElement.category_id = movingElementNewCategoryId;
+		}
+
+		this._categories = this._categories.map<TodoCategory>((category) => {
 			if (category.id !== movingElement.category_id) {
 				return category;
 			}
@@ -269,20 +248,18 @@ const updateTodoSort = (
 
 			return category;
 		});
-		categories = sortedCategories(categories);
-		return categories;
-	});
-};
+		this._categories = sortedCategories(this._categories);
+	}
 
-const addCategory = (category: TodoCategory) => {
-	_update((categories) => {
+	addCategory(category: TodoCategory) {
 		category.items = sortedTodos(category.items);
-		categories.push(category);
+		this._categories.push(category);
 		updateElementSort(
-			categories,
+			this._categories,
 			category.id,
 			{
-				leftId: getLastTodoCategoryInSortedListExceptCurrent(categories, category.id)?.id ?? null,
+				leftId:
+					getLastTodoCategoryInSortedListExceptCurrent(this._categories, category.id)?.id ?? null,
 				rightId: null
 			},
 			getTodoCategoryLeftId,
@@ -290,29 +267,23 @@ const addCategory = (category: TodoCategory) => {
 			setTodoCategoryLeftId,
 			setTodoCategoryRightId
 		);
-		categories = sortedCategories(categories);
-		return categories;
-	});
-};
+		this._categories = sortedCategories(this._categories);
+	}
 
-const updateCategory = (category: TodoCategory) => {
-	_update((categories) => {
-		categories = categories.map<TodoCategory>((value) => {
+	updateCategory(category: TodoCategory) {
+		this._categories = this._categories.map<TodoCategory>((value) => {
 			if (value.id !== category.id) {
 				return value;
 			}
 			category.items = sortedTodos(category.items);
 			return category;
 		});
-		categories = sortedCategories(categories);
-		return categories;
-	});
-};
+		this._categories = sortedCategories(this._categories);
+	}
 
-const removeCategory = (category: TodoCategory, removeDependencies = true) => {
-	_update((categories) => {
+	removeCategory(category: TodoCategory, removeDependencies = true) {
 		if (removeDependencies) {
-			categories = categories.map((value) => {
+			this._categories = this._categories.map((value) => {
 				value.items = value.items.map((item) => {
 					item.dependencies = item.dependencies.filter((dependency) => {
 						return category.items.some((item) => item.id == dependency.dependant_todo_id);
@@ -323,40 +294,23 @@ const removeCategory = (category: TodoCategory, removeDependencies = true) => {
 			});
 		}
 		removeElementFromSortedList(
-			categories,
+			this._categories,
 			category.id,
 			getTodoCategoryLeftId,
 			getTodoCategoryRightId,
 			setTodoCategoryLeftId,
 			setTodoCategoryRightId
 		);
-		return categories.filter((value) => value.id !== category.id);
-	});
-};
+		this._categories = this._categories.filter((value) => value.id !== category.id);
+	}
 
-const setTodoCategories = (categories: TodoCategory[]) => {
-	_set(
-		sortedCategories(
-			categories.map((category) => {
-				category.items = sortedTodos(category.items);
-				return category;
-			})
-		)
-	);
-};
-
-const clearTodoCategories = () => {
-	_set([]);
-};
-
-const updateCategoriesSort = (
-	movingElement: TodoCategory,
-	newOrder: NonNullable<NullableOrderedItem>,
-	skipSort = false
-) => {
-	_update((categories) => {
+	updateCategoriesSort(
+		movingElement: TodoCategory,
+		newOrder: NonNullable<NullableOrderedItem>,
+		skipSort = false
+	) {
 		updateElementSort(
-			categories,
+			this._categories,
 			movingElement.id,
 			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
 			getTodoCategoryLeftId,
@@ -364,31 +318,30 @@ const updateCategoriesSort = (
 			setTodoCategoryLeftId,
 			setTodoCategoryRightId
 		);
-		return skipSort ? categories : sortedCategories(categories);
-	});
-};
+		this._categories = skipSort ? this._categories : sortedCategories(this._categories);
+	}
+	setTodoCategories(categories: TodoCategory[]) {
+		this._categories = sortedCategories(
+			categories.map((category) => {
+				category.items = sortedTodos(category.items);
+				return category;
+			})
+		);
+	}
 
-export default {
-	setTodoCategories,
-	addTodo,
-	addTag,
-	addCategory,
-	addDependency,
+	clearTodoCategories() {
+		this._categories = [];
+	}
 
-	updateCategory,
-	updateTodo,
-	updateTag,
-	updateTodoSort,
-	updateCategoriesSort,
-	increaseTodoCommentsCounter,
-	decreaseTodoCommentsCounter,
+	get length(): number {
+		return this._categories.length;
+	}
 
-	removeCategory,
-	removeTodo,
-	detachTag,
-	deleteTag,
-	removeDependency,
+	get categories(): TodoCategory[] {
+		return this._categories;
+	}
+}
 
-	clearTodoCategories,
-	subscribe
-};
+const todos = new Todos([]);
+
+export default todos;

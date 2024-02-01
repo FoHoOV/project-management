@@ -25,7 +25,7 @@
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialDependency
 	} from '$lib/generated-client';
-	import todos from '$lib/stores/todos/todos';
+	import todos from '$lib/stores/todos/todos.svelte';
 	import type { DispatcherToCallbackEvent } from '$lib/utils/types';
 
 	const { todo, enabledFeatures = null, ...restProps } = $props<Props>();

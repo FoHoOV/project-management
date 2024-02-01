@@ -14,7 +14,7 @@
 	import { addTagSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import todos from '$lib/stores/todos/todos';
+	import todos from '$lib/stores/todos/todos.svelte';
 	import { untrack } from 'svelte';
 
 	const { form, todoId } = $props<Props>();

@@ -128,11 +128,11 @@
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: event.detail.data.id,
 					project_id: projectId,
-					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
+					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, todos)
 				});
 				todos.updateCategoriesSort(
 					event.detail.data,
-					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
+					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, todos)
 				);
 				componentState = 'none';
 				apiErrorTitle = null;
@@ -243,7 +243,7 @@
 				<div class="flex max-w-full items-baseline">
 					<Fa icon={faInfoCircle} class="mx-2 inline" />
 					<div
-						class="tooltip tooltip-info tooltip-bottom pr-2 text-lg font-bold"
+						class="tooltip tooltip-bottom tooltip-info pr-2 text-lg font-bold"
 						data-tip="category id"
 					>
 						<span class="text-info">#{category.id}</span>
