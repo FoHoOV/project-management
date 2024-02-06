@@ -181,10 +181,10 @@
 	<span class="loading loading-ring m-auto block" />
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#if todos.length == 0}
+		{#if $todos.length == 0}
 			<Empty text="Create your first todo list!" />
 		{:else}
-			{#each todos.categories as category (category.id)}
+			{#each $todos as category (category.id)}
 				<div
 					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 					animate:flip={{ duration: 200 }}

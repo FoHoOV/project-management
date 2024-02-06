@@ -17,7 +17,7 @@
 	} & TodoItemDispatcherEventTypes;
 
 	export type Props = {
-		category: TodoCategoryStore;
+		category: TodoCategory;
 		projectId: number;
 		enabledFeatures?: Feature[] | null;
 		class?: string;
@@ -60,7 +60,6 @@
 	import TodoListActions from '$components/todo/TodoListActions.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts';
-	import { type TodoCategory as TodoCategoryStore } from '$lib/stores/todos/todos.svelte';
 	import multiModal from '$lib/stores/multi-modal';
 
 	const { category, projectId, class: className = '', enabledFeatures = null } = $props<Props>();
@@ -78,7 +77,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
-					category_id: category.current.id,
+					category_id: category.id,
 					project_id: projectId
 				});
 				todos.removeCategory(category);
@@ -129,11 +128,11 @@
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: event.detail.data.id,
 					project_id: projectId,
-					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, todos)
+					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
 				});
 				todos.updateCategoriesSort(
 					event.detail.data,
-					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, todos)
+					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
 				);
 				componentState = 'none';
 				apiErrorTitle = null;
