@@ -7,6 +7,7 @@ import type {
 } from './drop-zone-types';
 import { _CUSTOM_DRAGGABLE_EVENT_DATA } from './constants';
 import { getDraggingElement } from './shared';
+import { faNotEqual } from '@fortawesome/free-solid-svg-icons';
 
 export function dropzone<Data extends object>(
 	node: HTMLElement,
@@ -15,6 +16,13 @@ export function dropzone<Data extends object>(
 	_setOptionsDefaults(options);
 
 	node.dataset.dropZoneNames = JSON.stringify(options.names);
+
+	function handleDragStart(event: DragEvent) {
+		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+			return;
+		}
+		_clearCustomEventData(getDraggingElement() as HTMLElement);
+	}
 
 	function handleDragEnter(event: DragEvent) {
 		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
@@ -122,6 +130,7 @@ export function dropzone<Data extends object>(
 		);
 	}
 
+	node.addEventListener('dragstart', handleDragStart);
 	node.addEventListener('dragenter', handleDragEnter);
 	node.addEventListener('dragleave', handleDragLeave);
 	node.addEventListener('dragover', handleDragOver);
@@ -133,6 +142,7 @@ export function dropzone<Data extends object>(
 			_setOptionsDefaults(options);
 		},
 		destroy() {
+			node.removeEventListener('dragstart', handleDragStart);
 			node.removeEventListener('dragenter', handleDragEnter);
 			node.removeEventListener('dragleave', handleDragLeave);
 			node.removeEventListener('dragover', handleDragOver);
@@ -238,4 +248,8 @@ function _getCustomEventData(draggingElement: HTMLElement, key: string): unknown
 		parsedCustomData = JSON.parse(customData);
 	}
 	return parsedCustomData[key];
+}
+
+function _clearCustomEventData(draggingElement: HTMLElement) {
+	draggingElement.dataset[_CUSTOM_DRAGGABLE_EVENT_DATA] = JSON.stringify({});
 }
