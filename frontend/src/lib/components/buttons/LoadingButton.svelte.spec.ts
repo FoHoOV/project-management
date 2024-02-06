@@ -1,3 +1,4 @@
+// TODO: pending fix for svelte-5
 // import { render, screen } from '@testing-library/svelte';
 // import LoadingButton from './LoadingButton.svelte';
 // import { expect, test } from 'vitest';

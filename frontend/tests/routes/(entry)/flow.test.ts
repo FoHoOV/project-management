@@ -7,7 +7,9 @@ test('signup then login flow', async ({ page }, testInfo) => {
 	await page.goto('/signup');
 
 	// new user credentials
-	const username = 'test' + crypto.getRandomValues(new Uint32Array(1)).join(''); // TODO: crypto is not known, a bug maybe?
+	// TODO: crypto is not known, a bug maybe? it was known in svelte4
+	// TODO: pending fix for svelte-5
+	const username = 'test' + crypto.getRandomValues(new Uint32Array(1)).join('');
 	const password = username;
 
 	// create an account
