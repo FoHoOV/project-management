@@ -51,7 +51,6 @@
 			>
 				<ul>
 					{#each browser ? $projects : data.projects as project (project.id)}
-						{$projects.length}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}
