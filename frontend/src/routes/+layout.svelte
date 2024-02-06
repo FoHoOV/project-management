@@ -30,9 +30,7 @@
 	// });
 
 	$effect(() => {
-		if (browser) {
-			projects.setProjects(data.projects);
-		}
+		projects.setProjects(data.projects);
 	});
 </script>
 
@@ -53,6 +51,7 @@
 			>
 				<ul>
 					{#each browser ? $projects : data.projects as project (project.id)}
+						{$projects.length}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}
