@@ -17,7 +17,7 @@
 	} & TodoItemDispatcherEventTypes;
 
 	export type Props = {
-		category: TodoCategory;
+		category: TodoCategoryStore;
 		projectId: number;
 		enabledFeatures?: Feature[] | null;
 		class?: string;
@@ -60,6 +60,7 @@
 	import TodoListActions from '$components/todo/TodoListActions.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts';
+	import { type TodoCategory as TodoCategoryStore } from '$lib/stores/todos/todos.svelte';
 	import multiModal from '$lib/stores/multi-modal';
 
 	const { category, projectId, class: className = '', enabledFeatures = null } = $props<Props>();
@@ -77,7 +78,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
-					category_id: category.id,
+					category_id: category.current.id,
 					project_id: projectId
 				});
 				todos.removeCategory(category);

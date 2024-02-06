@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Project } from '$lib/generated-client/models';
-import { sortById } from '../todos/sort';
+import { sortByIdInPlace } from '../todos/sort';
 
 const { subscribe, update: _update, set: _set } = writable<Project[]>([]);
 
@@ -23,7 +23,7 @@ const updateProject = (project: Project) => {
 			}
 			return project;
 		});
-		sortById(projects, true);
+		sortByIdInPlace(projects, true);
 		return projects;
 	});
 };

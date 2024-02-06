@@ -32,16 +32,26 @@ export function setTodoCategoryRightId(todoCategory: TodoCategory, rightId: numb
 	const existingOrder = todoCategory.orders.length > 0 ? { ...todoCategory.orders[0] } : {};
 	todoCategory.orders = [{ left_id: null, ...existingOrder, right_id: rightId }];
 }
-export function sortedTodos(todos: TodoCategoryPartialTodoItem[]) {
-	sortById(todos, false);
+
+/**
+ * mutates the original elements array, always replace the returned list with the original
+ */
+export function getSortedTodos(todos: TodoCategoryPartialTodoItem[]) {
+	sortByIdInPlace(todos, false);
 	return sortByCustomOrder(todos, getTodoItemLeftId, getTodoItemRightId);
 }
 
-export function sortedCategories(categories: TodoCategory[]) {
-	sortById(categories, true);
+/**
+ * mutates the original elements array, always replace the returned list with the original
+ */
+export function getSortedTodoCategories(categories: TodoCategory[]) {
+	sortByIdInPlace(categories, true);
 	return sortByCustomOrder(categories, getTodoCategoryLeftId, getTodoCategoryRightId);
 }
 
+/**
+ * mutates the original elements array, always replace the returned list with the original
+ */
 export function sortByCustomOrder<T extends { id: number }>(
 	elements: (T | null)[],
 	getLeftId: (element: T) => number | null,
@@ -157,13 +167,13 @@ export function sortByCustomOrder<T extends { id: number }>(
 	return elements.filter((element) => element != null) as T[];
 }
 
-export function sortById(elements: { id: number }[], ascending: boolean) {
+export function sortByIdInPlace(elements: { id: number }[], ascending: boolean) {
 	elements.sort((a, b) => {
 		return ascending ? a.id - b.id : b.id - a.id;
 	});
 }
 
-export function updateElementSort<T extends { id: number }>(
+export function updateElementSortInPlace<T extends { id: number }>(
 	elements: T[],
 	movingElementId: number,
 	movingElementNewOrder: {
@@ -190,7 +200,7 @@ export function updateElementSort<T extends { id: number }>(
 		throw new Error('inputs values create a cyclic order');
 	}
 
-	removeElementFromSortedList(
+	removeElementFromSortedListInPlace(
 		elements,
 		movingElementId,
 		getLeftId,
@@ -245,7 +255,7 @@ export function updateElementSort<T extends { id: number }>(
 	console.log(JSON.stringify(elements));
 }
 
-export function removeElementFromSortedList<T extends { id: number }>(
+export function removeElementFromSortedListInPlace<T extends { id: number }>(
 	elements: T[],
 	deletingElementId: number,
 	getLeftId: (element: T) => number | null,

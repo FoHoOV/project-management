@@ -1,9 +1,9 @@
 import type {
 	NullableOrderedItem,
-	TodoItemPartialTag,
-	TodoCategory,
-	TodoCategoryPartialTodoItem,
-	TodoItemPartialDependency
+	TodoItemPartialTag as TagModel,
+	TodoCategory as TodoCategoryModel,
+	TodoCategoryPartialTodoItem as TodoItemModel,
+	TodoItemPartialDependency as TodoItemDependency
 } from '$lib/generated-client/models';
 import {
 	getLastTodoCategoryInSortedListExceptCurrent,
@@ -13,105 +13,25 @@ import {
 	setTodoItemLeftId
 } from './sort';
 import {
-	sortedTodos,
+	getSortedTodos,
 	getTodoItemRightId,
 	setTodoItemRightId,
-	updateElementSort,
-	sortedCategories,
+	updateElementSortInPlace,
+	getSortedTodoCategories,
 	getTodoCategoryLeftId,
 	setTodoCategoryLeftId,
 	getTodoItemLeftId,
-	removeElementFromSortedList
+	removeElementFromSortedListInPlace
 } from './sort';
 
-export class Todos {
-	private _categories = $state<TodoCategory[]>([]);
+export class Todo {
+	private _category = $state<TodoCategory>();
 
-	constructor(categories: TodoCategory[]) {
-		this._categories = categories;
+	constructor(category: TodoCategory) {
+		this._category = category;
 	}
 
-	addTodo(todo: TodoCategoryPartialTodoItem, skipSort = false): void {
-		this._categories = this._categories.map<TodoCategory>((category) => {
-			if (category.id !== todo.category_id) {
-				return category;
-			}
-			category.items.push(todo);
-
-			updateElementSort(
-				category.items,
-				todo.id,
-				{
-					leftId: getLastTodoItemInSortedListExceptCurrent(category.items, todo.id)?.id ?? null,
-					rightId: null
-				},
-				getTodoItemLeftId,
-				getTodoItemRightId,
-				setTodoItemLeftId,
-				setTodoItemRightId
-			);
-
-			if (!skipSort) {
-				category.items = sortedTodos(category.items);
-			}
-
-			return category;
-		});
-	}
-
-	removeTodo(todo: TodoCategoryPartialTodoItem, removeDependencies = true, skipSort = false) {
-		this._categories = this._categories.map<TodoCategory>((category) => {
-			if (removeDependencies) {
-				category.items = category.items.map((item) => {
-					item.dependencies = item.dependencies.filter((dependency) => {
-						return dependency.dependant_todo_id !== todo.id;
-					});
-					return item;
-				});
-			}
-
-			if (category.id !== todo.category_id) {
-				return category;
-			}
-
-			removeElementFromSortedList(
-				category.items,
-				todo.id,
-				getTodoItemLeftId,
-				getTodoItemRightId,
-				setTodoItemLeftId,
-				setTodoItemRightId
-			);
-
-			if (!skipSort) {
-				category.items = sortedTodos(category.items.filter((value) => value.id !== todo.id));
-			}
-
-			return category;
-		});
-	}
-
-	updateTodo(todo: TodoCategoryPartialTodoItem, skipSort = false) {
-		this._categories = this._categories.map<TodoCategory>((category) => {
-			if (category.id !== todo.category_id) {
-				return category;
-			}
-			category.items = category.items.map((value) => {
-				if (value.id !== todo.id) {
-					return value;
-				}
-				return todo;
-			});
-
-			if (!skipSort) {
-				category.items = sortedTodos(category.items);
-			}
-
-			return category;
-		});
-	}
-
-	addDependency(todoId: number, dependency: TodoItemPartialDependency) {
+	addDependency(todoId: number, dependency: TodoItemDependency) {
 		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
@@ -124,7 +44,7 @@ export class Todos {
 		});
 	}
 
-	removeDependency(todoId: number, dependency: TodoItemPartialDependency) {
+	removeDependency(todoId: number, dependency: TodoItemDependency) {
 		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
@@ -136,7 +56,7 @@ export class Todos {
 			return category;
 		});
 	}
-	addTag(todoId: number, tag: TodoItemPartialTag) {
+	addTag(todoId: number, tag: TagModel) {
 		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
@@ -149,7 +69,7 @@ export class Todos {
 		});
 	}
 
-	detachTag(todoId: number, tag: TodoItemPartialTag) {
+	detachTag(todoId: number, tag: TagModel) {
 		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
@@ -162,7 +82,7 @@ export class Todos {
 		});
 	}
 
-	deleteTag(tag: TodoItemPartialTag) {
+	deleteTag(tag: TagModel) {
 		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
@@ -172,7 +92,7 @@ export class Todos {
 		});
 	}
 
-	updateTag(tag: TodoItemPartialTag) {
+	updateTag(tag: TagModel) {
 		this._categories = this._categories.map((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.map((value) => {
@@ -217,9 +137,9 @@ export class Todos {
 	}
 
 	updateTodoSort(
-		movingElement: TodoCategoryPartialTodoItem,
+		movingElement: TodoItemModel,
 		movingElementNewCategoryId: number,
-		newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
+		newOrder: NonNullable<TodoItemModel['order']>,
 		skipSort = false
 	) {
 		if (movingElement.category_id !== movingElementNewCategoryId) {
@@ -228,11 +148,11 @@ export class Todos {
 			movingElement.category_id = movingElementNewCategoryId;
 		}
 
-		this._categories = this._categories.map<TodoCategory>((category) => {
+		this._categories = this._categories.map<TodoCategoryModel>((category) => {
 			if (category.id !== movingElement.category_id) {
 				return category;
 			}
-			updateElementSort(
+			updateElementSortInPlace(
 				category.items,
 				movingElement.id,
 				{ leftId: newOrder.left_id, rightId: newOrder.right_id },
@@ -243,18 +163,107 @@ export class Todos {
 			);
 
 			if (!skipSort) {
-				category.items = sortedTodos(category.items);
+				category.items = getSortedTodos(category.items);
 			}
 
 			return category;
 		});
-		this._categories = sortedCategories(this._categories);
+		this._categories = getSortedTodoCategories(this._categories);
+	}
+}
+
+export class TodoCategory {
+	private _todoCategory: TodoCategoryModel;
+	private _todoCategories: TodoCategories;
+
+	constructor(todoCategories: TodoCategories, todoCategory: TodoCategoryModel) {
+		this._todoCategory = $state(todoCategory);
+		this._todoCategories = todoCategories;
 	}
 
-	addCategory(category: TodoCategory) {
-		category.items = sortedTodos(category.items);
-		this._categories.push(category);
-		updateElementSort(
+	addTodo(todo: TodoItemModel, skipSort = false): void {
+		this._todoCategory.items.push(todo);
+
+		updateElementSortInPlace(
+			this._todoCategory.items,
+			todo.id,
+			{
+				leftId:
+					getLastTodoItemInSortedListExceptCurrent(this._todoCategory.items, todo.id)?.id ?? null,
+				rightId: null
+			},
+			getTodoItemLeftId,
+			getTodoItemRightId,
+			setTodoItemLeftId,
+			setTodoItemRightId
+		);
+
+		if (!skipSort) {
+			this._todoCategory.items = getSortedTodos(this._todoCategory.items);
+		}
+	}
+
+	removeTodo(todo: TodoItemModel, removeDependencies = true, skipSort = false) {
+		if (removeDependencies) {
+			this._todoCategories.categories.forEach((category) => {
+				category.items = category.items.map((item) => {
+					item.dependencies = item.dependencies.filter((dependency) => {
+						return dependency.dependant_todo_id !== todo.id;
+					});
+					return item;
+				});
+			});
+		}
+
+		removeElementFromSortedListInPlace(
+			this._todoCategory.items,
+			todo.id,
+			getTodoItemLeftId,
+			getTodoItemRightId,
+			setTodoItemLeftId,
+			setTodoItemRightId
+		);
+
+		if (!skipSort) {
+			this._todoCategory.items = getSortedTodos(
+				this._todoCategory.items.filter((value) => value.id !== todo.id)
+			);
+		}
+	}
+
+	updateTodo(todo: TodoItemModel, skipSort = false) {
+		this._todoCategory.items.forEach((value, index) => {
+			if (value.id !== todo.id) {
+				return;
+			}
+			this._todoCategory.items[index] = todo;
+		});
+
+		if (!skipSort) {
+			this._todoCategory.items = getSortedTodos(this._todoCategory.items);
+		}
+	}
+
+	get todos() {
+		return this._todoCategory.items;
+	}
+
+	get current() {
+		return this._todoCategory;
+	}
+}
+
+export class TodoCategories {
+	private _categories: TodoCategory[];
+
+	constructor(categories: TodoCategoryModel[]) {
+		this._categories = $state(categories.map((category) => new TodoCategory(this, category)));
+	}
+
+	addCategory(category: TodoCategoryModel) {
+		category.items = getSortedTodos(category.items);
+		this._categories.push(new TodoCategory(this, category));
+		updateElementSortInPlace(
 			this._categories,
 			category.id,
 			{
@@ -267,21 +276,10 @@ export class Todos {
 			setTodoCategoryLeftId,
 			setTodoCategoryRightId
 		);
-		this._categories = sortedCategories(this._categories);
+		this._categories = getSortedTodoCategories(this._categories);
 	}
 
-	updateCategory(category: TodoCategory) {
-		this._categories = this._categories.map<TodoCategory>((value) => {
-			if (value.id !== category.id) {
-				return value;
-			}
-			category.items = sortedTodos(category.items);
-			return category;
-		});
-		this._categories = sortedCategories(this._categories);
-	}
-
-	removeCategory(category: TodoCategory, removeDependencies = true) {
+	removeCategory(category: TodoCategoryModel, removeDependencies = true) {
 		if (removeDependencies) {
 			this._categories = this._categories.map((value) => {
 				value.items = value.items.map((item) => {
@@ -293,7 +291,7 @@ export class Todos {
 				return value;
 			});
 		}
-		removeElementFromSortedList(
+		removeElementFromSortedListInPlace(
 			this._categories,
 			category.id,
 			getTodoCategoryLeftId,
@@ -304,12 +302,23 @@ export class Todos {
 		this._categories = this._categories.filter((value) => value.id !== category.id);
 	}
 
+	updateCategory(category: TodoCategoryModel) {
+		this._categories = this._categories.map<TodoCategoryModel>((value) => {
+			if (value.id !== category.id) {
+				return value;
+			}
+			category.items = getSortedTodos(category.items);
+			return category;
+		});
+		this._categories = getSortedTodoCategories(this._categories);
+	}
+
 	updateCategoriesSort(
-		movingElement: TodoCategory,
+		movingElement: TodoCategoryModel,
 		newOrder: NonNullable<NullableOrderedItem>,
 		skipSort = false
 	) {
-		updateElementSort(
+		updateElementSortInPlace(
 			this._categories,
 			movingElement.id,
 			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
@@ -318,12 +327,13 @@ export class Todos {
 			setTodoCategoryLeftId,
 			setTodoCategoryRightId
 		);
-		this._categories = skipSort ? this._categories : sortedCategories(this._categories);
+		this._categories = skipSort ? this._categories : getSortedTodoCategories(this._categories);
 	}
-	setTodoCategories(categories: TodoCategory[]) {
-		this._categories = sortedCategories(
+
+	setTodoCategories(categories: TodoCategoryModel[]) {
+		this._categories = getSortedTodoCategories(
 			categories.map((category) => {
-				category.items = sortedTodos(category.items);
+				category.items = getSortedTodos(category.items);
 				return category;
 			})
 		);
@@ -337,11 +347,11 @@ export class Todos {
 		return this._categories.length;
 	}
 
-	get categories(): TodoCategory[] {
+	get categories(): TodoCategoryModel[] {
 		return this._categories;
 	}
 }
 
-const todos = new Todos([]);
+const todos = new TodoCategories([]);
 
 export default todos;
