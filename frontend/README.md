@@ -16,9 +16,11 @@ npm run open-api:generate:[linux | windows] # generates the open-api clients and
 
 - OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
 
-## Developing
+## Developing (IMPORTANT)
 
-Once you've build the project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+I've upgraded this project to use Svelte 5, which requires extensive refactoring to conform to the Svelte 5 standards. Expect some bugs :D. Some dependencies, such as `svelte-fa`, haven't updated their peer dependency versions to accept Svelte 5. Therefore, you will need to install packages using the `--legacy-peer-deps` flag.
+
+Once you've build the project and installed dependencies with `npm install --legacy-peer-deps`, start a development server:
 
 ```bash
 npm run dev
@@ -42,7 +44,3 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-# IMPORTANT
-
-I've upgraded this project to use svelte5. There are lots of refactoring needed for everything to be svelte5 like. Expect bugs :D
