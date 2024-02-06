@@ -13,7 +13,8 @@ execute this to generate the clients/schemas:
 # create the clients and zod schemas
 npm run open-api:generate:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
 ```
-* OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
+
+- OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
 
 ## Developing
 
@@ -27,6 +28,7 @@ npm run dev -- --open
 ```
 
 ## Testing
+
 For this to work you need to create an exact copy of your `.env` file then rename it to `.env.integration`. After that change the values to connect to our test backend service which should connect to a test database (the default configured port is 8090 - see backend/README.md).
 
 ## Production
@@ -40,3 +42,7 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+# IMPORTANT
+
+I've upgraded this project to use svelte5. There are lots of refactoring needed for everything to be svelte5 like. Expect bugs :D
