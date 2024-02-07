@@ -59,11 +59,11 @@
 	}
 
 	onMount(() => {
-		todos.setTodoCategories([]);
+		todos.clearTodoCategories();
 	});
 
 	onDestroy(() => {
-		todos.setTodoCategories([]);
+		todos.clearTodoCategories();
 	});
 </script>
 
