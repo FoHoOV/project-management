@@ -8,8 +8,11 @@
 	import type { Project } from '$lib/generated-client/models';
 	import { projects } from '$lib/stores/projects';
 	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
+	import { browser } from '$app/environment';
 
 	const { data, form } = $props();
+
+	const derivedProjects = $derived(browser ? projects.current : data.projects);
 
 	function handleCreateProject() {
 		multiStepModal.add({
@@ -47,7 +50,7 @@
 </svelte:head>
 
 <ProjectList
-	projects={projects.current}
+	projects={derivedProjects}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}

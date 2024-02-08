@@ -24,6 +24,7 @@
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
+	import { browser } from '$app/environment';
 
 	const { data, form } = $props();
 
@@ -168,6 +169,8 @@
 		});
 	}
 
+	const derivedTodoCategories = $derived(browser ? todoCategories.current : data.response ?? []);
+
 	onMount(() => {
 		componentState = 'none';
 	});
@@ -181,10 +184,10 @@
 	<span class="loading loading-ring m-auto block" />
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#if todoCategories.current.length == 0}
+		{#if derivedTodoCategories.length == 0}
 			<Empty text="Create your first todo list!" />
 		{:else}
-			{#each todoCategories.current as category (category.id)}
+			{#each derivedTodoCategories as category (category.id)}
 				<div
 					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 					animate:flip={{ duration: 200 }}

@@ -13,8 +13,9 @@
 	import Toasts from '$components/popups/Toasts.svelte';
 	import { projects } from '$lib/stores/projects/projects.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { browser } from '$app/environment';
 	import MultiModal from '$components/popups/MultiModal.svelte';
+	import { onMount, untrack } from 'svelte';
+	import { browser } from '$app/environment';
 
 	const { data, children } = $props();
 	// beforeNavigate(async ({ to, cancel }) => {
@@ -29,7 +30,14 @@
 	// 	}
 	// });
 
-	projects.set(data.projects);
+	const derivedProjects = $derived(browser ? projects.current : data.projects);
+
+	$effect(() => {
+		data;
+		untrack(() => {
+			projects.set(data.projects);
+		});
+	});
 </script>
 
 <Drawer
@@ -48,7 +56,7 @@
 				on:click={closeDrawer}
 			>
 				<ul>
-					{#each projects.current as project (project.id)}
+					{#each derivedProjects as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}

@@ -1,11 +1,7 @@
 import { callServiceInFormActions, namedActionResult, validateFormActionRequest } from '$lib';
 import { TagClient } from '$lib/client-wrapper/clients';
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions } from './$types';
 import { searchTagSchema } from './validator';
-
-export const load = (async () => {
-	return {};
-}) satisfies PageServerLoad;
 
 export const actions = {
 	search: async ({ request, locals, fetch }) => {

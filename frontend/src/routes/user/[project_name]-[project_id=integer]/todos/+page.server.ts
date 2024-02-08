@@ -1,6 +1,5 @@
-import { error, type Actions } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { validateFormActionRequest, namedActionResult, superFail } from '$lib/actions/form';
+import { type Actions } from '@sveltejs/kit';
+import { validateFormActionRequest, namedActionResult } from '$lib/actions/form';
 import {
 	addTagSchema,
 	addTodoItemDependencySchema,
@@ -25,55 +24,13 @@ import {
 	TagUpdate,
 	TodoItemAddDependency
 } from '$lib/generated-client/zod/schemas';
-import { callService, callServiceInFormActions } from '$lib/client-wrapper';
+import { callServiceInFormActions } from '$lib/client-wrapper';
 import {
 	TodoItemClient,
 	TodoCategoryClient,
 	TodoItemCommentClient,
 	TagClient
 } from '$lib/client-wrapper/clients';
-import { convertNumberToHttpStatusCode } from '$lib';
-
-export const load = (async ({ locals, fetch, params }) => {
-	// https://github.com/sveltejs/kit/issues/9785
-	// if we reject or throw a redirect in streamed promises it doesn't work for now and crashes the server
-	// we have to wait for a fix or handle the error and make it an expected error :(
-	// even throwing an error (which is an expected error) still results in a server crash :(
-	// return {
-	// 	streamed: {
-	// 		todos: callService({
-	// 			serviceCall: async () => {
-	// 				return await TodoCategoryClient({
-	// 					token: locals.token,
-	// 					fetchApi: fetch
-	// 				}).getForUserTodoCategory(Number.parseInt(params.project_id));
-	// 			},
-	// 			errorCallback: async (e) => {
-	// 				if (e.type === ErrorType.UNAUTHORIZED) {
-	// 					e.preventDefaultHandler = true;
-	// 				}
-	// 				throw error(e.status >= 400 ? e.status : 400, { message: 'Error fetching your todos!' });
-	// 			}
-	// 		})
-	// 	}
-
-	return await callService({
-		serviceCall: async () => {
-			return await TodoCategoryClient({
-				token: locals.token,
-				fetchApi: fetch
-			}).getForUserTodoCategory(Number.parseInt(params.project_id));
-		},
-		errorCallback: async (e) => {
-			if (e.status == 401) {
-				return; // allow default unauthenticated user handling
-			}
-			error(convertNumberToHttpStatusCode(e.status), {
-				message: 'An error occurred while fetching your todos!'
-			});
-		}
-	});
-}) satisfies PageServerLoad;
 
 // TODO: probably should separate these to their own routes (todo/[edit|create] or category/[edit]/create, ...)
 // with the new shallow routing I can separate the associated components as well (but i'll w8 for the svelte5 for the big refactor)
