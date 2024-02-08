@@ -3,21 +3,11 @@ import type { ComponentProps, SvelteComponent } from 'svelte';
 type SvelteComponentClass<TComponent extends SvelteComponent> = new (...args: any[]) => TComponent;
 type ComponentPropsGenerator<TComponent extends SvelteComponent> = () => ComponentProps<TComponent>;
 
-class ModalStep<TComponent extends SvelteComponent> {
-	public readonly component = $state<SvelteComponentClass<TComponent>>()!;
-	public readonly props = $state<ComponentPropsGenerator<TComponent>>()!;
-	public readonly title = $state<string>()!;
-
-	constructor(
-		component: SvelteComponentClass<TComponent>,
-		props: ComponentPropsGenerator<TComponent>,
-		title: string
-	) {
-		this.component = component;
-		this.props = props;
-		this.title = title;
-	}
-}
+type ModalStep<TComponent extends SvelteComponent> = {
+	component: SvelteComponentClass<TComponent>;
+	props: ComponentPropsGenerator<TComponent>;
+	title: string;
+};
 
 class MultiStepModal {
 	private _steps = $state<ModalStep<any>[]>()!;
@@ -59,6 +49,6 @@ class MultiStepModal {
 	}
 }
 
-export const multiStepModal = $state<MultiStepModal>(new MultiStepModal([], false));
+export const multiStepModal = new MultiStepModal([], false);
 
 export default multiStepModal;
