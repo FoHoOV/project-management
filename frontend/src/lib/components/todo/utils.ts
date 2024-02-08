@@ -1,6 +1,5 @@
 import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 
-// TODO: move to sort.ts
 export function generateNewOrderForTodoItem(
 	target: TodoCategoryPartialTodoItem,
 	movingItem: TodoCategoryPartialTodoItem,
