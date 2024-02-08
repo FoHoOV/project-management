@@ -76,7 +76,7 @@
 		type Props as TodoDependenciesProps
 	} from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
-	import multiModal from '$lib/stores/multi-modal';
+	import multiModal from '$lib/stores/multi-step-modal';
 
 	const { todo, category = null, enabledFeatures = null, ...restProps } = $props<Props>();
 

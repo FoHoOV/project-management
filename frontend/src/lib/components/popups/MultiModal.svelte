@@ -6,27 +6,28 @@
 
 <script lang="ts">
 	import Modal from '$components/popups/Modal.svelte';
-	import multiModal from '$lib/stores/multi-modal';
+	import { multiStepModal } from '$lib/stores/multi-step-modal';
 
 	const { class: className = '' } = $props<Props>();
 
 	let modal = $state<Modal | null>(null);
 
 	const currentStep = $derived(
-		$multiModal.steps.length > 0 ? $multiModal.steps[$multiModal.steps.length - 1] : null
+		multiStepModal.steps.length > 0 ? multiStepModal.steps[multiStepModal.steps.length - 1] : null
 	);
 	const componentProps = $derived(currentStep?.props());
+	const showGoBackButton = $derived(multiStepModal.steps.length > 1);
 
 	function handleClose() {
-		multiModal.clear();
+		multiStepModal.clear();
 	}
 
 	function handleGoBack() {
-		multiModal.pop();
+		multiStepModal.pop();
 	}
 
 	$effect(() => {
-		if ($multiModal.show) {
+		if (multiStepModal.showing) {
 			modal?.show();
 		}
 	});
@@ -40,7 +41,7 @@
 		slot="actions"
 		type="button"
 		class="btn btn-neutral m-auto"
-		class:hidden={$multiModal.steps.length <= 1}
+		class:hidden={!showGoBackButton}
 		on:click={handleGoBack}
 	>
 		go back

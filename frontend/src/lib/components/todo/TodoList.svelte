@@ -60,7 +60,7 @@
 	import TodoListActions from '$components/todo/TodoListActions.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 	import toasts from '$lib/stores/toasts';
-	import multiModal from '$lib/stores/multi-modal';
+	import multiModal from '$lib/stores/multi-step-modal';
 
 	const { category, projectId, class: className = '', enabledFeatures = null } = $props<Props>();
 

@@ -8,12 +8,12 @@
 	import type { Project } from '$lib/generated-client/models';
 	import projects from '$lib/stores/projects';
 	import { browser } from '$app/environment';
-	import multiModal from '$lib/stores/multi-modal';
+	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
 
 	const { data, form } = $props();
 
 	function handleCreateProject() {
-		multiModal.add({
+		multiStepModal.add({
 			component: CreateProject,
 			props: () => {
 				return { form: form };
@@ -23,7 +23,7 @@
 	}
 
 	function handleAttachToUser(e: CustomEvent<{ project: Project }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: AttachToUser,
 			props: () => {
 				return { form: form, projectId: e.detail.project.id };
@@ -33,7 +33,7 @@
 	}
 
 	function handleEditProject(e: CustomEvent<{ project: Project }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: EditProject,
 			props: () => {
 				return { form: form, project: e.detail.project };

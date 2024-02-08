@@ -23,7 +23,7 @@
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
-	import multiModal from '$lib/stores/multi-modal';
+	import multiModal from '$lib/stores/multi-step-modal';
 
 	const { data, form } = $props();
 
