@@ -70,9 +70,9 @@
 	}}
 	bind:this={formElement}
 	method="post"
-	class="card flex w-full flex-row items-start justify-center bg-base-300"
+	class="w-full"
 >
-	<div class="card-body items-center text-center">
+	<div class="flex flex-col gap-2">
 		<Alert
 			class="mb-1"
 			type="success"

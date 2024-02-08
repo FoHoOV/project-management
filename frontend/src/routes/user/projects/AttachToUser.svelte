@@ -65,9 +65,9 @@
 	}}
 	bind:this={formElement}
 	method="post"
-	class="w-full flex-row items-start justify-center"
+	class="w-full"
 >
-	<div class="items-center text-center">
+	<div class="flex flex-col gap-2">
 		<Alert
 			class="mb-1"
 			type="success"
