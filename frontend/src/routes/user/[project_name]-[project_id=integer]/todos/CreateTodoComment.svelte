@@ -13,7 +13,7 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
-	import todoComments from '$lib/stores/todo-comments';
+	import { todoComments } from '$lib/stores/todo-comments';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { untrack } from 'svelte';
 
@@ -63,7 +63,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		todoComments.addComment(e.detail.response);
+		todoComments.add(e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

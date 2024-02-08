@@ -23,7 +23,7 @@
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import todoComments from '$lib/stores/todo-comments';
+	import {todoComments} from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
 	import Confirm from '$components/Confirm.svelte';
 	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
@@ -41,7 +41,7 @@
 					token: $page.data.token
 				}).listTodoItemComment(todoId);
 
-				todoComments.setOpenedTodoComments(result);
+				todoComments.set(result);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -61,7 +61,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
-				todoComments.deleteComment(comment);
+				todoComments.remove(comment);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -96,7 +96,7 @@
 		<Fa icon={faPlus} />
 		<p>add comment</p>
 	</button>
-	{#if $todoComments.length == 0 || $todoComments[0].todo_id != todoId}
+	{#if todoComments.comments.length == 0 || todoComments.comments[0].todo_id != todoId}
 		<div class="my-5 flex flex-row items-center gap-2">
 			{#if !enabledFeatures?.includes('create-comment')}
 				No comments
@@ -106,7 +106,7 @@
 			{/if}
 		</div>
 	{:else}
-		{#each $todoComments as comment, i (comment.id)}
+		{#each todoComments.comments as comment, i (comment.id)}
 			<div
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}

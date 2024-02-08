@@ -14,7 +14,7 @@
 	import { editTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
 	import type { TodoComment } from '$lib/generated-client/models';
-	import todoComments from '$lib/stores/todo-comments/todo-comments';
+	import { todoComments } from '$lib/stores/todo-comments/todo-comments.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { untrack } from 'svelte';
 
@@ -64,7 +64,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		todoComments.updateComment(e.detail.response);
+		todoComments.update(e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}
