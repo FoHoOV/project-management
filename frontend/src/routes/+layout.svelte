@@ -30,7 +30,7 @@
 	// 	}
 	// });
 
-	const derivedProjects = $derived(browser ? projects.current : data.projects);
+	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
 
 	$effect(() => {
 		data;
@@ -56,7 +56,7 @@
 				on:click={closeDrawer}
 			>
 				<ul>
-					{#each derivedProjects as project (project.id)}
+					{#each environmentSpecificProjects as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}

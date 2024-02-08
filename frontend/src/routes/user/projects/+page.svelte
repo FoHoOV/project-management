@@ -12,7 +12,7 @@
 
 	const { data, form } = $props();
 
-	const derivedProjects = $derived(browser ? projects.current : data.projects);
+	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
 
 	function handleCreateProject() {
 		multiStepModal.add({
@@ -50,7 +50,7 @@
 </svelte:head>
 
 <ProjectList
-	projects={derivedProjects}
+	projects={environmentSpecificProjects}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}
