@@ -327,7 +327,7 @@ class TodoCategories {
 		this._todoCategories = [];
 	}
 
-	get todoCategories() {
+	get current() {
 		return this._todoCategories;
 	}
 }

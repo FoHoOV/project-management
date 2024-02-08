@@ -47,7 +47,7 @@
 </svelte:head>
 
 <ProjectList
-	projects={projects.projects}
+	projects={projects.current}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}

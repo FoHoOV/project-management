@@ -27,7 +27,7 @@ class TodoComments {
 		todoCategories.decreaseTodoCommentsCounter(comment.todo_id);
 	}
 
-	get comments() {
+	get current() {
 		return this._comments;
 	}
 }

@@ -96,7 +96,7 @@
 		<Fa icon={faPlus} />
 		<p>add comment</p>
 	</button>
-	{#if todoComments.comments.length == 0 || todoComments.comments[0].todo_id != todoId}
+	{#if todoComments.current.length == 0 || todoComments.current[0].todo_id != todoId}
 		<div class="my-5 flex flex-row items-center gap-2">
 			{#if !enabledFeatures?.includes('create-comment')}
 				No comments
@@ -106,7 +106,7 @@
 			{/if}
 		</div>
 	{:else}
-		{#each todoComments.comments as comment, i (comment.id)}
+		{#each todoComments.current as comment, i (comment.id)}
 			<div
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}

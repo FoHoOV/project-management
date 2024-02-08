@@ -118,8 +118,8 @@
 </form>
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-	{#if todoCategories.todoCategories.length > 0}
-		{#each todoCategories.todoCategories as category (category.id)}
+	{#if todoCategories.current.length > 0}
+		{#each todoCategories.current as category (category.id)}
 			{#each category.items as todo (todo.id)}
 				<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
 			{/each}

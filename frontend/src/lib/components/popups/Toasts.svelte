@@ -20,7 +20,7 @@
 </script>
 
 <div class="toast toast-end">
-	{#each toasts.toasts as toast, i (toast.id)}
+	{#each toasts.current as toast, i (toast.id)}
 		<div
 			class="alert flex flex-row {getToastTypeClass(toast)}"
 			in:fade={{ duration: 150, classes: ['group', '-animation-activated'] }}

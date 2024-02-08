@@ -6,12 +6,12 @@ class Projects {
 
 	set(projects: Project[]) {
 		this._projects = projects;
-		sortByIdInPlace(this.projects, true);
+		sortByIdInPlace(this.current, true);
 	}
 
 	add(project: Project) {
 		this._projects.push(project);
-		sortByIdInPlace(this.projects, true);
+		sortByIdInPlace(this.current, true);
 	}
 
 	update(project: Project) {
@@ -21,14 +21,14 @@ class Projects {
 			}
 			return project;
 		});
-		sortByIdInPlace(this.projects, true);
+		sortByIdInPlace(this.current, true);
 	}
 
 	remove(project: Project) {
 		this._projects = this._projects.filter((value) => value.id != project.id);
 	}
 
-	get projects() {
+	get current() {
 		return this._projects;
 	}
 }

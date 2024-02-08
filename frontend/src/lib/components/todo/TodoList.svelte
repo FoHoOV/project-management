@@ -132,7 +132,7 @@
 						category,
 						event.detail.data,
 						moveLeft,
-						todoCategories.todoCategories
+						todoCategories.current
 					)
 				});
 				todoCategories.updateCategoriesSort(
@@ -141,7 +141,7 @@
 						category,
 						event.detail.data,
 						moveLeft,
-						todoCategories.todoCategories
+						todoCategories.current
 					)
 				);
 				componentState = 'none';
