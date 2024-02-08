@@ -28,6 +28,9 @@
 	import Confirm from '$components/Confirm.svelte';
 	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
 
+	// TODO: https://github.com/sveltejs/svelte/issues/10427
+	// because of this issue bound `confirm` doesnt work in a keyed each block, waiting for a fix :(
+
 	const { todoId, enabledFeatures = null, ...restProps } = $props<Props>();
 
 	export async function refreshComments() {
