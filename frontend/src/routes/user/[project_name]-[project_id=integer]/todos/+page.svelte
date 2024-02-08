@@ -23,7 +23,7 @@
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
-	import multiModal from '$lib/stores/multi-step-modal';
+	import { multiStepModal } from '$lib/stores/multi-step-modal';
 
 	const { data, form } = $props();
 
@@ -39,7 +39,7 @@
 	});
 
 	function handleCreateTodoCategory(e: MouseEvent) {
-		multiModal.add({
+		multiStepModal.add({
 			component: CreateTodoCategory,
 			props: () => {
 				return {
@@ -51,7 +51,7 @@
 	}
 
 	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: EditTodoCategory,
 			props: () => {
 				return {
@@ -64,7 +64,7 @@
 	}
 
 	function handleAttachToProject(e: CustomEvent<{ category: TodoCategory }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: AttachToProject,
 			props: () => {
 				return {
@@ -77,7 +77,7 @@
 	}
 
 	function handleEditTodoItem(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: EditTodoItem,
 			props: () => {
 				return {
@@ -90,7 +90,7 @@
 	}
 
 	function handleCreateTodoItem(e: CustomEvent<{ category: TodoCategory }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: CreateTodoItem,
 			props: () => {
 				return {
@@ -103,7 +103,7 @@
 	}
 
 	function handleCreateComment(e: CustomEvent<{ todoId: number }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: CreateTodoComment,
 			props: () => {
 				return {
@@ -116,7 +116,7 @@
 	}
 
 	function handleEditTodoComment(e: CustomEvent<{ comment: TodoComment }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: EditTodoComment,
 			props: () => {
 				return {
@@ -129,7 +129,7 @@
 	}
 
 	function handleAddTag(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: AddTag,
 			props: () => {
 				return {
@@ -142,7 +142,7 @@
 	}
 
 	function handleEditTag(e: CustomEvent<{ tag: TodoItemPartialTag }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: EditTag,
 			props: () => {
 				return {
@@ -155,7 +155,7 @@
 	}
 
 	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
-		multiModal.add({
+		multiStepModal.add({
 			component: AddTodoItemDependency,
 			props: () => {
 				return {

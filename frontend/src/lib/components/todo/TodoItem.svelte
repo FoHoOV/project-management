@@ -76,7 +76,7 @@
 		type Props as TodoDependenciesProps
 	} from './TodoItemDependencies.svelte';
 	import Confirm from '$components/Confirm.svelte';
-	import multiModal from '$lib/stores/multi-step-modal';
+	import { multiStepModal } from '$lib/stores/multi-step-modal';
 
 	const { todo, category = null, enabledFeatures = null, ...restProps } = $props<Props>();
 
@@ -222,7 +222,7 @@
 	}
 
 	function handleShowComments() {
-		multiModal.add({
+		multiStepModal.add({
 			component: TodoComments,
 			props: () => {
 				return {
@@ -241,7 +241,7 @@
 	}
 
 	function handleShowTags() {
-		multiModal.add({
+		multiStepModal.add({
 			component: TodoTags,
 			props: () => {
 				return {
@@ -260,7 +260,7 @@
 	}
 
 	function handleShowDependencies() {
-		multiModal.add({
+		multiStepModal.add({
 			component: TodoItemDependencies,
 			props: () => {
 				return {
