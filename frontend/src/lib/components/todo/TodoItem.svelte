@@ -45,7 +45,7 @@
 		faTrashCan,
 		faUser
 	} from '@fortawesome/free-solid-svg-icons';
-	import todos from '$lib/stores/todos';
+	import { todoCategories } from '$lib/stores/todos';
 	import {
 		ErrorCode,
 		type TodoCategory,
@@ -105,7 +105,7 @@
 					...todo,
 					is_done: !savedTodoStatus
 				});
-				todos.updateTodo(result, !enabledFeatures?.includes('sort-on-update-status'));
+				todoCategories.updateTodo(result, !enabledFeatures?.includes('sort-on-update-status'));
 				if (result.is_done == savedTodoStatus) {
 					toasts.addToast({
 						type: 'warning',
@@ -137,7 +137,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItem(todo);
-				todos.removeTodo(todo);
+				todoCategories.removeTodo(todo);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -171,12 +171,12 @@
 					new_category_id: todo.category_id,
 					...generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				});
-				todos.updateTodoSort(
+				todoCategories.updateTodoSort(
 					event.detail.data,
 					todo.category_id,
 					generateNewOrderForMovingTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				);
-				todos.updateTodo(result);
+				todoCategories.updateTodo(result);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},

@@ -11,7 +11,7 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
-	import todos from '$lib/stores/todos';
+	import { todoCategories } from '$lib/stores/todos';
 	import { createTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
@@ -60,7 +60,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={(e) => {
-		todos.addTodo(e.detail.response);
+		todoCategories.addTodo(e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

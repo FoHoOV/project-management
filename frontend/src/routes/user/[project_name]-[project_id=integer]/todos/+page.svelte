@@ -1,6 +1,6 @@
 <script lang="ts">
 	import TodoList from '$lib/components/todo/TodoList.svelte';
-	import todos from '$lib/stores/todos';
+	import { todoCategories } from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
 	import CreateTodoItem from './CreateTodoItem.svelte';
 	import CircleButton from '$components/buttons/CircleButton.svelte';
@@ -33,7 +33,7 @@
 		data;
 		untrack(() => {
 			if (data.response) {
-				todos.setTodoCategories(data.response);
+				todoCategories.setCategories(data.response);
 			}
 		});
 	});
@@ -181,10 +181,10 @@
 	<span class="loading loading-ring m-auto block" />
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#if $todos.length == 0}
+		{#if todoCategories.todoCategories.length == 0}
 			<Empty text="Create your first todo list!" />
 		{:else}
-			{#each $todos as category (category.id)}
+			{#each todoCategories.todoCategories as category (category.id)}
 				<div
 					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 					animate:flip={{ duration: 200 }}

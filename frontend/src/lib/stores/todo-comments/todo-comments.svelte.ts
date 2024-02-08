@@ -1,5 +1,5 @@
 import type { TodoComment } from '$lib/generated-client/models';
-import todos from '../todos';
+import { todoCategories } from '../todos';
 
 class TodoComments {
 	private _comments = $state<TodoComment[]>([]);
@@ -10,7 +10,7 @@ class TodoComments {
 
 	add(comment: TodoComment) {
 		this._comments.push(comment);
-		todos.increaseTodoCommentsCounter(comment.todo_id);
+		todoCategories.increaseTodoCommentsCounter(comment.todo_id);
 	}
 
 	update(comment: TodoComment) {
@@ -24,7 +24,7 @@ class TodoComments {
 
 	remove(comment: TodoComment) {
 		this._comments = this._comments.filter((value) => value.id != comment.id);
-		todos.decreaseTodoCommentsCounter(comment.todo_id);
+		todoCategories.decreaseTodoCommentsCounter(comment.todo_id);
 	}
 
 	get comments() {

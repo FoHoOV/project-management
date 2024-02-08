@@ -15,7 +15,7 @@
 	import { page } from '$app/stores';
 	import type { TodoItemPartialTag } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import todos from '$lib/stores/todos';
+	import { todoCategories } from '$lib/stores/todos';
 	import { untrack } from 'svelte';
 
 	const { form, tag } = $props<Props>();
@@ -61,7 +61,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		todos.updateTag(e.detail.response);
+		todoCategories.updateTag(e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

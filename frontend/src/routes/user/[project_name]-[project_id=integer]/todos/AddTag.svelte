@@ -14,7 +14,7 @@
 	import { addTagSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import todos from '$lib/stores/todos/todos.svelte';
+	import { todoCategories } from '$lib/stores/todos/todos.svelte';
 	import { untrack } from 'svelte';
 
 	const { form, todoId } = $props<Props>();
@@ -60,7 +60,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		todos.addTag(todoId, e.detail.response);
+		todoCategories.addTag(todoId, e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

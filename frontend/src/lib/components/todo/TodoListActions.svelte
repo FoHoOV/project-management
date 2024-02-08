@@ -11,7 +11,7 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { Action, type TodoCategory } from '$lib/generated-client';
-	import todos from '$lib/stores/todos';
+	import { todoCategories } from '$lib/stores/todos';
 
 	const { category } = $props<Props>();
 
@@ -29,7 +29,7 @@
 					}
 				);
 
-				todos.updateCategory(result);
+				todoCategories.updateCategory(result);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},

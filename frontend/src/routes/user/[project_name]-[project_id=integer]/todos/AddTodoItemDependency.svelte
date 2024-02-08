@@ -14,7 +14,7 @@
 	import { addTodoItemDependencySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import todos from '$lib/stores/todos/todos.svelte';
+	import { todoCategories } from '$lib/stores/todos/todos.svelte';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 	import { untrack } from 'svelte';
 
@@ -63,7 +63,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		todos.addDependency(todo.id, e.detail.response);
+		todoCategories.addDependency(todo.id, e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

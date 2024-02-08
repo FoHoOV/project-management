@@ -41,7 +41,7 @@
 		{/if}
 		{name}
 	</a>
-	
+
 	{#if children}
 		{@render children()}
 	{/if}

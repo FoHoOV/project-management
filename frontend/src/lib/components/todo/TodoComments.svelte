@@ -23,7 +23,7 @@
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import {todoComments} from '$lib/stores/todo-comments';
+	import { todoComments } from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
 	import Confirm from '$components/Confirm.svelte';
 	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';

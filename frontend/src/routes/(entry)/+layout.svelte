@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 
-	const {children} = $props();
+	const { children } = $props();
 </script>
 
 <div class="flex items-center gap-5 rounded-2xl bg-base-200 shadow-md">

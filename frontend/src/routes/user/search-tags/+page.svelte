@@ -6,7 +6,7 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import { onDestroy, onMount, untrack } from 'svelte';
-	import todos from '$lib/stores/todos/todos.svelte.js';
+	import { todoCategories } from '$lib/stores/todos/todos.svelte.js';
 	import TodoItem from '$components/todo/TodoItem.svelte';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
@@ -34,7 +34,7 @@
 	function handleShowResults(result: TodoItemModel[]) {
 		componentState = 'submit-successful';
 		if (result.length == 0) {
-			todos.clearTodoCategories();
+			todoCategories.clearCategories();
 			return;
 		}
 		const categories: TodoCategory[] = [];
@@ -55,15 +55,15 @@
 				});
 			}
 		});
-		todos.setTodoCategories(categories);
+		todoCategories.setCategories(categories);
 	}
 
 	onMount(() => {
-		todos.clearTodoCategories();
+		todoCategories.clearCategories();
 	});
 
 	onDestroy(() => {
-		todos.clearTodoCategories();
+		todoCategories.clearCategories();
 	});
 </script>
 
@@ -94,7 +94,7 @@
 	}}
 	on:submitended={() => {
 		componentState = 'none';
-		todos.clearTodoCategories();
+		todoCategories.clearCategories();
 	}}
 	on:submitsucceeded={(event) => handleShowResults(event.detail.response)}
 >
@@ -118,8 +118,8 @@
 </form>
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-	{#if $todos.length > 0}
-		{#each $todos as category (category.id)}
+	{#if todoCategories.todoCategories.length > 0}
+		{#each todoCategories.todoCategories as category (category.id)}
 			{#each category.items as todo (todo.id)}
 				<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
 			{/each}

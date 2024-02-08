@@ -1,4 +1,3 @@
-import { writable } from 'svelte/store';
 import type {
 	NullableOrderedItem,
 	TodoItemPartialTag,
@@ -25,11 +24,123 @@ import {
 	removeElementFromSortedListInPlace
 } from './sort';
 
-const { set: _set, subscribe, update: _update } = writable<TodoCategory[]>([]);
+class TodoCategories {
+	private _todoCategories = $state<TodoCategory[]>([]);
 
-const addTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false): void => {
-	_update((categories) => {
-		return categories.map<TodoCategory>((category) => {
+	setCategories(todoCategories: TodoCategory[]) {
+		this._todoCategories = getSortedTodoCategories(
+			todoCategories.map((category) => {
+				category.items = getSortedTodos(category.items);
+				return category;
+			})
+		);
+	}
+
+	addCategory(category: TodoCategory) {
+		category.items = getSortedTodos(category.items);
+		this._todoCategories.push(category);
+		updateElementSortInPlace(
+			this._todoCategories,
+			category.id,
+			{
+				leftId:
+					getLastTodoCategoryInSortedListExceptCurrent(this._todoCategories, category.id)?.id ??
+					null,
+				rightId: null
+			},
+			getTodoCategoryLeftId,
+			getTodoCategoryRightId,
+			setTodoCategoryLeftId,
+			setTodoCategoryRightId
+		);
+		this._todoCategories = getSortedTodoCategories(this._todoCategories);
+	}
+
+	updateCategory(todoCategory: TodoCategory) {
+		this._todoCategories = this._todoCategories.map<TodoCategory>((value) => {
+			if (value.id !== todoCategory.id) {
+				return value;
+			}
+			todoCategory.items = getSortedTodos(todoCategory.items);
+			return todoCategory;
+		});
+		this._todoCategories = getSortedTodoCategories(this._todoCategories);
+	}
+
+	removeCategory(todoCategory: TodoCategory, removeDependencies = true) {
+		if (removeDependencies) {
+			this._todoCategories = this._todoCategories.map((value) => {
+				value.items = value.items.map((item) => {
+					item.dependencies = item.dependencies.filter((dependency) => {
+						return todoCategory.items.some((item) => item.id == dependency.dependant_todo_id);
+					});
+					return item;
+				});
+				return value;
+			});
+		}
+
+		removeElementFromSortedListInPlace(
+			this._todoCategories,
+			todoCategory.id,
+			getTodoCategoryLeftId,
+			getTodoCategoryRightId,
+			setTodoCategoryLeftId,
+			setTodoCategoryRightId
+		);
+
+		this._todoCategories = this._todoCategories.filter((value) => value.id !== todoCategory.id);
+	}
+
+	updateCategoriesSort(movingElement: TodoCategory, newOrder: NonNullable<NullableOrderedItem>) {
+		updateElementSortInPlace(
+			this._todoCategories,
+			movingElement.id,
+			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
+			getTodoCategoryLeftId,
+			getTodoCategoryRightId,
+			setTodoCategoryLeftId,
+			setTodoCategoryRightId
+		);
+		this._todoCategories = getSortedTodoCategories(this._todoCategories);
+	}
+
+	updateTodoSort(
+		movingElement: TodoCategoryPartialTodoItem,
+		movingElementNewCategoryId: number,
+		newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
+		skipSort = false
+	) {
+		if (movingElement.category_id !== movingElementNewCategoryId) {
+			this.removeTodo(movingElement, false);
+			this.addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
+			movingElement.category_id = movingElementNewCategoryId;
+		}
+		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
+			if (category.id !== movingElement.category_id) {
+				return category;
+			}
+			updateElementSortInPlace(
+				category.items,
+				movingElement.id,
+				{ leftId: newOrder.left_id, rightId: newOrder.right_id },
+				getTodoItemLeftId,
+				getTodoItemRightId,
+				setTodoItemLeftId,
+				setTodoItemRightId
+			);
+
+			if (!skipSort) {
+				category.items = getSortedTodos(category.items);
+			}
+
+			return category;
+		});
+		this._todoCategories = getSortedTodoCategories(this._todoCategories);
+	}
+
+	addTodo(todo: TodoCategoryPartialTodoItem, skipSort = false): void {
+		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
@@ -54,16 +165,10 @@ const addTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false): void => {
 
 			return category;
 		});
-	});
-};
+	}
 
-const removeTodo = (
-	todo: TodoCategoryPartialTodoItem,
-	removeDependencies = true,
-	skipSort = false
-) => {
-	_update((categories) => {
-		return categories.map<TodoCategory>((category) => {
+	removeTodo(todo: TodoCategoryPartialTodoItem, removeDependencies = true, skipSort = false) {
+		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
 			if (removeDependencies) {
 				category.items = category.items.map((item) => {
 					item.dependencies = item.dependencies.filter((dependency) => {
@@ -92,12 +197,10 @@ const removeTodo = (
 
 			return category;
 		});
-	});
-};
+	}
 
-const updateTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false) => {
-	_update((categories) => {
-		return categories.map<TodoCategory>((category) => {
+	updateTodo(todo: TodoCategoryPartialTodoItem, skipSort = false) {
+		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
 			if (category.id !== todo.category_id) {
 				return category;
 			}
@@ -114,12 +217,10 @@ const updateTodo = (todo: TodoCategoryPartialTodoItem, skipSort = false) => {
 
 			return category;
 		});
-	});
-};
+	}
 
-const addDependency = (todoId: number, dependency: TodoItemPartialDependency) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	addDependency(todoId: number, dependency: TodoItemPartialDependency) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -129,12 +230,10 @@ const addDependency = (todoId: number, dependency: TodoItemPartialDependency) =>
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const removeDependency = (todoId: number, dependency: TodoItemPartialDependency) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	removeDependency(todoId: number, dependency: TodoItemPartialDependency) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -144,12 +243,10 @@ const removeDependency = (todoId: number, dependency: TodoItemPartialDependency)
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const addTag = (todoId: number, tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	addTag(todoId: number, tag: TodoItemPartialTag) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -159,12 +256,10 @@ const addTag = (todoId: number, tag: TodoItemPartialTag) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const detachTag = (todoId: number, tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	detachTag(todoId: number, tag: TodoItemPartialTag) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -174,24 +269,20 @@ const detachTag = (todoId: number, tag: TodoItemPartialTag) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const deleteTag = (tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	deleteTag(tag: TodoItemPartialTag) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
 				return todo;
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const updateTag = (tag: TodoItemPartialTag) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	updateTag(tag: TodoItemPartialTag) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.map((value) => {
 					if (value.id !== tag.id) {
@@ -204,12 +295,10 @@ const updateTag = (tag: TodoItemPartialTag) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const increaseTodoCommentsCounter = (todoId: number) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	increaseTodoCommentsCounter(todoId: number) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -219,12 +308,10 @@ const increaseTodoCommentsCounter = (todoId: number) => {
 			});
 			return category;
 		});
-	});
-};
+	}
 
-const decreaseTodoCommentsCounter = (todoId: number) => {
-	_update((categories) => {
-		return categories.map((category) => {
+	decreaseTodoCommentsCounter(todoId: number) {
+		this._todoCategories = this._todoCategories.map((category) => {
 			category.items.forEach((todo) => {
 				if (todo.id !== todoId) {
 					return todo;
@@ -234,161 +321,17 @@ const decreaseTodoCommentsCounter = (todoId: number) => {
 			});
 			return category;
 		});
-	});
-};
-
-const updateTodoSort = (
-	movingElement: TodoCategoryPartialTodoItem,
-	movingElementNewCategoryId: number,
-	newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
-	skipSort = false
-) => {
-	if (movingElement.category_id !== movingElementNewCategoryId) {
-		removeTodo(movingElement, false);
-		addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
-		movingElement.category_id = movingElementNewCategoryId;
 	}
-	_update((categories) => {
-		categories = categories.map<TodoCategory>((category) => {
-			if (category.id !== movingElement.category_id) {
-				return category;
-			}
-			updateElementSortInPlace(
-				category.items,
-				movingElement.id,
-				{ leftId: newOrder.left_id, rightId: newOrder.right_id },
-				getTodoItemLeftId,
-				getTodoItemRightId,
-				setTodoItemLeftId,
-				setTodoItemRightId
-			);
 
-			if (!skipSort) {
-				category.items = getSortedTodos(category.items);
-			}
+	clearCategories() {
+		this._todoCategories = [];
+	}
 
-			return category;
-		});
-		categories = getSortedTodoCategories(categories);
-		return categories;
-	});
-};
+	get todoCategories() {
+		return this._todoCategories;
+	}
+}
 
-const addCategory = (category: TodoCategory) => {
-	_update((categories) => {
-		category.items = getSortedTodos(category.items);
-		categories.push(category);
-		updateElementSortInPlace(
-			categories,
-			category.id,
-			{
-				leftId: getLastTodoCategoryInSortedListExceptCurrent(categories, category.id)?.id ?? null,
-				rightId: null
-			},
-			getTodoCategoryLeftId,
-			getTodoCategoryRightId,
-			setTodoCategoryLeftId,
-			setTodoCategoryRightId
-		);
-		categories = getSortedTodoCategories(categories);
-		return categories;
-	});
-};
+export const todoCategories = new TodoCategories();
 
-const updateCategory = (category: TodoCategory) => {
-	_update((categories) => {
-		categories = categories.map<TodoCategory>((value) => {
-			if (value.id !== category.id) {
-				return value;
-			}
-			category.items = getSortedTodos(category.items);
-			return category;
-		});
-		categories = getSortedTodoCategories(categories);
-		return categories;
-	});
-};
-
-const removeCategory = (category: TodoCategory, removeDependencies = true) => {
-	_update((categories) => {
-		if (removeDependencies) {
-			categories = categories.map((value) => {
-				value.items = value.items.map((item) => {
-					item.dependencies = item.dependencies.filter((dependency) => {
-						return category.items.some((item) => item.id == dependency.dependant_todo_id);
-					});
-					return item;
-				});
-				return value;
-			});
-		}
-		removeElementFromSortedListInPlace(
-			categories,
-			category.id,
-			getTodoCategoryLeftId,
-			getTodoCategoryRightId,
-			setTodoCategoryLeftId,
-			setTodoCategoryRightId
-		);
-		return categories.filter((value) => value.id !== category.id);
-	});
-};
-
-const setTodoCategories = (categories: TodoCategory[]) => {
-	_set(
-		getSortedTodoCategories(
-			categories.map((category) => {
-				category.items = getSortedTodos(category.items);
-				return category;
-			})
-		)
-	);
-};
-
-const clearTodoCategories = () => {
-	_set([]);
-};
-
-const updateCategoriesSort = (
-	movingElement: TodoCategory,
-	newOrder: NonNullable<NullableOrderedItem>,
-	skipSort = false
-) => {
-	_update((categories) => {
-		updateElementSortInPlace(
-			categories,
-			movingElement.id,
-			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
-			getTodoCategoryLeftId,
-			getTodoCategoryRightId,
-			setTodoCategoryLeftId,
-			setTodoCategoryRightId
-		);
-		return skipSort ? categories : getSortedTodoCategories(categories);
-	});
-};
-
-export default {
-	setTodoCategories,
-	addTodo,
-	addTag,
-	addCategory,
-	addDependency,
-
-	updateCategory,
-	updateTodo,
-	updateTag,
-	updateTodoSort,
-	updateCategoriesSort,
-	increaseTodoCommentsCounter,
-	decreaseTodoCommentsCounter,
-
-	removeCategory,
-	removeTodo,
-	detachTag,
-	deleteTag,
-	removeDependency,
-
-	clearTodoCategories,
-	subscribe
-};
+export default todoCategories;

@@ -42,7 +42,7 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient, TodoItemClient } from '$lib/client-wrapper/clients';
 	import { page } from '$app/stores';
-	import todos from '$lib/stores/todos';
+	import { todoCategories } from '$lib/stores/todos';
 	import { dropzone, type DropEvent, draggable, type CustomDragEvent } from '$lib/actions';
 	import Alert from '$components/Alert.svelte';
 	import Empty from '$components/Empty.svelte';
@@ -80,7 +80,7 @@
 					category_id: category.id,
 					project_id: projectId
 				});
-				todos.removeCategory(category);
+				todoCategories.removeCategory(category);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -128,11 +128,21 @@
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: event.detail.data.id,
 					project_id: projectId,
-					...generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
+					...generateNewOrderForMovingTodoCategory(
+						category,
+						event.detail.data,
+						moveLeft,
+						todoCategories.todoCategories
+					)
 				});
-				todos.updateCategoriesSort(
+				todoCategories.updateCategoriesSort(
 					event.detail.data,
-					generateNewOrderForMovingTodoCategory(category, event.detail.data, moveLeft, $todos)
+					generateNewOrderForMovingTodoCategory(
+						category,
+						event.detail.data,
+						moveLeft,
+						todoCategories.todoCategories
+					)
 				);
 				componentState = 'none';
 				apiErrorTitle = null;
@@ -161,8 +171,8 @@
 					category_id: event.detail.data.category_id,
 					new_category_id: category.id
 				});
-				todos.removeTodo(event.detail.data, false);
-				todos.addTodo(result);
+				todoCategories.removeTodo(event.detail.data, false);
+				todoCategories.addTodo(result);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
