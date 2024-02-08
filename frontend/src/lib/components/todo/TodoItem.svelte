@@ -71,7 +71,7 @@
 	import TodoComments, { type Props as TodoCommentsProps } from './TodoComments.svelte';
 	import TodoTags, { type Props as TodoTagsProps } from './TodoTags.svelte';
 	import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
-	import toasts from '$lib/stores/toasts/toasts';
+	import toasts from '$lib/stores/toasts/toasts.svelte';
 	import TodoItemDependencies, {
 		type Props as TodoDependenciesProps
 	} from './TodoItemDependencies.svelte';

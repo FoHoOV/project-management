@@ -11,7 +11,7 @@
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 	import Toasts from '$components/popups/Toasts.svelte';
-	import projects from '$lib/stores/projects/projects';
+	import { projects } from '$lib/stores/projects/projects.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { browser } from '$app/environment';
 	import MultiModal from '$components/popups/MultiModal.svelte';
@@ -29,9 +29,7 @@
 	// 	}
 	// });
 
-	$effect(() => {
-		projects.setProjects(data.projects);
-	});
+	projects.set(data.projects);
 </script>
 
 <Drawer
@@ -50,7 +48,7 @@
 				on:click={closeDrawer}
 			>
 				<ul>
-					{#each browser ? $projects : data.projects as project (project.id)}
+					{#each projects.projects as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}

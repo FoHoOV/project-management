@@ -11,7 +11,7 @@
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { createProjectSchema } from './validator';
-	import projects from '$lib/stores/projects';
+	import { projects } from '$lib/stores/projects';
 	import { untrack } from 'svelte';
 
 	const { form } = $props<Props>();
@@ -57,7 +57,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		projects.addProject(e.detail.response);
+		projects.add(e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

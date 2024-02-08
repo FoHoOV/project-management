@@ -6,8 +6,7 @@
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
 	import EditProject from '$routes/user/projects/EditProject.svelte';
 	import type { Project } from '$lib/generated-client/models';
-	import projects from '$lib/stores/projects';
-	import { browser } from '$app/environment';
+	import { projects } from '$lib/stores/projects';
 	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
 
 	const { data, form } = $props();
@@ -48,7 +47,7 @@
 </svelte:head>
 
 <ProjectList
-	projects={browser ? $projects : data.projects}
+	projects={projects.projects}
 	enabledFeatures={['attach-to-user', 'edit-project']}
 	on:attachToUser={handleAttachToUser}
 	on:editProject={handleEditProject}

@@ -1,1 +1,1 @@
-export * from './toasts';
+export * from './toasts.svelte';

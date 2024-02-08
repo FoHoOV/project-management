@@ -1,3 +1,1 @@
-import * as projects from './projects';
-
-export default { ...projects.default };
+export * from './projects.svelte';

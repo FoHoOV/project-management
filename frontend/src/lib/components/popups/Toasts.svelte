@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toasts } from '$lib/stores/toasts';
-	import type { Toast } from '$lib/stores/toasts/toasts';
+	import type { Toast } from '$lib/stores/toasts/toasts.svelte';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { fade, slide } from '$lib/animations';

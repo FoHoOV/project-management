@@ -13,7 +13,7 @@
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import type { Project } from '$lib/generated-client/models';
 	import { editProjectSchema } from './validator';
-	import projects from '$lib/stores/projects';
+	import { projects } from '$lib/stores/projects';
 	import { untrack } from 'svelte';
 
 	const { form, project } = $props<Props>();
@@ -59,7 +59,7 @@
 		componentState = 'none';
 	}}
 	on:submitsucceeded={async (e) => {
-		projects.updateProject(e.detail.response);
+		projects.update(e.detail.response);
 		resetForm();
 		componentState = 'submit-successful';
 	}}

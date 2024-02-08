@@ -18,7 +18,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
-	import projects from '$lib/stores/projects';
+	import { projects } from '$lib/stores/projects';
 
 	const { project, enabledFeatures = null } = $props<Props>();
 
@@ -38,7 +38,7 @@
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
-				projects.deleteProject(project);
+				projects.remove(project);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
