@@ -76,9 +76,9 @@
 			message={componentState == 'submit-successful' ? 'todo item info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={todo.id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={todo.id} errors={''} />
 		<FormInput
-			class="hidden"
+			wrapperClasses="hidden"
 			type="hidden"
 			name="category_id"
 			value={todo.category_id}
@@ -88,20 +88,20 @@
 			name="title"
 			autoFocus={true}
 			value={todo.title}
-			class="w-full"
+			wrapperClasses="w-full"
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
 			name="description"
 			label="description (Optional)"
 			value={todo.description}
-			class="w-full"
+			wrapperClasses="w-full"
 			errors={formErrors?.errors?.description}
 		/>
 		<FormInput
 			name="due_date"
 			label="Due date (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			type="date"
 			value={todo.due_date?.toLocaleDateString('en-CA')}
 			errors={formErrors?.errors?.due_date}

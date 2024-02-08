@@ -79,13 +79,19 @@
 			message={componentState == 'submit-successful' ? 'comment edited!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={comment?.id} errors={''} />
-		<FormInput class="hidden" type="hidden" name="todo_id" value={comment?.todo_id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={comment?.id} errors={''} />
+		<FormInput
+			wrapperClasses="hidden"
+			type="hidden"
+			name="todo_id"
+			value={comment?.todo_id}
+			errors={''}
+		/>
 		<FormInput
 			name="message"
 			type="text-area"
 			autoFocus={true}
-			class="w-full"
+			wrapperClasses="w-full"
 			inputClasses="min-h-48"
 			value={comment.message}
 			errors={formErrors?.errors?.message}

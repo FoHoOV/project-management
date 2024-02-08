@@ -78,7 +78,7 @@
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
 			name="project_id"
-			class="w-full"
+			wrapperClasses="w-full"
 			hideLabel={true}
 			value={projectId}
 			errors={''}
@@ -86,7 +86,7 @@
 		/>
 		<FormInput
 			name="username"
-			class="w-full"
+			wrapperClasses="w-full"
 			autoFocus={true}
 			errors={formErrors?.errors?.username}
 		/>

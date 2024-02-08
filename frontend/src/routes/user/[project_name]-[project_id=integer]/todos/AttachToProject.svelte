@@ -78,11 +78,17 @@
 			message={componentState == 'submit-successful' ? 'attached to project!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput name="category_id" class="hidden" value={categoryId} errors={''} type="hidden" />
+		<FormInput
+			name="category_id"
+			wrapperClasses="hidden"
+			value={categoryId}
+			errors={''}
+			type="hidden"
+		/>
 		<FormInput
 			name="project_id"
 			label="project id"
-			class="w-full"
+			wrapperClasses="w-full"
 			autoFocus={true}
 			errors={typeof formErrors?.errors?.project_id === 'number'
 				? formErrors.errors.project_id.toString()

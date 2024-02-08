@@ -80,7 +80,7 @@
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
 			name="todo_id"
-			class="w-full"
+			wrapperClasses="w-full"
 			hideLabel={true}
 			value={todo.id}
 			errors={''}
@@ -89,7 +89,7 @@
 		<FormInput
 			name="dependant_todo_id"
 			label="depends on (todo id)"
-			class="w-full"
+			wrapperClasses="w-full"
 			autoFocus={true}
 			errors={formErrors.errors?.dependant_todo_id?.toString()}
 		/>

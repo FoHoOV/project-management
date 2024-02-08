@@ -78,12 +78,12 @@
 			message={componentState == 'submit-successful' ? 'comment created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="todo_id" value={todoId} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="todo_id" value={todoId} errors={''} />
 		<FormInput
 			name="message"
 			type="text-area"
 			autoFocus={true}
-			class="w-full"
+			wrapperClasses="w-full"
 			inputClasses="min-h-48"
 			errors={formErrors?.errors?.message}
 		/>

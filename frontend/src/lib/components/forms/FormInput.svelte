@@ -16,7 +16,7 @@
 		autoFocus?: boolean;
 		pattern?: HTMLInputAttributes['pattern'];
 		autoComplete?: HTMLInputAttributes['autocomplete'] | null;
-		class?: string;
+		wrapperClasses?: string;
 		inputClasses?: string;
 	};
 </script>
@@ -35,7 +35,7 @@
 		autoFocus = null,
 		autoComplete = null,
 		pattern = null,
-		class: wrapperClasses = '',
+		wrapperClasses = '',
 		inputClasses = ''
 	} = $props<Props>();
 

@@ -76,12 +76,12 @@
 			message={componentState == 'submit-successful' ? 'tag edited!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={tag.id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={tag.id} errors={''} />
 		<FormInput
 			name="name"
 			type="text"
 			autoFocus={true}
-			class="w-full"
+			wrapperClasses="w-full"
 			value={tag.name}
 			errors={formErrors?.errors?.message}
 		/>

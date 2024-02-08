@@ -45,13 +45,13 @@
 		<FormInput
 			name="username"
 			autoComplete="username"
-			class="w-full"
+			wrapperClasses="w-full"
 			errors={formErrors?.errors?.username}
 		/>
 		<FormInput
 			name="password"
 			autoComplete="new-password"
-			class="w-full"
+			wrapperClasses="w-full"
 			type="password"
 			errors={formErrors?.errors?.password}
 		/>
@@ -59,7 +59,7 @@
 			name="confirm_password"
 			autoComplete="new-password"
 			label="confirm password"
-			class="w-full"
+			wrapperClasses="w-full"
 			type="password"
 			errors={formErrors?.errors?.confirm_password}
 		/>

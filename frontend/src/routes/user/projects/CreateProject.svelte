@@ -72,11 +72,16 @@
 			message={componentState == 'submit-successful' ? 'project created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput name="title" class="w-full" autoFocus={true} errors={formErrors?.errors?.title} />
+		<FormInput
+			name="title"
+			wrapperClasses="w-full"
+			autoFocus={true}
+			errors={formErrors?.errors?.title}
+		/>
 		<FormInput
 			name="description"
 			label="description (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			errors={formErrors?.errors?.description}
 		/>
 		<FormInput
@@ -84,7 +89,7 @@
 			label="Create from default template?"
 			type="checkbox"
 			value={true}
-			class="w-full !flex-row items-center !justify-start gap-3"
+			wrapperClasses="w-full !flex-row items-center !justify-start gap-3"
 			inputClasses="!checkbox !btn-square !checkbox-success"
 			errors={formErrors.errors?.create_from_default_template?.toString()}
 		/>

@@ -79,7 +79,7 @@
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
 			name="todo_id"
-			class="w-full"
+			wrapperClasses="w-full"
 			hideLabel={true}
 			value={todoId}
 			errors={''}
@@ -93,7 +93,7 @@
 			type="hidden"
 			errors={''}
 		/>
-		<FormInput name="name" label="name" class="w-full" autoFocus={true} errors={''} />
+		<FormInput name="name" label="name" wrapperClasses="w-full" autoFocus={true} errors={''} />
 		<div class="card-actions mt-1 w-full justify-end">
 			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 			<LoadingButton

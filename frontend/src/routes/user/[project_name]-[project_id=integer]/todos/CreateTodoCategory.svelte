@@ -74,17 +74,22 @@
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		<FormInput
-			class="hidden"
+			wrapperClasses="hidden"
 			type="hidden"
 			name="project_id"
 			value={$page.params.project_id}
 			errors={''}
 		/>
-		<FormInput name="title" autoFocus={true} class="w-full" errors={formErrors?.errors?.title} />
+		<FormInput
+			name="title"
+			autoFocus={true}
+			wrapperClasses="w-full"
+			errors={formErrors?.errors?.title}
+		/>
 		<FormInput
 			name="description"
 			label="description (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			errors={formErrors?.errors?.description}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">

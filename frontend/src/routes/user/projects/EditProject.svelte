@@ -74,18 +74,24 @@
 			message={componentState == 'submit-successful' ? 'project info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="project_id" value={project.id} errors={''} />
+		<FormInput
+			wrapperClasses="hidden"
+			type="hidden"
+			name="project_id"
+			value={project.id}
+			errors={''}
+		/>
 		<FormInput
 			name="title"
 			autoFocus={true}
-			class="w-full"
+			wrapperClasses="w-full"
 			value={project.title}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
 			name="description"
 			label="description (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			value={project.description}
 			errors={formErrors?.errors?.description}
 		/>

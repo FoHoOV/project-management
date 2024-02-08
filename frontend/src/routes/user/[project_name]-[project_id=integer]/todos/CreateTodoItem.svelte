@@ -75,19 +75,30 @@
 			message={componentState == 'submit-successful' ? 'todo created!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="is_done" value={false} errors={''} />
-		<FormInput class="hidden" type="hidden" value={categoryId} name="category_id" errors={''} />
-		<FormInput name="title" autoFocus={true} class="w-full" errors={formErrors?.errors?.title} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="is_done" value={false} errors={''} />
+		<FormInput
+			wrapperClasses="hidden"
+			type="hidden"
+			value={categoryId}
+			name="category_id"
+			errors={''}
+		/>
+		<FormInput
+			name="title"
+			autoFocus={true}
+			wrapperClasses="w-full"
+			errors={formErrors?.errors?.title}
+		/>
 		<FormInput
 			name="description"
 			label="description (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			errors={formErrors?.errors?.description}
 		/>
 		<FormInput
 			name="due_date"
 			label="Due date (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			type="date"
 			errors={formErrors?.errors?.due_date}
 		/>

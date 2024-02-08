@@ -79,18 +79,18 @@
 			message={componentState == 'submit-successful' ? 'todo category info updated!' : ''}
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
-		<FormInput class="hidden" type="hidden" name="id" value={category.id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={category.id} errors={''} />
 		<FormInput
 			name="title"
 			autoFocus={true}
-			class="w-full"
+			wrapperClasses="w-full"
 			value={category.title}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput
 			name="description"
 			label="description (Optional)"
-			class="w-full"
+			wrapperClasses="w-full"
 			value={category.description}
 			errors={formErrors?.errors?.description}
 		/>
