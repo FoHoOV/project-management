@@ -3,7 +3,7 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { superEnhance, getFormErrors } from '$lib/actions/form';
-	import toasts from '$lib/stores/toasts';
+	import { toasts } from '$lib/stores/toasts';
 	import { schema } from './validators';
 	import { untrack } from 'svelte';
 

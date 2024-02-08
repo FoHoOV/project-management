@@ -1,5 +1,5 @@
 <script lang="ts">
-	import toasts from '$lib/stores/toasts';
+	import { toasts } from '$lib/stores/toasts';
 	import type { Toast } from '$lib/stores/toasts/toasts';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';

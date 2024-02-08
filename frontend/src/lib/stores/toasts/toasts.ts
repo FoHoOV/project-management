@@ -1,36 +1,37 @@
-import { writable } from 'svelte/store';
-
 type MilliSeconds = number;
+type MessageType = 'info' | 'warning' | 'success' | 'error';
 
 export type Toast = {
 	time: MilliSeconds;
 	message: string;
-	type: 'info' | 'warning' | 'success' | 'error';
+	type: MessageType;
 	id: string;
 };
 
-const { subscribe, update: _update } = writable<Toast[]>([]);
+class ToastManager {
+	private _toasts = $state<Toast[]>([]);
 
-const addToast = (toast: Omit<Toast, 'id'>): Toast => {
-	const toastWithId: Toast = { ...toast, id: crypto.randomUUID() };
-	_update((toasts) => {
+	addToast(toast: Omit<Toast, 'id'>): Toast {
+		const toastWithId = { ...toast, id: crypto.randomUUID() };
+
 		setTimeout(() => {
-			removeToast(toastWithId);
+			this.removeToast(toastWithId);
 		}, toastWithId.time);
-		return [...toasts, toastWithId];
-	});
 
-	return toastWithId;
-};
+		this._toasts.push(toastWithId);
 
-const removeToast = (toast: Toast): void => {
-	_update((toasts) => {
-		return toasts.filter((item) => item.id !== toast.id);
-	});
-};
+		return toastWithId;
+	}
 
-export default {
-	addToast,
-	removeToast,
-	subscribe
-};
+	removeToast(toast: Toast): void {
+		this._toasts = this._toasts.filter((item) => item.id !== toast.id);
+	}
+
+	public get toasts() {
+		return this._toasts;
+	}
+}
+
+export const toasts = new ToastManager();
+
+export default toasts;
