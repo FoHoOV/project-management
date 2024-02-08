@@ -86,7 +86,7 @@
 			type="text-area"
 			autoFocus={true}
 			class="w-full"
-			inputClasses="min-h-16"
+			inputClasses="min-h-48"
 			value={comment.message}
 			errors={formErrors?.errors?.message}
 		/>

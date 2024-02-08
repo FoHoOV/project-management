@@ -84,7 +84,7 @@
 			type="text-area"
 			autoFocus={true}
 			class="w-full"
-			inputClasses="min-h-16"
+			inputClasses="min-h-48"
 			errors={formErrors?.errors?.message}
 		/>
 		<div class="card-actions mt-1 w-full justify-end">
