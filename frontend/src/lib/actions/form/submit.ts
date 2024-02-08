@@ -48,14 +48,14 @@ export function superEnhance<
 	const handleSubmit =
 		options?.submit ?? _defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
 
-	const validatorReturn = options?.validator && validate(node, options.validator);
-	const enhanceReturn = enhance(node, handleSubmit);
+	const validator = options?.validator && validate(node, options.validator);
+	const enhancer = enhance(node, handleSubmit);
 	node.addEventListener('reset', _superResetHandler);
 
 	return {
 		destroy() {
-			validatorReturn?.destroy && validatorReturn.destroy();
-			enhanceReturn.destroy();
+			validator?.destroy && validator.destroy();
+			enhancer.destroy();
 			node.removeEventListener('reset', _superResetHandler);
 		}
 	};
