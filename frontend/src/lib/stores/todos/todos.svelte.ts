@@ -108,67 +108,54 @@ class TodoCategories {
 	updateTodoSort(
 		movingElement: TodoCategoryPartialTodoItem,
 		movingElementNewCategoryId: number,
-		newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>,
-		skipSort = false
+		newOrder: NonNullable<TodoCategoryPartialTodoItem['order']>
 	) {
 		if (movingElement.category_id !== movingElementNewCategoryId) {
 			this.removeTodo(movingElement, false);
 			this.addTodo({ ...movingElement, category_id: movingElementNewCategoryId }, true);
 			movingElement.category_id = movingElementNewCategoryId;
 		}
-		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
-			if (category.id !== movingElement.category_id) {
-				return category;
-			}
-			updateElementSortInPlace(
-				category.items,
-				movingElement.id,
-				{ leftId: newOrder.left_id, rightId: newOrder.right_id },
-				getTodoItemLeftId,
-				getTodoItemRightId,
-				setTodoItemLeftId,
-				setTodoItemRightId
-			);
 
-			if (!skipSort) {
-				category.items = getSortedTodos(category.items);
-			}
+		const category = this._findCategory(movingElement.category_id);
 
-			return category;
-		});
-		this._todoCategories = getSortedTodoCategories(this._todoCategories);
+		updateElementSortInPlace(
+			category.items,
+			movingElement.id,
+			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
+			getTodoItemLeftId,
+			getTodoItemRightId,
+			setTodoItemLeftId,
+			setTodoItemRightId
+		);
+
+		category.items = getSortedTodos(category.items);
 	}
 
 	addTodo(todo: TodoCategoryPartialTodoItem, skipSort = false): void {
-		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
-			if (category.id !== todo.category_id) {
-				return category;
-			}
-			category.items.push(todo);
+		const category = this._findCategory(todo.category_id);
 
-			updateElementSortInPlace(
-				category.items,
-				todo.id,
-				{
-					leftId: getLastTodoItemInSortedListExceptCurrent(category.items, todo.id)?.id ?? null,
-					rightId: null
-				},
-				getTodoItemLeftId,
-				getTodoItemRightId,
-				setTodoItemLeftId,
-				setTodoItemRightId
-			);
+		category.items.push(todo);
 
-			if (!skipSort) {
-				category.items = getSortedTodos(category.items);
-			}
+		updateElementSortInPlace(
+			category.items,
+			todo.id,
+			{
+				leftId: getLastTodoItemInSortedListExceptCurrent(category.items, todo.id)?.id ?? null,
+				rightId: null
+			},
+			getTodoItemLeftId,
+			getTodoItemRightId,
+			setTodoItemLeftId,
+			setTodoItemRightId
+		);
 
-			return category;
-		});
+		if (!skipSort) {
+			category.items = getSortedTodos(category.items);
+		}
 	}
 
 	removeTodo(todo: TodoCategoryPartialTodoItem, removeDependencies = true, skipSort = false) {
-		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
+		this._todoCategories.forEach((category) => {
 			if (removeDependencies) {
 				category.items = category.items.map((item) => {
 					item.dependencies = item.dependencies.filter((dependency) => {
@@ -179,7 +166,7 @@ class TodoCategories {
 			}
 
 			if (category.id !== todo.category_id) {
-				return category;
+				return;
 			}
 
 			removeElementFromSortedListInPlace(
@@ -194,137 +181,101 @@ class TodoCategories {
 			if (!skipSort) {
 				category.items = getSortedTodos(category.items.filter((value) => value.id !== todo.id));
 			}
-
-			return category;
 		});
 	}
 
 	updateTodo(todo: TodoCategoryPartialTodoItem, skipSort = false) {
-		this._todoCategories = this._todoCategories.map<TodoCategory>((category) => {
-			if (category.id !== todo.category_id) {
-				return category;
-			}
-			category.items = category.items.map((value) => {
-				if (value.id !== todo.id) {
-					return value;
-				}
-				return todo;
-			});
+		const category = this._findCategory(todo.category_id);
 
-			if (!skipSort) {
-				category.items = getSortedTodos(category.items);
+		category.items = category.items.map((value) => {
+			if (value.id !== todo.id) {
+				return value;
 			}
-
-			return category;
+			return todo;
 		});
+
+		if (!skipSort) {
+			category.items = getSortedTodos(category.items);
+		}
 	}
 
 	addDependency(todoId: number, dependency: TodoItemPartialDependency) {
-		this._todoCategories = this._todoCategories.map((category) => {
-			category.items.forEach((todo) => {
-				if (todo.id !== todoId) {
-					return todo;
-				}
-				todo.dependencies.push(dependency);
-				return todo;
-			});
-			return category;
-		});
+		const todo = this._findTodo(todoId);
+		todo.dependencies.push(dependency);
 	}
 
 	removeDependency(todoId: number, dependency: TodoItemPartialDependency) {
-		this._todoCategories = this._todoCategories.map((category) => {
-			category.items.forEach((todo) => {
-				if (todo.id !== todoId) {
-					return todo;
-				}
-				todo.dependencies = todo.dependencies.filter((value) => value.id != dependency.id);
-				return todo;
-			});
-			return category;
-		});
+		const todo = this._findTodo(todoId);
+		todo.dependencies = todo.dependencies.filter((value) => value.id != dependency.id);
 	}
 
 	addTag(todoId: number, tag: TodoItemPartialTag) {
-		this._todoCategories = this._todoCategories.map((category) => {
-			category.items.forEach((todo) => {
-				if (todo.id !== todoId) {
-					return todo;
-				}
-				todo.tags.unshift(tag);
-				return todo;
-			});
-			return category;
-		});
+		const todo = this._findTodo(todoId);
+		todo.tags.unshift(tag);
 	}
 
 	detachTag(todoId: number, tag: TodoItemPartialTag) {
-		this._todoCategories = this._todoCategories.map((category) => {
-			category.items.forEach((todo) => {
-				if (todo.id !== todoId) {
-					return todo;
-				}
-				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
-				return todo;
-			});
-			return category;
-		});
+		const todo = this._findTodo(todoId);
+		todo.tags = todo.tags.filter((value) => value.id !== tag.id);
 	}
 
 	deleteTag(tag: TodoItemPartialTag) {
-		this._todoCategories = this._todoCategories.map((category) => {
+		this._todoCategories.forEach((category) => {
 			category.items.forEach((todo) => {
 				todo.tags = todo.tags.filter((value) => value.id !== tag.id);
-				return todo;
 			});
-			return category;
 		});
 	}
 
 	updateTag(tag: TodoItemPartialTag) {
-		this._todoCategories = this._todoCategories.map((category) => {
+		this._todoCategories.forEach((category) => {
 			category.items.forEach((todo) => {
-				todo.tags = todo.tags.map((value) => {
+				todo.tags.forEach((value) => {
 					if (value.id !== tag.id) {
-						return value;
+						return;
 					}
 					value.name = tag.name;
-					return value;
 				});
-				return todo;
+				return;
 			});
-			return category;
+			return;
 		});
 	}
 
 	increaseTodoCommentsCounter(todoId: number) {
-		this._todoCategories = this._todoCategories.map((category) => {
-			category.items.forEach((todo) => {
-				if (todo.id !== todoId) {
-					return todo;
-				}
-				todo.comments_count += 1;
-				return todo;
-			});
-			return category;
-		});
+		const todo = this._findTodo(todoId);
+		todo.comments_count += 1;
 	}
 
 	decreaseTodoCommentsCounter(todoId: number) {
-		this._todoCategories = this._todoCategories.map((category) => {
-			category.items.forEach((todo) => {
-				if (todo.id !== todoId) {
-					return todo;
-				}
-				todo.comments_count -= 1;
-				return todo;
-			});
-			return category;
-		});
+		const todo = this._findTodo(todoId);
+		todo.comments_count -= 1;
 	}
 
 	clearCategories() {
 		this._todoCategories = [];
+	}
+
+	_findTodo(todoId: number) {
+		const result = this._todoCategories
+			.find((category) => category.items.some((item) => item.id == todoId))
+			?.items.find((item) => item.id == todoId);
+
+		if (!result) {
+			throw new Error(`todo item not found in store: todoId=${todoId}`);
+		}
+
+		return result;
+	}
+
+	_findCategory(categoryId: number) {
+		const result = this._todoCategories.find((category) => category.id == categoryId);
+
+		if (!result) {
+			throw new Error(`todo category not found store: todoCategoryId=${categoryId}`);
+		}
+
+		return result;
 	}
 
 	get current() {
