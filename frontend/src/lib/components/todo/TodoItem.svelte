@@ -96,7 +96,7 @@
 		}
 	});
 
-	async function handleChangeDoneStatus() {
+	async function handleChangeDoneStatus(event: Event) {
 		componentState = 'calling-service';
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
@@ -126,7 +126,7 @@
 				} else {
 					apiErrorTitle = e.message;
 				}
-				todo.is_done = savedTodoStatus;
+				(event.target as HTMLInputElement).checked = savedTodoStatus;
 				componentState = 'none';
 			}
 		});
@@ -334,7 +334,7 @@
 					class="checkbox"
 					class:checkbox-success={todo.is_done}
 					class:checkbox-error={!todo.is_done}
-					bind:checked={todo.is_done}
+					checked={todo.is_done}
 					on:click={handleChangeDoneStatus}
 				/>
 				<button
