@@ -57,9 +57,14 @@ class TodoCategories {
 	}
 
 	updateCategory(todoCategory: TodoCategory) {
-		let foundTodoCategory = this._findCategory(todoCategory.id);
-		foundTodoCategory = todoCategory;
-		foundTodoCategory.items = getSortedTodos(todoCategory.items);
+		this._todoCategories = this._todoCategories.map<TodoCategory>((value) => {
+			if (value.id !== todoCategory.id) {
+				return value;
+			}
+			todoCategory.items = getSortedTodos(todoCategory.items);
+			return todoCategory;
+		});
+
 		this._todoCategories = getSortedTodoCategories(this._todoCategories);
 	}
 
@@ -187,10 +192,6 @@ class TodoCategories {
 			}
 			return todo;
 		});
-
-		// let foundTodo = this._findTodo(todo.id);
-		// // eslint-disable-next-line @typescript-eslint/no-unused-vars
-		// foundTodo = todo;
 
 		if (!skipSort) {
 			category.items = getSortedTodos(category.items);
