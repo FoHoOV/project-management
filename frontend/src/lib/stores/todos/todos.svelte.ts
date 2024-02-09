@@ -57,26 +57,20 @@ class TodoCategories {
 	}
 
 	updateCategory(todoCategory: TodoCategory) {
-		this._todoCategories = this._todoCategories.map<TodoCategory>((value) => {
-			if (value.id !== todoCategory.id) {
-				return value;
-			}
-			todoCategory.items = getSortedTodos(todoCategory.items);
-			return todoCategory;
-		});
+		let foundTodoCategory = this._findCategory(todoCategory.id);
+		foundTodoCategory = todoCategory;
+		foundTodoCategory.items = getSortedTodos(todoCategory.items);
 		this._todoCategories = getSortedTodoCategories(this._todoCategories);
 	}
 
 	removeCategory(todoCategory: TodoCategory, removeDependencies = true) {
 		if (removeDependencies) {
-			this._todoCategories = this._todoCategories.map((value) => {
-				value.items = value.items.map((item) => {
+			this._todoCategories.forEach((value) => {
+				value.items.forEach((item) => {
 					item.dependencies = item.dependencies.filter((dependency) => {
 						return todoCategory.items.some((item) => item.id == dependency.dependant_todo_id);
 					});
-					return item;
 				});
-				return value;
 			});
 		}
 
@@ -194,6 +188,10 @@ class TodoCategories {
 			return todo;
 		});
 
+		// let foundTodo = this._findTodo(todo.id);
+		// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// foundTodo = todo;
+
 		if (!skipSort) {
 			category.items = getSortedTodos(category.items);
 		}
@@ -236,9 +234,7 @@ class TodoCategories {
 					}
 					value.name = tag.name;
 				});
-				return;
 			});
-			return;
 		});
 	}
 
@@ -256,7 +252,7 @@ class TodoCategories {
 		this._todoCategories = [];
 	}
 
-	_findTodo(todoId: number) {
+	private _findTodo(todoId: number) {
 		const result = this._todoCategories
 			.find((category) => category.items.some((item) => item.id == todoId))
 			?.items.find((item) => item.id == todoId);
@@ -268,7 +264,7 @@ class TodoCategories {
 		return result;
 	}
 
-	_findCategory(categoryId: number) {
+	private _findCategory(categoryId: number) {
 		const result = this._todoCategories.find((category) => category.id == categoryId);
 
 		if (!result) {
