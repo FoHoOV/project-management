@@ -9,74 +9,27 @@
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/Alert.svelte';
-	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { addTagSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { todoCategories } from '$lib/stores/todos/todos.svelte';
-	import { untrack } from 'svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	const { form, todoId } = $props<Props>();
-
-	let formElement = $state<HTMLFormElement | null>(null);
-
-	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
-
-	let formErrors = $state(getFormErrors(form));
-
-	$effect(() => {
-		form;
-		untrack(() => {
-			formErrors = getFormErrors(form);
-		});
-	});
-
-	function resetForm() {
-		formElement?.reset();
-		formErrors = { errors: undefined, message: undefined };
-		componentState = 'none';
-	}
 </script>
 
-<form
-	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTag"
-	use:superEnhance={{
+<EnhancedForm
+	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,
 		action: 'addTag'
 	}}
-	on:submitclienterror={(e) => {
-		formErrors = {
-			errors: e.detail,
-			message: 'Invalid form, please review your inputs'
-		};
-		componentState = 'none';
+	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTag"
+	onSubmitSucceeded={(response) => {
+		todoCategories.addTag(todoId, response);
 	}}
-	on:submitstarted={() => {
-		componentState = 'submitting';
-	}}
-	on:submitended={() => {
-		componentState = 'none';
-	}}
-	on:submitsucceeded={async (e) => {
-		todoCategories.addTag(todoId, e.detail.response);
-		resetForm();
-		componentState = 'submit-successful';
-	}}
-	bind:this={formElement}
-	method="post"
-	class="w-full"
 >
-	<div class="flex flex-col gap-2">
-		<Alert
-			class="mb-1"
-			type="success"
-			message={componentState == 'submit-successful'
-				? 'your tag has been added to this todo item'
-				: ''}
-		/>
-		<Alert class="mb-1" type="error" message={formErrors?.message} />
+	{#snippet inputs({ formErrors })}
 		<FormInput
 			name="todo_id"
 			wrapperClasses="w-full"
@@ -93,15 +46,16 @@
 			type="hidden"
 			errors={''}
 		/>
-		<FormInput name="name" label="name" wrapperClasses="w-full" autoFocus={true} errors={''} />
-		<div class="card-actions mt-1 w-full justify-end">
-			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
-			<LoadingButton
-				text="add"
-				class="btn-success flex-1"
-				type="submit"
-				loading={componentState == 'submitting'}
-			/>
-		</div>
-	</div>
-</form>
+		<FormInput
+			name="name"
+			label="name"
+			wrapperClasses="w-full"
+			autoFocus={true}
+			errors={formErrors.errors.name}
+		/>
+	{/snippet}
+
+	{#snippet submitActions({ loading })}
+		<LoadingButton text="add" class="btn-success flex-1" type="submit" {loading} />
+	{/snippet}
+</EnhancedForm>
