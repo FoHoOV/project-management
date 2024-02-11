@@ -1,7 +1,8 @@
 <script lang="ts" context="module">
-	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
+
+	import { page } from '$app/stores';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import Fa from 'svelte-fa';

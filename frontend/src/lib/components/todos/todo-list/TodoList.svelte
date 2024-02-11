@@ -1,17 +1,18 @@
 <script lang="ts" context="module">
-	import { page } from '$app/stores';
-	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import Confirm from '$components/Confirm.svelte';
 	import Draggable from './Draggable.svelte';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
 	import TodoItem from '../todo-item/TodoItem.svelte';
+	import Empty from '$components/Empty.svelte';
+	import TodoListActions from './TodoListActions.svelte';
+
+	import { page } from '$app/stores';
+	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import type { TodoCategory } from '$lib/generated-client';
 	import { todoCategories } from '$lib/stores/todos';
 	import type { Events as TodoItemEvents } from '../todo-item/TodoItem.svelte';
-	import Empty from '$components/Empty.svelte';
-	import TodoListActions from './TodoListActions.svelte';
 	import {
 		faInfoCircle,
 		faEdit,

@@ -1,6 +1,8 @@
 <script lang="ts" context="module">
-	import { page } from '$app/stores';
+	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
 	import Spinner from '$components/Spinner.svelte';
+
+	import { page } from '$app/stores';
 	import {
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		TODO_CATEGORY_ORDER_DROP_ZONE,
@@ -24,7 +26,6 @@
 	import { toasts } from '$lib/stores/toasts';
 	import { todoCategories } from '$lib/stores/todos';
 	import type { Snippet } from 'svelte';
-	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
 
 	type ComponentState =
 		| CommonComponentStates

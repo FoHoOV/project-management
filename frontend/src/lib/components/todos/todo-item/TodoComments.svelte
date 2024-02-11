@@ -1,7 +1,9 @@
 <script lang="ts" context="module">
-	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
+	import Confirm from '$components/Confirm.svelte';
+
+	import { page } from '$app/stores';
 	import { TodoItemCommentClient } from '$lib/client-wrapper/clients';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
@@ -10,7 +12,6 @@
 	import { onMount } from 'svelte';
 	import { todoComments } from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
-	import Confirm from '$components/Confirm.svelte';
 
 	export type Events = {
 		onEditComment?: (comment: TodoComment) => void;

@@ -5,6 +5,11 @@
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import TodoComments from './TodoComments.svelte';
 	import TodoTags from './TodoTags.svelte';
+	import CategoryInfo from '$components/todos/todo-item/CategoryInfo.svelte';
+	import ProjectsInfo from '$components/todos/todo-item/ProjectsInfo.svelte';
+	import Fa from 'svelte-fa';
+	import Draggable from './Draggable.svelte';
+	
 	import {
 		type StrictUnion,
 		type TodoItem,
@@ -23,8 +28,6 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-	import Draggable from './Draggable.svelte';
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
 	import { page } from '$app/stores';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
@@ -50,9 +53,6 @@
 </script>
 
 <script lang="ts">
-	import CategoryInfo from '$components/todos/todo-item/CategoryInfo.svelte';
-	import ProjectsInfo from '$components/todos/todo-item/ProjectsInfo.svelte';
-
 	const {
 		todo,
 		category,

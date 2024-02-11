@@ -1,18 +1,19 @@
 <script context="module" lang="ts">
+	import Spinner from '$components/Spinner.svelte';
+	import Alert from '$components/Alert.svelte';
+
+	import { page } from '$app/stores';
+	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
+	import { Action, type TodoCategory } from '$lib/generated-client';
+	import { todoCategories } from '$lib/stores/todos';
+
 	export type Props = {
 		category: TodoCategory;
 	};
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/Alert.svelte';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
-	import { Action, type TodoCategory } from '$lib/generated-client';
-	import { todoCategories } from '$lib/stores/todos';
-
 	const { category } = $props<Props>();
 
 	let componentState = $state<'calling-service' | 'none'>('none');

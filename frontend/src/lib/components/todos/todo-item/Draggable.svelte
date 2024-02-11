@@ -1,7 +1,8 @@
 <script lang="ts" context="module">
-	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
+
+	import { page } from '$app/stores';
 	import {
 		TODO_ITEM_ORDER_DROP_ZONE,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
