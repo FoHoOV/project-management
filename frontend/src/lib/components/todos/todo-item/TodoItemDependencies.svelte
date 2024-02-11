@@ -1,18 +1,4 @@
 <script lang="ts" context="module">
-	export type Feature = 'add-dependency';
-	export type DispatcherEventTypes = {
-		addDependency: { todo: TodoCategoryPartialTodoItem };
-	};
-
-	export type CallBackEventTypes = DispatcherToCallbackEvent<DispatcherEventTypes>;
-
-	export type Props = {
-		todo: TodoCategoryPartialTodoItem;
-		enabledFeatures: Feature[] | null;
-	} & Partial<CallBackEventTypes>;
-</script>
-
-<script script lang="ts">
 	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
@@ -26,9 +12,18 @@
 		TodoItemPartialDependency
 	} from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos.svelte';
-	import type { DispatcherToCallbackEvent } from '$lib/utils/types';
 
-	const { todo, enabledFeatures = null, ...restProps } = $props<Props>();
+	export type Events = {
+		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;
+	};
+
+	export type Props = {
+		todo: TodoCategoryPartialTodoItem;
+	} & Events;
+</script>
+
+<script script lang="ts">
+	const { todo, onAddDependency } = $props<Props>();
 
 	let componentState = $state<'calling-service' | 'none'>('none');
 	let apiErrorTitle = $state<string | null>(null);
@@ -52,7 +47,7 @@
 	}
 
 	function handleCreateDependency() {
-		restProps?.onAddDependency?.({ todo: todo });
+		onAddDependency?.(todo);
 	}
 </script>
 
@@ -62,15 +57,15 @@
 	<button
 		on:click={handleCreateDependency}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!enabledFeatures?.includes('add-dependency')}
+		class:hidden={!onAddDependency}
 	>
 		<Fa icon={faPlus} />
 		<p>add dependency</p>
 	</button>
 	{#if todo.dependencies.length == 0}
 		<div class="my-5 flex flex-row items-center gap-2">
-			{#if !enabledFeatures?.includes('add-dependency')}
-				No dependencies
+			{#if !onAddDependency}
+				no dependencies
 			{:else}
 				<Fa icon={faPlusCircle} />
 				<p class="break-words text-lg">add dependencies using the plus sign above</p>

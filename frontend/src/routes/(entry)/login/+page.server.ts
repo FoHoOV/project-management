@@ -4,7 +4,7 @@ import KEYS from '$lib/constants/cookie';
 import { superFail, validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
 import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
-import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper';
+import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
 import { OAuthClient } from '$lib/client-wrapper/clients';
 

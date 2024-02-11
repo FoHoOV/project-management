@@ -1,7 +1,8 @@
-import { callServiceInFormActions, namedActionResult, validateFormActionRequest } from '$lib';
+import { namedActionResult, validateFormActionRequest } from '$lib';
 import { TagClient } from '$lib/client-wrapper/clients';
 import type { Actions } from './$types';
 import { searchTagSchema } from './validator';
+import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 
 export const actions = {
 	search: async ({ request, locals, fetch }) => {

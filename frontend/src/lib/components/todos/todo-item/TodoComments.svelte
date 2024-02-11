@@ -1,19 +1,4 @@
 <script lang="ts" context="module">
-	export type Feature = 'create-comment' | 'edit-comment';
-	export type DispatcherEventTypes = {
-		editComment: { comment: TodoComment };
-		createComment: { todoId: number };
-	};
-
-	export type CallBackEventTypes = DispatcherToCallbackEvent<DispatcherEventTypes>;
-
-	export type Props = {
-		todoId: number;
-		enabledFeatures: Feature[] | null;
-	} & Partial<CallBackEventTypes>;
-</script>
-
-<script script lang="ts">
 	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
@@ -26,12 +11,25 @@
 	import { todoComments } from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
 	import Confirm from '$components/Confirm.svelte';
-	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
 
+	export type Events = {
+		onEditComment?: (comment: TodoComment) => void;
+		onCreateComment?: (todoId: number) => void;
+	};
+
+	export type Props = {
+		todoId: number;
+	} & Events;
+</script>
+
+<script script lang="ts">
+	const { todoId, onEditComment, onCreateComment } = $props<Props>();
+
+	let componentState = $state<'calling-service' | 'none'>('none');
+	let apiErrorTitle = $state<string | null>(null);
 	// TODO: https://github.com/sveltejs/svelte/issues/10427
 	// because of this issue bound `confirm` doesnt work in a keyed each block, waiting for a fix :(
-
-	const { todoId, enabledFeatures = null, ...restProps } = $props<Props>();
+	let deleteCommentConfirms = $state<Confirm[]>([]);
 
 	export async function refreshComments() {
 		componentState = 'calling-service';
@@ -52,10 +50,6 @@
 		});
 	}
 
-	let componentState = $state<'calling-service' | 'none'>('none');
-	let apiErrorTitle = $state<string | null>(null);
-	let deleteCommentConfirms = $state<Confirm[]>([]);
-
 	async function handleDeleteComment(comment: TodoComment) {
 		componentState = 'calling-service';
 		await callServiceInClient({
@@ -72,14 +66,6 @@
 		});
 	}
 
-	function handleCreateComment() {
-		restProps?.onCreateComment?.({ todoId: todoId });
-	}
-
-	function handleEditComment(comment: TodoComment) {
-		restProps?.onEditComment?.({ comment: comment });
-	}
-
 	onMount(() => {
 		refreshComments();
 	});
@@ -89,17 +75,17 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
-		on:click={handleCreateComment}
+		on:click={() => onCreateComment?.(todoId)}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!enabledFeatures?.includes('create-comment')}
+		class:hidden={!onCreateComment}
 	>
 		<Fa icon={faPlus} />
 		<p>add comment</p>
 	</button>
 	{#if todoComments.current.length == 0 || todoComments.current[0].todo_id != todoId}
 		<div class="my-5 flex flex-row items-center gap-2">
-			{#if !enabledFeatures?.includes('create-comment')}
-				No comments
+			{#if !onCreateComment}
+				no comments
 			{:else}
 				<Fa icon={faPlusCircle} />
 				<p class="break-words text-lg">create your first comments using the plus sign</p>
@@ -113,7 +99,7 @@
 			>
 				<Confirm
 					bind:this={deleteCommentConfirms[i]}
-					on:onConfirm={() => handleDeleteComment(comment)}
+					on:onConfirm={() => handleDeleteComment?.(comment)}
 				></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">
@@ -125,8 +111,8 @@
 						</button>
 						<button
 							class="btn btn-square btn-info btn-sm"
-							class:hidden={!enabledFeatures?.includes('edit-comment')}
-							on:click={() => handleEditComment(comment)}
+							class:hidden={!onEditComment}
+							on:click={() => onEditComment?.(comment)}
 						>
 							<Fa icon={faEdit}></Fa>
 						</button>

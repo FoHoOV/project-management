@@ -1,5 +1,5 @@
 import { ProjectClient } from '$lib/client-wrapper/clients';
-import { callServiceInFormActions } from '$lib/client-wrapper';
+import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import type { Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
 import { namedActionResult, validateFormActionRequest } from '$lib';

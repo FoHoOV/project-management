@@ -1,19 +1,4 @@
 <script lang="ts" context="module">
-	export type Feature = 'add-tag' | 'edit-tag';
-	export type DispatcherEventTypes = {
-		editTag: { tag: TodoItemPartialTag };
-		addTag: { todo: TodoCategoryPartialTodoItem };
-	};
-
-	export type CallBackEventTypes = DispatcherToCallbackEvent<DispatcherEventTypes>;
-
-	export type Props = {
-		todo: TodoCategoryPartialTodoItem;
-		enabledFeatures: Feature[] | null;
-	} & Partial<CallBackEventTypes>;
-</script>
-
-<script script lang="ts">
 	import { page } from '$app/stores';
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
@@ -31,9 +16,19 @@
 	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos.svelte';
 	import Confirm from '$components/Confirm.svelte';
-	import type { DispatcherToCallbackEvent } from '$lib/utils/types/dispatcher-type-to-callback-events';
 
-	const { todo, enabledFeatures = null, ...restProps } = $props<Props>();
+	export type Events = {
+		onEditTag?: (tag: TodoItemPartialTag) => void;
+		onAddTag?: (todo: TodoCategoryPartialTodoItem) => void;
+	};
+
+	export type Props = {
+		todo: TodoCategoryPartialTodoItem;
+	} & Events;
+</script>
+
+<script script lang="ts">
+	const { todo, onEditTag, onAddTag } = $props<Props>();
 
 	let componentState = $state<'calling-service' | 'none'>('none');
 	let apiErrorTitle = $state<string | null>(null);
@@ -73,30 +68,22 @@
 			}
 		});
 	}
-
-	function handleAddTag() {
-		restProps?.onAddTag?.({ todo: todo });
-	}
-
-	function handleEditTag(tag: TodoItemPartialTag) {
-		restProps?.onEditTag?.({ tag: tag });
-	}
 </script>
 
 <div class="relative flex flex-col">
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
-		on:click={handleAddTag}
+		on:click={() => onAddTag?.(todo)}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!enabledFeatures?.includes('add-tag')}
+		class:hidden={!onAddTag}
 	>
 		<Fa icon={faPlus} />
 		<p>add tag</p>
 	</button>
 	{#if todo.tags.length == 0}
 		<div class="my-5 flex flex-row items-center gap-2">
-			{#if !enabledFeatures?.includes('add-tag')}
+			{#if !onAddTag}
 				No tags
 			{:else}
 				<Fa icon={faPlusCircle} />
@@ -135,11 +122,11 @@
 						</div>
 
 						<div
-							class:hidden={!enabledFeatures?.includes('edit-tag')}
+							class:hidden={!onEditTag}
 							class="tooltip tooltip-top tooltip-left tooltip-info"
 							data-tip="edit tag name"
 						>
-							<button class="btn btn-square btn-info btn-sm" on:click={() => handleEditTag(tag)}>
+							<button class="btn btn-square btn-info btn-sm" on:click={() => onEditTag?.(tag)}>
 								<Fa icon={faEdit} class="text-info-content"></Fa>
 							</button>
 						</div>

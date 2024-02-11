@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TodoList from '$lib/components/todo/TodoList.svelte';
+	import TodoList from '$components/todos/todo-list/TodoList.svelte';
 	import { todoCategories } from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
 	import CreateTodoItem from './CreateTodoItem.svelte';
@@ -51,117 +51,117 @@
 		});
 	}
 
-	function handleEditTodoCategory(e: CustomEvent<{ category: TodoCategory }>) {
+	function handleEditTodoCategory(category: TodoCategory) {
 		multiStepModal.add({
 			component: EditTodoCategory,
 			props: () => {
 				return {
 					form: form,
-					category: e.detail.category
+					category: category
 				};
 			},
 			title: "Edit this todo category's details"
 		});
 	}
 
-	function handleAttachToProject(e: CustomEvent<{ category: TodoCategory }>) {
+	function handleAttachToProject(category: TodoCategory) {
 		multiStepModal.add({
 			component: AttachToProject,
 			props: () => {
 				return {
 					form: form,
-					categoryId: e.detail.category.id
+					categoryId: category.id
 				};
 			},
 			title: 'Attach this todo category to another project'
 		});
 	}
 
-	function handleEditTodoItem(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
+	function handleEditTodoItem(todo: TodoCategoryPartialTodoItem) {
 		multiStepModal.add({
 			component: EditTodoItem,
 			props: () => {
 				return {
 					form: form,
-					todo: e.detail.todo
+					todo: todo
 				};
 			},
 			title: "Edit this todo item's details"
 		});
 	}
 
-	function handleCreateTodoItem(e: CustomEvent<{ category: TodoCategory }>) {
+	function handleCreateTodoItem(category: TodoCategory) {
 		multiStepModal.add({
 			component: CreateTodoItem,
 			props: () => {
 				return {
 					form: form,
-					categoryId: e.detail.category.id
+					categoryId: category.id
 				};
 			},
 			title: 'Create a new todo item'
 		});
 	}
 
-	function handleCreateComment(e: CustomEvent<{ todoId: number }>) {
+	function handleCreateComment(todoId: number) {
 		multiStepModal.add({
 			component: CreateTodoComment,
 			props: () => {
 				return {
 					form: form,
-					todoId: e.detail.todoId
+					todoId: todoId
 				};
 			},
 			title: 'Add a comment to the selected todo item'
 		});
 	}
 
-	function handleEditTodoComment(e: CustomEvent<{ comment: TodoComment }>) {
+	function handleEditTodoComment(comment: TodoComment) {
 		multiStepModal.add({
 			component: EditTodoComment,
 			props: () => {
 				return {
 					form: form,
-					comment: e.detail.comment
+					comment: comment
 				};
 			},
 			title: 'Edit comments'
 		});
 	}
 
-	function handleAddTag(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
+	function handleAddTag(todo: TodoCategoryPartialTodoItem) {
 		multiStepModal.add({
 			component: AddTag,
 			props: () => {
 				return {
 					form: form,
-					todoId: e.detail.todo.id
+					todoId: todo.id
 				};
 			},
 			title: 'Add tags to this todo item'
 		});
 	}
 
-	function handleEditTag(e: CustomEvent<{ tag: TodoItemPartialTag }>) {
+	function handleEditTag(tag: TodoItemPartialTag) {
 		multiStepModal.add({
 			component: EditTag,
 			props: () => {
 				return {
 					form: form,
-					tag: e.detail.tag
+					tag: tag
 				};
 			},
 			title: "Edit this tag's details"
 		});
 	}
 
-	function handleAddTodoItemDependency(e: CustomEvent<{ todo: TodoCategoryPartialTodoItem }>) {
+	function handleAddTodoItemDependency(todo: TodoCategoryPartialTodoItem) {
 		multiStepModal.add({
 			component: AddTodoItemDependency,
 			props: () => {
 				return {
 					form: form,
-					todo: e.detail.todo
+					todo: todo
 				};
 			},
 			title:
@@ -195,28 +195,15 @@
 					<TodoList
 						{category}
 						projectId={Number.parseInt($page.params.project_id)}
-						enabledFeatures={[
-							'attach-to-project',
-							'create-todo-item',
-							'edit-todo-category',
-							'edit-todo-item',
-							'create-comment',
-							'edit-comment',
-							'add-tag',
-							'edit-tag',
-							'update-todo-item-order',
-							'add-dependency',
-							'sort-on-update-status'
-						]}
-						on:createTodoItem={handleCreateTodoItem}
-						on:editTodoItem={handleEditTodoItem}
-						on:editTodoCategory={handleEditTodoCategory}
-						on:attachToProject={handleAttachToProject}
-						on:editComment={handleEditTodoComment}
-						on:createComment={handleCreateComment}
-						on:addTag={handleAddTag}
-						on:editTag={handleEditTag}
-						on:addDependency={handleAddTodoItemDependency}
+						onCreateTodoItem={handleCreateTodoItem}
+						onEditTodoItem={handleEditTodoItem}
+						onEditTodoCategory={handleEditTodoCategory}
+						onAttachToProject={handleAttachToProject}
+						onEditComment={handleEditTodoComment}
+						onCreateComment={handleCreateComment}
+						onAddTag={handleAddTag}
+						onEditTag={handleEditTag}
+						onAddDependency={handleAddTodoItemDependency}
 					></TodoList>
 				</div>
 			{/each}

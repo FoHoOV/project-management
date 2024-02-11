@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
 import { UserCreate } from '$lib/generated-client/zod/schemas';
-import { callServiceInFormActions } from '$lib/client-wrapper';
+import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import { UserClient } from '$lib/client-wrapper/clients';
 
 export const load = (async () => {

@@ -24,7 +24,7 @@ import {
 	TagUpdate,
 	TodoItemAddDependency
 } from '$lib/generated-client/zod/schemas';
-import { callServiceInFormActions } from '$lib/client-wrapper';
+import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import {
 	TodoItemClient,
 	TodoCategoryClient,

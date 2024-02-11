@@ -7,7 +7,7 @@
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import { onDestroy, onMount, untrack } from 'svelte';
 	import { todoCategories } from '$lib/stores/todos/todos.svelte.js';
-	import TodoItem from '$components/todo/TodoItem.svelte';
+	import TodoItem from '$components/todos/todo-item/TodoItem.svelte';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
@@ -121,7 +121,7 @@
 	{#if todoCategories.current.length > 0}
 		{#each todoCategories.current as category (category.id)}
 			{#each category.items as todo (todo.id)}
-				<TodoItem {todo} enabledFeatures={['show-category-title', 'show-project-id']}></TodoItem>
+				<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true}></TodoItem>
 			{/each}
 		{/each}
 	{:else}
