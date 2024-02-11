@@ -121,7 +121,8 @@
 	{#if todoCategories.current.length > 0}
 		{#each todoCategories.current as category (category.id)}
 			{#each category.items as todo (todo.id)}
-				<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true}></TodoItem>
+				<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true} draggable={false}
+				></TodoItem>
 			{/each}
 		{/each}
 	{:else}
