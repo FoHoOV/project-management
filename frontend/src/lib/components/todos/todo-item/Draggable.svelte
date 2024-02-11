@@ -121,7 +121,7 @@
 	}
 
 	$effect(() => {
-		if (!disabled) {
+		if (!disabled && !category) {
 			throw new Error(
 				'If you want the todo-item to be able to update its order please provide the TodoCategory associated with it'
 			);
