@@ -130,7 +130,7 @@
 </script>
 
 <div
-	class="relative"
+	class="relative mt-4"
 	use:dropzone={{
 		model: todo,
 		names: [TODO_ITEM_ORDER_DROP_ZONE],
