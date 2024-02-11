@@ -5,7 +5,7 @@
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		TODO_CATEGORY_ORDER_DROP_ZONE,
 		DROP_EVENT_HANDLED_BY_TODO_ITEM
-	} from '$components/todo/constants';
+	} from '$components/todos/constants';
 	import {
 		dropzone,
 		draggable,
@@ -24,7 +24,7 @@
 	import { toasts } from '$lib/stores/toasts';
 	import { todoCategories } from '$lib/stores/todos';
 	import type { Snippet } from 'svelte';
-	import DropZoneHelper from '$components/todo/rewrite/DropZoneHelper.svelte';
+	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
 
 	type ComponentState =
 		| CommonComponentStates
