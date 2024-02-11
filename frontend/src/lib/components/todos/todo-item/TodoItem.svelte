@@ -9,7 +9,7 @@
 	import ProjectsInfo from '$components/todos/todo-item/ProjectsInfo.svelte';
 	import Fa from 'svelte-fa';
 	import Draggable from './Draggable.svelte';
-	
+
 	import {
 		type StrictUnion,
 		type TodoItem,
@@ -61,6 +61,7 @@
 		showCategoryInfo = false,
 		...restProps
 	} = $props<Props>();
+
 	let apiErrorTitle = $state<string | null>(null);
 	let componentState = $state<CommonComponentStates>('none');
 	let confirmDeleteTodo = $state<Confirm | null>(null);
@@ -175,7 +176,7 @@
 	}
 </script>
 
-<Draggable {todo} {category} disabled={draggable} onError={(message) => (apiErrorTitle = message)}>
+<Draggable {todo} {category} disabled={!draggable} onError={(message) => (apiErrorTitle = message)}>
 	<div class="card mt-4 max-h-full bg-base-200 shadow-xl transition-colors hover:bg-base-300">
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 
