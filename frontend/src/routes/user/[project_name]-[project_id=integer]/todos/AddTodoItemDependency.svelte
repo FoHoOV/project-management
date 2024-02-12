@@ -20,7 +20,7 @@
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl(
+	action="{generateTodoListUrl(
 		$page.params.project_name,
 		$page.params.project_id
 	)}?/addTodoItemDependency"
@@ -29,8 +29,8 @@
 		form: form,
 		action: 'addTodoItemDependency'
 	}}
-	onSubmitSucceeded={(response) => {
-		todoCategories.addDependency(todo.id, response);
+	onSubmitSucceeded={(event) => {
+		todoCategories.addDependency(todo.id, event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

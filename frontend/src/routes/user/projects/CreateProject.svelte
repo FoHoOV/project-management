@@ -16,14 +16,14 @@
 </script>
 
 <EnhancedForm
-	url="/user/projects?/create"
+	action="/user/projects?/create"
 	enhancerConfig={{
 		validator: { schema: createProjectSchema },
 		form: form,
 		action: 'create'
 	}}
-	onSubmitSucceeded={async (response) => {
-		projects.add(response);
+	onSubmitSucceeded={async (event) => {
+		projects.add(event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

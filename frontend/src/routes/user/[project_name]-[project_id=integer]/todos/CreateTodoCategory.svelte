@@ -19,14 +19,14 @@
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/createCategory"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/createCategory"
 	enhancerConfig={{
 		validator: { schema: createTodoCategorySchema },
 		form: form,
 		action: 'createCategory'
 	}}
-	onSubmitSucceeded={async (response) => {
-		todoCategories.addCategory(response);
+	onSubmitSucceeded={async (event) => {
+		todoCategories.addCategory(event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

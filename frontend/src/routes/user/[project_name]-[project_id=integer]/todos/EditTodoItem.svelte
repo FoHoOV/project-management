@@ -20,14 +20,14 @@
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTodoItem"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTodoItem"
 	enhancerConfig={{
 		validator: { schema: editTodoItemSchema },
 		form: form,
 		action: 'editTodoItem'
 	}}
-	onSubmitSucceeded={async (response) => {
-		todoCategories.updateTodo(response);
+	onSubmitSucceeded={async (event) => {
+		todoCategories.updateTodo(event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

@@ -14,19 +14,19 @@
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	
+
 	const { form, categoryId } = $props<Props>();
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTodo"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTodo"
 	enhancerConfig={{
 		validator: { schema: createTodoItemSchema },
 		form: form,
 		action: 'addTodo'
 	}}
-	onSubmitSucceeded={async (response) => {
-		todoCategories.addTodo(response);
+	onSubmitSucceeded={async (event) => {
+		todoCategories.addTodo(event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

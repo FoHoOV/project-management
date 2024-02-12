@@ -19,14 +19,17 @@
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/createTodoComment"
+	action="{generateTodoListUrl(
+		$page.params.project_name,
+		$page.params.project_id
+	)}?/createTodoComment"
 	enhancerConfig={{
 		validator: { schema: createTodoCommentSchema },
 		form: form,
 		action: 'createTodoComment'
 	}}
-	onSubmitSucceeded={async (response) => {
-		todoComments.add(response);
+	onSubmitSucceeded={async (event) => {
+		todoComments.add(event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

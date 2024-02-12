@@ -19,14 +19,14 @@
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTag"
+	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTag"
 	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,
 		action: 'addTag'
 	}}
-	onSubmitSucceeded={(response) => {
-		todoCategories.addTag(todoId, response);
+	onSubmitSucceeded={(event) => {
+		todoCategories.addTag(todoId, event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

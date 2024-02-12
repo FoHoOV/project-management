@@ -1,38 +1,20 @@
 <script lang="ts">
 	import LoadingButton from '$components/buttons/LoadingButton.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
-	import Alert from '$components/Alert.svelte';
 	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client/models';
-	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
-	import { onDestroy, onMount, untrack } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { todoCategories } from '$lib/stores/todos/todos.svelte.js';
 	import TodoItem from '$components/todos/todo-item/TodoItem.svelte';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	const { form } = $props();
 
-	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
-	let formElement = $state<HTMLFormElement | null>(null);
-
-	let formErrors = $state(getFormErrors(form));
-
-	$effect(() => {
-		form;
-		untrack(() => {
-			formErrors = getFormErrors(form);
-		});
-	});
-
-	function resetForm() {
-		formElement?.reset();
-		formErrors = { errors: undefined, message: undefined };
-		componentState = 'none';
-	}
+	let enhancedForm = $state<EnhancedForm<any, any, any> | null>();
 
 	function handleShowResults(result: TodoItemModel[]) {
-		componentState = 'submit-successful';
 		if (result.length == 0) {
 			todoCategories.clearCategories();
 			return;
@@ -71,51 +53,36 @@
 	<title>search by tag</title>
 </svelte:head>
 
-<form
-	bind:this={formElement}
-	class="px-1"
-	method="post"
+<EnhancedForm
+	bind:this={enhancedForm}
 	action="/user/search-tags?/search"
-	use:superEnhance={{
+	enhancerConfig={{
 		form: form,
 		action: 'search',
 		resetOnSubmit: false,
 		validator: { schema: searchTagSchema }
 	}}
-	on:submitclienterror={(e) => {
-		formErrors = {
-			errors: e.detail,
-			message: 'Invalid form, please review your inputs'
-		};
-		componentState = 'none';
+	onSubmitSucceeded={async (event) => {
+		handleShowResults(event.response);
 	}}
-	on:submitstarted={() => {
-		componentState = 'submitting';
-	}}
-	on:submitended={() => {
-		componentState = 'none';
-		todoCategories.clearCategories();
-	}}
-	on:submitsucceeded={(event) => handleShowResults(event.detail.response)}
+	showResetButton={false}
 >
-	<Alert class="mb-1" type="error" message={formErrors?.message} />
-	<FormInput type="text" label="tag name" name="name" errors={formErrors.errors?.name}></FormInput>
-	<FormInput
-		type="text"
-		label="project id (Optional)"
-		name="projectId"
-		errors={formErrors.errors?.projectId?.toString()}
-	></FormInput>
-	<div class="card-actions mt-3 w-full justify-end">
-		<LoadingButton
-			text="Search"
-			class="btn-success flex-1"
-			type="submit"
-			loading={componentState == 'submitting'}
-		/>
-		<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
-	</div>
-</form>
+	{#snippet inputs({ formErrors })}
+		<FormInput type="text" label="tag name" name="name" errors={formErrors.errors?.name}
+		></FormInput>
+		<FormInput
+			type="text"
+			label="project id (Optional)"
+			name="projectId"
+			errors={formErrors.errors?.projectId?.toString()}
+		></FormInput>
+	{/snippet}
+
+	{#snippet submitActions({ loading, reset })}
+		<LoadingButton text="Search" class="btn-success flex-1" type="submit" {loading} />
+		<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={reset} />
+	{/snippet}
+</EnhancedForm>
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
 	{#if todoCategories.current.length > 0}
@@ -128,7 +95,7 @@
 	{:else}
 		<div
 			class="mt-5 flex items-center gap-2 text-lg font-bold text-warning"
-			class:hidden={componentState !== 'submit-successful'}
+			class:hidden={enhancedForm.formState() !== 'submit-successful'}
 		>
 			<Fa icon={faCircleNotch}></Fa>
 			<span>no results</span>

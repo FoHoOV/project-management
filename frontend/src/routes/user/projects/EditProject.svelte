@@ -18,14 +18,14 @@
 </script>
 
 <EnhancedForm
-	url="/user/projects?/edit"
+	action="/user/projects?/edit"
 	enhancerConfig={{
 		validator: { schema: editProjectSchema },
 		form: form,
 		action: 'edit'
 	}}
-	onSubmitSucceeded={async (response) => {
-		projects.update(response);
+	onSubmitSucceeded={async (event) => {
+		projects.update(event.response);
 	}}
 >
 	{#snippet inputs({ formErrors })}

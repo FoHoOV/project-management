@@ -17,7 +17,7 @@
 </script>
 
 <EnhancedForm
-	url="/user/projects?/attach"
+	action="/user/projects?/attach"
 	enhancerConfig={{
 		validator: { schema: attachProjectSchema },
 		form: form,

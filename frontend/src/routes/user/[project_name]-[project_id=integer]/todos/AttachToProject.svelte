@@ -19,7 +19,10 @@
 </script>
 
 <EnhancedForm
-	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/attachToProject"
+	action="{generateTodoListUrl(
+		$page.params.project_name,
+		$page.params.project_id
+	)}?/attachToProject"
 	enhancerConfig={{
 		validator: { schema: attachToProjectSchema },
 		form: form,
