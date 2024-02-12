@@ -26,6 +26,7 @@
 	onSubmitSucceeded={async (response) => {
 		await invalidate('/user/projects');
 	}}
+	successfulMessage="Project is now shared with the specified user"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput

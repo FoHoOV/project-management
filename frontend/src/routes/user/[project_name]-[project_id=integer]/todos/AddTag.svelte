@@ -28,6 +28,7 @@
 	onSubmitSucceeded={(event) => {
 		todoCategories.addTag(todoId, event.response);
 	}}
+	successfulMessage="Tag created"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput

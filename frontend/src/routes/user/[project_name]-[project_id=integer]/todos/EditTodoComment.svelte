@@ -32,6 +32,7 @@
 	onSubmitSucceeded={async (event) => {
 		todoComments.update(event.response);
 	}}
+	successfulMessage="Todo comment edited"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={comment?.id} errors={''} />

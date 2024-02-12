@@ -27,6 +27,7 @@
 	onSubmitSucceeded={async (event) => {
 		todoCategories.addCategory(event.response);
 	}}
+	successfulMessage="Todo category created"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput

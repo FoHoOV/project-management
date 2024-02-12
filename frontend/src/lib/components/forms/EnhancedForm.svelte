@@ -56,7 +56,7 @@
 	const {
 		action,
 		enhancerConfig,
-		successfulMessage = 'request submitted!',
+		successfulMessage = '',
 		method = 'post',
 		showResetButton = true,
 		formWrapperClasses = '',

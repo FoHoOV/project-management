@@ -32,6 +32,7 @@
 	onSubmitSucceeded={async (event) => {
 		todoCategories.updateCategory(event.response);
 	}}
+	successfulMessage="Todo category edited"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={category.id} errors={''} />

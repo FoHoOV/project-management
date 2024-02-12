@@ -32,6 +32,7 @@
 	onSubmitSucceeded={(event) => {
 		todoCategories.addDependency(todo.id, event.response);
 	}}
+	successfulMessage="Todo dependency added"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput

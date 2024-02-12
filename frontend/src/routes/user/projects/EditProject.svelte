@@ -27,6 +27,7 @@
 	onSubmitSucceeded={async (event) => {
 		projects.update(event.response);
 	}}
+	successfulMessage="Project edited"
 >
 	{#snippet inputs({ formErrors })}
 		<FormInput
