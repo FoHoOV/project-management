@@ -21,14 +21,6 @@ export function superEnhance(
 	undefined,
 	Pick<SubmitEvents<never, never, never>, 'on:submitstarted' | 'on:submitended'>
 >;
-export function superEnhance<TSchema extends z.ZodTypeAny>(
-	node: HTMLFormElement,
-	options: Pick<EnhanceOptions<TSchema, never>, 'validator'>
-): ActionReturn<
-	Pick<EnhanceOptions<TSchema, never>, 'validator'>,
-	ValidatorErrorEvent<TSchema> &
-		Pick<SubmitEvents<TSchema, never, never>, 'on:submitstarted' | 'on:submitended'>
->;
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
