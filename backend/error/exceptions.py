@@ -7,6 +7,7 @@ class ErrorCode(StrEnum):
     TAG_NOT_FOUND = auto()
     COMMENT_NOT_FOUND = auto()
     USER_NOT_FOUND = auto()
+    USERNAME_ALREADY_EXISTS = auto()
     TODO_NOT_FOUND = auto()
     TODO_CATEGORY_NOT_FOUND = auto()
     PROJECT_NOT_FOUND = auto()
