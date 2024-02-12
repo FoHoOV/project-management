@@ -1,28 +1,32 @@
 <script lang="ts">
-	import TodoList from '$components/todos/todo-list/TodoList.svelte';
-	import { todoCategories } from '$lib/stores/todos';
-	import { flip } from 'svelte/animate';
-	import CreateTodoItem from './CreateTodoItem.svelte';
-	import CircleButton from '$components/buttons/CircleButton.svelte';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import CreateTodoCategory from './CreateTodoCategory.svelte';
-	import Empty from '$components/Empty.svelte';
-	import { page } from '$app/stores';
-	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
-	import { onMount, untrack } from 'svelte';
+	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
+	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
+	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
+	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
+	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
 	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
 	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
+	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
+	import CircleButton from '$components/buttons/CircleButton.svelte';
+	import CreateTodoCategory from './CreateTodoCategory.svelte';
+	import Empty from '$components/Empty.svelte';
+	import TodoList from '$components/todos/todo-list/TodoList.svelte';
+	import CreateTodoItem from './CreateTodoItem.svelte';
+
+	import { todoCategories } from '$lib/stores/todos';
+	import { flip } from 'svelte/animate';
+	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+	import { page } from '$app/stores';
+	import { onMount, untrack } from 'svelte';
+
 	import type {
 		TodoCategory,
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialTag
 	} from '$lib/generated-client/models';
-	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
-	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
+
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
-	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
-	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
-	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
+
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
 	import { browser } from '$app/environment';
 
