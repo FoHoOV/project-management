@@ -51,7 +51,7 @@
 			label="name"
 			wrapperClasses="w-full"
 			autoFocus={true}
-			errors={formErrors.errors.name}
+			errors={formErrors.errors?.name}
 		/>
 	{/snippet}
 

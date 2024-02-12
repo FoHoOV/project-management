@@ -7,11 +7,11 @@ export type EnhanceOptions<
 	TFormAction,
 	TKey extends keyof NonNullable<TFormAction> = never
 > = {
-	submit?: SubmitFunction;
 	form: TFormAction;
+	validator: ValidatorOptions<TSchema>;
+	submit?: SubmitFunction;
 	action?: TKey;
 	resetOnSubmit?: boolean;
-	validator: ValidatorOptions<TSchema>;
 };
 
 export type FormActionResultType<

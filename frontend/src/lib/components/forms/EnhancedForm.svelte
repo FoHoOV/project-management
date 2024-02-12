@@ -1,14 +1,6 @@
 <script context="module" lang="ts">
-	import type {
-		CommonComponentStates,
-		EnhanceOptions,
-		ErrorMessage,
-		FormActionResultType,
-		StandardFormActionError
-	} from '$lib';
-
+	import type { EnhanceOptions, FormActionResultType, StandardFormActionError } from '$lib';
 	import { z } from 'zod';
-
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
@@ -33,17 +25,17 @@
 	> = {
 		url: string;
 		enhancerConfig: EnhanceOptions<TSchema, TFormAction, TKey>;
-		method: 'post' | 'get';
-		successfulMessage: string;
 		submitActions: Snippet<[{ loading: boolean }]>;
-		defaultActions: Snippet;
 		inputs: Snippet<[{ formErrors: ReturnType<typeof getFormErrors<TFormAction>> }]>;
+		defaultActions?: Snippet;
+		method?: 'post' | 'get';
+		successfulMessage?: string;
 	} & Events<TFormAction, TSchema, TKey>;
 </script>
 
 <script
 	lang="ts"
-	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodTypeAny, TKey extends keyof NonNullable<TFormAction>"
+	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodTypeAny, TKey extends keyof NonNullable<TFormAction> = never"
 >
 	const {
 		url,
