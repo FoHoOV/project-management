@@ -16,8 +16,13 @@ export type FailedActionProps<T> = {
 	error?: T;
 };
 
+export type StandardFormActionError = {
+	error?: any | undefined;
+	message?: ErrorMessage | undefined;
+} | null;
+
 export function getFormErrors<
-	Form extends { error?: TError | undefined; message?: ErrorMessage | undefined } | null,
+	Form extends StandardFormActionError,
 	TError = NonNullable<Form>['error']
 >(form: Form) {
 	return {

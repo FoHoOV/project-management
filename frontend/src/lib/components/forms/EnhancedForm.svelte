@@ -1,5 +1,11 @@
 <script context="module" lang="ts">
-	import type { EnhanceOptions, ErrorMessage, FormActionResultType } from '$lib';
+	import type {
+		CommonComponentStates,
+		EnhanceOptions,
+		ErrorMessage,
+		FormActionResultType,
+		StandardFormActionError
+	} from '$lib';
 
 	import { z } from 'zod';
 
@@ -9,17 +15,19 @@
 	import { untrack } from 'svelte';
 	import type { Snippet } from 'svelte';
 
+	type ComponentStates = 'submitting' | 'submit-successful' | 'none';
+
 	export type Events<
-		TFormAction extends { error?: any | undefined; message?: ErrorMessage | undefined } | null,
+		TFormAction extends StandardFormActionError,
 		TSchema extends z.ZodTypeAny,
 		TKey extends keyof NonNullable<TFormAction> = never
 	> = {
 		onSubmitSucceeded?: (response: FormActionResultType<TFormAction, TKey>) => void;
-		onValidationErrors?: () => void;
+		onValidationErrors?: (formErrors: ReturnType<typeof getFormErrors<TFormAction>>) => void;
 	};
 
 	export type Props<
-		TFormAction extends { error?: any | undefined; message?: ErrorMessage | undefined } | null,
+		TFormAction extends StandardFormActionError,
 		TSchema extends z.ZodTypeAny,
 		TKey extends keyof NonNullable<TFormAction> = never
 	> = {
@@ -35,7 +43,7 @@
 
 <script
 	lang="ts"
-	generics="TFormAction extends { error?: any | undefined; message?: ErrorMessage | undefined } | null, TSchema extends z.ZodTypeAny"
+	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodTypeAny, TKey extends keyof NonNullable<TFormAction>"
 >
 	const {
 		url,
@@ -47,10 +55,10 @@
 		submitActions,
 		defaultActions,
 		inputs
-	} = $props<Props<TFormAction, TSchema>>();
+	} = $props<Props<TFormAction, TSchema, TKey>>();
 
 	let formElement = $state<HTMLFormElement | null>(null);
-	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
+	let componentState = $state<ComponentStates>('none');
 	let formErrors = $state(getFormErrors(enhancerConfig.form));
 
 	$effect(() => {
@@ -72,11 +80,11 @@
 	use:superEnhance={enhancerConfig}
 	on:submitclienterror={(e) => {
 		formErrors = {
-			errors: e.detail,
+			errors: e.detail as any,
 			message: 'Invalid form, please review your inputs'
 		};
 		componentState = 'none';
-		onValidationErrors?.();
+		onValidationErrors?.(formErrors);
 	}}
 	on:submitstarted={() => {
 		componentState = 'submitting';
