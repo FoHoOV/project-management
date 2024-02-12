@@ -9,73 +9,28 @@
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/Alert.svelte';
-	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { todoCategories } from '$lib/stores/todos';
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
-	import { untrack } from 'svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	const { form, todo } = $props<Props>();
-
-	let formElement = $state<HTMLFormElement | null>(null);
-
-	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
-
-	let formErrors = $state(getFormErrors(form));
-
-	$effect(() => {
-		form;
-		untrack(() => {
-			formErrors = getFormErrors(form);
-		});
-	});
-
-	function resetForm() {
-		formElement?.reset();
-		formErrors = { errors: undefined, message: undefined };
-		componentState = 'none';
-	}
 </script>
 
-<form
-	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTodoItem"
-	use:superEnhance={{
+<EnhancedForm
+	url="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTodoItem"
+	enhancerConfig={{
 		validator: { schema: editTodoItemSchema },
 		form: form,
 		action: 'editTodoItem'
 	}}
-	on:submitclienterror={(e) => {
-		formErrors = {
-			errors: e.detail,
-			message: 'Invalid form, please review your inputs'
-		};
-		componentState = 'none';
+	onSubmitSucceeded={async (response) => {
+		todoCategories.updateTodo(response);
 	}}
-	on:submitstarted={() => {
-		componentState = 'submitting';
-	}}
-	on:submitended={() => {
-		componentState = 'none';
-	}}
-	on:submitsucceeded={(e) => {
-		todoCategories.updateTodo(e.detail.response);
-		resetForm();
-		componentState = 'submit-successful';
-	}}
-	bind:this={formElement}
-	method="post"
-	class="w-full"
 >
-	<div class="flex flex-col gap-2">
-		<Alert
-			class="mb-1"
-			type="success"
-			message={componentState == 'submit-successful' ? 'todo item info updated!' : ''}
-		/>
-		<Alert class="mb-1" type="error" message={formErrors?.message} />
+	{#snippet inputs({ formErrors })}
 		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={todo.id} errors={''} />
 		<FormInput
 			wrapperClasses="hidden"
@@ -106,14 +61,9 @@
 			value={todo.due_date?.toLocaleDateString('en-CA')}
 			errors={formErrors?.errors?.due_date}
 		/>
-		<div class="card-actions mt-1 w-full justify-end">
-			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
-			<LoadingButton
-				text="edit"
-				class="btn-success flex-1"
-				type="submit"
-				loading={componentState === 'submitting'}
-			/>
-		</div>
-	</div>
-</form>
+	{/snippet}
+
+	{#snippet submitActions({ loading })}
+		<LoadingButton text="edit" class="btn-success flex-1" type="submit" {loading} />
+	{/snippet}
+</EnhancedForm>
