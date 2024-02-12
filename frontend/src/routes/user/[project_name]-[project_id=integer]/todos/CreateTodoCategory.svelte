@@ -13,7 +13,6 @@
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import { e } from 'vitest/dist/reporters-1evA5lom.js';
 
 	const { form } = $props<Props>();
 </script>
