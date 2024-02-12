@@ -30,7 +30,7 @@
 			props: () => {
 				return { form: form, projectId: e.detail.project.id };
 			},
-			title: 'Share this project to another user'
+			title: 'Share this project with another user'
 		});
 	}
 

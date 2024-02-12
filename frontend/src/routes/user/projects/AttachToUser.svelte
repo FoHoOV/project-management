@@ -9,73 +9,25 @@
 	import type { ActionData } from './$types';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/Alert.svelte';
-	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { attachProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
-	import { untrack } from 'svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	const { form, projectId } = $props<Props>();
-
-	let formElement = $state<HTMLFormElement | null>(null);
-
-	let componentState = $state<'submitting' | 'submit-successful' | 'none'>('none');
-
-	let formErrors = $state(getFormErrors(form));
-
-	$effect(() => {
-		form;
-		untrack(() => {
-			formErrors = getFormErrors(form);
-		});
-	});
-
-	function resetForm() {
-		formElement?.reset();
-		formErrors = { errors: undefined, message: undefined };
-		componentState = 'none';
-	}
 </script>
 
-<form
-	action="/user/projects?/attach"
-	use:superEnhance={{
+<EnhancedForm
+	url="/user/projects?/attach"
+	enhancerConfig={{
 		validator: { schema: attachProjectSchema },
 		form: form,
 		action: 'attach'
 	}}
-	on:submitclienterror={(e) => {
-		formErrors = {
-			errors: e.detail,
-			message: 'Invalid form, please review your inputs'
-		};
-		componentState = 'none';
+	onSubmitSucceeded={async (response) => {
+		await invalidate('/user/projects');
 	}}
-	on:submitstarted={() => {
-		componentState = 'submitting';
-	}}
-	on:submitended={() => {
-		componentState = 'none';
-	}}
-	on:submitsucceeded={async (e) => {
-		// based on docs and on how invalidate works this doesn't do ssa.reverse()
-		await invalidate('/user/projects'); // TODO: use stores/runes later
-		resetForm();
-		componentState = 'submit-successful';
-	}}
-	bind:this={formElement}
-	method="post"
-	class="w-full"
 >
-	<div class="flex flex-col gap-2">
-		<Alert
-			class="mb-1"
-			type="success"
-			message={componentState == 'submit-successful'
-				? 'project has successfully attached to user!'
-				: ''}
-		/>
-		<Alert class="mb-1" type="error" message={formErrors?.message} />
+	{#snippet inputs({ formErrors })}
 		<FormInput
 			name="project_id"
 			wrapperClasses="w-full"
@@ -90,14 +42,9 @@
 			autoFocus={true}
 			errors={formErrors?.errors?.username}
 		/>
-		<div class="card-actions mt-1 w-full justify-end">
-			<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
-			<LoadingButton
-				text="attach"
-				class="btn-success flex-1"
-				type="submit"
-				loading={componentState == 'submitting'}
-			/>
-		</div>
-	</div>
-</form>
+	{/snippet}
+
+	{#snippet submitActions({ loading })}
+		<LoadingButton text="share" class="btn-success flex-1" type="submit" {loading} />
+	{/snippet}
+</EnhancedForm>
