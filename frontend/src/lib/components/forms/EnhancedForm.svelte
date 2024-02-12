@@ -43,6 +43,9 @@
 		method?: 'post' | 'get';
 		successfulMessage?: string;
 		showResetButton?: boolean;
+		formWrapperClasses?: string;
+		inputsWrapperClasses?: string;
+		actionsWrapperClasses?: string;
 	} & Events<TFormAction, TSchema, TKey>;
 </script>
 
@@ -56,6 +59,9 @@
 		successfulMessage = 'request submitted!',
 		method = 'post',
 		showResetButton = true,
+		formWrapperClasses = '',
+		inputsWrapperClasses = '',
+		actionsWrapperClasses = '',
 		onSubmitSucceeded,
 		onValidationErrors,
 		onRedirected,
@@ -114,9 +120,9 @@
 	}}
 	bind:this={formElement}
 	{method}
-	class="w-full"
+	class="w-full {formWrapperClasses}"
 >
-	<div class="flex flex-col gap-2">
+	<div class="flex flex-col gap-2 {inputsWrapperClasses}">
 		<Alert
 			class="mb-1"
 			type="success"
@@ -124,7 +130,7 @@
 		/>
 		<Alert class="mb-1" type="error" message={formErrors?.message} />
 		{@render inputs({ formErrors: formErrors, reset: resetForm })}
-		<div class="mt-1 flex w-full flex-wrap items-start justify-end gap-2">
+		<div class="mt-1 flex w-full flex-wrap items-start justify-end gap-2 {actionsWrapperClasses}">
 			{#if showResetButton}
 				<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 			{/if}

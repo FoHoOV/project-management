@@ -11,7 +11,12 @@
 	<title>login</title>
 </svelte:head>
 
-<EnhancedForm enhancerConfig={{ validator: { schema }, form: form }} showResetButton={false}>
+<EnhancedForm
+	enhancerConfig={{ validator: { schema }, form: form }}
+	showResetButton={false}
+	formWrapperClasses="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
+	inputsWrapperClasses="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0"
+>
 	{#snippet inputs({ formErrors })}
 		<FormInput
 			name="username"
