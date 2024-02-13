@@ -1,6 +1,8 @@
-<script lang="ts">
-	import { page } from '$app/stores';
+<script lang="ts" context="module">
+		import { page } from '$app/stores';
+</script>
 
+<script lang="ts">
 	const { children } = $props();
 </script>
 
