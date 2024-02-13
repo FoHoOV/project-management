@@ -2,7 +2,6 @@
 	import '../app.css';
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
 	import { navigating, page } from '$app/stores';
-	import type { PageData } from './$types';
 	import Drawer from '$components/Drawer.svelte';
 	import {
 		faArrowRight,
@@ -14,22 +13,10 @@
 	import { projects } from '$lib/stores/projects/projects.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import MultiModal from '$components/popups/MultiModal.svelte';
-	import { onMount, untrack } from 'svelte';
+	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
 
 	const { data, children } = $props();
-	// beforeNavigate(async ({ to, cancel }) => {
-	// 	if (browser && isRouteProtected(to?.route.id!) && !$page.data.token) {
-	// 		// because if the client-side router kicks in and page does NOT
-	// 		// have a page.server.ts which doesn't fire the hooks.server.ts then
-	// 		// the an unauthenticated user might see an authenticated page
-	// 		// * in form submissions if the action redirects then this is called before invalidateAll
-	// 		// doing so might cause the hooks.server.ts to run after beforeNavigation and not set the token to page.data
-	// 		cancel();
-	// 		await goto('/user/login');
-	// 	}
-	// });
-
 	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
 
 	$effect(() => {
