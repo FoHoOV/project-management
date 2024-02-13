@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import json
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -18,9 +19,12 @@ class ProjectCreate(ProjectBase):
 
     @field_validator("title")
     @classmethod
-    def title_should_not_contain_dash(cls, title: str) -> str:
-        if title.find("-") != -1:
-            raise ValueError("'-' is not allowed in the project title")
+    def title_invalid_chars(cls, title: str) -> str:
+        invalid_character_set = ["-", "+", "?", "/"]
+        if any(ch in invalid_character_set for ch in title):
+            raise ValueError(
+                f"{json.dumps(invalid_character_set)} is not allowed in the project title"
+            )
         return title
 
 
