@@ -45,7 +45,7 @@
 		/>
 	{/snippet}
 
-	{#snippet submitActions({ loading })}
+	{#snippet actions({ loading })}
 		<LoadingButton text="share" class="btn-success flex-1" type="submit" {loading} />
 	{/snippet}
 </EnhancedForm>

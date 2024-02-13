@@ -78,7 +78,7 @@
 		></FormInput>
 	{/snippet}
 
-	{#snippet submitActions({ loading, reset })}
+	{#snippet actions({ loading, reset })}
 		<LoadingButton text="Search" class="btn-success flex-1" type="submit" {loading} />
 		<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={reset} />
 	{/snippet}

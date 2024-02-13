@@ -45,7 +45,7 @@
 		/>
 	{/snippet}
 
-	{#snippet submitActions({ loading })}
+	{#snippet actions({ loading })}
 		<LoadingButton class="btn-primary mt-4 flex-grow" text="signup" {loading} type="submit" />
 	{/snippet}
 

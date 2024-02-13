@@ -35,7 +35,7 @@
 	> = {
 		action?: string;
 		enhancerConfig: EnhanceOptions<TSchema, TFormAction, TKey>;
-		submitActions: Snippet<[{ loading: boolean; reset: () => void }]>;
+		actions: Snippet<[{ loading: boolean; reset: () => void }]>;
 		inputs: Snippet<
 			[{ formErrors: ReturnType<typeof getFormErrors<TFormAction>>; reset: () => void }]
 		>;
@@ -66,8 +66,7 @@
 		onSubmitSucceeded,
 		onClientSideValidationErrors,
 		onRedirected,
-		submitActions,
-		defaultActions,
+		actions,
 		inputs,
 		footer
 	} = $props<Props<TFormAction, TSchema, TKey>>();
@@ -136,10 +135,7 @@
 				<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
 			{/if}
 
-			{#if defaultActions}
-				{@render defaultActions({ reset: resetForm })}
-			{/if}
-			{@render submitActions({ loading: componentState == 'submitting', reset: resetForm })}
+			{@render actions({ loading: componentState == 'submitting', reset: resetForm })}
 		</div>
 
 		{#if footer}
