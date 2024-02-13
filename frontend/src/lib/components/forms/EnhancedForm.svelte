@@ -25,7 +25,7 @@
 			event: SubmitSucceededEventType<TSchema, TFormAction, TKey>['detail']
 		) => void;
 		onRedirected?: (event: SubmitRedirectedEventType<TSchema>['detail']) => void;
-		onValidationErrors?: (event: ValidatorErrorsType<TSchema>) => void;
+		onClientSideValidationErrors?: (event: ValidatorErrorsType<TSchema>) => void;
 	};
 
 	export type Props<
@@ -64,7 +64,7 @@
 		inputsWrapperClasses = '',
 		actionsWrapperClasses = '',
 		onSubmitSucceeded,
-		onValidationErrors,
+		onClientSideValidationErrors,
 		onRedirected,
 		submitActions,
 		defaultActions,
@@ -103,7 +103,7 @@
 			message: 'Invalid form, please review your inputs'
 		};
 		componentState = 'none';
-		onValidationErrors?.(e.detail);
+		onClientSideValidationErrors?.(e.detail);
 	}}
 	on:submitstarted={() => {
 		componentState = 'submitting';
