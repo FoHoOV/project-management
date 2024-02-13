@@ -91,7 +91,7 @@
 		class:border-info={category.projects.length <= 1}
 	>
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
-		<Confirm bind:this={confirmDeleteTodoCategory} on:onConfirm={handleDeleteCategory}></Confirm>
+		<Confirm bind:this={confirmDeleteTodoCategory} onConfirmed={handleDeleteCategory}></Confirm>
 		<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
 			<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
 			<div class="flex w-full max-w-full flex-col self-start">

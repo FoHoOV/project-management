@@ -101,7 +101,7 @@
 			>
 				<Confirm
 					bind:this={deleteCommentConfirms[i]}
-					on:onConfirm={() => handleDeleteComment?.(comment)}
+					onConfirmed={() => handleDeleteComment?.(comment)}
 				></Confirm>
 				<div class="card-body">
 					<div class="card-actions justify-end">

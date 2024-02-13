@@ -1,14 +1,22 @@
 <script lang="ts" context="module">
-	import { createEventDispatcher } from 'svelte';
+	export type Events = {
+		onConfirmed?: () => void;
+		onCanceled?: () => void;
+	};
 
 	export type Props = {
 		confirmText?: string;
 		cancelText?: string;
-	};
+	} & Events;
 </script>
 
 <script lang="ts">
-	const { confirmText = 'confirm', cancelText = 'cancel' } = $props<Props>();
+	const {
+		confirmText = 'confirm',
+		cancelText = 'cancel',
+		onConfirmed,
+		onCanceled
+	} = $props<Props>();
 
 	export function show() {
 		visible = true;
@@ -19,7 +27,6 @@
 	}
 
 	let visible = $state<boolean>(false);
-	const dispatcher = createEventDispatcher<{ onConfirm: {}; onCancel: {} }>();
 </script>
 
 <div
@@ -30,7 +37,7 @@
 		class="btn btn-neutral"
 		on:click={() => {
 			hide();
-			dispatcher('onCancel', {});
+			onCanceled?.();
 		}}
 	>
 		{cancelText}
@@ -40,7 +47,7 @@
 		class="btn btn-warning"
 		on:click={() => {
 			hide();
-			dispatcher('onConfirm', {});
+			onConfirmed?.();
 		}}
 	>
 		{confirmText}

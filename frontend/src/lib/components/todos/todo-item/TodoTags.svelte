@@ -97,7 +97,7 @@
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
 			>
-				<Confirm bind:this={deleteTagConfirms[i]} on:onConfirm={() => handleDeleteTag(tag)}
+				<Confirm bind:this={deleteTagConfirms[i]} onConfirmed={() => handleDeleteTag(tag)}
 				></Confirm>
 				<div class="card-body">
 					<div class="card-actions box-border justify-end">

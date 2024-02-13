@@ -179,7 +179,7 @@
 	<div class="card max-h-full bg-base-200 shadow-xl transition-colors hover:bg-base-300">
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 
-		<Confirm bind:this={confirmDeleteTodo} on:onConfirm={handleRemoveTodo}></Confirm>
+		<Confirm bind:this={confirmDeleteTodo} onConfirmed={handleRemoveTodo}></Confirm>
 		<div class="card-body pb-4">
 			<Alert type="error" message={apiErrorTitle} />
 

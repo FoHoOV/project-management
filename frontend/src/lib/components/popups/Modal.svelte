@@ -1,13 +1,17 @@
 <script lang="ts" context="module">
-	import { createEventDispatcher } from 'svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
+
+	export type Events = {
+		onClosed?: () => void;
+		onOpened?: () => void;
+	};
 
 	export type Props = {
 		title?: string;
 		dialogProps?: Partial<HTMLAttributes<HTMLDialogElement>>;
 		wrapperClasses?: string;
 		class?: string;
-	};
+	} & Events;
 </script>
 
 <script lang="ts">
@@ -17,20 +21,20 @@
 		title,
 		dialogProps = {},
 		wrapperClasses = '',
-		class: modalBodyClasses = ''
+		class: modalBodyClasses = '',
+		onOpened,
+		onClosed
 	} = $props<Props>();
 	let modalElement = $state<HTMLDialogElement | null>(null);
 
-	const dispatch = createEventDispatcher<{ closed: {}; opened: {} }>();
-
 	export function show() {
 		modalElement?.show();
-		dispatch('opened', {});
+		onOpened?.();
 	}
 
 	export function close() {
 		modalElement?.close();
-		dispatch('closed', {});
+		onClosed?.();
 	}
 
 	function handleKeyupEvent(e: KeyboardEvent) {

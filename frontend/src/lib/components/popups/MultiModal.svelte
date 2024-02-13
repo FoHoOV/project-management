@@ -31,7 +31,7 @@
 	});
 </script>
 
-<Modal title={currentStep?.title} class={className} on:closed={handleClose} bind:this={modal}>
+<Modal title={currentStep?.title} class={className} onClosed={handleClose} bind:this={modal}>
 	<svelte:component this={currentStep?.component} slot="body" {...componentProps}
 	></svelte:component>
 

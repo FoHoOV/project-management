@@ -8,7 +8,6 @@
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/generated-client/models';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
-	import { createEventDispatcher } from 'svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
 	import { projects } from '$lib/stores/projects';
@@ -54,7 +53,7 @@
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
-		<Confirm bind:this={confirmDetachProject} on:onConfirm={handleDetachProjectFromUser}></Confirm>
+		<Confirm bind:this={confirmDetachProject} onConfirmed={handleDetachProjectFromUser}></Confirm>
 		<div class="card-title justify-between">
 			<div class="flex items-baseline gap-2">
 				<div class="tooltip tooltip-info" data-tip="project id">
