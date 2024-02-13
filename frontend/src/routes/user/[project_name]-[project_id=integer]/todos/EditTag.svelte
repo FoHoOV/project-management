@@ -39,7 +39,7 @@
 			autoFocus={true}
 			wrapperClasses="w-full"
 			value={tag.name}
-			errors={formErrors?.errors?.message}
+			errors={formErrors?.errors?.name}
 		/>
 	{/snippet}
 
