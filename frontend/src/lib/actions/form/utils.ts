@@ -21,6 +21,8 @@ export type StandardFormActionError = {
 	message?: ErrorMessage | undefined;
 } | null;
 
+export type StandardFormActionNames<TForm> = keyof NonNullable<TForm>;
+
 export function getFormErrors<
 	Form extends StandardFormActionError,
 	TError = NonNullable<Form>['error']

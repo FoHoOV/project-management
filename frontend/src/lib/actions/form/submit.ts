@@ -14,6 +14,7 @@ import type {
 } from './submit-types';
 import { validate } from './validator';
 import type { ValidatorErrorEvent } from './validator-types';
+import type { StandardFormActionNames } from './utils';
 
 export function superEnhance(
 	node: HTMLFormElement
@@ -24,7 +25,7 @@ export function superEnhance(
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	node: HTMLFormElement,
 	options: EnhanceOptions<TSchema, TFormAction, TKey>
@@ -35,7 +36,7 @@ export function superEnhance<
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
 	TFormAction = never,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
 	const handleSubmit =
 		options?.submit ?? _defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
@@ -56,7 +57,7 @@ export function superEnhance<
 function _defaultSubmitHandler<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	node: HTMLFormElement,
 	options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>
@@ -101,7 +102,7 @@ function _defaultSubmitHandler<
 function _getResultFromFormAction<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	data: Record<string, any> | undefined,
 	options: Partial<EnhanceOptions<TSchema, TFormAction, TKey>> | undefined

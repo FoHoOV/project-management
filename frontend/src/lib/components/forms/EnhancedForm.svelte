@@ -2,6 +2,7 @@
 	import type {
 		EnhanceOptions,
 		StandardFormActionError,
+		StandardFormActionNames,
 		SubmitRedirectedEventType,
 		SubmitSucceededEventType,
 		ValidatorErrorsType
@@ -18,7 +19,7 @@
 	export type Events<
 		TFormAction extends StandardFormActionError,
 		TSchema extends z.ZodTypeAny,
-		TKey extends keyof NonNullable<TFormAction> = never
+		TKey extends StandardFormActionNames<TFormAction>
 	> = {
 		onSubmitSucceeded?: (
 			event: SubmitSucceededEventType<TSchema, TFormAction, TKey>['detail']
@@ -30,7 +31,7 @@
 	export type Props<
 		TFormAction extends StandardFormActionError,
 		TSchema extends z.ZodTypeAny,
-		TKey extends keyof NonNullable<TFormAction> = never
+		TKey extends StandardFormActionNames<TFormAction>
 	> = {
 		action?: string;
 		enhancerConfig: EnhanceOptions<TSchema, TFormAction, TKey>;
@@ -51,7 +52,7 @@
 
 <script
 	lang="ts"
-	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodTypeAny, TKey extends keyof NonNullable<TFormAction> = never"
+	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodTypeAny, TKey extends StandardFormActionNames<TFormAction> = never"
 >
 	const {
 		action,

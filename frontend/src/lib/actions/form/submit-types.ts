@@ -1,11 +1,12 @@
 import type { SubmitFunction } from '@sveltejs/kit';
 import type { z } from 'zod';
 import type { ValidatorOptions } from './validator-types';
+import type { StandardFormActionNames } from './utils';
 
 export type EnhanceOptions<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
 	form: TFormAction;
 	validator: ValidatorOptions<TSchema>;
@@ -16,7 +17,7 @@ export type EnhanceOptions<
 
 export type FormActionResultType<
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 > = TFormAction extends { response: infer TResult }
 	? Extract<TFormAction, { response: TResult }>['response']
 	: Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { response: any }>['response'];
@@ -24,7 +25,7 @@ export type FormActionResultType<
 export type SubmitEvents<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
 	'on:submitstarted'?: (e: SubmitStartEventType) => void;
 	'on:submitended'?: (e: SubmitEndedEventType) => void;
@@ -44,7 +45,7 @@ export type SubmitRedirectedEventType<TSchema extends z.ZodTypeAny> = CustomEven
 export type SubmitSucceededEventType<
 	TSchema extends z.ZodTypeAny,
 	TFormAction,
-	TKey extends keyof NonNullable<TFormAction> = never
+	TKey extends StandardFormActionNames<TFormAction> = never
 > = CustomEvent<{
 	response: FormActionResultType<TFormAction, TKey>;
 	formData: z.infer<TSchema>;
