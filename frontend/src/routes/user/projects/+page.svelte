@@ -1,17 +1,19 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import CircleButton from '$components/buttons/CircleButton.svelte';
 	import ProjectList from '$components/project/ProjectList.svelte';
 	import CreateProject from '$routes/user/projects/CreateProject.svelte';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
 	import EditProject from '$routes/user/projects/EditProject.svelte';
+
+	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { Project } from '$lib/generated-client/models';
 	import { projects } from '$lib/stores/projects';
 	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
 	import { browser } from '$app/environment';
+</script>
 
+<script lang="ts">
 	const { data, form } = $props();
-
 	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
 
 	function handleCreateProject() {
@@ -24,21 +26,21 @@
 		});
 	}
 
-	function handleAttachToUser(e: CustomEvent<{ project: Project }>) {
+	function handleAttachToUser(project: Project) {
 		multiStepModal.add({
 			component: AttachToUser,
 			props: () => {
-				return { form: form, projectId: e.detail.project.id };
+				return { form: form, projectId: project.id };
 			},
 			title: 'Share this project with another user'
 		});
 	}
 
-	function handleEditProject(e: CustomEvent<{ project: Project }>) {
+	function handleEditProject(project: Project) {
 		multiStepModal.add({
 			component: EditProject,
 			props: () => {
-				return { form: form, project: e.detail.project };
+				return { form: form, project: project };
 			},
 			title: 'Edit this project details'
 		});
@@ -51,9 +53,8 @@
 
 <ProjectList
 	projects={environmentSpecificProjects}
-	enabledFeatures={['attach-to-user', 'edit-project']}
-	on:attachToUser={handleAttachToUser}
-	on:editProject={handleEditProject}
+	onAttachToUser={handleAttachToUser}
+	onEditProject={handleEditProject}
 ></ProjectList>
 
 <CircleButton

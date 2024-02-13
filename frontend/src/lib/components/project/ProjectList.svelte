@@ -1,20 +1,19 @@
 <script lang="ts" context="module">
-	import type { Feature as ProjectFeature } from './Project.svelte';
+	import ProjectComponent, { type Events as ProjectEvents } from './Project.svelte';
+	import Empty from '$components/Empty.svelte';
 
-	export type Feature = ProjectFeature;
+	import type { Project as ProjectModel } from '$lib/generated-client/models';
+	import { flip } from 'svelte/animate';
+
+	export type Events = ProjectEvents;
+
 	export type Props = {
-		projects: ProjectType[];
-		enabledFeatures?: Feature[] | null;
-	};
+		projects: ProjectModel[];
+	} & Events;
 </script>
 
 <script lang="ts">
-	import ProjectComponent from './Project.svelte';
-	import type { Project as ProjectType } from '$lib/generated-client/models';
-	import Empty from '$components/Empty.svelte';
-	import { flip } from 'svelte/animate';
-
-	const { projects, enabledFeatures = null } = $props<Props>();
+	const { projects, ...restProps } = $props<Props>();
 </script>
 
 {#if projects.length == 0}
@@ -23,8 +22,7 @@
 	<div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
 		{#each projects as project (project.id)}
 			<div animate:flip={{ duration: 200 }}>
-				<ProjectComponent {project} {enabledFeatures} on:attachToUser on:editProject
-				></ProjectComponent>
+				<ProjectComponent {project} {...restProps}></ProjectComponent>
 			</div>
 		{/each}
 	</div>

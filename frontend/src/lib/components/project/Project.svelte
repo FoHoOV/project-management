@@ -1,35 +1,33 @@
 <script lang="ts" context="module">
-	export type Feature = 'edit-project' | 'attach-to-user';
-	export type Props = {
-		project: Project;
-		enabledFeatures?: Feature[] | null;
-	};
-</script>
-
-<script lang="ts">
-	import { page } from '$app/stores';
 	import Alert from '$components/Alert.svelte';
+	import Fa from 'svelte-fa';
+	import Spinner from '$components/Spinner.svelte';
+
+	import { page } from '$app/stores';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/generated-client/models';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { createEventDispatcher } from 'svelte';
-	import Fa from 'svelte-fa';
-	import Spinner from '$components/Spinner.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
 	import { projects } from '$lib/stores/projects';
+	import type { CommonComponentStates } from '$lib';
 
-	const { project, enabledFeatures = null } = $props<Props>();
+	export type Events = {
+		onEditProject?: (project: Project) => void;
+		onAttachToUser?: (project: Project) => void;
+	};
+	export type Props = {
+		project: Project;
+	} & Events;
+</script>
 
-	let componentState = $state<'calling-service' | 'none'>('none');
+<script lang="ts">
+	const { project, onEditProject, onAttachToUser } = $props<Props>();
+	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let confirmDetachProject = $state<Confirm | null>(null);
-
-	const dispatch = createEventDispatcher<{
-		editProject: { project: Project };
-		attachToUser: { project: Project };
-	}>();
 
 	async function handleDetachProjectFromUser() {
 		componentState = 'calling-service';
@@ -47,14 +45,6 @@
 				componentState = 'none';
 			}
 		});
-	}
-
-	function handleAttachToUser(event: MouseEvent) {
-		dispatch('attachToUser', { project: project });
-	}
-
-	function handleEditProject(event: MouseEvent) {
-		dispatch('editProject', { project: project });
 	}
 </script>
 
@@ -74,10 +64,7 @@
 					>{project.title}</span
 				>
 			</div>
-			<button
-				on:click={handleEditProject}
-				class:hidden={!enabledFeatures?.includes('edit-project')}
-			>
+			<button on:click={() => onEditProject?.(project)} class:hidden={!onEditProject}>
 				<Fa icon={faEdit} class="text-success" />
 			</button>
 		</div>
@@ -110,10 +97,10 @@
 		<div class="card-actions justify-end pt-3">
 			<button
 				class="btn btn-success flex-1"
-				class:hidden={!enabledFeatures?.includes('attach-to-user')}
-				on:click={handleAttachToUser}
+				on:click={() => onAttachToUser?.(project)}
+				class:hidden={!onAttachToUser}
 			>
-				Attach to user
+				Share access
 			</button>
 			<button class="btn btn-error flex-1" on:click={() => confirmDetachProject?.show()}>
 				{#if project.users.length == 1}

@@ -46,7 +46,6 @@
 
 <script lang="ts">
 	const { category, projectId, disabled, onError, children } = $props<Props>();
-
 	let componentState = $state<ComponentState>('none');
 
 	async function handleOnDrop(event: DropEvent<{}>) {

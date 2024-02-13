@@ -1,17 +1,19 @@
-<script lang="ts">
+<script lang="ts" context="module">
+	import TodoItem from '$components/todos/todo-item/TodoItem.svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import LoadingButton from '$components/buttons/LoadingButton.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
+	import Fa from 'svelte-fa';
+
 	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client/models';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import { onDestroy, onMount } from 'svelte';
 	import { todoCategories } from '$lib/stores/todos/todos.svelte.js';
-	import TodoItem from '$components/todos/todo-item/TodoItem.svelte';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+</script>
 
+<script lang="ts">
 	const { form } = $props();
-
 	let enhancedForm = $state<EnhancedForm<any, any, any> | null>();
 
 	function handleShowResults(result: TodoItemModel[]) {

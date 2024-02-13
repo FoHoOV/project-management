@@ -1,4 +1,7 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import Alert from '$components/Alert.svelte';
+
 	import type {
 		EnhanceOptions,
 		StandardFormActionError,
@@ -8,8 +11,6 @@
 		ValidatorErrorsType
 	} from '$lib';
 	import { z } from 'zod';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/Alert.svelte';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
 	import { untrack } from 'svelte';
 	import type { Snippet } from 'svelte';
@@ -70,7 +71,6 @@
 		inputs,
 		footer
 	} = $props<Props<TFormAction, TSchema, TKey>>();
-
 	let formElement = $state<HTMLFormElement | null>(null);
 	let componentState = $state<ComponentStates>('none');
 	let formErrors = $state(getFormErrors(enhancerConfig.form));

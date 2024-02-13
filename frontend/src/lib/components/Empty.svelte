@@ -1,4 +1,7 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import Fa from 'svelte-fa';
+	import { faFolderBlank } from '@fortawesome/free-solid-svg-icons';
+
 	export type Props = {
 		text?: string;
 		class?: string;
@@ -6,9 +9,6 @@
 </script>
 
 <script lang="ts">
-	import { faFolderBlank } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-
 	const { text = 'Nothing to see here', class: className = '' } = $props();
 </script>
 

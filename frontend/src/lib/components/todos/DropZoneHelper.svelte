@@ -1,11 +1,4 @@
-<script context="module" lang="ts">
-	export type Props = {
-		visible?: boolean;
-		direction: 'top' | 'bottom' | 'right' | 'left';
-	};
-</script>
-
-<script lang="ts">
+<script lang="ts" context="module">
 	import {
 		faArrowDown,
 		faArrowLeft,
@@ -15,8 +8,14 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 
-	const { visible = false, direction } = $props<Props>();
+	export type Props = {
+		visible?: boolean;
+		direction: 'top' | 'bottom' | 'right' | 'left';
+	};
+</script>
 
+<script lang="ts">
+	const { visible = false, direction } = $props<Props>();
 	const { icon, flexDirection } = $derived(getIconAndDirection());
 
 	function getIconAndDirection() {

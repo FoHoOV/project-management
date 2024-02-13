@@ -1,7 +1,8 @@
-<script lang="ts">
+<script lang="ts" context="module">
+	import Fa from 'svelte-fa';
+
 	import { page } from '$app/stores';
 	import { faWarning } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
 </script>
 
 <div class="flex w-full flex-col items-center gap-3 pt-10">

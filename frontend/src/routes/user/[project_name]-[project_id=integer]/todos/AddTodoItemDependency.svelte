@@ -1,4 +1,15 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+
+	import type { ActionData } from './$types';
+	import { addTodoItemDependencySchema } from './validator';
+	import { page } from '$app/stores';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { todoCategories } from '$lib/stores/todos/todos.svelte';
+	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
+
 	export type Props = {
 		form: ActionData;
 		todo: TodoCategoryPartialTodoItem;
@@ -6,16 +17,6 @@
 </script>
 
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { addTodoItemDependencySchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { todoCategories } from '$lib/stores/todos/todos.svelte';
-	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-
 	const { form, todo } = $props<Props>();
 </script>
 

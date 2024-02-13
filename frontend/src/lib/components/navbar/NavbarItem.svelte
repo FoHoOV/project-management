@@ -1,4 +1,11 @@
 <script lang="ts" context="module">
+	import Fa from 'svelte-fa';
+
+	import { page } from '$app/stores';
+	import { toggleClass } from '$lib/actions';
+	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+	import type { Snippet } from 'svelte';
+
 	export type Props = {
 		name: string;
 		href: string;
@@ -10,12 +17,6 @@
 </script>
 
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { toggleClass } from '$lib/actions';
-	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-	import type { Snippet } from 'svelte';
-	import Fa from 'svelte-fa';
-
 	const {
 		name,
 		href,

@@ -1,4 +1,7 @@
 <script lang="ts" context="module">
+	import { createEventDispatcher } from 'svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
+
 	export type Props = {
 		title?: string;
 		dialogProps?: Partial<HTMLAttributes<HTMLDialogElement>>;
@@ -8,9 +11,6 @@
 </script>
 
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
-
 	// had to remove the default value for this because of this weird issue
 	// TODO: upstream issue i've created: https://github.com/sveltejs/svelte/issues/10321
 	const {
@@ -19,10 +19,9 @@
 		wrapperClasses = '',
 		class: modalBodyClasses = ''
 	} = $props<Props>();
+	let modalElement = $state<HTMLDialogElement | null>(null);
 
 	const dispatch = createEventDispatcher<{ closed: {}; opened: {} }>();
-
-	let modalElement = $state<HTMLDialogElement | null>(null);
 
 	export function show() {
 		modalElement?.show();

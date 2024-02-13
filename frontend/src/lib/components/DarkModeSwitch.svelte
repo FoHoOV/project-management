@@ -1,9 +1,12 @@
-<script lang="ts">
+<script lang="ts" context="module">
+	import Fa from 'svelte-fa';
+
 	import { onMount } from 'svelte';
 	import { themeChange } from 'theme-change';
 	import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
+</script>
 
+<script lang="ts">
 	onMount(() => {
 		themeChange(false);
 	});

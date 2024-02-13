@@ -61,7 +61,6 @@
 		showCategoryInfo = false,
 		...restProps
 	} = $props<Props>();
-
 	let apiErrorTitle = $state<string | null>(null);
 	let componentState = $state<CommonComponentStates>('none');
 	let confirmDeleteTodo = $state<Confirm | null>(null);

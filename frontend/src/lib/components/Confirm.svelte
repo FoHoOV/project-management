@@ -1,4 +1,6 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import { createEventDispatcher } from 'svelte';
+
 	export type Props = {
 		confirmText?: string;
 		cancelText?: string;
@@ -6,8 +8,6 @@
 </script>
 
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-
 	const { confirmText = 'confirm', cancelText = 'cancel' } = $props<Props>();
 
 	export function show() {

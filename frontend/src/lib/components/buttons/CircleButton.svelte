@@ -1,4 +1,7 @@
 <script lang="ts" context="module">
+	import Fa from 'svelte-fa';
+	import { faClose, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
+
 	export type Props = {
 		icon?: IconDefinition;
 		class?: string;
@@ -6,9 +9,6 @@
 </script>
 
 <script lang="ts">
-	import { faClose, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
-
 	const { icon = faClose, class: className = 'h-6 w-6' } = $props<Props>();
 </script>
 

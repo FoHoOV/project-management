@@ -17,6 +17,7 @@
 	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos.svelte';
 	import Confirm from '$components/Confirm.svelte';
+	import type { CommonComponentStates } from '$lib';
 
 	export type Events = {
 		onEditTag?: (tag: TodoItemPartialTag) => void;
@@ -30,8 +31,7 @@
 
 <script script lang="ts">
 	const { todo, onEditTag, onAddTag } = $props<Props>();
-
-	let componentState = $state<'calling-service' | 'none'>('none');
+	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let deleteTagConfirms = $state<Confirm[]>([]);
 

@@ -1,9 +1,12 @@
-<script lang="ts">
-	import { page } from '$app/stores';
+<script lang="ts" context="module">
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
-	import { superEnhance } from '$lib/actions/form';
 
+	import { page } from '$app/stores';
+	import { superEnhance } from '$lib/actions/form';
+</script>
+
+<script lang="ts">
 	let status = $state<'submitting' | 'none'>('none');
 </script>
 

@@ -1,10 +1,12 @@
-<script lang="ts">
+<script lang="ts" context="module">
+	import Fa from 'svelte-fa';
 	import { toasts } from '$lib/stores/toasts';
 	import type { Toast } from '$lib/stores/toasts/toasts.svelte';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
-	import Fa from 'svelte-fa';
 	import { fade, slide } from '$lib/animations';
+</script>
 
+<script lang="ts">
 	function getToastTypeClass(toast: Toast): string {
 		switch (toast.type) {
 			case 'success':

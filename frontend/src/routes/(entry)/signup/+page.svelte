@@ -1,10 +1,13 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { schema } from './validators';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import { toasts } from '$lib/stores/toasts';
 
+	import { schema } from './validators';
+	import { toasts } from '$lib/stores/toasts';
+</script>
+
+<script lang="ts">
 	const { form } = $props();
 </script>
 

@@ -1,21 +1,25 @@
-<script lang="ts">
-	import '../app.css';
+<script lang="ts" context="module">
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import { navigating, page } from '$app/stores';
+	import MultiModal from '$components/popups/MultiModal.svelte';
 	import Drawer from '$components/Drawer.svelte';
+	import Toasts from '$components/popups/Toasts.svelte';
+
+	import '../app.css';
+
+	import { navigating, page } from '$app/stores';
 	import {
 		faArrowRight,
 		faHome,
 		faProjectDiagram,
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
-	import Toasts from '$components/popups/Toasts.svelte';
 	import { projects } from '$lib/stores/projects/projects.svelte';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import MultiModal from '$components/popups/MultiModal.svelte';
 	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
+</script>
 
+<script lang="ts">
 	const { data, children } = $props();
 	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
 

@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
 	export type Props = {
 		visible?: boolean;
 	};

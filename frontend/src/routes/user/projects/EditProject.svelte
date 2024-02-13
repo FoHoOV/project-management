@@ -1,4 +1,13 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+
+	import type { ActionData } from './$types';
+	import type { Project } from '$lib/generated-client/models';
+	import { editProjectSchema } from './validator';
+	import { projects } from '$lib/stores/projects';
+
 	export type Props = {
 		form: ActionData;
 		project: Project;
@@ -6,14 +15,6 @@
 </script>
 
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import type { Project } from '$lib/generated-client/models';
-	import { editProjectSchema } from './validator';
-	import { projects } from '$lib/stores/projects';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-
 	const { form, project } = $props<Props>();
 </script>
 

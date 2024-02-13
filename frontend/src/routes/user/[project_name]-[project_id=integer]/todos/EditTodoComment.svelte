@@ -1,4 +1,15 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+
+	import type { ActionData } from './$types';
+	import { editTodoCommentSchema } from './validator';
+	import { page } from '$app/stores';
+	import type { TodoComment } from '$lib/generated-client/models';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { todoComments } from '$lib/stores/todo-comments';
+
 	export type Props = {
 		form: ActionData;
 		comment: TodoComment;
@@ -6,16 +17,6 @@
 </script>
 
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { editTodoCommentSchema } from './validator';
-	import { page } from '$app/stores';
-	import type { TodoComment } from '$lib/generated-client/models';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import { todoComments } from '$lib/stores/todo-comments';
-
 	const { form, comment } = $props<Props>();
 </script>
 

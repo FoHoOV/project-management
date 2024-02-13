@@ -1,4 +1,7 @@
 <script lang="ts" context="module">
+	import Alert from '$components/Alert.svelte';
+	import type { HTMLInputAttributes } from 'svelte/elements';
+
 	export type Props = (
 		| {
 				type?: 'text-area';
@@ -22,9 +25,6 @@
 </script>
 
 <script lang="ts">
-	import Alert from '$components/Alert.svelte';
-	import type { HTMLInputAttributes } from 'svelte/elements';
-
 	const {
 		name,
 		value = '',
@@ -38,7 +38,6 @@
 		wrapperClasses = '',
 		inputClasses = ''
 	} = $props<Props>();
-
 	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
 	export function focus() {

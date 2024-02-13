@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
 
@@ -7,6 +7,7 @@
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { Action, type TodoCategory } from '$lib/generated-client';
 	import { todoCategories } from '$lib/stores/todos';
+	import type { CommonComponentStates } from '$lib';
 
 	export type Props = {
 		category: TodoCategory;
@@ -15,8 +16,7 @@
 
 <script lang="ts">
 	const { category } = $props<Props>();
-
-	let componentState = $state<'calling-service' | 'none'>('none');
+	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 
 	async function handleUpdateAction(event: Event) {

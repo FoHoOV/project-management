@@ -13,6 +13,7 @@
 		TodoItemPartialDependency
 	} from '$lib/generated-client';
 	import todos from '$lib/stores/todos/todos.svelte';
+	import type { CommonComponentStates } from '$lib';
 
 	export type Events = {
 		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;
@@ -25,8 +26,7 @@
 
 <script script lang="ts">
 	const { todo, onAddDependency } = $props<Props>();
-
-	let componentState = $state<'calling-service' | 'none'>('none');
+	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {

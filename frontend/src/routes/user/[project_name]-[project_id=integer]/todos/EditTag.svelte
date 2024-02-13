@@ -1,4 +1,15 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+
+	import type { ActionData } from './$types';
+	import { page } from '$app/stores';
+	import type { TodoItemPartialTag } from '$lib/generated-client/models';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { todoCategories } from '$lib/stores/todos';
+	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
+
 	export type Props = {
 		form: ActionData;
 		tag: TodoItemPartialTag;
@@ -6,16 +17,6 @@
 </script>
 
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { page } from '$app/stores';
-	import type { TodoItemPartialTag } from '$lib/generated-client/models';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { todoCategories } from '$lib/stores/todos';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
-
 	const { form, tag } = $props<Props>();
 </script>
 

@@ -1,17 +1,18 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+
+	import type { ActionData } from './$types';
+	import { createProjectSchema } from './validator';
+	import { projects } from '$lib/stores/projects';
+
 	export type Props = {
 		form: ActionData;
 	};
 </script>
 
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { createProjectSchema } from './validator';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import { projects } from '$lib/stores/projects';
-
 	const { form } = $props<Props>();
 </script>
 

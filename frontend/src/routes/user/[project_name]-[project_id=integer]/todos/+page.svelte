@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
@@ -29,9 +29,10 @@
 
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
 	import { browser } from '$app/environment';
+</script>
 
+<script lang="ts">
 	const { data, form } = $props();
-
 	let componentState = $state<'loading' | 'none'>('loading');
 
 	$effect(() => {

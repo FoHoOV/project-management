@@ -1,9 +1,12 @@
-<script lang="ts">
+<script lang="ts" context="module">
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import { schema } from './validators';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
+	import { schema } from './validators';
+</script>
+
+<script lang="ts">
 	const { form } = $props();
 </script>
 

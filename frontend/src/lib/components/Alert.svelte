@@ -1,4 +1,7 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import Fa from 'svelte-fa';
+	import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+
 	export type Props = {
 		message?: string | null;
 		type?: 'success' | 'error' | 'info';
@@ -7,9 +10,6 @@
 </script>
 
 <script lang="ts">
-	import Fa from 'svelte-fa';
-	import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-
 	const { type, message = null, class: className = '' } = $props<Props>();
 
 	let _getAlertClassName = $derived(() => {

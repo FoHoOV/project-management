@@ -1,4 +1,14 @@
-<script context="module" lang="ts">
+<script lang="ts" context="module">
+	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+
+	import type { ActionData } from './$types';
+	import { attachToProjectSchema } from './validator';
+	import { invalidate } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
+
 	export type Props = {
 		form: ActionData;
 		categoryId: number;
@@ -6,15 +16,6 @@
 </script>
 
 <script lang="ts">
-	import type { ActionData } from './$types';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import { attachToProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-
 	const { form, categoryId } = $props<Props>();
 </script>
 
