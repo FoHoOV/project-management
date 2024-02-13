@@ -1,18 +1,34 @@
 <script context="module" lang="ts">
+	type SnippetParams = [{ closeDrawer: () => void }];
+
 	export type Props = {
 		id: string;
-		startDrawerOpened?: boolean;
 		navbarTitle?: string;
 		navbarTitleHref?: string;
+		navbarStart?: Snippet<SnippetParams>;
+		navbarCenter?: Snippet<SnippetParams>;
+		navbarEnd?: Snippet<SnippetParams>;
+		sidebar?: Snippet<SnippetParams>;
+		content?: Snippet<SnippetParams>;
 	};
 </script>
 
 <script lang="ts">
 	import Navbar from '$components/navbar/Navbar.svelte';
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
+	import type { Snippet } from 'svelte';
 	import Fa from 'svelte-fa';
 
-	const { id, startDrawerOpened = false, navbarTitle = '', navbarTitleHref = '' } = $props<Props>();
+	const {
+		id,
+		navbarTitle = '',
+		navbarTitleHref = '',
+		navbarStart,
+		navbarCenter,
+		navbarEnd,
+		sidebar,
+		content
+	} = $props<Props>();
 
 	let showDrawer = $state<boolean>(false);
 
@@ -21,7 +37,7 @@
 	};
 </script>
 
-<div class="drawer" class:lg:drawer-open={startDrawerOpened}>
+<div class="drawer lg:drawer-open">
 	<input {id} type="checkbox" bind:checked={showDrawer} class="drawer-toggle" />
 	<div class="drawer-content z-40 flex h-[100vh] flex-col">
 		<Navbar title={navbarTitle} titleHref={navbarTitleHref}>
@@ -31,23 +47,33 @@
 						<Fa icon={faBarsStaggered} />
 					</label>
 				</div>
-				<slot name="drawer-navbar-start" {closeDrawer} />
+				{#if navbarStart}
+					{@render navbarStart({ closeDrawer })}
+				{/if}
 			</svelte:fragment>
 			<svelte:fragment slot="center">
-				<slot name="drawer-navbar-center" {closeDrawer} />
+				{#if navbarCenter}
+					{@render navbarCenter({ closeDrawer })}
+				{/if}
 			</svelte:fragment>
 			<svelte:fragment slot="end">
-				<slot name="drawer-navbar-end" {closeDrawer} />
+				{#if navbarEnd}
+					{@render navbarEnd({ closeDrawer })}
+				{/if}
 			</svelte:fragment>
 		</Navbar>
-		<slot name="drawer-content" {closeDrawer} />
+		{#if content}
+			{@render content({ closeDrawer })}
+		{/if}
 	</div>
 	<div class="drawer-side z-40 lg:!z-10 lg:p-2">
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul
 			class="menu box-border min-h-full w-80 rounded-md bg-base-300 bg-opacity-90 p-4 text-base-content backdrop-blur transition-shadow lg:shadow-2xl"
 		>
-			<slot name="drawer-side" {closeDrawer} />
+			{#if sidebar}
+				{@render sidebar({ closeDrawer })}
+			{/if}
 		</ul>
 	</div>
 </div>
