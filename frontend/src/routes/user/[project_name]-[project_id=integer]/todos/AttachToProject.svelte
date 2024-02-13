@@ -28,7 +28,7 @@
 		form: form,
 		action: 'attachToProject'
 	}}
-	onSubmitSucceeded={async (response) => {
+	onSubmitSucceeded={async (event) => {
 		await invalidate(`${generateTodoListUrl($page.params.project_name, $page.params.project_id)}`);
 	}}
 	successfulMessage="Todo category is now shared with the specified project"

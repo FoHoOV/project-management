@@ -21,7 +21,10 @@ export type StandardFormActionError = {
 	message?: ErrorMessage | undefined;
 } | null;
 
-export type StandardFormActionNames<TForm> = keyof NonNullable<TForm>;
+export type StandardFormActionNames<TForm> =
+	StrictUnion<TForm> extends StandardFormActionError
+		? Exclude<keyof NonNullable<StrictUnion<TForm>>, 'error' | 'message'>
+		: keyof NonNullable<StrictUnion<TForm>>;
 
 export function getFormErrors<
 	Form extends StandardFormActionError,
