@@ -58,7 +58,7 @@ class TodoItemAddDependency(BaseModel):
     dependant_todo_id: int
 
     @model_validator(mode="after")
-    def check_todo_ids(self) -> "TodoItemAddDependency":
+    def check_todo_ids(self):
         if self.todo_id == self.dependant_todo_id:
             raise UserFriendlyError(
                 ErrorCode.INVALID_INPUT,

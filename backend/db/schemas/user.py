@@ -5,7 +5,7 @@ class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=30)
 
     @model_validator(mode="after")
-    def strip_and_lower_username(self) -> "UserBase":
+    def strip_and_lower_username(self):
         self.username = self.username.strip().lower()
         return self
 
@@ -15,7 +15,7 @@ class UserCreate(UserBase):
     confirm_password: str = Field(min_length=5, max_length=100, exclude=True)
 
     @model_validator(mode="after")
-    def check_passwords_match(self) -> "UserCreate":
+    def check_passwords_match(self):
         pw1 = self.password
         pw2 = self.confirm_password
         if pw1 is not None and pw2 is not None and pw1 != pw2:

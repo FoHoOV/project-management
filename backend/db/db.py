@@ -3,7 +3,7 @@ from typing import Any, TypedDict
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import sessionmaker, Session
 
-DbPrams = TypedDict("Result", {"session": sessionmaker[Session], "engine": Engine})
+DbPrams = TypedDict("DbPrams", {"session": sessionmaker[Session], "engine": Engine})
 
 
 def get_db_params(connection_string: str, enable_logging: bool) -> DbPrams:
