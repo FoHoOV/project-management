@@ -153,20 +153,19 @@
 					Attach to project
 				</button>
 			</div>
-			{#if category.items.length > 0}
-				{#each category.items as todo (todo.id)}
-					<div
-						class="w-full"
-						in:receive={{ key: todo.id }}
-						out:send={{ key: todo.id }}
-						animate:flip={{ duration: 200 }}
-					>
-						<TodoItem {todo} {category} {...restProps}></TodoItem>
-					</div>
-				{/each}
+
+			{#each category.items as todo (todo.id)}
+				<div
+					class="w-full"
+					in:receive={{ key: todo.id }}
+					out:send={{ key: todo.id }}
+					animate:flip={{ duration: 200 }}
+				>
+					<TodoItem {todo} {category} {...restProps}></TodoItem>
+				</div>
 			{:else}
 				<Empty class="mt-2 w-full justify-start" text="Add your first todo!" />
-			{/if}
+			{/each}
 		</div>
 	</div>
 </Draggable>

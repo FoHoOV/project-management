@@ -87,12 +87,9 @@
 </EnhancedForm>
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-	{#if todoCategories.current.length > 0}
-		{#each todoCategories.current as category (category.id)}
-			{#each category.items as todo (todo.id)}
-				<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true} draggable={false}
-				></TodoItem>
-			{/each}
+	{#each todoCategories.current as category (category.id)}
+		{#each category.items as todo (todo.id)}
+			<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true} draggable={false}></TodoItem>
 		{/each}
 	{:else}
 		<div
@@ -102,5 +99,5 @@
 			<Fa icon={faCircleNotch}></Fa>
 			<span>no results</span>
 		</div>
-	{/if}
+	{/each}
 </div>

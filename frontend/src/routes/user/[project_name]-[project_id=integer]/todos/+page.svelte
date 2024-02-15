@@ -189,30 +189,28 @@
 	<span class="loading loading-ring m-auto block" />
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#if derivedTodoCategories.length == 0}
-			<Empty text="Create your first todo list!" />
+		{#each derivedTodoCategories as category (category.id)}
+			<div
+				class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
+				animate:flip={{ duration: 200 }}
+			>
+				<TodoList
+					{category}
+					projectId={Number.parseInt($page.params.project_id)}
+					onCreateTodoItem={handleCreateTodoItem}
+					onEditTodoItem={handleEditTodoItem}
+					onEditTodoCategory={handleEditTodoCategory}
+					onAttachToProject={handleAttachToProject}
+					onEditComment={handleEditTodoComment}
+					onCreateComment={handleCreateComment}
+					onAddTag={handleAddTag}
+					onEditTag={handleEditTag}
+					onAddDependency={handleAddTodoItemDependency}
+				></TodoList>
+			</div>
 		{:else}
-			{#each derivedTodoCategories as category (category.id)}
-				<div
-					class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
-					animate:flip={{ duration: 200 }}
-				>
-					<TodoList
-						{category}
-						projectId={Number.parseInt($page.params.project_id)}
-						onCreateTodoItem={handleCreateTodoItem}
-						onEditTodoItem={handleEditTodoItem}
-						onEditTodoCategory={handleEditTodoCategory}
-						onAttachToProject={handleAttachToProject}
-						onEditComment={handleEditTodoComment}
-						onCreateComment={handleCreateComment}
-						onAddTag={handleAddTag}
-						onEditTag={handleEditTag}
-						onAddDependency={handleAddTodoItemDependency}
-					></TodoList>
-				</div>
-			{/each}
-		{/if}
+			<Empty text="Create your first todo list!" />
+		{/each}
 	</div>
 	<CircleButton
 		icon={faPlus}
