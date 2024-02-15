@@ -12,7 +12,7 @@
 <script lang="ts">
 	const { type, message = null, class: className = '' } = $props<Props>();
 
-	let _getAlertClassName = $derived(() => {
+	const alertClassName = $derived.by(() => {
 		switch (type) {
 			case 'success':
 				return 'success';
@@ -27,7 +27,7 @@
 </script>
 
 {#if message}
-	<div class="alert alert-{_getAlertClassName()} rounded-md {className}">
+	<div class="alert alert-{alertClassName} rounded-md {className}">
 		<Fa icon={faExclamationCircle} />
 		<span>{message}</span>
 	</div>
