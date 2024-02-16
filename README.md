@@ -1,5 +1,5 @@
 # todos
-A todo app. The goal of this project is to have most of ASANA's features (step by step tho)
+A simple Project management app. The goal of this project is to have most of ASANA's features (step by step tho)
 one day.
 
 features it has right now:
