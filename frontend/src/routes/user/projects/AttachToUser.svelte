@@ -5,7 +5,6 @@
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
 	import type { Project } from '$lib/generated-client/models';
 	import { getProjectsStoreFromContext } from '$components/project/utils';
 
