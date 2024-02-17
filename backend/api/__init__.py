@@ -28,6 +28,7 @@ def create_app():
         return f"{route.name}_{str(route.tags[0]).replace('-','_')}"
 
     app = FastAPI(generate_unique_id_function=custom_generate_unique_id)
+
     app.add_exception_handler(UserFriendlyError, db_excepted_exception_handler)
 
     app.include_router(oath.router)
@@ -43,11 +44,9 @@ def create_app():
         "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it
     )
 
-    origins = settings.ALLOWED_ORIGINS
-
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=settings.ALLOWED_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
