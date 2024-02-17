@@ -7,14 +7,19 @@
 
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { Project } from '$lib/generated-client/models';
-	import { projects } from '$lib/stores/projects';
 	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
-	import { browser } from '$app/environment';
+	import { getProjectsStoreFromContext } from '$components/project/utils.js';
+	import Error from '$routes/+error.svelte';
 </script>
 
 <script lang="ts">
 	const { data, form } = $props();
-	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
+
+	const projectsStore = getProjectsStoreFromContext();
+
+	if (!projectsStore) {
+		throw new window.Error('projects store must have a value for this page to work!');
+	}
 
 	function handleCreateProject() {
 		multiStepModal.add({
@@ -52,7 +57,7 @@
 </svelte:head>
 
 <ProjectList
-	projects={environmentSpecificProjects}
+	projects={projectsStore?.current}
 	onAttachToUser={handleAttachToUser}
 	onEditProject={handleEditProject}
 ></ProjectList>

@@ -6,8 +6,8 @@
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { Action, type TodoCategory } from '$lib/generated-client';
-	import { todoCategories } from '$lib/stores/todos';
 	import type { CommonComponentStates } from '$lib';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
 		category: TodoCategory;
@@ -16,8 +16,11 @@
 
 <script lang="ts">
 	const { category } = $props<Props>();
+
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
+
+	const todoCategoriesStore = getTodosStoreFromContext();
 
 	async function handleUpdateAction(event: Event) {
 		componentState = 'calling-service';
@@ -30,7 +33,7 @@
 					}
 				);
 
-				todoCategories.updateCategory(result);
+				todoCategoriesStore?.updateCategory(result);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},

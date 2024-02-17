@@ -6,7 +6,7 @@
 	import type { ActionData } from './$types';
 	import type { Project } from '$lib/generated-client/models';
 	import { editProjectSchema } from './validator';
-	import { projects } from '$lib/stores/projects';
+	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Props = {
 		form: ActionData;
@@ -16,6 +16,7 @@
 
 <script lang="ts">
 	const { form, project } = $props<Props>();
+	const projectsStore = getProjectsStoreFromContext();
 </script>
 
 <EnhancedForm
@@ -26,7 +27,7 @@
 		action: 'edit'
 	}}
 	onSubmitSucceeded={async (event) => {
-		projects.update(event.response);
+		projectsStore?.update(event.response);
 	}}
 	successfulMessage="Project edited"
 >

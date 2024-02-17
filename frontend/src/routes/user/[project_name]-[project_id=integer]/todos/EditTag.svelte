@@ -7,17 +7,18 @@
 	import { page } from '$app/stores';
 	import type { TodoItemPartialTag } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { todoCategories } from '$lib/stores/todos';
+	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
 
 	export type Props = {
 		form: ActionData;
+		todoCategoriesStore: TodoCategories;
 		tag: TodoItemPartialTag;
 	};
 </script>
 
 <script lang="ts">
-	const { form, tag } = $props<Props>();
+	const { form, todoCategoriesStore, tag } = $props<Props>();
 </script>
 
 <EnhancedForm
@@ -28,7 +29,7 @@
 		action: 'editTag'
 	}}
 	onSubmitSucceeded={async (event) => {
-		todoCategories.updateTag(event.response);
+		todoCategoriesStore?.updateTag(event.response);
 	}}
 	successfulMessage="Todo tag edited"
 >

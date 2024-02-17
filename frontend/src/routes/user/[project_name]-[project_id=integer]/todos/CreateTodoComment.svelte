@@ -6,7 +6,7 @@
 	import type { ActionData } from './$types';
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
-	import { todoComments } from '$lib/stores/todo-comments';
+	// import { todoComments } from '$lib/stores/todo-comments'; TODO:
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export type Props = {
@@ -30,7 +30,7 @@
 		action: 'createTodoComment'
 	}}
 	onSubmitSucceeded={async (event) => {
-		todoComments.add(event.response);
+		// TODO:: todoComments.add(event.response);
 	}}
 	successfulMessage="Todo comment created"
 >

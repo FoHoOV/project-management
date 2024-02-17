@@ -5,7 +5,7 @@
 
 	import type { ActionData } from './$types';
 	import { createProjectSchema } from './validator';
-	import { projects } from '$lib/stores/projects';
+	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Props = {
 		form: ActionData;
@@ -14,6 +14,8 @@
 
 <script lang="ts">
 	const { form } = $props<Props>();
+
+	const projectsStore = getProjectsStoreFromContext();
 </script>
 
 <EnhancedForm
@@ -24,7 +26,7 @@
 		action: 'create'
 	}}
 	onSubmitSucceeded={async (event) => {
-		projects.add(event.response);
+		projectsStore?.add(event.response);
 	}}
 	successfulMessage="Project created"
 >

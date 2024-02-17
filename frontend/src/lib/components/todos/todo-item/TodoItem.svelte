@@ -31,11 +31,11 @@
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
 	import { page } from '$app/stores';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
-	import { todoCategories } from '$lib/stores/todos';
 	import { toasts } from '$lib/stores/toasts';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
 		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;
@@ -61,9 +61,12 @@
 		showCategoryInfo = false,
 		...restProps
 	} = $props<Props>();
+
 	let apiErrorTitle = $state<string | null>(null);
 	let componentState = $state<CommonComponentStates>('none');
 	let confirmDeleteTodo = $state<Confirm | null>(null);
+
+	const todoCategoriesStore = getTodosStoreFromContext();
 
 	async function handleChangeDoneStatus(event: Event) {
 		componentState = 'calling-service';
@@ -74,7 +77,7 @@
 					...todo,
 					is_done: !savedTodoStatus
 				});
-				todoCategories.updateTodo(result, draggable);
+				todoCategoriesStore?.updateTodo(result, draggable);
 				if (result.is_done == savedTodoStatus) {
 					toasts.addToast({
 						type: 'warning',
@@ -106,7 +109,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItem(todo);
-				todoCategories.removeTodo(todo);
+				todoCategoriesStore?.removeTodo(todo);
 				apiErrorTitle = null;
 				componentState = 'none';
 			},

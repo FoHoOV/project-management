@@ -71,6 +71,7 @@
 		inputs,
 		footer
 	} = $props<Props<TFormAction, TSchema, TKey>>();
+
 	let formElement = $state<HTMLFormElement | null>(null);
 	let componentState = $state<ComponentStates>('none');
 	let formErrors = $state(getFormErrors(enhancerConfig.form));

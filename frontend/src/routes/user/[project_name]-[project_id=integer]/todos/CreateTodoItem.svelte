@@ -4,19 +4,20 @@
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
-	import { todoCategories } from '$lib/stores/todos';
+	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import { createTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export type Props = {
 		form: ActionData;
+		todoCategoriesStore: TodoCategories;
 		categoryId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, categoryId } = $props<Props>();
+	const { form, todoCategoriesStore, categoryId } = $props<Props>();
 </script>
 
 <EnhancedForm
@@ -27,7 +28,7 @@
 		action: 'addTodo'
 	}}
 	onSubmitSucceeded={async (event) => {
-		todoCategories.addTodo(event.response);
+		todoCategoriesStore?.addTodo(event.response);
 	}}
 	successfulMessage="Todo item created"
 >

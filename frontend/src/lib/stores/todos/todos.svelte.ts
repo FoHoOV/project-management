@@ -24,8 +24,14 @@ import {
 	removeElementFromSortedListInPlace
 } from './sort';
 
-class TodoCategories {
+export class TodoCategories {
 	private _todoCategories = $state<TodoCategory[]>([]);
+
+	constructor(todoCategories?: TodoCategory[]){
+		if(todoCategories){
+			this.setCategories(todoCategories);
+		}
+	}
 
 	setCategories(todoCategories: TodoCategory[]) {
 		this._todoCategories = getSortedTodoCategories(
@@ -279,7 +285,3 @@ class TodoCategories {
 		return this._todoCategories;
 	}
 }
-
-export const todoCategories = new TodoCategories();
-
-export default todoCategories;

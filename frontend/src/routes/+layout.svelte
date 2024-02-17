@@ -13,22 +13,16 @@
 		faProjectDiagram,
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
-	import { projects } from '$lib/stores/projects/projects.svelte';
+
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { untrack } from 'svelte';
-	import { browser } from '$app/environment';
+	import { setProjectsStoreToContext } from '$components/project/utils';
+	import { Projects } from '$lib/stores/projects';
 </script>
 
 <script lang="ts">
 	const { data, children } = $props();
-	const environmentSpecificProjects = $derived(browser ? projects.current : data.projects);
 
-	$effect(() => {
-		data;
-		untrack(() => {
-			projects.set(data.projects);
-		});
-	});
+	const projectsStore = setProjectsStoreToContext(new Projects(data.projects));
 </script>
 
 <Drawer id="app-drawer" navbarTitle="Todos" navbarTitleHref="/user/projects">
@@ -42,7 +36,7 @@
 				on:click={closeDrawer}
 			>
 				<ul>
-					{#each environmentSpecificProjects as project (project.id)}
+					{#each projectsStore.current as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListUrl(project.title, project.id)}

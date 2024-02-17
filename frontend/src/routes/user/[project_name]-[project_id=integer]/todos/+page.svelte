@@ -13,7 +13,6 @@
 	import TodoList from '$components/todos/todo-list/TodoList.svelte';
 	import CreateTodoItem from './CreateTodoItem.svelte';
 
-	import { todoCategories } from '$lib/stores/todos';
 	import { flip } from 'svelte/animate';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
@@ -28,18 +27,22 @@
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
-	import { browser } from '$app/environment';
+	import { TodoCategories } from '$lib/stores/todos';
+	import { setTodosStoreToContext } from '$components/todos/utils';
 </script>
 
 <script lang="ts">
 	const { data, form } = $props();
+
 	let componentState = $state<'loading' | 'none'>('loading');
+
+	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories(data.response ?? []));
 
 	$effect(() => {
 		data;
 		untrack(() => {
 			if (data.response) {
-				todoCategories.setCategories(data.response);
+				todoCategoriesStore.setCategories(data.response);
 			}
 		});
 	});
@@ -49,7 +52,8 @@
 			component: CreateTodoCategory,
 			props: () => {
 				return {
-					form: form
+					form: form,
+					todoCategoriesStore: todoCategoriesStore
 				};
 			},
 			title: 'Create todo categories'
@@ -62,6 +66,7 @@
 			props: () => {
 				return {
 					form: form,
+					todoCategoriesStore: todoCategoriesStore,
 					category: category
 				};
 			},
@@ -88,6 +93,7 @@
 			props: () => {
 				return {
 					form: form,
+					todoCategoriesStore: todoCategoriesStore,
 					todo: todo
 				};
 			},
@@ -101,6 +107,7 @@
 			props: () => {
 				return {
 					form: form,
+					todoCategoriesStore: todoCategoriesStore,
 					categoryId: category.id
 				};
 			},
@@ -140,6 +147,7 @@
 			props: () => {
 				return {
 					form: form,
+					todoCategoriesStore: todoCategoriesStore,
 					todoId: todo.id
 				};
 			},
@@ -153,6 +161,7 @@
 			props: () => {
 				return {
 					form: form,
+					todoCategoriesStore: todoCategoriesStore,
 					tag: tag
 				};
 			},
@@ -166,6 +175,7 @@
 			props: () => {
 				return {
 					form: form,
+					todoCategoriesStore: todoCategoriesStore,
 					todo: todo
 				};
 			},
@@ -173,8 +183,6 @@
 				'Add todo dependencies here, this todo cannot be marked as done unless all of its dependencies are marked as done'
 		});
 	}
-
-	const derivedTodoCategories = $derived(browser ? todoCategories.current : data.response ?? []);
 
 	onMount(() => {
 		componentState = 'none';
@@ -189,7 +197,7 @@
 	<span class="loading loading-ring m-auto block" />
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#each derivedTodoCategories as category (category.id)}
+		{#each todoCategoriesStore.current as category (category.id)}
 			<div
 				class="max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 				animate:flip={{ duration: 200 }}

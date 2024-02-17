@@ -21,10 +21,12 @@
 		type TodoItem,
 		type CommonComponentStates
 	} from '$lib';
-	import { generateNewOrderForTodoCategory } from '../utils';
+	import {
+		generateNewOrderForTodoCategory,
+		getTodosStoreFromContext
+	} from '$components/todos/utils';
 	import { TodoCategoryClient, TodoItemClient } from '$lib/client-wrapper/clients';
 	import { toasts } from '$lib/stores/toasts';
-	import { todoCategories } from '$lib/stores/todos';
 	import type { Snippet } from 'svelte';
 
 	type ComponentState =
@@ -46,6 +48,8 @@
 
 <script lang="ts">
 	const { category, projectId, disabled, onError, children } = $props<Props>();
+
+	const todoCategoriesStore = getTodosStoreFromContext();
 	let componentState = $state<ComponentState>('none');
 
 	async function handleOnDrop(event: DropEvent<{}>) {
@@ -64,8 +68,13 @@
 			return;
 		}
 
-		const moveLeft = componentState == 'drop-zone-left-activated';
+		if (!todoCategoriesStore) {
+			throw new Error(
+				'todoCategories store must have value for UpdateCategoryOrder service to workS'
+			);
+		}
 
+		const moveLeft = componentState == 'drop-zone-left-activated';
 		componentState = 'calling-service';
 
 		await callServiceInClient({
@@ -77,16 +86,16 @@
 						category,
 						event.detail.data,
 						moveLeft,
-						todoCategories.current
+						todoCategoriesStore.current
 					)
 				});
-				todoCategories.updateCategoriesSort(
+				todoCategoriesStore?.updateCategoriesSort(
 					event.detail.data,
 					generateNewOrderForTodoCategory(
 						category,
 						event.detail.data,
 						moveLeft,
-						todoCategories.current
+						todoCategoriesStore.current
 					)
 				);
 				componentState = 'none';
@@ -115,8 +124,8 @@
 					category_id: event.detail.data.category_id,
 					new_category_id: category.id
 				});
-				todoCategories.removeTodo(event.detail.data, false);
-				todoCategories.addTodo(result);
+				todoCategoriesStore?.removeTodo(event.detail.data, false);
+				todoCategoriesStore?.addTodo(result);
 				componentState = 'none';
 			},
 			errorCallback: async (e) => {

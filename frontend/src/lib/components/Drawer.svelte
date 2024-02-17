@@ -30,6 +30,7 @@
 		sidebar,
 		content
 	} = $props<Props>();
+
 	let showDrawer = $state<boolean>(false);
 
 	function closeDrawer() {

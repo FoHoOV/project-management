@@ -9,6 +9,7 @@
 
 <script lang="ts">
 	const { class: className = '' } = $props<Props>();
+
 	let modal = $state<Modal | null>(null);
 	const currentStep = $derived(
 		multiStepModal.steps.length > 0 ? multiStepModal.steps[multiStepModal.steps.length - 1] : null

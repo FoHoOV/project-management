@@ -1,16 +1,18 @@
 import type { TodoComment } from '$lib/generated-client/models';
-import { todoCategories } from '../todos';
+import { TodoCategories } from '../todos';
 
-class TodoComments {
+export class TodoComments {
 	private _comments = $state<TodoComment[]>([]);
+	private _todoCategoriesStore?: TodoCategories = undefined;
 
-	set(comments: TodoComment[]) {
+	set(comments: TodoComment[], todoCategoriesStore?: TodoCategories) {
 		this._comments = comments;
+		this._todoCategoriesStore = todoCategoriesStore;
 	}
 
 	add(comment: TodoComment) {
 		this._comments.push(comment);
-		todoCategories.increaseTodoCommentsCounter(comment.todo_id);
+		this._todoCategoriesStore?.increaseTodoCommentsCounter(comment.todo_id);
 	}
 
 	update(comment: TodoComment) {
@@ -24,14 +26,10 @@ class TodoComments {
 
 	remove(comment: TodoComment) {
 		this._comments = this._comments.filter((value) => value.id != comment.id);
-		todoCategories.decreaseTodoCommentsCounter(comment.todo_id);
+		this._todoCategoriesStore?.decreaseTodoCommentsCounter(comment.todo_id);
 	}
 
 	get current() {
 		return this._comments;
 	}
 }
-
-export const todoComments = new TodoComments();
-
-export default todoComments;

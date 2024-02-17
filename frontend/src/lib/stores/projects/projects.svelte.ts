@@ -1,8 +1,12 @@
 import type { Project } from '$lib/generated-client/models';
 import { sortByIdInPlace } from '../todos/sort';
 
-class Projects {
+export class Projects {
 	private _projects = $state<Project[]>([]);
+
+	constructor(projects: Project[]) {
+		this.set(projects);
+	}
 
 	set(projects: Project[]) {
 		this._projects = projects;
@@ -32,7 +36,3 @@ class Projects {
 		return this._projects;
 	}
 }
-
-export const projects = new Projects();
-
-export default projects;

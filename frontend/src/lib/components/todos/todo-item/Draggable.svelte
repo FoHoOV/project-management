@@ -8,7 +8,7 @@
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		DROP_EVENT_HANDLED_BY_TODO_ITEM
 	} from '$components/todos/constants';
-	import { generateNewOrderForTodoItem } from '$components/todos/utils';
+	import { generateNewOrderForTodoItem, getTodosStoreFromContext } from '$components/todos/utils';
 	import {
 		dropzone,
 		draggable,
@@ -26,7 +26,6 @@
 	} from '$lib';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
 	import { toasts } from '$lib/stores/toasts';
-	import { todoCategories } from '$lib/stores/todos';
 	import type { Snippet } from 'svelte';
 
 	type ComponentStates =
@@ -48,7 +47,10 @@
 
 <script lang="ts">
 	const { todo, disabled, category, onError, children } = $props<Props>();
+
 	let componentState = $state<ComponentStates>();
+
+	const todoCategoriesStore = getTodosStoreFromContext();
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoCategoryPartialTodoItem>) {
 		if (event.detail.data.id == todo.id) {
@@ -73,12 +75,12 @@
 					new_category_id: todo.category_id,
 					...generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				});
-				todoCategories.updateTodoSort(
+				todoCategoriesStore?.updateTodoSort(
 					event.detail.data,
 					todo.category_id,
 					generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 				);
-				todoCategories.updateTodo(result);
+				todoCategoriesStore?.updateTodo(result);
 				componentState = 'none';
 			},
 			errorCallback: async (e) => {

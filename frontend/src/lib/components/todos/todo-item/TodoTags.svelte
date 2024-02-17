@@ -15,9 +15,9 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { flip } from 'svelte/animate';
 	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
-	import todos from '$lib/stores/todos/todos.svelte';
 	import Confirm from '$components/Confirm.svelte';
 	import type { CommonComponentStates } from '$lib';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
 		onEditTag?: (tag: TodoItemPartialTag) => void;
@@ -31,9 +31,12 @@
 
 <script script lang="ts">
 	const { todo, onEditTag, onAddTag } = $props<Props>();
+
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let deleteTagConfirms = $state<Confirm[]>([]);
+
+	const todoCategoriesStore = getTodosStoreFromContext();
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
@@ -43,7 +46,7 @@
 					tag_id: tag.id,
 					todo_id: todo.id
 				});
-				todos.detachTag(todo.id, tag);
+				todoCategoriesStore?.detachTag(todo.id, tag);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -59,7 +62,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TagClient({ token: $page.data.token }).deleteTag(tag);
-				todos.deleteTag(tag);
+				todoCategoriesStore?.deleteTag(tag);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},

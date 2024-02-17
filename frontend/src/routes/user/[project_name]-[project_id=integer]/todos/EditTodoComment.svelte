@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import type { TodoComment } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { todoComments } from '$lib/stores/todo-comments';
+	// import { todoComments } from '$lib/stores/todo-comments';
 
 	export type Props = {
 		form: ActionData;
@@ -31,7 +31,7 @@
 		action: 'editTodoComment'
 	}}
 	onSubmitSucceeded={async (event) => {
-		todoComments.update(event.response);
+		/// TODO: todoComments.update(event.response);
 	}}
 	successfulMessage="Todo comment edited"
 >

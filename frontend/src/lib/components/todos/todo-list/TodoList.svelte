@@ -11,7 +11,7 @@
 	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import type { TodoCategory } from '$lib/generated-client';
-	import { todoCategories } from '$lib/stores/todos';
+	import type { TodoCategories } from '$lib/stores/todos';
 	import type { Events as TodoItemEvents } from '../todo-item/TodoItem.svelte';
 	import {
 		faInfoCircle,
@@ -25,6 +25,7 @@
 	import Fa from 'svelte-fa';
 	import { flip } from 'svelte/animate';
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
+	import { getTodosStoreFromContext, setTodosStoreToContext } from '$components/todos/utils';
 
 	export type Events = {
 		onEditTodoCategory?: (category: TodoCategory) => void;
@@ -42,9 +43,12 @@
 
 <script lang="ts">
 	const { category, projectId, draggable = true, class: className, ...restProps } = $props<Props>();
+
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let confirmDeleteTodoCategory = $state<Confirm | null>();
+
+	const todoCategoriesStore = getTodosStoreFromContext();
 
 	async function handleDeleteCategory() {
 		componentState = 'calling-service';
@@ -54,7 +58,7 @@
 					category_id: category.id,
 					project_id: projectId
 				});
-				todoCategories.removeCategory(category);
+				todoCategoriesStore?.removeCategory(category);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},

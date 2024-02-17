@@ -38,6 +38,7 @@
 		wrapperClasses = '',
 		inputClasses = ''
 	} = $props<Props>();
+
 	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
 	export function focus() {

@@ -7,18 +7,21 @@
 
 	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client/models';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
-	import { onDestroy, onMount } from 'svelte';
-	import { todoCategories } from '$lib/stores/todos/todos.svelte.js';
+	import { TodoCategories } from '$lib/stores/todos/todos.svelte.js';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+	import { setTodosStoreToContext } from '$components/todos/utils.js';
 </script>
 
 <script lang="ts">
 	const { form } = $props();
+
 	let enhancedForm = $state<EnhancedForm<any, any, any> | null>();
+
+	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories());
 
 	function handleShowResults(result: TodoItemModel[]) {
 		if (result.length == 0) {
-			todoCategories.clearCategories();
+			todoCategoriesStore.clearCategories();
 			return;
 		}
 		const categories: TodoCategory[] = [];
@@ -39,16 +42,8 @@
 				});
 			}
 		});
-		todoCategories.setCategories(categories);
+		todoCategoriesStore.setCategories(categories);
 	}
-
-	onMount(() => {
-		todoCategories.clearCategories();
-	});
-
-	onDestroy(() => {
-		todoCategories.clearCategories();
-	});
 </script>
 
 <svelte:head>
@@ -87,7 +82,7 @@
 </EnhancedForm>
 
 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-	{#each todoCategories.current as category (category.id)}
+	{#each todoCategoriesStore.current as category (category.id)}
 		{#each category.items as todo (todo.id)}
 			<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true} draggable={false}></TodoItem>
 		{/each}

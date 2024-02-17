@@ -10,9 +10,10 @@
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { todoComments } from '$lib/stores/todo-comments';
+	import { TodoComments } from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
 	import type { CommonComponentStates } from '$lib';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
 		onEditComment?: (comment: TodoComment) => void;
@@ -33,6 +34,9 @@
 	// because of this issue bound `confirm` doesnt work in a keyed each block, waiting for a fix :(
 	let deleteCommentConfirms = $state<Confirm[]>([]);
 
+	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCommentsStore = new TodoComments();
+
 	export async function refreshComments() {
 		componentState = 'calling-service';
 		await callServiceInClient({
@@ -41,7 +45,7 @@
 					token: $page.data.token
 				}).listTodoItemComment(todoId);
 
-				todoComments.set(result);
+				todoCommentsStore.set(result, todoCategoriesStore);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -57,7 +61,7 @@
 		await callServiceInClient({
 			serviceCall: async () => {
 				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
-				todoComments.remove(comment);
+				todoCommentsStore.remove(comment);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
@@ -84,7 +88,7 @@
 		<Fa icon={faPlus} />
 		<p>add comment</p>
 	</button>
-	{#if todoComments.current.length == 0 || todoComments.current[0].todo_id != todoId}
+	{#if todoCommentsStore.current.length == 0 || todoCommentsStore.current[0].todo_id != todoId}
 		<div class="my-5 flex flex-row items-center gap-2">
 			{#if !onCreateComment}
 				no comments
@@ -94,7 +98,7 @@
 			{/if}
 		</div>
 	{:else}
-		{#each todoComments.current as comment, i (comment.id)}
+		{#each todoCommentsStore.current as comment, i (comment.id)}
 			<div
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}

@@ -10,8 +10,8 @@
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
-	import { projects } from '$lib/stores/projects';
 	import type { CommonComponentStates } from '$lib';
+	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Events = {
 		onEditProject?: (project: Project) => void;
@@ -24,9 +24,12 @@
 
 <script lang="ts">
 	const { project, onEditProject, onAttachToUser } = $props<Props>();
+
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let confirmDetachProject = $state<Confirm | null>(null);
+
+	const projectsStore = getProjectsStoreFromContext();
 
 	async function handleDetachProjectFromUser() {
 		componentState = 'calling-service';
@@ -35,7 +38,7 @@
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
-				projects.remove(project);
+				projectsStore?.remove(project);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},

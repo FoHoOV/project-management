@@ -7,17 +7,18 @@
 	import { addTodoItemDependencySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import { todoCategories } from '$lib/stores/todos/todos.svelte';
+	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 
 	export type Props = {
 		form: ActionData;
+		todoCategoriesStore: TodoCategories;
 		todo: TodoCategoryPartialTodoItem;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todo } = $props<Props>();
+	const { form, todoCategoriesStore, todo } = $props<Props>();
 </script>
 
 <EnhancedForm
@@ -31,7 +32,7 @@
 		action: 'addTodoItemDependency'
 	}}
 	onSubmitSucceeded={(event) => {
-		todoCategories.addDependency(todo.id, event.response);
+		todoCategoriesStore?.addDependency(todo.id, event.response);
 	}}
 	successfulMessage="Todo dependency added"
 >

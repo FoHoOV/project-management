@@ -4,7 +4,7 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 
 	import type { ActionData } from './$types';
-	import { todoCategories } from '$lib/stores/todos';
+	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
@@ -12,12 +12,13 @@
 
 	export type Props = {
 		form: ActionData;
+		todoCategoriesStore: TodoCategories;
 		todo: TodoCategoryPartialTodoItem;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todo } = $props<Props>();
+	const { form, todoCategoriesStore, todo } = $props<Props>();
 </script>
 
 <EnhancedForm
@@ -28,7 +29,7 @@
 		action: 'editTodoItem'
 	}}
 	onSubmitSucceeded={async (event) => {
-		todoCategories.updateTodo(event.response);
+		todoCategoriesStore?.updateTodo(event.response);
 	}}
 	successfulMessage="Todo item edited"
 >

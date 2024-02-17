@@ -16,6 +16,7 @@
 
 <script lang="ts">
 	const { visible = false, direction } = $props<Props>();
+
 	const { icon, flexDirection } = $derived(getIconAndDirection());
 
 	function getIconAndDirection() {

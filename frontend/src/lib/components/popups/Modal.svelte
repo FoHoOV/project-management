@@ -25,6 +25,7 @@
 		onOpened,
 		onClosed
 	} = $props<Props>();
+
 	let modalElement = $state<HTMLDialogElement | null>(null);
 
 	export function show() {
