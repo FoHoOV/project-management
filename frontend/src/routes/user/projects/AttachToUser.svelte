@@ -6,15 +6,19 @@
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
+	import type { Project } from '$lib/generated-client/models';
+	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Props = {
 		form: ActionData;
-		projectId?: number | undefined;
+		project: Project;
 	};
 </script>
 
 <script lang="ts">
-	const { form, projectId } = $props<Props>();
+	const { form, project } = $props<Props>();
+
+	const projectsStore = getProjectsStoreFromContext();
 </script>
 
 <EnhancedForm
@@ -24,8 +28,8 @@
 		form: form,
 		action: 'attach'
 	}}
-	onSubmitSucceeded={async (response) => {
-		await invalidate('/user/projects');
+	onSubmitSucceeded={async (event) => {
+		projectsStore?.addAssociation(project, {username: event.formData.username, id: event.response.user_id});
 	}}
 	successfulMessage="Project is now shared with the specified user"
 >
@@ -34,7 +38,7 @@
 			name="project_id"
 			wrapperClasses="w-full"
 			hideLabel={true}
-			value={projectId}
+			value={project.id}
 			errors={''}
 			type="hidden"
 		/>

@@ -35,7 +35,7 @@
 		multiStepModal.add({
 			component: AttachToUser,
 			props: () => {
-				return { form: form, projectId: project.id };
+				return { form: form, project: project };
 			},
 			title: 'Share this project with another user'
 		});
