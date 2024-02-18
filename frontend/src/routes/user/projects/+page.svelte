@@ -9,7 +9,6 @@
 	import type { Project } from '$lib/generated-client/models';
 	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
 	import { getProjectsStoreFromContext } from '$components/project/utils.js';
-	import Error from '$routes/+error.svelte';
 </script>
 
 <script lang="ts">

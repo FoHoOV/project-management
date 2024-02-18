@@ -17,12 +17,20 @@
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { setProjectsStoreToContext } from '$components/project/utils';
 	import { Projects } from '$lib/stores/projects';
+	import { untrack } from 'svelte';
 </script>
 
 <script lang="ts">
 	const { data, children } = $props();
 
 	const projectsStore = setProjectsStoreToContext(new Projects(data.projects));
+
+	$effect(() => {
+		data;
+		untrack(() => {
+			projectsStore.set(data.projects);
+		});
+	});
 </script>
 
 <Drawer id="app-drawer" navbarTitle="Todos" navbarTitleHref="/user/projects">
