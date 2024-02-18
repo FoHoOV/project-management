@@ -11,7 +11,7 @@ export function toggleClass(node: HTMLElement, options: ToggleClassOptions) {
 }
 
 function _updateClasses(node: HTMLElement, options: ToggleClassOptions) {
-	if (options.activateClasses) {
+	if (options.isActive) {
 		node.classList.add(...options.classes);
 	} else {
 		node.classList.remove(...options.classes);

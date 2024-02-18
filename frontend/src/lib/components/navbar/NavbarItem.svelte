@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import Fa from 'svelte-fa';
-
 	import { page } from '$app/stores';
+
 	import { toggleClass } from '$lib/actions';
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import type { Snippet } from 'svelte';
@@ -34,7 +34,7 @@
 		{href}
 		use:toggleClass={{
 			classes: ['active'],
-			activateClasses: setActiveClassOnClick && $page.url.href.endsWith(href)
+			isActive: setActiveClassOnClick && $page.url.href.endsWith(href)
 		}}
 	>
 		{#if icon}

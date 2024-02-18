@@ -1,4 +1,4 @@
 export type ToggleClassOptions = {
-	activateClasses: boolean;
+	isActive: boolean;
 	classes: string[];
 };
