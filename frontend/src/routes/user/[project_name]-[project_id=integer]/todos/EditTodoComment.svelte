@@ -8,16 +8,17 @@
 	import { page } from '$app/stores';
 	import type { TodoComment } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	// import { todoComments } from '$lib/stores/todo-comments';
+	import { TodoComments } from '$lib/stores/todo-comments';
 
 	export type Props = {
 		form: ActionData;
+		todoCommentsStore: TodoComments;
 		comment: TodoComment;
 	};
 </script>
 
 <script lang="ts">
-	const { form, comment } = $props<Props>();
+	const { form, todoCommentsStore, comment } = $props<Props>();
 </script>
 
 <EnhancedForm
@@ -31,7 +32,7 @@
 		action: 'editTodoComment'
 	}}
 	onSubmitSucceeded={async (event) => {
-		/// TODO: todoComments.update(event.response);
+		todoCommentsStore.update(event.response);
 	}}
 	successfulMessage="Todo comment edited"
 >

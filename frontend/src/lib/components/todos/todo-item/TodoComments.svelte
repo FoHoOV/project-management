@@ -16,8 +16,8 @@
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
-		onEditComment?: (comment: TodoComment) => void;
-		onCreateComment?: (todoId: number) => void;
+		onEditComment?: (comment: TodoComment, store: TodoComments) => void;
+		onCreateComment?: (todoId: number, store: TodoComments) => void;
 	};
 
 	export type Props = {
@@ -81,14 +81,45 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
 	<button
-		on:click={() => onCreateComment?.(todoId)}
+		on:click={() => onCreateComment?.(todoId, todoCommentsStore)}
 		class="btn btn-square btn-success w-full"
 		class:hidden={!onCreateComment}
 	>
 		<Fa icon={faPlus} />
 		<p>add comment</p>
 	</button>
-	{#if todoCommentsStore.current.length == 0 || todoCommentsStore.current[0].todo_id != todoId}
+
+	{#each todoCommentsStore.current as comment, i (comment.id)}
+		<div
+			class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
+			animate:flip={{ duration: 200 }}
+		>
+			<Confirm
+				bind:this={deleteCommentConfirms[i]}
+				onConfirmed={() => handleDeleteComment?.(comment)}
+			></Confirm>
+			<div class="card-body">
+				<div class="card-actions justify-end">
+					<button
+						class="btn btn-square btn-error btn-sm"
+						on:click={() => deleteCommentConfirms[i].show()}
+					>
+						<Fa icon={faTrashCan}></Fa>
+					</button>
+					<button
+						class="btn btn-square btn-info btn-sm"
+						class:hidden={!onEditComment}
+						on:click={() => onEditComment?.(comment, todoCommentsStore)}
+					>
+						<Fa icon={faEdit}></Fa>
+					</button>
+				</div>
+				<p class="whitespace-pre-wrap break-words font-bold">
+					{comment.message}
+				</p>
+			</div>
+		</div>
+	{:else}
 		<div class="my-5 flex flex-row items-center gap-2">
 			{#if !onCreateComment}
 				no comments
@@ -97,37 +128,5 @@
 				<p class="break-words text-lg">create your first comments using the plus sign</p>
 			{/if}
 		</div>
-	{:else}
-		{#each todoCommentsStore.current as comment, i (comment.id)}
-			<div
-				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
-				animate:flip={{ duration: 200 }}
-			>
-				<Confirm
-					bind:this={deleteCommentConfirms[i]}
-					onConfirmed={() => handleDeleteComment?.(comment)}
-				></Confirm>
-				<div class="card-body">
-					<div class="card-actions justify-end">
-						<button
-							class="btn btn-square btn-error btn-sm"
-							on:click={() => deleteCommentConfirms[i].show()}
-						>
-							<Fa icon={faTrashCan}></Fa>
-						</button>
-						<button
-							class="btn btn-square btn-info btn-sm"
-							class:hidden={!onEditComment}
-							on:click={() => onEditComment?.(comment)}
-						>
-							<Fa icon={faEdit}></Fa>
-						</button>
-					</div>
-					<p class="whitespace-pre-wrap break-words font-bold">
-						{comment.message}
-					</p>
-				</div>
-			</div>
-		{/each}
-	{/if}
+	{/each}
 </div>

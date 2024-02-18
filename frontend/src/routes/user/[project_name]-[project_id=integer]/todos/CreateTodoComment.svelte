@@ -6,17 +6,18 @@
 	import type { ActionData } from './$types';
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
-	// import { todoComments } from '$lib/stores/todo-comments'; TODO:
+	import { TodoComments } from '$lib/stores/todo-comments';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 
 	export type Props = {
 		form: ActionData;
+		todoCommentsStore: TodoComments;
 		todoId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoId } = $props<Props>();
+	const { form, todoCommentsStore, todoId } = $props<Props>();
 </script>
 
 <EnhancedForm
@@ -30,7 +31,7 @@
 		action: 'createTodoComment'
 	}}
 	onSubmitSucceeded={async (event) => {
-		// TODO:: todoComments.add(event.response);
+		todoCommentsStore.add(event.response);
 	}}
 	successfulMessage="Todo comment created"
 >

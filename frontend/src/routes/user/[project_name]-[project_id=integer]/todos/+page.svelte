@@ -28,6 +28,7 @@
 
 	import { multiStepModal } from '$lib/stores/multi-step-modal';
 	import { TodoCategories } from '$lib/stores/todos';
+	import { TodoComments } from '$lib/stores/todo-comments';
 	import { setTodosStoreToContext } from '$components/todos/utils';
 </script>
 
@@ -115,12 +116,13 @@
 		});
 	}
 
-	function handleCreateComment(todoId: number) {
+	function handleCreateComment(todoId: number, store: TodoComments) {
 		multiStepModal.add({
 			component: CreateTodoComment,
 			props: () => {
 				return {
 					form: form,
+					todoCommentsStore: store,
 					todoId: todoId
 				};
 			},
@@ -128,12 +130,13 @@
 		});
 	}
 
-	function handleEditTodoComment(comment: TodoComment) {
+	function handleEditTodoComment(comment: TodoComment, store: TodoComments) {
 		multiStepModal.add({
 			component: EditTodoComment,
 			props: () => {
 				return {
 					form: form,
+					todoCommentsStore: store,
 					comment: comment
 				};
 			},
