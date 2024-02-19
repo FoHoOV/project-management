@@ -252,6 +252,9 @@ def validate_user_has_permissions(
     if any(permission == Permission.ALL for permission in permissions):
         permissions = [Permission.ALL]
 
+    if all(permission != Permission.ALL for permission in permissions):
+        permissions = permissions + [Permission.ALL]
+
     if db.query(UserProjectPermission).join(
         UserProjectPermission.project_user_association
     ).filter(
