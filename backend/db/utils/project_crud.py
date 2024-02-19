@@ -1,5 +1,6 @@
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
+from db.models import project_user_association
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.tag import Tag
@@ -8,6 +9,7 @@ from db.models.todo_category_project_association import TodoCategoryProjectAssoc
 from db.models.todo_item import TodoItem
 from db.models.todo_item_tag_association import TodoItemTagAssociation
 from db.models.user import User
+from db.models.user_project_permission import Permission, UserProjectPermission
 from db.schemas.project import (
     ProjectAttachAssociation,
     ProjectCreate,
@@ -34,6 +36,13 @@ def create(db: Session, project: ProjectCreate, user_id: int):
 
     association = ProjectUserAssociation(user_id=user_id, project_id=db_item.id)
     db.add(association)
+    db.commit()
+    db.refresh(association)
+
+    permission = UserProjectPermission(
+        project_user_association_id=association.id, permission=Permission.ALL
+    )
+    db.add(permission)
     db.commit()
 
     if project.create_from_default_template:
@@ -77,12 +86,23 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
         db.add(association_db_item)
         db.commit()
         db.refresh(association_db_item)
-        return association_db_item
     except IntegrityError:
         raise UserFriendlyError(
             ErrorCode.USER_ASSOCIATION_ALREADY_EXISTS,
             "this user already exists in this project's associations",
         )
+
+    for permission in association.permissions:
+        db.add(
+            UserProjectPermission(
+                project_user_association_id=association_db_item.id,
+                permission=permission,
+            )
+        )
+
+    db.commit()
+
+    return association_db_item
 
 
 def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id: int):

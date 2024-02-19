@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import json
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from db.models.user_project_permission import Permission
+
 
 class ProjectBase(BaseModel):
     pass
@@ -39,6 +41,20 @@ class ProjectDetachAssociation(ProjectBase):
 class ProjectAttachAssociation(ProjectBase):
     project_id: int
     username: str = Field(min_length=3, max_length=100)
+    permissions: list[Permission]
+
+    @field_validator("permissions")
+    @classmethod
+    def permissions_length(cls, permissions: list[Permission]) -> list[Permission]:
+        if len(permissions) == 0:
+            raise ValueError(
+                f"you need to explicitly set what permissions is this user going to have"
+            )
+
+        if len(set(permissions)) != len(permissions):
+            raise ValueError("repetitive values in permissions list is not allowed")
+
+        return permissions
 
 
 class ProjectAttachAssociationResponse(ProjectBase):
