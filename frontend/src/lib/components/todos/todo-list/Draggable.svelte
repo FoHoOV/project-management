@@ -174,7 +174,7 @@
 	on:dragHover={handleDragHover}
 	on:dragLeft={handleDragLeft}
 	on:dropped={handleOnDrop}
-	class="relative"
+	class="relative h-full"
 >
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<DropZoneHelper
