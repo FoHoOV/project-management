@@ -5,6 +5,7 @@ from db.models.todo_category import TodoCategory
 from db.models.todo_item import TodoItem
 from db.models.todo_item_tag_association import TodoItemTagAssociation
 from db.models.user import User
+from db.models.user_project_permission import Permission
 from db.schemas.tag import (
     TagAttachToTodo,
     TagCreate,
@@ -14,12 +15,17 @@ from db.schemas.tag import (
     TagUpdate,
 )
 from error.exceptions import ErrorCode, UserFriendlyError
-from db.utils.project_crud import validate_project_belongs_to_user
+from db.utils.project_crud import (
+    validate_project_belongs_to_user,
+    validate_user_has_permissions,
+)
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
 
 
 def create(db: Session, tag: TagCreate, user_id: int):
     validate_project_belongs_to_user(db, tag.project_id, user_id, user_id, True)
+    # TODO: test
+    validate_user_has_permissions(db, user_id, tag.project_id, [Permission.CREATE_TAG])
 
     tag_already_exists = False
     try:
@@ -64,6 +70,7 @@ def search(db: Session, search: TagSearch, user_id: int):
 
 def edit(db: Session, tag: TagUpdate, user_id: int):
     validate_tag_belongs_to_user_by_id(db, tag.id, user_id)
+    # TODO: what about these validate_user_has_permissions(db, user_id, tag.project_id, [Permission.CREATE_TAG])
 
     db_item = db.query(Tag).filter(Tag.id == tag.id).first()
 

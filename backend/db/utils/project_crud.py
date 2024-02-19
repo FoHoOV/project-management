@@ -244,3 +244,25 @@ def validate_project_belongs_to_user(
             ErrorCode.PROJECT_NOT_FOUND,
             "project doesn't exist or doesn't belong to user",
         )
+
+
+def validate_user_has_permissions(
+    db: Session, user_id: int, project_id: int, permissions: list[Permission]
+):
+    if any(permission == Permission.ALL for permission in permissions):
+        permissions = [Permission.ALL]
+
+    if db.query(UserProjectPermission).join(
+        UserProjectPermission.project_user_association
+    ).filter(
+        ProjectUserAssociation.user_id == user_id,
+        ProjectUserAssociation.project_id == project_id,
+    ).filter(
+        UserProjectPermission.permission.in_(permissions)
+    ).count() != len(
+        permissions
+    ):
+        raise UserFriendlyError(
+            ErrorCode.PERMISSION_DENIED,
+            "user doesn't have the permission to perform this action",
+        )

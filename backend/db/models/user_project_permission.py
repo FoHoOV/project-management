@@ -15,9 +15,26 @@ from db.models.base import BaseOrderedItem, BasesWithCreatedDate
 
 
 class Permission(enum.StrEnum):
-    UPDATE = enum.auto()
-    DELETE = enum.auto()
-    CREATE = enum.auto()
+    CREATE_TODO_CATEGORY = enum.auto()
+    UPDATE_TODO_CATEGORY = enum.auto()
+    DELETE_TODO_CATEGORY = enum.auto()
+
+    CREATE_TODO_ITEM = enum.auto()
+    UPDATE_TODO_ITEM = enum.auto()
+    DELETE_TODO_ITEM = enum.auto()
+
+    CREATE_TODO_ITEM_DEPENDENCY = enum.auto()
+    UPDATE_TODO_ITEM_DEPENDENCY = enum.auto()
+    DELETE_TODO_ITEM_DEPENDENCY = enum.auto()
+
+    CREATE_COMMENT = enum.auto()
+    UPDATE_COMMENT = enum.auto()
+    DELETE_COMMENT = enum.auto()
+
+    CREATE_TAG = enum.auto()
+    UPDATE_TAG = enum.auto()
+    DELETE_TAG = enum.auto()
+
     ALL = enum.auto()
 
 
