@@ -21,6 +21,8 @@ def join_with_permission_query_if_required[
     if all(permission != Permission.ALL for permission in permissions):
         permissions = permissions + [Permission.ALL]
 
-    query = query.filter(UserProjectPermission.permission.in_(permissions))
+    query = query.join(ProjectUserAssociation.permissions).filter(
+        UserProjectPermission.permission.in_(permissions)
+    )
 
     return query
