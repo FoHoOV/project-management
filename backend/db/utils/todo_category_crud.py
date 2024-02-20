@@ -269,6 +269,11 @@ def _update_actions(
                         ErrorCode.CANT_CHANGE_ACTION,
                         "Cannot add this rule at the moment, because this category contains items that are already marked as done",
                     )
+            case _:
+                raise UserFriendlyError(
+                    ErrorCode.UNKNOWN_ERROR,
+                    "This action's validations are not implemented yet",
+                )
 
     for action in toggle_actions:
         if has_action(todo_category.actions, action):
