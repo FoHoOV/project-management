@@ -15,6 +15,8 @@
 </script>
 
 <script lang="ts">
+	import Permissions from '$components/project/Permissions.svelte';
+
 	const { form, project } = $props<Props>();
 
 	const projectsStore = getProjectsStoreFromContext();
@@ -28,11 +30,15 @@
 		action: 'attach'
 	}}
 	onSubmitSucceeded={async (event) => {
-		projectsStore?.addAssociation(project, {username: event.formData.username, id: event.response.user_id});
+		projectsStore?.addAssociation(project, {
+			username: event.formData.username,
+			id: event.response.user_id
+		});
 	}}
 	successfulMessage="Project is now shared with the specified user"
 >
 	{#snippet inputs({ formErrors })}
+		<Permissions></Permissions>
 		<FormInput
 			name="project_id"
 			wrapperClasses="w-full"
