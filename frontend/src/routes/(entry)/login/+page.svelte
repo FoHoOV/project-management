@@ -23,13 +23,13 @@
 	{#snippet inputs({ formErrors })}
 		<FormInput
 			name="username"
-			autoComplete="username"
+			autocomplete="username"
 			wrapperClasses="w-full"
 			errors={formErrors?.errors?.username}
 		/>
 		<FormInput
 			name="password"
-			autoComplete="current-password"
+			autocomplete="current-password"
 			wrapperClasses="w-full"
 			type="password"
 			errors={formErrors?.errors?.password}
