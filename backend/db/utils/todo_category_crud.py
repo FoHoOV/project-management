@@ -269,7 +269,7 @@ def validate_todo_category_belongs_to_user(
 
     query = join_with_permission_query_if_required(query, permissions)
 
-    if query.count() < len(permissions) if permissions is not None else 1:
+    if query.count() < (len(permissions) if permissions is not None else 1):
         raise UserFriendlyError(
             ErrorCode.TODO_CATEGORY_NOT_FOUND,
             "todo category doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
