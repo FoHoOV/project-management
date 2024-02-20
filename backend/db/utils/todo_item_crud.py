@@ -29,6 +29,7 @@ from db.schemas.todo_item import (
     SearchTodoItemParams,
     TodoItemUpdateOrder,
 )
+from db.utils.shared.permission_query import join_with_permission_query_if_required
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
 from db.utils.todo_category_crud import validate_todo_category_belongs_to_user
@@ -326,24 +327,7 @@ def validate_todo_item_belongs_to_user(
         .filter(User.id == user_id)
     )
 
-    if permissions is not None:
-        if any(permission == Permission.ALL for permission in permissions):
-            permissions = [Permission.ALL]
-
-        if all(permission != Permission.ALL for permission in permissions):
-            permissions = permissions + [Permission.ALL]
-
-        query = (
-            query.join(
-                ProjectUserAssociation,
-                and_(
-                    ProjectUserAssociation.project_id == Project.id,
-                    ProjectUserAssociation.user_id,
-                ),
-            )
-            .join(ProjectUserAssociation.permissions)
-            .filter(UserProjectPermission.permission.in_(permissions))
-        )
+    query = join_with_permission_query_if_required(query, permissions)
 
     if query.count() < len(permissions) if permissions is not None else 1:
         raise UserFriendlyError(
