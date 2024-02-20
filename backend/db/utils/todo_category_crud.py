@@ -264,7 +264,7 @@ def _update_actions(
                         "Cannot add this rule at the moment, because this category contains items that are not done yet",
                     )
             case Action.AUTO_MARK_AS_UNDONE:
-                if len(list(filter(lambda x: not x.is_done, todo_category.items))) >= 1:
+                if len(list(filter(lambda x: x.is_done, todo_category.items))) >= 1:
                     raise UserFriendlyError(
                         ErrorCode.CANT_CHANGE_ACTION,
                         "Cannot add this rule at the moment, because this category contains items that are already marked as done",

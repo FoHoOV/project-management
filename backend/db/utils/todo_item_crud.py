@@ -323,6 +323,18 @@ def _perform_actions(
                         "This todo's category has an action that prevents you from marking this todo as `UNDONE`",
                     )
                 _update_done_status(db, todo_item, True, user_id)
+            case Action.AUTO_MARK_AS_UNDONE:
+                if new_done_status is not None and new_done_status == True:
+                    raise UserFriendlyError(
+                        ErrorCode.ACTION_PREVENTED_TODO_UPDATE,
+                        "This todo's category has an action that prevents you from marking this todo as `DONE`",
+                    )
+                _update_done_status(db, todo_item, False, user_id)
+            case _:
+                raise UserFriendlyError(
+                    ErrorCode.UNKNOWN_ERROR,
+                    "This action is not implemented yet",
+                )
 
 
 def _update_done_status(
