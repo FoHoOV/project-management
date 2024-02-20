@@ -24,7 +24,8 @@
 	enhancerConfig={{
 		validator: { schema: editProjectSchema },
 		form: form,
-		action: 'edit'
+		action: 'edit',
+		resetOnSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.update(event.response);

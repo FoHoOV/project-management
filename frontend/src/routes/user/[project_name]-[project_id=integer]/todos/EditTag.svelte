@@ -26,7 +26,8 @@
 	enhancerConfig={{
 		validator: { schema: editTagSchema },
 		form: form,
-		action: 'editTag'
+		action: 'editTag',
+		resetOnSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTag(event.response);

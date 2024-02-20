@@ -5,7 +5,7 @@
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
-	import type { Project } from '$lib/generated-client/models';
+	import { Permission, type Project } from '$lib/generated-client/models';
 	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Props = {
@@ -15,8 +15,6 @@
 </script>
 
 <script lang="ts">
-	import Permissions from '$components/project/Permissions.svelte';
-
 	const { form, project } = $props<Props>();
 
 	const projectsStore = getProjectsStoreFromContext();
@@ -38,7 +36,14 @@
 	successfulMessage="Project is now shared with the specified user"
 >
 	{#snippet inputs({ formErrors })}
-		<Permissions></Permissions>
+		{#each Object.values(Permission) as permission}
+			<FormInput
+				name={`permission:${permission}`}
+				label={permission}
+				inputClasses="checkbox-warning"
+			></FormInput>
+		{/each}
+
 		<FormInput
 			name="project_id"
 			wrapperClasses="w-full"

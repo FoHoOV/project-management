@@ -84,7 +84,7 @@
 	});
 
 	export function resetForm() {
-		formElement?.reset();
+		enhancerConfig.resetOnSubmit !== false && formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
 		componentState = 'none';
 	}

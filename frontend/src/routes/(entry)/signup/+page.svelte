@@ -27,20 +27,20 @@
 	{#snippet inputs({ formErrors })}
 		<FormInput
 			name="username"
-			autoComplete="username"
+			autocomplete="username"
 			wrapperClasses="w-full"
 			errors={formErrors?.errors?.username}
 		/>
 		<FormInput
 			name="password"
-			autoComplete="new-password"
+			autocomplete="new-password"
 			wrapperClasses="w-full"
 			type="password"
 			errors={formErrors?.errors?.password}
 		/>
 		<FormInput
 			name="confirm_password"
-			autoComplete="new-password"
+			autocomplete="new-password"
 			label="confirm password"
 			wrapperClasses="w-full"
 			type="password"

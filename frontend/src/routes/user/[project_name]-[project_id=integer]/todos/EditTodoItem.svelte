@@ -26,7 +26,8 @@
 	enhancerConfig={{
 		validator: { schema: editTodoItemSchema },
 		form: form,
-		action: 'editTodoItem'
+		action: 'editTodoItem',
+		resetOnSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTodo(event.response);
