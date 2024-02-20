@@ -35,6 +35,8 @@ class Permission(enum.StrEnum):
     UPDATE_TAG = enum.auto()
     DELETE_TAG = enum.auto()
 
+    UPDATE_PROJECT = enum.auto()
+
     ALL = enum.auto()
 
 

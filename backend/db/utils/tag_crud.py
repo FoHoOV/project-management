@@ -1,11 +1,13 @@
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from db.models.project import Project
+from db.models.project_user_association import ProjectUserAssociation
 from db.models.tag import Tag
 from db.models.todo_category import TodoCategory
 from db.models.todo_item import TodoItem
 from db.models.todo_item_tag_association import TodoItemTagAssociation
 from db.models.user import User
-from db.models.user_project_permission import Permission
+from db.models.user_project_permission import Permission, UserProjectPermission
 from db.schemas.tag import (
     TagAttachToTodo,
     TagCreate,
@@ -14,22 +16,24 @@ from db.schemas.tag import (
     TagSearch,
     TagUpdate,
 )
+from db.utils.shared.permission_query import join_with_permission_query_if_required
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import (
     validate_project_belongs_to_user,
-    validate_user_has_permissions,
 )
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
 
 
 def create(db: Session, tag: TagCreate, user_id: int):
-    validate_project_belongs_to_user(db, tag.project_id, user_id, user_id, True)
-    # TODO: test
-    validate_user_has_permissions(db, user_id, tag.project_id, [Permission.CREATE_TAG])
+    validate_project_belongs_to_user(
+        db, tag.project_id, user_id, [Permission.CREATE_TAG]
+    )
 
     tag_already_exists = False
     try:
-        validate_tag_belongs_to_user_by_name(db, tag.name, tag.project_id, user_id)
+        validate_tag_belongs_to_user_by_name(
+            db, tag.name, tag.project_id, user_id, [Permission.CREATE_TAG]
+        )
         tag_already_exists = True
     except UserFriendlyError:
         pass
@@ -50,7 +54,9 @@ def create(db: Session, tag: TagCreate, user_id: int):
 
 
 def search(db: Session, search: TagSearch, user_id: int):
-    validate_tag_belongs_to_user_by_name(db, search.name, search.project_id, user_id)
+    validate_tag_belongs_to_user_by_name(
+        db, search.name, search.project_id, user_id, None
+    )
 
     query = (
         db.query(TodoItem)
@@ -69,8 +75,7 @@ def search(db: Session, search: TagSearch, user_id: int):
 
 
 def edit(db: Session, tag: TagUpdate, user_id: int):
-    validate_tag_belongs_to_user_by_id(db, tag.id, user_id)
-    # TODO: what about these validate_user_has_permissions(db, user_id, tag.project_id, [Permission.CREATE_TAG])
+    validate_tag_belongs_to_user_by_id(db, tag.id, user_id, [Permission.UPDATE_TAG])
 
     db_item = db.query(Tag).filter(Tag.id == tag.id).first()
 
@@ -78,7 +83,9 @@ def edit(db: Session, tag: TagUpdate, user_id: int):
         raise
 
     try:
-        validate_tag_belongs_to_user_by_name(db, tag.name, db_item.project_id, user_id)
+        validate_tag_belongs_to_user_by_name(
+            db, tag.name, db_item.project_id, user_id, [Permission.UPDATE_TAG]
+        )
         raise UserFriendlyError(
             ErrorCode.TAG_PROJECT_ASSOCIATION_ALREADY_EXISTS,
             "This tag already exists, either remove this tag and add the appropriate one, or delete the old and then retry renaming this one",
@@ -96,17 +103,23 @@ def edit(db: Session, tag: TagUpdate, user_id: int):
 
 
 def delete(db: Session, tag: TagDelete, user_id: int):
-    validate_tag_belongs_to_user_by_id(db, tag.id, user_id)
+    validate_tag_belongs_to_user_by_id(db, tag.id, user_id, [Permission.DELETE_TAG])
     db.query(Tag).filter(Tag.id == tag.id).delete()
     db.commit()
 
 
 def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
-    validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
+    validate_todo_item_belongs_to_user(
+        db, association.todo_id, user_id, [Permission.CREATE_TAG]
+    )
 
     try:
         validate_tag_belongs_to_user_by_name(
-            db, association.name, association.project_id, user_id
+            db,
+            association.name,
+            association.project_id,
+            user_id,
+            [Permission.CREATE_TAG],
         )
     except UserFriendlyError as e:
         if e.code != ErrorCode.TAG_NOT_FOUND:
@@ -154,8 +167,12 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
 
 
 def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: int):
-    validate_todo_item_belongs_to_user(db, association.todo_id, user_id)
-    validate_tag_belongs_to_user_by_id(db, association.tag_id, user_id)
+    validate_todo_item_belongs_to_user(
+        db, association.todo_id, user_id, [Permission.DELETE_TAG]
+    )
+    validate_tag_belongs_to_user_by_id(
+        db, association.tag_id, user_id, [Permission.DELETE_TAG]
+    )
 
     affected_columns = (
         db.query(TodoItemTagAssociation)
@@ -175,7 +192,11 @@ def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: i
 
 
 def validate_tag_belongs_to_user_by_name(
-    db: Session, tag_name: str, project_id: int | None, user_id: int
+    db: Session,
+    tag_name: str,
+    project_id: int | None,
+    user_id: int,
+    permissions: list[Permission] | None,
 ):
     query = (
         db.query(Tag)
@@ -188,22 +209,32 @@ def validate_tag_belongs_to_user_by_name(
     if project_id is not None:
         query = query.filter(Tag.project_id == project_id)
 
-    if query.count() == 0:
+    query = join_with_permission_query_if_required(query, permissions)
+
+    if query.count() < len(permissions) if permissions is not None else 1:
         raise UserFriendlyError(
-            ErrorCode.TAG_NOT_FOUND, "tag not found or doesn't belong to user"
+            ErrorCode.TAG_NOT_FOUND,
+            "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
         )
 
 
-def validate_tag_belongs_to_user_by_id(db: Session, tag_id: int, user_id: int):
-    result = (
+def validate_tag_belongs_to_user_by_id(
+    db: Session,
+    tag_id: int,
+    user_id: int,
+    permissions: list[Permission] | None,
+):
+    query = (
         db.query(Tag)
         .join(Tag.project)
         .join(Project.users)
         .filter(User.id == user_id)
         .filter(Tag.id == tag_id)
-        .count()
     )
-    if result == 0:
+    query = join_with_permission_query_if_required(query, permissions)
+
+    if query.count() < len(permissions) if permissions is not None else 1:
         raise UserFriendlyError(
-            ErrorCode.TAG_NOT_FOUND, "tag not found or doesn't belong to user"
+            ErrorCode.TAG_NOT_FOUND,
+            "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
         )

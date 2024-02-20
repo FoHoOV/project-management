@@ -1,8 +1,12 @@
 import datetime
 from types import NoneType
 from typing import List
+
+from sqlalchemy import and_
+from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category_action import Action
 from db.models.todo_item_dependency import TodoItemDependency
+from db.models.user_project_permission import Permission, UserProjectPermission
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
@@ -37,11 +41,12 @@ def get_todos_for_user(
         db,
         search_todo_params.project_id,
         user_id,
-        user_id,
-        True,
+        None,
     )
 
-    validate_todo_category_belongs_to_user(db, search_todo_params.category_id, user_id)
+    validate_todo_category_belongs_to_user(
+        db, search_todo_params.category_id, user_id, None
+    )
 
     query = db.query(TodoItem)
 
@@ -63,7 +68,9 @@ def get_todos_for_user(
 
 
 def create(db: Session, todo: TodoItemCreate, user_id: int):
-    validate_todo_category_belongs_to_user(db, todo.category_id, user_id)
+    validate_todo_category_belongs_to_user(
+        db, todo.category_id, user_id, [Permission.CREATE_TODO_ITEM]
+    )
 
     todo.due_date = (
         todo.due_date.astimezone(datetime.UTC) if todo.due_date is not None else None
@@ -103,7 +110,9 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
 def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     # in order to reset due_date pass a date with year=1
 
-    validate_todo_item_belongs_to_user(db, todo.id, user_id)
+    validate_todo_item_belongs_to_user(
+        db, todo.id, user_id, [Permission.UPDATE_TODO_ITEM]
+    )
 
     db_item = (
         db.query(TodoItem).filter(TodoItem.id == todo.id).join(TodoCategory).first()
@@ -154,13 +163,19 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
 
 
 def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
-    validate_todo_item_belongs_to_user(db, moving_item.id, user_id)
+    validate_todo_item_belongs_to_user(
+        db, moving_item.id, user_id, [Permission.UPDATE_TODO_ITEM]
+    )
 
     if moving_item.left_id is not None:
-        validate_todo_item_belongs_to_user(db, moving_item.left_id, user_id)
+        validate_todo_item_belongs_to_user(
+            db, moving_item.left_id, user_id, [Permission.UPDATE_TODO_ITEM]
+        )
 
     if moving_item.right_id is not None:
-        validate_todo_item_belongs_to_user(db, moving_item.right_id, user_id)
+        validate_todo_item_belongs_to_user(
+            db, moving_item.right_id, user_id, [Permission.UPDATE_TODO_ITEM]
+        )
 
     db_item = (
         db.query(TodoItem)
@@ -176,7 +191,9 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
 
     if db_item.category_id != moving_item.new_category_id:
         _perform_actions(db, db_item, moving_item.new_category_id, None, user_id)
-        validate_todo_category_belongs_to_user(db, moving_item.new_category_id, user_id)
+        validate_todo_category_belongs_to_user(
+            db, moving_item.new_category_id, user_id, [Permission.UPDATE_TODO_ITEM]
+        )
         delete_item_from_sorted_items(
             db,
             TodoItemOrder,
@@ -209,7 +226,9 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
 
 
 def remove(db: Session, todo: TodoItemDelete, user_id: int):
-    validate_todo_item_belongs_to_user(db, todo.id, user_id=user_id)
+    validate_todo_item_belongs_to_user(
+        db, todo.id, user_id, [Permission.DELETE_TODO_ITEM]
+    )
     db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
     if not db_item:
         return
@@ -227,8 +246,15 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
 
 
 def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id: int):
-    validate_todo_item_belongs_to_user(db, dependency.todo_id, user_id)
-    validate_todo_item_belongs_to_user(db, dependency.dependant_todo_id, user_id)
+    validate_todo_item_belongs_to_user(
+        db, dependency.todo_id, user_id, [Permission.CREATE_TODO_ITEM_DEPENDENCY]
+    )
+    validate_todo_item_belongs_to_user(
+        db,
+        dependency.dependant_todo_id,
+        user_id,
+        [Permission.CREATE_TODO_ITEM_DEPENDENCY],
+    )
 
     if (
         db.query(TodoItemDependency)
@@ -280,26 +306,49 @@ def remove_todo_dependency(
             ErrorCode.TODO_ITEM_DEPENDENCY_NOT_FOUND, "Dependency not found!"
         )
 
-    validate_todo_item_belongs_to_user(db, db_item.todo_id, user_id)
+    validate_todo_item_belongs_to_user(
+        db, db_item.todo_id, user_id, [Permission.DELETE_TODO_ITEM_DEPENDENCY]
+    )
 
     db.delete(db_item)
     db.commit()
 
 
-def validate_todo_item_belongs_to_user(db: Session, todo_id: int, user_id: int):
-    if (
+def validate_todo_item_belongs_to_user(
+    db: Session, todo_id: int, user_id: int, permissions: list[Permission] | None
+):
+    query = (
         db.query(TodoItem)
         .filter(TodoItem.id == todo_id)
         .join(TodoItem.category)
         .join(TodoCategory.projects)
         .join(Project.users)
         .filter(User.id == user_id)
-        .count()
-        == 0
-    ):
+    )
+
+    if permissions is not None:
+        if any(permission == Permission.ALL for permission in permissions):
+            permissions = [Permission.ALL]
+
+        if all(permission != Permission.ALL for permission in permissions):
+            permissions = permissions + [Permission.ALL]
+
+        query = (
+            query.join(
+                ProjectUserAssociation,
+                and_(
+                    ProjectUserAssociation.project_id == Project.id,
+                    ProjectUserAssociation.user_id,
+                ),
+            )
+            .join(ProjectUserAssociation.permissions)
+            .filter(UserProjectPermission.permission.in_(permissions))
+        )
+
+    if query.count() < len(permissions) if permissions is not None else 1:
         raise UserFriendlyError(
             ErrorCode.TODO_NOT_FOUND,
-            "todo item doesn't exist or doesn't belong to user",
+            "todo item doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
         )
 
 
@@ -345,7 +394,9 @@ def _update_done_status(
 
     # this does not commit the changes, caller needs to commit the changes
     if new_status == True:
-        _validate_dependencies_are_resolved(db, todo_item, user_id)
+        _validate_dependencies_are_resolved(
+            db, todo_item, user_id, [Permission.UPDATE_TODO_ITEM]
+        )
 
     if (
         todo_item.marked_as_done_by_user_id is not None
@@ -363,11 +414,13 @@ def _update_done_status(
         todo_item.marked_as_done_by_user_id = None
 
 
-def _validate_dependencies_are_resolved(db: Session, todo: TodoItem, user_id: int):
+def _validate_dependencies_are_resolved(
+    db: Session, todo: TodoItem, user_id: int, permissions: list[Permission]
+):
     for dependency in todo.dependencies:
         try:
             validate_todo_item_belongs_to_user(
-                db, dependency.dependant_todo_id, user_id
+                db, dependency.dependant_todo_id, user_id, permissions
             )
         except UserFriendlyError as e:
             raise UserFriendlyError(

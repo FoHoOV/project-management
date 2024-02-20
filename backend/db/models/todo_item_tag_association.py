@@ -14,4 +14,6 @@ class TodoItemTagAssociation(BasesWithCreatedDate):
         ForeignKey("tag.id", ondelete="CASCADE"), primary_key=True
     )
 
+    tag: Mapped["Tag"] = relationship(foreign_keys=[tag_id])  # type: ignore
+
     __table_args__ = (UniqueConstraint("todo_id", "tag_id"),)
