@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
+	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { page } from '$app/stores';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -49,15 +50,12 @@
 <div class="relative">
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={apiErrorTitle} class="mb-2" />
-	<label
-		class="label flex max-w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-info p-3"
-	>
-		<span> Mark as done when dropped </span>
-		<input
-			type="checkbox"
-			class="checkbox-warning checkbox"
-			checked={category.actions.filter((action) => action.action == Action.Done).length > 0}
-			on:change={handleUpdateAction}
-		/>
-	</label>
+	<FormInput
+		label="Mark as done when dropped"
+		name="done-action"
+		inputClasses="checkbox-warning"
+		labelClasses="flex max-w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-info p-3"
+		onchange={handleUpdateAction}
+		checked={category.actions.filter((action) => action.action == Action.Done).length > 0}
+	></FormInput>
 </div>

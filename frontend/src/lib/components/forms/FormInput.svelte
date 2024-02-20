@@ -1,25 +1,23 @@
 <script lang="ts" context="module">
 	import Alert from '$components/Alert.svelte';
-	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';
 
 	export type Props = (
-		| {
+		| ({
 				type?: 'text-area';
 				value?: string | number | undefined;
-		  }
-		| {
+		  } & Partial<Exclude<HTMLInputAttributes, 'class' | 'placeholder' | 'id'>>)
+		| ({
 				type?: HTMLInputAttributes['type'];
 				value?: string | boolean | number | undefined;
-		  }
+		  } & Partial<Exclude<HTMLInputAttributes, 'type' | 'class' | 'placeholder' | 'id'>>)
 	) & {
 		name: string;
 		label?: string;
 		errors?: string | string[] | null | undefined | (string | null)[];
 		hideLabel?: boolean;
-		autoFocus?: boolean;
-		pattern?: HTMLInputAttributes['pattern'];
-		autoComplete?: HTMLInputAttributes['autocomplete'] | null;
 		wrapperClasses?: string;
+		labelClasses?: string;
 		inputClasses?: string;
 	};
 </script>
@@ -32,11 +30,10 @@
 		errors = null,
 		hideLabel = false,
 		type = '',
-		autoFocus = null,
-		autoComplete = null,
-		pattern = null,
 		wrapperClasses = '',
-		inputClasses = ''
+		labelClasses = '',
+		inputClasses = '',
+		...restProps
 	} = $props<Props>();
 
 	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
@@ -48,7 +45,7 @@
 
 <div class="flex flex-col {wrapperClasses}">
 	{#if !hideLabel}
-		<label class="label" class:hidden={hideLabel} for={name}>
+		<label class="label {labelClasses}" class:hidden={hideLabel} for={name}>
 			<span class="label-text">{label}</span>
 		</label>
 	{/if}
@@ -59,25 +56,22 @@
 			bind:this={input}
 			id={name}
 			{name}
-			autocomplete={autoComplete}
 			placeholder={label}
 			class="textarea w-full {inputClasses}"
 			value={value?.toString()}
-			autofocus={autoFocus}
+			{...restProps as HTMLTextareaAttributes}
 		/>
 	{:else}
 		<!-- svelte-ignore a11y-autofocus -->
 		<input
 			bind:this={input}
 			{type}
-			autocomplete={autoComplete}
 			id={name}
 			{name}
 			placeholder={label}
 			class="input input-bordered w-full {inputClasses}"
 			{value}
-			autofocus={autoFocus}
-			{pattern}
+			{...restProps}
 		/>
 	{/if}
 
