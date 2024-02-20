@@ -34,7 +34,7 @@
 		<FormInput
 			name="title"
 			wrapperClasses="w-full"
-			autoFocus={true}
+			autofocus={true}
 			errors={formErrors?.errors?.title}
 		/>
 		<FormInput

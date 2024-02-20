@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import Checkbox from '$components/forms/Checkbox.svelte';
+	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { Permission } from '$lib/generated-client/models';
 </script>
@@ -8,5 +8,5 @@
 </script>
 
 {#each Object.values(Permission) as permission}
-	<Checkbox label={permission} inputClasses="checkbox-warning"></Checkbox>
+	<FormInput name={permission} label={permission} inputClasses="checkbox-warning"></FormInput>
 {/each}

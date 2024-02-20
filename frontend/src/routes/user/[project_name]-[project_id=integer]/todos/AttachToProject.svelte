@@ -46,7 +46,7 @@
 			name="project_id"
 			label="project id"
 			wrapperClasses="w-full"
-			autoFocus={true}
+			autofocus={true}
 			errors={typeof formErrors?.errors?.project_id === 'number'
 				? formErrors.errors.project_id.toString()
 				: formErrors?.errors?.project_id}

@@ -50,7 +50,7 @@
 		<FormInput
 			name="username"
 			wrapperClasses="w-full"
-			autoFocus={true}
+			autofocus={true}
 			errors={formErrors?.errors?.username}
 		/>
 	{/snippet}

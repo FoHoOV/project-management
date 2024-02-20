@@ -40,7 +40,7 @@
 		<FormInput
 			name="message"
 			type="text-area"
-			autoFocus={true}
+			autofocus={true}
 			wrapperClasses="w-full"
 			inputClasses="min-h-48"
 			errors={formErrors?.errors?.message}

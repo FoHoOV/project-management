@@ -40,7 +40,7 @@
 		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={category.id} errors={''} />
 		<FormInput
 			name="title"
-			autoFocus={true}
+			autofocus={true}
 			wrapperClasses="w-full"
 			value={category.title}
 			errors={formErrors?.errors?.title}

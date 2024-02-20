@@ -49,7 +49,7 @@
 			name="dependant_todo_id"
 			label="depends on (todo id)"
 			wrapperClasses="w-full"
-			autoFocus={true}
+			autofocus={true}
 			errors={formErrors.errors?.dependant_todo_id?.toString()}
 		/>
 	{/snippet}

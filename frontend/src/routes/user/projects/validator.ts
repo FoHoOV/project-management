@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import type { ProjectAttachAssociation, ProjectCreate, ProjectUpdate } from '$lib/generated-client';
+import {
+	type ProjectAttachAssociation,
+	type ProjectCreate,
+	type ProjectUpdate
+} from '$lib/generated-client';
+import { Permission } from '$lib/generated-client/zod/schemas';
 
 const optionalDescriptionSchema = z
 	.string()
@@ -20,7 +25,8 @@ export const createProjectSchema = z.object({
 
 export const attachProjectSchema = z.object({
 	project_id: z.number({ coerce: true }),
-	username: z.string().min(3)
+	username: z.string().min(3),
+	permissions: z.array(Permission)
 });
 
 ({}) as z.infer<typeof attachProjectSchema> satisfies ProjectAttachAssociation;

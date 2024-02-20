@@ -51,7 +51,6 @@
 	{/if}
 
 	{#if type == 'text-area'}
-		<!-- svelte-ignore a11y-autofocus -->
 		<textarea
 			bind:this={input}
 			id={name}
@@ -62,7 +61,6 @@
 			{...restProps as HTMLTextareaAttributes}
 		/>
 	{:else}
-		<!-- svelte-ignore a11y-autofocus -->
 		<input
 			bind:this={input}
 			{type}

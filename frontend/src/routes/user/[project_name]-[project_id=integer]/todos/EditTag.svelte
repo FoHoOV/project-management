@@ -38,7 +38,7 @@
 		<FormInput
 			name="name"
 			type="text"
-			autoFocus={true}
+			autofocus={true}
 			wrapperClasses="w-full"
 			value={tag.name}
 			errors={formErrors?.errors?.name}
