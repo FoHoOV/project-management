@@ -89,7 +89,7 @@
 	onError={(error) => (apiErrorTitle = error)}
 >
 	<div
-		class="relative flex max-h-full w-full rounded-xl border border-opacity-70 shadow-lg transition-colors hover:border-opacity-100 dark:border-opacity-30 dark:hover:border-opacity-50"
+		class="relative flex h-full w-full rounded-xl border border-opacity-70 shadow-lg transition-colors hover:border-opacity-100 dark:border-opacity-30 dark:hover:border-opacity-50"
 		class:border-dashed={category.projects.length > 1}
 		class:border-warning={category.projects.length > 1}
 		class:border-info={category.projects.length <= 1}

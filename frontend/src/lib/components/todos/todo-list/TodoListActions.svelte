@@ -53,7 +53,7 @@
 	<div class="relative my-2">
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<FormInput
-			label="Mark as done when dropped"
+			label={action}
 			name={action}
 			inputClasses="checkbox-warning"
 			labelClasses="border border-info"
