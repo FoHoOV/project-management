@@ -250,10 +250,10 @@ def validate_todo_category_belongs_to_user(db: Session, category_id: int, user_i
 
 
 def _update_actions(
-    db: Session, todo_category: TodoCategory, new_actions: list[Action]
+    db: Session, todo_category: TodoCategory, toggle_actions: list[Action]
 ):
-    def has_action(actions: list[Action], action: Action):
-        return len(list(filter(lambda x: x == action, actions))) >= 1
+    def has_action(actions: list[TodoCategoryAction], action: Action):
+        return len(list(filter(lambda x: x.action == action, actions))) >= 1
 
     def validate_can_add_action(action: Action, todo_category: TodoCategory):
         match action:
@@ -270,19 +270,15 @@ def _update_actions(
                         "Cannot add this rule at the moment, because this category contains items that are already marked as done",
                     )
 
-    for action in new_actions:
+    for action in toggle_actions:
         if has_action(todo_category.actions, action):
             db.query(TodoCategoryAction).filter(
                 TodoCategoryAction.category_id == todo_category.id,
-                TodoCategoryAction.action == Action.AUTO_MARK_AS_DONE,
+                TodoCategoryAction.action == action,
             ).delete()
         else:
             validate_can_add_action(action, todo_category)
-            db.add(
-                TodoCategoryAction(
-                    category_id=todo_category.id, action=Action.AUTO_MARK_AS_DONE
-                )
-            )
+            db.add(TodoCategoryAction(category_id=todo_category.id, action=action))
 
 
 def _get_last_category_id_in_project_except_current(

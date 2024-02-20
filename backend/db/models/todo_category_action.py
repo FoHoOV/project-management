@@ -1,16 +1,13 @@
 import enum
 from sqlalchemy import (
-    CheckConstraint,
-    Connection,
     Enum,
     ForeignKey,
     UniqueConstraint,
-    event,
 )
-from sqlalchemy.orm import Mapped, Session, Mapper
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import BaseOrderedItem, BasesWithCreatedDate
+from db.models.base import BasesWithCreatedDate
 
 
 class Action(enum.StrEnum):
