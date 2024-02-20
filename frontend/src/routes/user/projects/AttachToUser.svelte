@@ -38,8 +38,10 @@
 	{#snippet inputs({ formErrors })}
 		{#each Object.values(Permission) as permission}
 			<FormInput
-				name={`permission:${permission}`}
+				name="permissions[]"
+				value={permission}
 				label={permission}
+				type="checkbox"
 				inputClasses="checkbox-warning"
 			></FormInput>
 		{/each}

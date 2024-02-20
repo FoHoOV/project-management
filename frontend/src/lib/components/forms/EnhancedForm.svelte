@@ -7,6 +7,7 @@
 		StandardFormActionError,
 		StandardFormActionNames,
 		SubmitRedirectedEventType,
+		SubmitStartEventType,
 		SubmitSucceededEventType,
 		ValidatorErrorsType
 	} from '$lib';
@@ -25,6 +26,7 @@
 		onSubmitSucceeded?: (
 			event: SubmitSucceededEventType<TSchema, TFormAction, TKey>['detail']
 		) => void;
+		onSubmitStarted?: (event: SubmitStartEventType['detail']) => void;
 		onRedirected?: (event: SubmitRedirectedEventType<TSchema>['detail']) => void;
 		onClientSideValidationErrors?: (event: ValidatorErrorsType<TSchema>) => void;
 	};
@@ -65,6 +67,7 @@
 		inputsWrapperClasses = '',
 		actionsWrapperClasses = '',
 		onSubmitSucceeded,
+		onSubmitStarted,
 		onClientSideValidationErrors,
 		onRedirected,
 		actions,
@@ -105,8 +108,9 @@
 		componentState = 'none';
 		onClientSideValidationErrors?.(e.detail);
 	}}
-	on:submitstarted={() => {
+	on:submitstarted={(e) => {
 		componentState = 'submitting';
+		onSubmitStarted?.(e.detail);
 	}}
 	on:submitended={() => {
 		componentState = 'none';

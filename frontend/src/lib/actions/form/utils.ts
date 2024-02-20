@@ -3,10 +3,20 @@ import type { NumberRange, ErrorMessage, StrictUnion } from '$lib/utils/types';
 import type { ZodTypeAny, z } from 'zod';
 import type { ValidatorErrorsType } from '.';
 
-export function convertFormDataToObject(formData: FormData): Record<string, FormDataEntryValue> {
-	const result: Record<string, FormDataEntryValue> = {};
+export type ParsedFormData = Record<string, string | File | string[]>;
+export function convertFormDataToObject(formData: FormData): ParsedFormData {
+	const result: ParsedFormData = {};
 	formData.forEach((value, key) => {
-		result[key] = value;
+		if (key.endsWith('[]')) {
+			result[key.split('[]')[0]] = formData.getAll(key).map((value) => {
+				if (value instanceof File) {
+					throw new Error('my formData implementation does not support arrays of files for now');
+				}
+				return value;
+			});
+		} else {
+			result[key] = value;
+		}
 	});
 	return result;
 }
