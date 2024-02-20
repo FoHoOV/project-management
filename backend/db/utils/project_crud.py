@@ -210,9 +210,11 @@ def validate_project_belongs_to_user(
     user_id: int,
     permissions: list[Permission] | None,
 ):
-    query = db.query(ProjectUserAssociation).filter(
-        ProjectUserAssociation.user_id == user_id,
-        ProjectUserAssociation.project_id == project_id,
+    query = (
+        db.query(Project)
+        .filter(Project.id == project_id)
+        .join(Project.users)
+        .filter(User.id == user_id)
     )
 
     query = join_with_permission_query_if_required(query, permissions)

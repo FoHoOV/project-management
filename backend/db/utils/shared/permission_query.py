@@ -1,4 +1,5 @@
 from sqlalchemy import and_
+from db.models.base import Base
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.user_project_permission import Permission, UserProjectPermission
@@ -6,7 +7,7 @@ from sqlalchemy.orm import Query
 
 
 def join_with_permission_query_if_required[
-    T
+    T: Base
 ](query: Query[T], permissions: list[Permission] | None):
     if permissions is None:
         return query
@@ -20,16 +21,6 @@ def join_with_permission_query_if_required[
     if all(permission != Permission.ALL for permission in permissions):
         permissions = permissions + [Permission.ALL]
 
-    query = (
-        query.join(
-            ProjectUserAssociation,
-            and_(
-                ProjectUserAssociation.project_id == Project.id,
-                ProjectUserAssociation.user_id,
-            ),
-        )
-        .join(ProjectUserAssociation.permissions)
-        .filter(UserProjectPermission.permission.in_(permissions))
-    )
+    query = query.filter(UserProjectPermission.permission.in_(permissions))
 
     return query
