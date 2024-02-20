@@ -48,7 +48,7 @@
 		class="flex items-start {labelClasses} {type == 'checkbox'
 			? 'max-w-full cursor-pointer flex-row items-center justify-between gap-2 rounded-md p-3'
 			: 'flex-col'}"
-		for={name}
+		for={restProps.id ?? name}
 	>
 		{#if !hideLabel}
 			<p class="label label-text">{label}</p>
@@ -56,7 +56,7 @@
 		{#if type == 'text-area'}
 			<textarea
 				bind:this={input}
-				id={name}
+				id={restProps.id ?? name}
 				{name}
 				placeholder={label}
 				class="textarea w-full {inputClasses}"
@@ -67,7 +67,7 @@
 			<input
 				bind:this={input}
 				{type}
-				id={name}
+				id={restProps.id ?? name}
 				{name}
 				placeholder={label}
 				class="{type == 'checkbox' ? 'checkbox' : 'input input-bordered w-full'}  {inputClasses}"

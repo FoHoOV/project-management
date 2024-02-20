@@ -38,6 +38,7 @@
 	{#snippet inputs({ formErrors })}
 		{#each Object.values(Permission) as permission}
 			<FormInput
+				id="permissions:{permission}"
 				name="permissions[]"
 				value={permission}
 				label={permission}
