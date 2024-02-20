@@ -50,14 +50,15 @@
 
 <Alert type="error" message={apiErrorTitle} class="mb-2" />
 {#each Object.values(Action) as action}
-	<div class="relative">
+	<div class="relative my-2">
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<FormInput
 			label="Mark as done when dropped"
 			name={action}
 			inputClasses="checkbox-warning"
-			labelClasses="flex max-w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-info p-3"
+			labelClasses="border border-info"
 			onchange={handleUpdateAction}
+			type="checkbox"
 			checked={category.actions.some((value) => value.action == action)}
 		></FormInput>
 	</div>

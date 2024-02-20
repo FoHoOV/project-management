@@ -43,6 +43,7 @@
 				label={permission}
 				type="checkbox"
 				inputClasses="checkbox-warning"
+				labelClasses="border border-info"
 			></FormInput>
 		{/each}
 

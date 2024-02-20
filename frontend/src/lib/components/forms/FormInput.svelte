@@ -44,34 +44,38 @@
 </script>
 
 <div class="flex flex-col {wrapperClasses}">
-	{#if !hideLabel}
-		<label class="label {labelClasses}" class:hidden={hideLabel} for={name}>
-			<span class="label-text">{label}</span>
-		</label>
-	{/if}
-
-	{#if type == 'text-area'}
-		<textarea
-			bind:this={input}
-			id={name}
-			{name}
-			placeholder={label}
-			class="textarea w-full {inputClasses}"
-			value={value?.toString()}
-			{...restProps as HTMLTextareaAttributes}
-		/>
-	{:else}
-		<input
-			bind:this={input}
-			{type}
-			id={name}
-			{name}
-			placeholder={label}
-			class="input input-bordered w-full {inputClasses}"
-			{value}
-			{...restProps}
-		/>
-	{/if}
+	<label
+		class="flex items-start {labelClasses} {type == 'checkbox'
+			? 'max-w-full cursor-pointer flex-row items-center justify-between gap-2 rounded-md p-3'
+			: 'flex-col'}"
+		for={name}
+	>
+		{#if !hideLabel}
+			<p class="label label-text">{label}</p>
+		{/if}
+		{#if type == 'text-area'}
+			<textarea
+				bind:this={input}
+				id={name}
+				{name}
+				placeholder={label}
+				class="textarea w-full {inputClasses}"
+				value={value?.toString()}
+				{...restProps as HTMLTextareaAttributes}
+			/>
+		{:else}
+			<input
+				bind:this={input}
+				{type}
+				id={name}
+				{name}
+				placeholder={label}
+				class="{type == 'checkbox' ? 'checkbox' : 'input input-bordered w-full'}  {inputClasses}"
+				{value}
+				{...restProps}
+			/>
+		{/if}
+	</label>
 
 	<Alert type="error" message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
 </div>
