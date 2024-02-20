@@ -36,17 +36,20 @@
 	successfulMessage="Project is now shared with the specified user"
 >
 	{#snippet inputs({ formErrors })}
-		{#each Object.values(Permission) as permission}
-			<FormInput
-				id="permissions:{permission}"
-				name="permissions[]"
-				value={permission}
-				label={permission}
-				type="checkbox"
-				inputClasses="checkbox-warning"
-				labelClasses="border border-info"
-			></FormInput>
-		{/each}
+		<span> permissions </span>
+		<div class="grid grid-cols-1 gap-2 lg:grid-cols-2">
+			{#each Object.values(Permission) as permission}
+				<FormInput
+					id="permissions:{permission}"
+					name="permissions[]"
+					value={permission}
+					label={permission.replaceAll('_', ' ')}
+					type="checkbox"
+					inputClasses="checkbox-warning"
+					labelClasses="border border-info"
+				></FormInput>
+			{/each}
+		</div>
 
 		<FormInput
 			name="project_id"

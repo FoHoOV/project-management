@@ -53,8 +53,9 @@
 	<div class="relative my-2">
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<FormInput
-			label={action}
+			label={action.replaceAll('_', ' ')}
 			name={action}
+			value={action}
 			inputClasses="checkbox-warning"
 			labelClasses="border border-info"
 			onchange={handleUpdateAction}
