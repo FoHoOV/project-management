@@ -41,6 +41,10 @@
 	export function focus() {
 		input?.focus();
 	}
+
+	export function inputElement() {
+		return input;
+	}
 </script>
 
 <div class="flex flex-col {wrapperClasses}">

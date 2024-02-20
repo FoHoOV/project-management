@@ -18,6 +18,7 @@
 	const { form, project } = $props<Props>();
 
 	const projectsStore = getProjectsStoreFromContext();
+	let allowAllAccessRights = $state<boolean>(false);
 </script>
 
 <EnhancedForm
@@ -37,14 +38,27 @@
 >
 	{#snippet inputs({ formErrors })}
 		<span> permissions </span>
+		<FormInput
+			id="permissions:{Permission.All}"
+			name="permissions[]"
+			value={Permission.All}
+			label="Allow all permissions"
+			type="checkbox"
+			inputClasses="checkbox-warning"
+			labelClasses="border border-info"
+			onchange={(e)=>{
+				allowAllAccessRights = (e.target as HTMLInputElement).checked;
+			}}
+		></FormInput>
 		<div class="grid grid-cols-1 gap-2 lg:grid-cols-2">
-			{#each Object.values(Permission) as permission}
+			{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
 				<FormInput
 					id="permissions:{permission}"
 					name="permissions[]"
 					value={permission}
 					label={permission.replaceAll('_', ' ')}
 					type="checkbox"
+					disabled={allowAllAccessRights}
 					inputClasses="checkbox-warning"
 					labelClasses="border border-info"
 				></FormInput>
