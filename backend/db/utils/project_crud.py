@@ -71,7 +71,7 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
         db,
         association.project_id,
         user_id,
-        [Permission.UPDATE_PROJECT],
+        [Permission.ALL],  # this only allows owners to be able to share the project
     )
 
     association_db_item = ProjectUserAssociation(

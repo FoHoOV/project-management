@@ -11,7 +11,11 @@ from db.utils.user_crud import create_user
 
 
 TestUserType = TypedDict("TestUserType", {"username": str, "password": str})
-TEST_USER: TestUserType = {"username": "test_username", "password": "test_password"}
+TEST_USERS: list[TestUserType] = [
+    {"username": "test_username1", "password": "test_password1"},
+    {"username": "test_username2", "password": "test_password2"},
+    {"username": "test_username3", "password": "test_password3"},
+]
 
 
 def create_test_app():
@@ -28,29 +32,34 @@ def create_test_user():
     from db.schemas.user import UserCreate
 
     db: Session = SessionLocalTest()
-    create_user(
-        db,
-        UserCreate.model_validate(
-            {
-                "username": TEST_USER["username"],
-                "password": TEST_USER["password"],
-                "confirm_password": TEST_USER["password"],
-            }
-        ),
-    )
-
-
-def get_access_token():
-    access_token = (
-        TestClient(app)
-        .post(
-            "/oauth/token",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            data={"username": TEST_USER["username"], "password": TEST_USER["password"]},
+    for user in TEST_USERS:
+        create_user(
+            db,
+            UserCreate.model_validate(
+                {
+                    "username": user["username"],
+                    "password": user["password"],
+                    "confirm_password": user["password"],
+                }
+            ),
         )
-        .json()["access_token"]
+
+
+def get_access_token(user: TestUserType):
+    response = TestClient(app).post(
+        "/oauth/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={
+            "username": user["username"],
+            "password": user["password"],
+        },
     )
-    return access_token
+
+    assert (
+        response.status_code == 200
+    ), "already registered test user should successfully get an access token exist"
+
+    return response.json()["access_token"]
 
 
 app = create_test_app()
