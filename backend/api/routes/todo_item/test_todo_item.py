@@ -3,6 +3,7 @@ import json
 from operator import le
 from fastapi.testclient import TestClient
 from api.test import TEST_USERS, get_access_token, app
+from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectRead
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
@@ -35,7 +36,7 @@ def test_list_all_todos():
     # create a project
     project = Project.model_validate(
         client.post(
-            "project/create",
+            "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={"title": "list_test_p", "description": "-"},
         ).json(),
@@ -59,8 +60,8 @@ def test_list_all_todos():
             "/todo-item/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={
-                "title": "test{i}",
-                "description": "test{i}",
+                "title": f"test{i}",
+                "description": f"test{i}",
                 "is_done": False,
                 "category_id": category.id,
             },
@@ -109,7 +110,7 @@ def test_reorder_todos():
     # create a project
     project = Project.model_validate(
         client.post(
-            "project/create",
+            "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={"title": "reorder_test_p", "description": "-"},
         ).json(),
@@ -119,7 +120,7 @@ def test_reorder_todos():
     # add a category to the newly created project
     category = TodoCategory.model_validate(
         client.post(
-            "todo-category/create",
+            "/todo-category/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={
                 "title": "reorder_test_c",
@@ -137,8 +138,8 @@ def test_reorder_todos():
             "/todo-item/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={
-                "title": "test{i}",
-                "description": "test{i}",
+                "title": f"test{i}",
+                "description": f"test{i}",
                 "is_done": False,
                 "category_id": category.id,
             },
@@ -192,3 +193,94 @@ def test_reorder_todos():
     assert (
         todos[0].order.left_id == None
     ), "after reorder, oldest todo must be the first one in the list"
+
+
+def test_todo_item_permissions():
+    # create a project
+    project = Project.model_validate(
+        client.post(
+            "/project/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={"title": "reorder_test_p", "description": "-"},
+        ).json(),
+        strict=True,
+    )
+
+    # add a category to the newly created project
+    category = TodoCategory.model_validate(
+        client.post(
+            "/todo-category/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={
+                "title": "reorder_test_c",
+                "description": "-",
+                "project_id": project.id,
+            },
+        ).json(),
+        strict=True,
+    )
+
+    # share it with user b with only edit todo permission
+    response = client.post(
+        "/project/attach-to-user",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        json={
+            "project_id": project.id,
+            "username": TEST_USERS[1]["username"],
+            "permissions": [Permission.UPDATE_TODO_ITEM],
+        },
+    )
+
+    todo_item = TodoItem.model_validate(
+        client.post(
+            "/todo-item/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={
+                "title": "test",
+                "description": "test",
+                "is_done": False,
+                "category_id": category.id,
+            },
+        ).json(),
+        strict=True,
+    )
+
+    response = client.request(
+        "delete",
+        "/todo-item/remove",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        json={
+            "id": todo_item.id,
+        },
+    )
+
+    assert (
+        response.status_code == 400
+    ), "user b(shared) shouldn't be able to remove a todo item when it doesn't have the permission to do so"
+
+    response = client.patch(
+        "/todo-item/update-item",
+        json={
+            "id": todo_item.id,
+            "category_id": todo_item.category_id,
+            "is_done": True,
+        },
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+    )
+
+    assert (
+        response.status_code == 200
+    ), "user b(shared) should be able to update the todo item because they have access"
+
+    response = client.request(
+        "delete",
+        "/todo-item/remove",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        json={
+            "id": todo_item.id,
+        },
+    )
+
+    assert (
+        response.status_code == 200
+    ), "user a(owner) should be able to remove a todo item"

@@ -84,8 +84,9 @@ def test_user_a_cannot_access_user_b_project_if_not_shared():
     project = Project.model_validate(response.json(), strict=True)
 
     response = client.get(
-        f"/project/search?project_id={project.id}",
+        "/project/search",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        params={"project_id": project.id},
     )
 
     assert (
@@ -93,8 +94,9 @@ def test_user_a_cannot_access_user_b_project_if_not_shared():
     ), "owner of project should be able to search their own project"
 
     response = client.get(
-        f"/project/search?project_id={project.id}",
+        "/project/search",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        params={"project_id": project.id},
     )
 
     assert (
@@ -128,8 +130,9 @@ def test_user_a_can_access_user_b_project_if_shared():
     ), "owner of a project should be able to share it with someone else"
 
     response = client.get(
-        f"/project/search?project_id={project.id}",
+        "/project/search",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        params={"project_id": project.id},
     )
 
     assert (
