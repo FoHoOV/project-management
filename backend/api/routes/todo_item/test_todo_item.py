@@ -231,6 +231,7 @@ def test_todo_item_permissions():
         },
     )
 
+    # create a todo item to begin testing modifications to this item
     todo_item = TodoItem.model_validate(
         client.post(
             "/todo-item/create",
@@ -245,6 +246,7 @@ def test_todo_item_permissions():
         strict=True,
     )
 
+    # try deleting from a user who doesn't have access
     response = client.request(
         "delete",
         "/todo-item/remove",
@@ -258,6 +260,7 @@ def test_todo_item_permissions():
         response.status_code == 400
     ), "user b(shared) shouldn't be able to remove a todo item when it doesn't have the permission to do so"
 
+    # try updating from a user who has access -- todo-item endpoint
     response = client.patch(
         "/todo-item/update-item",
         json={
@@ -272,6 +275,22 @@ def test_todo_item_permissions():
         response.status_code == 200
     ), "user b(shared) should be able to update the todo item because they have access"
 
+    # try updating from a user who this project isn't even shared with them
+    response = client.patch(
+        "/todo-item/update-item",
+        json={
+            "id": todo_item.id,
+            "category_id": todo_item.category_id,
+            "is_done": True,
+        },
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
+    )
+
+    assert (
+        response.status_code == 400
+    ), "user c(not shared) should be not able to update the todo item because they shouldn't even see this project"
+
+    # try deleting the item from the owner
     response = client.request(
         "delete",
         "/todo-item/remove",
