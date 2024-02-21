@@ -8,7 +8,7 @@
 				value?: string | number | undefined;
 		  } & Partial<Exclude<HTMLInputAttributes, 'class' | 'placeholder' | 'id'>>)
 		| ({
-				type?: HTMLInputAttributes['type'];
+				type?: HTMLInputAttributes['type'] | 'toggle';
 				value?: string | boolean | number | undefined;
 		  } & Partial<Exclude<HTMLInputAttributes, 'type' | 'class' | 'placeholder' | 'id'>>)
 	) & {
@@ -52,12 +52,23 @@
 
 		return errors?.at?.(0);
 	});
+	const defaultInputClasses = $derived.by(() => {
+		if (type == 'checkbox') {
+			return 'checkbox';
+		} else if (type == 'text-area') {
+			return 'text-area w-full';
+		} else if (type == 'toggle') {
+			return 'toggle';
+		} else {
+			return 'input input-bordered w-full';
+		}
+	});
 </script>
 
 <div class="flex flex-col {wrapperClasses}">
 	<label
-		class="flex items-start {labelClasses} {type == 'checkbox'
-			? 'max-w-full cursor-pointer flex-row items-center justify-between gap-2 rounded-md p-3'
+		class="flex items-start {labelClasses} {type == 'checkbox' || type == 'toggle'
+			? 'max-w-full cursor-pointer flex-row items-center justify-between gap-2 rounded-md p-2'
 			: 'flex-col'}"
 		for={restProps.id ?? name}
 	>
@@ -70,18 +81,18 @@
 				id={restProps.id ?? name}
 				{name}
 				placeholder={label}
-				class="textarea w-full {inputClasses}"
+				class="{defaultInputClasses} {inputClasses}"
 				value={value?.toString()}
 				{...restProps as HTMLTextareaAttributes}
 			/>
 		{:else}
 			<input
 				bind:this={input}
-				{type}
+				type={type == 'toggle' ? 'checkbox' : type}
 				id={restProps.id ?? name}
 				{name}
 				placeholder={label}
-				class="{type == 'checkbox' ? 'checkbox' : 'input input-bordered w-full'}  {inputClasses}"
+				class="{defaultInputClasses} {inputClasses}"
 				{value}
 				{...restProps}
 			/>

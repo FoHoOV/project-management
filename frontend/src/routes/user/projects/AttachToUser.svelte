@@ -18,7 +18,7 @@
 	const { form, project } = $props<Props>();
 
 	const projectsStore = getProjectsStoreFromContext();
-	let allowAllAccessRights = $state<boolean>(false);
+	let allowAllAccessRights = $state<boolean>(true);
 </script>
 
 <EnhancedForm
@@ -26,13 +26,15 @@
 	enhancerConfig={{
 		validator: { schema: attachProjectSchema },
 		form: form,
-		action: 'attach'
+		action: 'attach',
+		resetOnSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {
 			username: event.formData.username,
 			id: event.response.user_id
 		});
+		allowAllAccessRights = true;
 	}}
 	successfulMessage="Project is now shared with the specified user"
 >
@@ -42,15 +44,16 @@
 			id="permissions:{Permission.All}"
 			name="permissions[]"
 			value={Permission.All}
+			checked={allowAllAccessRights}
 			label="Allow all permissions"
-			type="checkbox"
-			inputClasses="checkbox-warning"
+			type="toggle"
+			inputClasses="toggle toggle-success"
 			labelClasses="border border-info"
 			onchange={(e)=>{
 				allowAllAccessRights = (e.target as HTMLInputElement).checked;
 			}}
 		></FormInput>
-		<div class="grid grid-cols-1 gap-2 lg:grid-cols-2">
+		<div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
 			{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
 				<FormInput
 					id="permissions:{permission}"
