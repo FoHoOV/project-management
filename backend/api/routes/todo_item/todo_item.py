@@ -54,7 +54,7 @@ def update_order(
     return todo_item_crud.update_order(db=db, moving_item=todo, user_id=current_user.id)
 
 
-@router.delete(path="/remove")
+@router.delete(path="/delete")
 def remove(
     current_user: Annotated[User, Depends(get_current_user)],
     todo: TodoItemDelete,

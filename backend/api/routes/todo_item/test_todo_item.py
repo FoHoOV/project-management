@@ -249,7 +249,7 @@ def test_todo_item_permissions():
     # try deleting from a user who doesn't have access
     response = client.request(
         "delete",
-        "/todo-item/remove",
+        "/todo-item/delete",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
         json={
             "id": todo_item.id,
@@ -293,7 +293,7 @@ def test_todo_item_permissions():
     # try deleting the item from the owner
     response = client.request(
         "delete",
-        "/todo-item/remove",
+        "/todo-item/delete",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
             "id": todo_item.id,

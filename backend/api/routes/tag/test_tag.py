@@ -4,6 +4,7 @@ from operator import le
 from fastapi.testclient import TestClient
 from api.test import TEST_USERS, get_access_token, app
 from db.models.user_project_permission import Permission
+from db.schemas.tag import Tag
 from db.schemas.project import Project, ProjectRead
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
@@ -13,7 +14,7 @@ from error.exceptions import ErrorCode
 client = TestClient(app)
 
 
-def test_todo_comment_permissions():
+def test_todo_tag_permissions():
     # create a project
     project = Project.model_validate(
         client.post(
@@ -45,7 +46,7 @@ def test_todo_comment_permissions():
         json={
             "project_id": project.id,
             "username": TEST_USERS[1]["username"],
-            "permissions": [Permission.CREATE_COMMENT],
+            "permissions": [Permission.CREATE_TAG],
         },
     )
 
@@ -66,76 +67,85 @@ def test_todo_comment_permissions():
 
     # try creating from a user doesn't have access
     response = client.post(
-        "/todo-item/comment/create",
+        "/tag/attach-to-todo",
         json={
+            "project_id": project.id,
             "todo_id": todo_item.id,
-            "message": "some message",
+            "name": "test tag",
+            "create_if_doesnt_exist": True,
         },
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
     )
 
     assert (
         response.status_code == 400
-    ), "user c(not shared) should not be able to create a new comment because they don't have access"
+    ), "user c(not shared) should not be able to create a new tag because they don't have access"
 
     # try creating from a user who this project is shared with
     response = client.post(
-        "/todo-item/comment/create",
-        json={"todo_id": todo_item.id, "message": "some message"},
+        "/tag/attach-to-todo",
+        json={
+            "project_id": project.id,
+            "todo_id": todo_item.id,
+            "name": "test tag",
+            "create_if_doesnt_exist": True,
+        },
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
     )
 
     assert (
         response.status_code == 200
-    ), "user b(shared) should be able to create the todo comment because they have access"
+    ), "user b(shared) should be able to create a tag because they have access"
 
     # try creating from a owner
-    response = client.post(
-        "/todo-item/comment/create",
-        json={"todo_id": todo_item.id, "message": "some message"},
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+    created_tag_by_owner = Tag.model_validate(
+        client.post(
+            "/tag/attach-to-todo",
+            json={
+                "project_id": project.id,
+                "todo_id": todo_item.id,
+                "name": "test tag 2",
+                "create_if_doesnt_exist": True,
+            },
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        ).json(),
+        strict=True,
     )
 
     assert (
         response.status_code == 200
-    ), "user a(owner) should be able to create the todo comment because they have access"
+    ), "user a(owner) should be able to create a tag because they have access"
 
-    # try removing a comment from a not shared user
+    # try removing a tag from a not shared user
     response = client.request(
         "delete",
-        url="/todo-item/comment/delete",
+        url="/tag/detach-from-todo",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
-        json={
-            "id": todo_item.id,
-        },
+        json={"tag_id": created_tag_by_owner.id, "todo_id": todo_item.id},
     )
 
     assert (
         response.status_code == 400
-    ), "user c(not shared) shouldn't be able to remove a comment item when it doesn't have the permission to do so"
+    ), "user c(not shared) shouldn't be able to remove a tag item when it doesn't have the permission to do so"
 
-    # try removing a comment from a user who doesnt even have access
+    # try removing a tag from a user who doesnt even have access
     response = client.request(
         "delete",
-        url="/todo-item/comment/delete",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
-        json={
-            "id": todo_item.id,
-        },
+        url="/tag/detach-from-todo",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        json={"tag_id": created_tag_by_owner.id, "todo_id": todo_item.id},
     )
 
     assert (
         response.status_code == 400
-    ), "user b(shared) shouldn't be able to remove a todo comment when it doesn't have the permission to do so"
+    ), "user b(shared) shouldn't be able to remove a todo tag when it doesn't have the permission to do so"
 
-    # try removing a comment from shared user
+    # try removing a tag from shared user
     response = client.request(
         "delete",
-        url="/todo-item/comment/delete",
+        url="/tag/detach-from-todo",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-        json={
-            "id": todo_item.id,
-        },
+        json={"tag_id": created_tag_by_owner.id, "todo_id": todo_item.id},
     )
 
     assert response.status_code == 200, "user a(owner) should be be able to remove"
