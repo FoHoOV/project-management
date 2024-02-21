@@ -16,11 +16,20 @@ client = TestClient(app)
 
 def test_todo_category_permissions():
     # create a project
-    project = Project.model_validate(
+    project_one = Project.model_validate(
         client.post(
             "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-            json={"title": "reorder_test_p", "description": "-"},
+            json={"title": "project 1", "description": "-"},
+        ).json(),
+        strict=True,
+    )
+
+    project_two = Project.model_validate(
+        client.post(
+            "/project/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={"title": "project 2", "description": "-"},
         ).json(),
         strict=True,
     )
@@ -31,9 +40,9 @@ def test_todo_category_permissions():
             "/todo-category/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={
-                "title": "reorder_test_c",
+                "title": "cat test 1",
                 "description": "-",
-                "project_id": project.id,
+                "project_id": project_one.id,
             },
         ).json(),
         strict=True,
@@ -44,9 +53,24 @@ def test_todo_category_permissions():
         "/project/attach-to-user",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "username": TEST_USERS[1]["username"],
             "permissions": [Permission.UPDATE_TODO_CATEGORY],
+        },
+    )
+
+    assert (
+        response.status_code == 200
+    ), "owner should be able to share the project with others"
+
+    # share it with user b with only update category permission
+    response = client.post(
+        "/project/attach-to-user",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        json={
+            "project_id": project_two.id,
+            "username": TEST_USERS[1]["username"],
+            "permissions": [Permission.ALL],
         },
     )
 
@@ -92,7 +116,7 @@ def test_todo_category_permissions():
         "delete",
         url="/todo-category/detach-from-project",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
-        json={"category_id": category.id, "project_id": project.id},
+        json={"category_id": category.id, "project_id": project_one.id},
     )
 
     assert (
@@ -104,7 +128,7 @@ def test_todo_category_permissions():
         "delete",
         url="/todo-category/detach-from-project",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
-        json={"category_id": category.id, "project_id": project.id},
+        json={"category_id": category.id, "project_id": project_one.id},
     )
 
     assert (
@@ -116,7 +140,7 @@ def test_todo_category_permissions():
         "delete",
         url="/todo-category/detach-from-project",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-        json={"category_id": category.id, "project_id": project.id},
+        json={"category_id": category.id, "project_id": project_one.id},
     )
 
     assert (
