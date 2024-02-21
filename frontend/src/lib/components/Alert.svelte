@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import Fa from 'svelte-fa';
-	import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+	import { faClose, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+	import { untrack } from 'svelte';
 
 	export type Props = {
 		message?: string | null;
@@ -11,6 +12,7 @@
 
 <script lang="ts">
 	const { type, message = null, class: className = '' } = $props<Props>();
+	let closedByUser = $state<boolean>(false);
 
 	const alertClassName = $derived.by(() => {
 		switch (type) {
@@ -24,11 +26,21 @@
 				return 'info';
 		}
 	});
+
+	$effect(() => {
+		message;
+		untrack(() => {
+			closedByUser = false;
+		});
+	});
 </script>
 
-{#if message}
-	<div class="alert alert-{alertClassName} rounded-md {className}">
+{#if message && !closedByUser}
+	<div role="alert" class="alert alert-{alertClassName} rounded-md {className}">
 		<Fa icon={faExclamationCircle} />
 		<span>{message}</span>
+		<button class="btn-sm" onclick={() => (closedByUser = true)}>
+			<Fa class="cursor-pointer" icon={faClose} />
+		</button>
 	</div>
 {/if}
