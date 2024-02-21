@@ -30,8 +30,7 @@
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
-	// TODO: https://github.com/sveltejs/svelte/issues/10427
-	// because of this issue bound `confirm` doesnt work in a keyed each block, waiting for a fix :(
+
 	let deleteCommentConfirms = $state<Confirm[]>([]);
 
 	const todoCategoriesStore = getTodosStoreFromContext();

@@ -15,8 +15,6 @@
 </script>
 
 <script lang="ts">
-	// had to remove the default value for this because of this weird issue
-	// TODO: upstream issue i've created: https://github.com/sveltejs/svelte/issues/10321
 	const {
 		title,
 		dialogProps = {},

@@ -29,10 +29,10 @@ You can find the demo at [this](https://todos-fohoov.vercel.app/) url (it might 
 2. goto the frontend project and follow the steps of its README.md
 
 # known bugs
+1. conditional rendering: https://github.com/sveltejs/svelte/issues/10321
+2. animation bugs(this bug basically destroys my UX but whatever :D): https://github.com/sveltejs/svelte/issues/10493
 
-1. animation bugs after upating items are buggy, its an upstream bug and I'll w8 for a fix.
-
-# IMPORTANT
+# important
 
 you might need to delete the database after an update. I'll not implement migrations until I'm completely happy with the project. If you are required to delete the db after an update I'll mention it in the release notes (_/ω＼_)
 
