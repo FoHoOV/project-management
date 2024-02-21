@@ -13,14 +13,14 @@ from db.schemas.todo_item import TodoItem
 
 def test_todo_tag_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_client: TestClient,
     test_project_factory: Callable[[TestUserType], Project],
     test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
+    test_todo_item_factory: Callable[[TestUserType, int], TodoCategory],
     test_attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
+    test_client: TestClient,
 ):
     user_a = test_users[0]
     user_b = test_users[1]

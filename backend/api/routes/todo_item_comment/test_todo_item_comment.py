@@ -10,12 +10,14 @@ from db.schemas.todo_item_comment import TodoComment
 
 def test_todo_comment_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_client: TestClient,
-    test_project_factory: Callable[..., Project],
-    test_category_factory: Callable[..., TodoCategory],
-    test_todo_item_factory: Callable[..., TodoItem],
-    test_attach_project_to_user: Callable[..., None],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_category_factory: Callable[[TestUserType, int], TodoCategory],
+    test_todo_item_factory: Callable[[TestUserType, int], TodoCategory],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
     test_users: list[TestUserType],
+    test_client: TestClient,
 ):
     # Create a project
     project_one = test_project_factory(test_users[0])

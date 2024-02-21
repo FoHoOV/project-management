@@ -14,8 +14,8 @@ from error.exceptions import ErrorCode
 @pytest.mark.parametrize("template_flag", [False, True])
 def test_create_project(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_client: TestClient,
     test_users: list[TestUserType],
+    test_client: TestClient,
     template_flag: bool,
 ):
     # Choose a random user from `test_users`
@@ -61,10 +61,12 @@ def test_create_project(
 
 def test_project_accessibility(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[..., Project],
-    test_client: TestClient,
-    test_attach_project_to_user: Callable[..., None],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
     test_users: list[TestUserType],
+    test_client: TestClient,
 ):
     # Project creation by user A
     user_a = test_users[0]
@@ -105,9 +107,11 @@ def test_project_accessibility(
 
 
 def test_cannot_share_project_to_same_user_multiple_times(
-    test_project_factory: Callable[..., Project],
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
-    test_attach_project_to_user: Callable[..., None],
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
     test_users: list[TestUserType],
     test_client: TestClient,
 ):

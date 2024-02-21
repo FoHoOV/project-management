@@ -16,7 +16,10 @@ def test_new_user_signup(test_client: TestClient):
     assert "username" in response.json()
 
 
-def test_existing_user_signup(test_client: TestClient, test_users: list[TestUserType]):
+def test_existing_user_signup(
+    test_users: list[TestUserType],
+    test_client: TestClient,
+):
     response = test_client.post(
         "/user/signup",
         json={

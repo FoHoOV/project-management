@@ -1,148 +1,83 @@
-from email import header
-import json
-from operator import le
+from typing import Callable, Dict
+import pytest
 from fastapi.testclient import TestClient
-from api.conftest import _TEST_USERS, access_token_factory, app
+
+from api.conftest import TestUserType
 from db.models.user_project_permission import Permission
-from db.schemas.tag import Tag
-from db.schemas.project import Project, ProjectRead
+from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
-from db.schemas.todo_item import TodoItem
-from error.exceptions import ErrorCode
 
 
-client = TestClient(app)
+def test_todo_category_permissions(
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_category_factory: Callable[[TestUserType, int], TodoCategory],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+    test_client: TestClient,
+):
+    user_a = test_users[0]  # Owner
+    user_b = test_users[1]  # Shared user with permission
+    user_c = test_users[2]  # User without access
 
+    # Create two projects and add a category to the first one
+    project_one = test_project_factory(user_a)
+    project_two = test_project_factory(user_a)
+    category = test_category_factory(user_a, project_one.id)
 
-def test_todo_category_permissions():
-    # create a project
-    project_one = Project.model_validate(
-        client.post(
-            "/project/create",
-            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
-            json={"title": "project 1", "description": "-"},
-        ).json(),
-        strict=True,
+    # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
+    test_attach_project_to_user(
+        user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
-    project_two = Project.model_validate(
-        client.post(
-            "/project/create",
-            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
-            json={"title": "project 2", "description": "-"},
-        ).json(),
-        strict=True,
+    # Share project_two with user_b with ALL permissions
+    test_attach_project_to_user(
+        user_a,
+        user_b,
+        project_two.id,
+        [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
     )
 
-    # add a category to the newly created project
-    category = TodoCategory.model_validate(
-        client.post(
-            "/todo-category/create",
-            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
-            json={
-                "title": "cat test 1",
-                "description": "-",
-                "project_id": project_one.id,
-            },
-        ).json(),
-        strict=True,
-    )
-
-    # share it with user b with only update category permission
-    response = client.post(
-        "/project/attach-to-user",
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
-        json={
-            "project_id": project_one.id,
-            "username": _TEST_USERS[1]["username"],
-            "permissions": [Permission.UPDATE_TODO_CATEGORY],
-        },
-    )
-
-    assert (
-        response.status_code == 200
-    ), "owner should be able to share the project with others"
-
-    # share it with user b with ALL permissions to make sure this doesn't affect the project 1 permissions
-    response = client.post(
-        "/project/attach-to-user",
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
-        json={
-            "project_id": project_two.id,
-            "username": _TEST_USERS[1]["username"],
-            "permissions": [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
-        },
-    )
-
-    assert (
-        response.status_code == 200
-    ), "owner should be able to share the project with others"
-
-    # try updating from a user doesn't have access
-    response = client.patch(
+    # Try updating a category by user_c (should fail)
+    response = test_client.patch(
         "/todo-category/update-item",
+        headers=auth_header_factory(user_c),
         json={"id": category.id, "title": "new title"},
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[2])}"},
     )
-
     assert (
         response.status_code == 400
-    ), "user c(not shared) should not be able to update a todo category because they don't have access"
+    ), "User C (without access) should not be able to update the category"
 
-    # try updating from a user who this project is shared with
-    response = client.patch(
+    # Update the category by user_b (should succeed)
+    response = test_client.patch(
         "/todo-category/update-item",
+        headers=auth_header_factory(user_b),
         json={"id": category.id, "title": "new title"},
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
     )
-
     assert (
         response.status_code == 200
-    ), "user b(shared) should be able to update a todo category because they have access"
+    ), "User B (with permission) should be able to update the category"
 
-    # try creating from a owner
-    response = client.patch(
-        "/todo-category/update-item",
-        json={"id": category.id, "title": "new title"},
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
-    )
-
-    assert (
-        response.status_code == 200
-    ), "user a(owner) should be able to update a todo category because they have access"
-
-    # try removing a tag from a not shared user
-    response = client.request(
+    # Try removing the category by user_c (should fail)
+    response = test_client.request(
         "delete",
-        url="/todo-category/detach-from-project",
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[2])}"},
+        "/todo-category/detach-from-project",
+        headers=auth_header_factory(user_c),
         json={"category_id": category.id, "project_id": project_one.id},
     )
-
     assert (
         response.status_code == 400
-    ), "user c(not shared) shouldn't be able to remove a todo category item when it doesn't have the permission to do so"
+    ), "User C (without access) should not be able to remove the category"
 
-    # try removing a tag from a user who doesnt even have access
-    response = client.request(
+    # Remove the category by user_a (owner) (should succeed)
+    response = test_client.request(
         "delete",
-        url="/todo-category/detach-from-project",
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
+        "/todo-category/detach-from-project",
+        headers=auth_header_factory(user_a),
         json={"category_id": category.id, "project_id": project_one.id},
     )
-
-    assert (
-        response.status_code == 400
-    ), "user b(shared) shouldn't be able to remove a todo category when it doesn't have the permission to do so"
-
-    # try removing a tag from shared user
-    response = client.request(
-        "delete",
-        url="/todo-category/detach-from-project",
-        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
-        json={"category_id": category.id, "project_id": project_one.id},
-    )
-
     assert (
         response.status_code == 200
-    ), "user a(owner) should be be able to remove todo categories"
+    ), "User A (owner) should be able to remove the category"
