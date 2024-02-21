@@ -27,12 +27,14 @@ def test_todo_comment_permissions(
     # Share project with user b with only edit todo permission
     test_attach_project_to_user(
         test_users[0],
+        test_users[1],
         project_one.id,
         [Permission.CREATE_COMMENT],
     )
     # Share this project to user b to ensure permissions of this doesn't leak into project_one permissions
     test_attach_project_to_user(
         test_users[0],
+        test_users[1],
         project_two.id,
         [
             Permission.CREATE_COMMENT,

@@ -87,14 +87,17 @@ def test_attach_project_to_user(
     auth_header_factory: Callable[..., dict[str, str]], test_client: TestClient
 ):
     def _attach_to_user(
-        user: TestUserType, project_id: int, permissions: list[Permission]
+        owner: TestUserType,
+        new_user: TestUserType,
+        project_id: int,
+        permissions: list[Permission],
     ):
         attach_to_user_response = test_client.post(
             "/project/attach-to-user",
-            headers=auth_header_factory(user),
+            headers=auth_header_factory(owner),
             json={
                 "project_id": project_id,
-                "username": user["username"],
+                "username": new_user["username"],
                 "permissions": permissions,
             },
         )
