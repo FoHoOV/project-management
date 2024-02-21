@@ -36,8 +36,6 @@
 		...restProps
 	} = $props<Props>();
 
-	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
-
 	export function focus() {
 		input?.focus();
 	}
@@ -45,6 +43,15 @@
 	export function inputElement() {
 		return input;
 	}
+
+	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
+	const errorMessage = $derived.by(() => {
+		if (typeof errors === 'string') {
+			return errors;
+		}
+
+		return errors?.at?.(0);
+	});
 </script>
 
 <div class="flex flex-col {wrapperClasses}">
@@ -81,5 +88,5 @@
 		{/if}
 	</label>
 
-	<Alert type="error" message={typeof errors === 'string' ? errors : errors?.at(0)} class="mt-2" />
+	<Alert type="error" message={errorMessage} class="mt-2" />
 </div>

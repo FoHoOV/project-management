@@ -12,7 +12,9 @@
 
 <script lang="ts">
 	const { type, message = null, class: className = '' } = $props<Props>();
-	let closedByUser = $state<boolean>(false);
+
+	let closed = $state<boolean>(false);
+	let autoClosePercentage = $state<number>(0);
 
 	const alertClassName = $derived.by(() => {
 		switch (type) {
@@ -29,18 +31,41 @@
 
 	$effect(() => {
 		message;
+		let intervalId: NodeJS.Timeout;
+
 		untrack(() => {
-			closedByUser = false;
+			closed = false;
+			autoClosePercentage = 0;
+
+			intervalId = setInterval(() => {
+				autoClosePercentage += 1;
+			}, 90);
 		});
+
+		return () => {
+			clearInterval(intervalId);
+		};
+	});
+
+	$effect(() => {
+		if (autoClosePercentage >= 100) {
+			closed = true;
+		}
 	});
 </script>
 
-{#if message && !closedByUser}
+{#if message && !closed}
 	<div role="alert" class="alert alert-{alertClassName} rounded-md {className}">
 		<Fa icon={faExclamationCircle} />
 		<span>{message}</span>
-		<button class="btn-sm" onclick={() => (closedByUser = true)}>
-			<Fa class="cursor-pointer" icon={faClose} />
+		<button class="h-8 w-8" onclick={() => (closed = true)}>
+			<div
+				class="radial-progress max-h-full max-w-full overflow-hidden"
+				style="--value:{autoClosePercentage}; --thickness: 2px;"
+				role="progressbar"
+			>
+				<Fa class="cursor-pointer" icon={faClose} />
+			</div>
 		</button>
 	</div>
 {/if}
