@@ -7,6 +7,7 @@ from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectRead
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
+from db.schemas.todo_item_comment import TodoComment
 from error.exceptions import ErrorCode
 
 
@@ -100,6 +101,8 @@ def test_todo_comment_permissions():
         response.status_code == 200
     ), "user a(owner) should be able to create the todo comment because they have access"
 
+    todo_comment = TodoComment.model_validate(response.json(), strict=True)
+
     # try removing a comment from a not shared user
     response = client.request(
         "delete",
@@ -134,7 +137,7 @@ def test_todo_comment_permissions():
         url="/todo-item/comment/delete",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
-            "id": todo_item.id,
+            "id": todo_comment.id,
         },
     )
 
