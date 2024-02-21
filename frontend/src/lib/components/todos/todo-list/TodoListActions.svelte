@@ -25,7 +25,6 @@
 
 	async function handleUpdateAction(event: Event) {
 		componentState = 'calling-service';
-		const cachedCheckedState = (event.target as HTMLInputElement).checked;
 		await callServiceInClient({
 			serviceCall: async () => {
 				const result = await TodoCategoryClient({ token: $page.data.token }).updateItemTodoCategory(
@@ -42,25 +41,26 @@
 			errorCallback: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
-				(event.target as HTMLInputElement).checked = cachedCheckedState;
+				(event.target as HTMLInputElement).checked = !(event.target as HTMLInputElement).checked;
 			}
 		});
 	}
 </script>
 
-<Alert type="error" message={apiErrorTitle} class="mb-2" />
-{#each Object.values(Action) as action}
-	<div class="relative my-2">
-		<Spinner visible={componentState === 'calling-service'}></Spinner>
+<div class="relative my-2">
+	<Alert type="error" message={apiErrorTitle} class="mb-2" />
+	<Spinner visible={componentState === 'calling-service'}></Spinner>
+	{#each Object.values(Action) as action}
 		<FormInput
 			label={action.replaceAll('_', ' ')}
 			name={action}
 			value={action}
 			inputClasses="checkbox-warning"
 			labelClasses="border border-info"
+			wrapperClasses="my-2"
 			onchange={handleUpdateAction}
 			type="checkbox"
 			checked={category.actions.some((value) => value.action == action)}
 		></FormInput>
-	</div>
-{/each}
+	{/each}
+</div>
