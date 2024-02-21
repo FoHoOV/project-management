@@ -18,6 +18,7 @@ features it has right now:
 11. creating projects from a default template
 12. adding rules to todo categories (currently we only support `MARK_AS_DONE` action meaning when you move a todo item to a todo category, it will be automatically marked as `Done`)
 13. setting due dates for each todoitem (with add/edit/remove)
+14. setting custom permissions per user (PENDING FEATURE: update these permissions, currenly you have to detach and ask the OWNER to invite you with the new permissions)
 
 # demo
 
