@@ -1,15 +1,15 @@
 from secrets import choice
 from fastapi.testclient import TestClient
 
-from api.test import TEST_USERS, app
+from api.conftest import _TEST_USERS, app
 
 
 client = TestClient(app)
 
 
 def test_login():
-    username_lower_case = TEST_USERS[0]["username"].lower()
-    username_upper_case = TEST_USERS[0]["username"].upper()
+    username_lower_case = _TEST_USERS[0]["username"].lower()
+    username_upper_case = _TEST_USERS[0]["username"].upper()
 
     for username in [username_lower_case, username_upper_case]:
         response = client.post(
@@ -17,7 +17,7 @@ def test_login():
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={
                 "username": username,
-                "password": TEST_USERS[0]["password"],
+                "password": _TEST_USERS[0]["password"],
             },
         )
 

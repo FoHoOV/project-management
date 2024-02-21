@@ -2,7 +2,7 @@ from email import header
 import json
 from operator import le
 from fastapi.testclient import TestClient
-from api.test import TEST_USERS, get_access_token, app
+from api.conftest import _TEST_USERS, access_token_factory, app
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectRead
 from db.schemas.todo_category import TodoCategory
@@ -16,7 +16,7 @@ client = TestClient(app)
 def test_create_todo_item_not_belonging_to_user():
     response = client.post(
         "/todo-item/create",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={
             "title": "test",
             "description": "test",
@@ -37,7 +37,7 @@ def test_list_all_todos():
     project = Project.model_validate(
         client.post(
             "/project/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={"title": "project 1", "description": "-"},
         ).json(),
         strict=True,
@@ -47,7 +47,7 @@ def test_list_all_todos():
     category = TodoCategory.model_validate(
         client.post(
             "todo-category/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": "list_test_c",
                 "description": "-",
@@ -62,7 +62,7 @@ def test_list_all_todos():
     for i in range(number_of_todos_to_create):
         response = client.post(
             "/todo-item/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": f"test{i}",
                 "description": f"test{i}",
@@ -77,7 +77,7 @@ def test_list_all_todos():
     todos_response = client.get(
         "/todo-item/list",
         params={"project_id": project.id, "category_id": category.id},
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
     )
 
     assert todos_response.status_code == 200
@@ -91,7 +91,7 @@ def test_list_all_todos():
         for x in client.get(
             "/todo-item/list",
             params={"project_id": project.id, "category_id": category.id},
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         ).json()
     ]
 
@@ -115,7 +115,7 @@ def test_reorder_todos():
     project = Project.model_validate(
         client.post(
             "/project/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={"title": "reorder_test_p", "description": "-"},
         ).json(),
         strict=True,
@@ -125,7 +125,7 @@ def test_reorder_todos():
     category = TodoCategory.model_validate(
         client.post(
             "/todo-category/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": "reorder_test_c",
                 "description": "-",
@@ -140,7 +140,7 @@ def test_reorder_todos():
     for i in range(number_of_todos_to_create):
         response = client.post(
             "/todo-item/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": f"test{i}",
                 "description": f"test{i}",
@@ -157,7 +157,7 @@ def test_reorder_todos():
         for x in client.get(
             "/todo-item/list",
             params={"project_id": project.id, "category_id": category.id},
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         ).json()
     ]
 
@@ -170,7 +170,7 @@ def test_reorder_todos():
             "right_id": todos[-1].id,
             "new_category_id": category.id,
         },
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
     )
 
     assert reorder_response.status_code == 200
@@ -180,7 +180,7 @@ def test_reorder_todos():
         for x in client.get(
             "/todo-item/list",
             params={"project_id": project.id, "category_id": category.id},
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         ).json()
     ]
 
@@ -204,7 +204,7 @@ def test_todo_item_permissions():
     project_one = Project.model_validate(
         client.post(
             "/project/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={"title": "reorder_test_p", "description": "-"},
         ).json(),
         strict=True,
@@ -213,7 +213,7 @@ def test_todo_item_permissions():
     project_two = Project.model_validate(
         client.post(
             "/project/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={"title": "project 2", "description": "-"},
         ).json(),
         strict=True,
@@ -223,7 +223,7 @@ def test_todo_item_permissions():
     category = TodoCategory.model_validate(
         client.post(
             "/todo-category/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": "reorder_test_c",
                 "description": "-",
@@ -236,10 +236,10 @@ def test_todo_item_permissions():
     # share it with user b with only edit todo permission
     response = client.post(
         "/project/attach-to-user",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={
             "project_id": project_one.id,
-            "username": TEST_USERS[1]["username"],
+            "username": _TEST_USERS[1]["username"],
             "permissions": [Permission.UPDATE_TODO_ITEM],
         },
     )
@@ -251,10 +251,10 @@ def test_todo_item_permissions():
     # share it with user b with ALL permissions to make sure this doesn't affect the project 1 permissions
     response = client.post(
         "/project/attach-to-user",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={
             "project_id": project_two.id,
-            "username": TEST_USERS[1]["username"],
+            "username": _TEST_USERS[1]["username"],
             "permissions": [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
         },
     )
@@ -263,7 +263,7 @@ def test_todo_item_permissions():
     todo_item = TodoItem.model_validate(
         client.post(
             "/todo-item/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": "test",
                 "description": "test",
@@ -278,7 +278,7 @@ def test_todo_item_permissions():
     response = client.request(
         "delete",
         "/todo-item/delete",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
         json={
             "id": todo_item.id,
         },
@@ -296,7 +296,7 @@ def test_todo_item_permissions():
             "category_id": todo_item.category_id,
             "is_done": True,
         },
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
     )
 
     assert (
@@ -311,7 +311,7 @@ def test_todo_item_permissions():
             "category_id": todo_item.category_id,
             "is_done": True,
         },
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[2])}"},
     )
 
     assert (
@@ -322,7 +322,7 @@ def test_todo_item_permissions():
     response = client.request(
         "delete",
         "/todo-item/delete",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={
             "id": todo_item.id,
         },

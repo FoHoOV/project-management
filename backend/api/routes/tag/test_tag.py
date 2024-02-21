@@ -2,7 +2,7 @@ from email import header
 import json
 from operator import le
 from fastapi.testclient import TestClient
-from api.test import TEST_USERS, get_access_token, app
+from api.conftest import _TEST_USERS, access_token_factory, app
 from db.models.user_project_permission import Permission
 from db.schemas.tag import Tag
 from db.schemas.project import Project, ProjectRead
@@ -19,7 +19,7 @@ def test_todo_tag_permissions():
     project_one = Project.model_validate(
         client.post(
             "/project/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={"title": "project 1", "description": "-"},
         ).json(),
         strict=True,
@@ -28,7 +28,7 @@ def test_todo_tag_permissions():
     project_two = Project.model_validate(
         client.post(
             "/project/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={"title": "project 2", "description": "-"},
         ).json(),
         strict=True,
@@ -38,7 +38,7 @@ def test_todo_tag_permissions():
     category = TodoCategory.model_validate(
         client.post(
             "/todo-category/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": "reorder_test_c",
                 "description": "-",
@@ -51,10 +51,10 @@ def test_todo_tag_permissions():
     # share it with user b with only edit todo permission
     response = client.post(
         "/project/attach-to-user",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={
             "project_id": project_one.id,
-            "username": TEST_USERS[1]["username"],
+            "username": _TEST_USERS[1]["username"],
             "permissions": [Permission.CREATE_TAG],
         },
     )
@@ -66,10 +66,10 @@ def test_todo_tag_permissions():
     # share it with user b with ALL permissions to make sure this doesn't affect the project 1 permissions
     response = client.post(
         "/project/attach-to-user",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={
             "project_id": project_two.id,
-            "username": TEST_USERS[1]["username"],
+            "username": _TEST_USERS[1]["username"],
             "permissions": [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
         },
     )
@@ -78,7 +78,7 @@ def test_todo_tag_permissions():
     todo_item = TodoItem.model_validate(
         client.post(
             "/todo-item/create",
-            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
             json={
                 "title": "test",
                 "description": "test",
@@ -98,7 +98,7 @@ def test_todo_tag_permissions():
             "name": "test tag",
             "create_if_doesnt_exist": True,
         },
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[2])}"},
     )
 
     assert (
@@ -114,7 +114,7 @@ def test_todo_tag_permissions():
             "name": "test tag",
             "create_if_doesnt_exist": True,
         },
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
     )
 
     assert (
@@ -129,7 +129,7 @@ def test_todo_tag_permissions():
             "name": "test tag 2",
             "create_if_doesnt_exist": True,
         },
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
     )
 
     assert (
@@ -146,7 +146,7 @@ def test_todo_tag_permissions():
     response = client.request(
         "delete",
         url="/tag/detach-from-todo",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[2])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[2])}"},
         json={"tag_id": created_tag_by_owner.id, "todo_id": todo_item.id},
     )
 
@@ -158,7 +158,7 @@ def test_todo_tag_permissions():
     response = client.request(
         "delete",
         url="/tag/detach-from-todo",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[1])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[1])}"},
         json={"tag_id": created_tag_by_owner.id, "todo_id": todo_item.id},
     )
 
@@ -170,7 +170,7 @@ def test_todo_tag_permissions():
     response = client.request(
         "delete",
         url="/tag/detach-from-todo",
-        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        headers={"Authorization": f"Bearer {access_token_factory(_TEST_USERS[0])}"},
         json={"tag_id": created_tag_by_owner.id, "todo_id": todo_item.id},
     )
 
