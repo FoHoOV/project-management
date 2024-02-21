@@ -16,11 +16,20 @@ client = TestClient(app)
 
 def test_todo_tag_permissions():
     # create a project
-    project = Project.model_validate(
+    project_one = Project.model_validate(
         client.post(
             "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-            json={"title": "reorder_test_p", "description": "-"},
+            json={"title": "project 1", "description": "-"},
+        ).json(),
+        strict=True,
+    )
+
+    project_two = Project.model_validate(
+        client.post(
+            "/project/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={"title": "project 2", "description": "-"},
         ).json(),
         strict=True,
     )
@@ -33,7 +42,7 @@ def test_todo_tag_permissions():
             json={
                 "title": "reorder_test_c",
                 "description": "-",
-                "project_id": project.id,
+                "project_id": project_one.id,
             },
         ).json(),
         strict=True,
@@ -44,9 +53,24 @@ def test_todo_tag_permissions():
         "/project/attach-to-user",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "username": TEST_USERS[1]["username"],
             "permissions": [Permission.CREATE_TAG],
+        },
+    )
+
+    assert (
+        response.status_code == 200
+    ), "owner should be able to share the project with others"
+
+    # share it with user b with ALL permissions to make sure this doesn't affect the project 1 permissions
+    response = client.post(
+        "/project/attach-to-user",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        json={
+            "project_id": project_two.id,
+            "username": TEST_USERS[1]["username"],
+            "permissions": [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
         },
     )
 
@@ -69,7 +93,7 @@ def test_todo_tag_permissions():
     response = client.post(
         "/tag/attach-to-todo",
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "todo_id": todo_item.id,
             "name": "test tag",
             "create_if_doesnt_exist": True,
@@ -85,7 +109,7 @@ def test_todo_tag_permissions():
     response = client.post(
         "/tag/attach-to-todo",
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "todo_id": todo_item.id,
             "name": "test tag",
             "create_if_doesnt_exist": True,
@@ -100,7 +124,7 @@ def test_todo_tag_permissions():
     response = client.post(
         "/tag/attach-to-todo",
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "todo_id": todo_item.id,
             "name": "test tag 2",
             "create_if_doesnt_exist": True,

@@ -16,11 +16,20 @@ client = TestClient(app)
 
 def test_todo_comment_permissions():
     # create a project
-    project = Project.model_validate(
+    project_one = Project.model_validate(
         client.post(
             "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-            json={"title": "reorder_test_p", "description": "-"},
+            json={"title": "project 1", "description": "-"},
+        ).json(),
+        strict=True,
+    )
+
+    project_two = Project.model_validate(
+        client.post(
+            "/project/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={"title": "project 2", "description": "-"},
         ).json(),
         strict=True,
     )
@@ -33,7 +42,7 @@ def test_todo_comment_permissions():
             json={
                 "title": "reorder_test_c",
                 "description": "-",
-                "project_id": project.id,
+                "project_id": project_one.id,
             },
         ).json(),
         strict=True,
@@ -44,7 +53,7 @@ def test_todo_comment_permissions():
         "/project/attach-to-user",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "username": TEST_USERS[1]["username"],
             "permissions": [Permission.CREATE_COMMENT],
         },

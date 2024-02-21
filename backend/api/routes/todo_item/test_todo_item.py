@@ -38,7 +38,7 @@ def test_list_all_todos():
         client.post(
             "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-            json={"title": "list_test_p", "description": "-"},
+            json={"title": "project 1", "description": "-"},
         ).json(),
         strict=True,
     )
@@ -48,7 +48,11 @@ def test_list_all_todos():
         client.post(
             "todo-category/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
-            json={"title": "list_test_c", "description": "-", "project_id": project.id},
+            json={
+                "title": "list_test_c",
+                "description": "-",
+                "project_id": project.id,
+            },
         ).json(),
         strict=True,
     )
@@ -197,11 +201,20 @@ def test_reorder_todos():
 
 def test_todo_item_permissions():
     # create a project
-    project = Project.model_validate(
+    project_one = Project.model_validate(
         client.post(
             "/project/create",
             headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
             json={"title": "reorder_test_p", "description": "-"},
+        ).json(),
+        strict=True,
+    )
+
+    project_two = Project.model_validate(
+        client.post(
+            "/project/create",
+            headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+            json={"title": "project 2", "description": "-"},
         ).json(),
         strict=True,
     )
@@ -214,7 +227,7 @@ def test_todo_item_permissions():
             json={
                 "title": "reorder_test_c",
                 "description": "-",
-                "project_id": project.id,
+                "project_id": project_one.id,
             },
         ).json(),
         strict=True,
@@ -225,9 +238,24 @@ def test_todo_item_permissions():
         "/project/attach-to-user",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
-            "project_id": project.id,
+            "project_id": project_one.id,
             "username": TEST_USERS[1]["username"],
             "permissions": [Permission.UPDATE_TODO_ITEM],
+        },
+    )
+
+    assert (
+        response.status_code == 200
+    ), "owner should be able to share the project with others"
+
+    # share it with user b with ALL permissions to make sure this doesn't affect the project 1 permissions
+    response = client.post(
+        "/project/attach-to-user",
+        headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
+        json={
+            "project_id": project_two.id,
+            "username": TEST_USERS[1]["username"],
+            "permissions": [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
         },
     )
 

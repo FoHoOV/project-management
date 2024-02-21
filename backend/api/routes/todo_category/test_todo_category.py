@@ -63,14 +63,14 @@ def test_todo_category_permissions():
         response.status_code == 200
     ), "owner should be able to share the project with others"
 
-    # share it with user b with only update category permission
+    # share it with user b with ALL permissions to make sure this doesn't affect the project 1 permissions
     response = client.post(
         "/project/attach-to-user",
         headers={"Authorization": f"Bearer {get_access_token(TEST_USERS[0])}"},
         json={
             "project_id": project_two.id,
             "username": TEST_USERS[1]["username"],
-            "permissions": [Permission.ALL],
+            "permissions": [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
         },
     )
 
