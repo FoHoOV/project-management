@@ -58,7 +58,7 @@
 	<div role="alert" class="alert alert-{alertClassName} rounded-md {className}">
 		<Fa icon={faExclamationCircle} />
 		<span>{message}</span>
-		<button class="h-8 w-8" onclick={() => (closed = true)}>
+		<button class="h-8 w-8" onclick={() => (closed = true)} tabindex="-1">
 			<div
 				class="radial-progress max-h-full max-w-full overflow-hidden"
 				style="--value:{autoClosePercentage}; --thickness: 2px;"

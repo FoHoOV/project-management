@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
 	import Alert from '$components/Alert.svelte';
+	import { untrack } from 'svelte';
 	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';
 
 	export type Props = (
@@ -45,13 +46,29 @@
 	}
 
 	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
+
+	// TODO: do something about this hack
+	let _hasErrorMessageSetToUndefinedAfterChange = $state(false);
 	const errorMessage = $derived.by(() => {
+		if (!_hasErrorMessageSetToUndefinedAfterChange) {
+			return null;
+		}
+
 		if (typeof errors === 'string') {
 			return errors;
 		}
 
 		return errors?.at?.(0);
 	});
+
+	$effect(() => {
+		errors;
+		_hasErrorMessageSetToUndefinedAfterChange = false;
+		setTimeout(() => {
+			_hasErrorMessageSetToUndefinedAfterChange = true;
+		}, 1);
+	});
+
 	const defaultInputClasses = $derived.by(() => {
 		if (type == 'checkbox') {
 			return 'checkbox';
