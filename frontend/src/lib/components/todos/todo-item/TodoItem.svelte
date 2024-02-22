@@ -161,7 +161,7 @@
 		});
 	}
 
-	function _getDueDateClass(date: Date | null) {
+	function _getDueDateClass(date: (typeof todo)['due_date']) {
 		if (!date || todo.is_done) {
 			return '';
 		}
