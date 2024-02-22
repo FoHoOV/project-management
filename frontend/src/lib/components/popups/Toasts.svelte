@@ -28,7 +28,7 @@
 			in:fade={{ duration: 150, classes: ['group', '-animation-activated'] }}
 			out:slide={{ axis: 'x', duration: 500, classes: ['group', '-animation-activated'] }}
 		>
-			<span class="whitespace-normal text-start group-[.-animation-activated]:whitespace-nowrap"
+			<span class="whitespace-normal text-start group-[-animation-activated]:whitespace-nowrap"
 				>{toast.message}
 			</span>
 
