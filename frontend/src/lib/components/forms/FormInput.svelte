@@ -47,26 +47,16 @@
 
 	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
-	// TODO: do something about this hack
-	let _hasErrorMessageSetToUndefinedAfterChange = $state(false);
-	const errorMessage = $derived.by(() => {
-		if (!_hasErrorMessageSetToUndefinedAfterChange) {
-			return null;
-		}
+	let errorMessage = $state<string | null>();
+	$effect(() => {
+		// TODO: do something about this hack
+		errorMessage = null;
 
 		if (typeof errors === 'string') {
-			return errors;
+			errorMessage = errors;
+		} else {
+			errorMessage = errors?.at?.(0);
 		}
-
-		return errors?.at?.(0);
-	});
-
-	$effect(() => {
-		errors;
-		_hasErrorMessageSetToUndefinedAfterChange = false;
-		setTimeout(() => {
-			_hasErrorMessageSetToUndefinedAfterChange = true;
-		}, 1);
 	});
 
 	const defaultInputClasses = $derived.by(() => {

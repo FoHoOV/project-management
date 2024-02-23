@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import Fa from 'svelte-fa';
 	import { faClose, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-	import { untrack } from 'svelte';
 
 	export type Props = {
 		message?: string | null;
@@ -33,14 +32,12 @@
 		message;
 		let intervalId: NodeJS.Timeout;
 
-		untrack(() => {
-			closed = false;
-			autoClosePercentage = 0;
+		closed = false;
+		autoClosePercentage = 0;
 
-			intervalId = setInterval(() => {
-				autoClosePercentage += 1;
-			}, 90);
-		});
+		intervalId = setInterval(() => {
+			autoClosePercentage += 1;
+		}, 90);
 
 		return () => {
 			clearInterval(intervalId);
