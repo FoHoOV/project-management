@@ -73,7 +73,7 @@
 		if (type == 'checkbox') {
 			return 'checkbox';
 		} else if (type == 'text-area') {
-			return 'text-area w-full';
+			return 'textarea w-full';
 		} else if (type == 'toggle') {
 			return 'toggle';
 		} else {
