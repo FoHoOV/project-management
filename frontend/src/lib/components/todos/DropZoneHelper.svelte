@@ -17,9 +17,7 @@
 <script lang="ts">
 	const { visible = false, direction } = $props<Props>();
 
-	const { icon, flexDirection } = $derived(getIconAndDirection());
-
-	function getIconAndDirection() {
+	const { icon, flexDirection } = $derived.by(() => {
 		switch (direction) {
 			case 'top':
 				return {
@@ -47,7 +45,7 @@
 					flexDirection: 'flex-row'
 				};
 		}
-	}
+	});
 </script>
 
 <div
