@@ -13,6 +13,7 @@ export type EnhanceOptions<
 	submit?: SubmitFunction;
 	action?: TKey;
 	resetOnSubmit?: boolean;
+	invalidateAllAfterSubmit?: boolean;
 };
 
 export type FormActionResultType<

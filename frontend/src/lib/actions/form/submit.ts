@@ -94,7 +94,10 @@ function _defaultSubmitHandler<
 				);
 			}
 
-			await update({ reset: options?.resetOnSubmit });
+			await update({
+				reset: options?.resetOnSubmit,
+				invalidateAll: options?.invalidateAllAfterSubmit ?? true
+			});
 		};
 	};
 }
