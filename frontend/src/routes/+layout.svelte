@@ -25,7 +25,7 @@
 
 	const projectsStore = setProjectsStoreToContext(new Projects(data.projects));
 
-	$effect(() => {
+	$effect.pre(() => {
 		data;
 		untrack(() => {
 			projectsStore.set(data.projects);
