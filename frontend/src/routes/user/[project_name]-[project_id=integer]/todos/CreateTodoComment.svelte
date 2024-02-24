@@ -28,7 +28,8 @@
 	enhancerConfig={{
 		validator: { schema: createTodoCommentSchema },
 		form: form,
-		action: 'createTodoComment'
+		action: 'createTodoComment',
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCommentsStore.add(event.response);

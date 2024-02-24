@@ -25,7 +25,8 @@
 	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,
-		action: 'addTag'
+		action: 'addTag',
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {
 		todoCategoriesStore.addTag(todoId, event.response);

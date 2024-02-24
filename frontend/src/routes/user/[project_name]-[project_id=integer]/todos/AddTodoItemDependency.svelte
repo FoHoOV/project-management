@@ -29,7 +29,8 @@
 	enhancerConfig={{
 		validator: { schema: addTodoItemDependencySchema },
 		form: form,
-		action: 'addTodoItemDependency'
+		action: 'addTodoItemDependency',
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {
 		todoCategoriesStore?.addDependency(todo.id, event.response);

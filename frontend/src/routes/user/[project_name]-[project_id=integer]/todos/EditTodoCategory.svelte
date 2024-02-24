@@ -30,7 +30,8 @@
 		validator: { schema: editTodoCategorySchema },
 		form: form,
 		action: 'editTodoCategory',
-		resetOnSubmit: false
+		resetOnSubmit: false,
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateCategory(event.response);

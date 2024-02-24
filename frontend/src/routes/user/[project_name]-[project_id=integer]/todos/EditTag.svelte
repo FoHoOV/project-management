@@ -27,7 +27,8 @@
 		validator: { schema: editTagSchema },
 		form: form,
 		action: 'editTag',
-		resetOnSubmit: false
+		resetOnSubmit: false,
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTag(event.response);

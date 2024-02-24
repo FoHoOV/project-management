@@ -25,7 +25,8 @@
 		validator: { schema: editProjectSchema },
 		form: form,
 		action: 'edit',
-		resetOnSubmit: false
+		resetOnSubmit: false,
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.update(event.response);

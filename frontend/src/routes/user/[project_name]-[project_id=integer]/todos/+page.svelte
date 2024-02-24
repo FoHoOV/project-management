@@ -39,7 +39,7 @@
 
 	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories(data.response ?? []));
 
-	$effect(() => {
+	$effect.pre(() => {
 		data;
 		untrack(() => {
 			if (data.response) {

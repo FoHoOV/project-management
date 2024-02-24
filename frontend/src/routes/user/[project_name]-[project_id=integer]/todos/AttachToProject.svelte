@@ -27,7 +27,8 @@
 	enhancerConfig={{
 		validator: { schema: attachToProjectSchema },
 		form: form,
-		action: 'attachToProject'
+		action: 'attachToProject',
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		await invalidate(`${generateTodoListUrl($page.params.project_name, $page.params.project_id)}`);

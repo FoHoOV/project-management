@@ -27,7 +27,8 @@
 		validator: { schema: editTodoItemSchema },
 		form: form,
 		action: 'editTodoItem',
-		resetOnSubmit: false
+		resetOnSubmit: false,
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTodo(event.response);

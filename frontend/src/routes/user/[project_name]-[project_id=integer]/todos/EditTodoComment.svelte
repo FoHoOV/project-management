@@ -30,7 +30,8 @@
 		validator: { schema: editTodoCommentSchema },
 		form: form,
 		action: 'editTodoComment',
-		resetOnSubmit: false
+		resetOnSubmit: false,
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCommentsStore.update(event.response);

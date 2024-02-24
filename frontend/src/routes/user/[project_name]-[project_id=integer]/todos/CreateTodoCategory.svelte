@@ -24,7 +24,8 @@
 	enhancerConfig={{
 		validator: { schema: createTodoCategorySchema },
 		form: form,
-		action: 'createCategory'
+		action: 'createCategory',
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.addCategory(event.response);

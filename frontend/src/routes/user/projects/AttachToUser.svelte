@@ -27,7 +27,8 @@
 		validator: { schema: attachProjectSchema },
 		form: form,
 		action: 'attach',
-		resetOnSubmit: false
+		resetOnSubmit: false,
+		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {
