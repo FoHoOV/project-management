@@ -15,7 +15,7 @@
 <script lang="ts">
 	const { form } = $props();
 
-	let enhancedForm = $state<EnhancedForm<any, any, any> | null>();
+	let enhancedForm = $state<EnhancedForm<any, any, any> | null>(null);
 
 	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories());
 
@@ -89,7 +89,7 @@
 	{:else}
 		<div
 			class="mt-5 flex items-center gap-2 text-lg font-bold text-warning"
-			class:hidden={enhancedForm.formState() !== 'submit-successful'}
+			class:hidden={enhancedForm?.formState() !== 'submit-successful'}
 		>
 			<Fa icon={faCircleNotch}></Fa>
 			<span>no results</span>
