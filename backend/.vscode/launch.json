@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "Python: FastAPI",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "args": ["main:app", "--reload", "--port", "8080"],
@@ -15,7 +15,7 @@
     },
     {
       "name": "Python: FastAPI - integration",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "args": ["main:app", "--reload", "--port", "8090"],
@@ -25,7 +25,7 @@
     },
     {
       "name": "Python: Tests",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "pytest",
       "justMyCode": true
