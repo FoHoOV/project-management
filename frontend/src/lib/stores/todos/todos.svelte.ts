@@ -16,7 +16,7 @@ import {
 	getSortedTodos,
 	getTodoItemRightId,
 	setTodoItemRightId,
-	updateElementSortInPlace,
+	moveElementInPlace,
 	getSortedTodoCategories,
 	getTodoCategoryLeftId,
 	setTodoCategoryLeftId,
@@ -27,8 +27,8 @@ import {
 export class TodoCategories {
 	private _todoCategories = $state<TodoCategory[]>([]);
 
-	constructor(todoCategories?: TodoCategory[]){
-		if(todoCategories){
+	constructor(todoCategories?: TodoCategory[]) {
+		if (todoCategories) {
 			this.setCategories(todoCategories);
 		}
 	}
@@ -45,7 +45,7 @@ export class TodoCategories {
 	addCategory(category: TodoCategory) {
 		category.items = getSortedTodos(category.items);
 		this._todoCategories.push(category);
-		updateElementSortInPlace(
+		moveElementInPlace(
 			this._todoCategories,
 			category.id,
 			{
@@ -98,7 +98,7 @@ export class TodoCategories {
 	}
 
 	updateCategoriesSort(movingElement: TodoCategory, newOrder: NonNullable<NullableOrderedItem>) {
-		updateElementSortInPlace(
+		moveElementInPlace(
 			this._todoCategories,
 			movingElement.id,
 			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
@@ -123,7 +123,7 @@ export class TodoCategories {
 
 		const category = this._findCategory(movingElement.category_id);
 
-		updateElementSortInPlace(
+		moveElementInPlace(
 			category.items,
 			movingElement.id,
 			{ leftId: newOrder.left_id, rightId: newOrder.right_id },
@@ -141,7 +141,7 @@ export class TodoCategories {
 
 		category.items.push(todo);
 
-		updateElementSortInPlace(
+		moveElementInPlace(
 			category.items,
 			todo.id,
 			{

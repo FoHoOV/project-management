@@ -173,7 +173,7 @@ export function sortByIdInPlace(elements: { id: number }[], ascending: boolean) 
 	});
 }
 
-export function updateElementSortInPlace<T extends { id: number }>(
+export function moveElementInPlace<T extends { id: number }>(
 	elements: T[],
 	movingElementId: number,
 	movingElementNewOrder: {
