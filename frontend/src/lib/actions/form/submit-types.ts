@@ -14,6 +14,12 @@ export type EnhanceOptions<
 	action?: TKey;
 	resetOnSubmit?: boolean;
 	invalidateAllAfterSubmit?: boolean;
+	/**
+	 * @param ignoreSamePageConstraint
+	 * by default if the page we are in has a different url than the action, it will not update the form and page store, and error page redirection etc ...
+	 * here is official docs for this behavior: //https://kit.svelte.dev/docs/form-actions#progressive-enhancement-customising-use-enhance
+	 */
+	ignoreSamePageConstraint?: boolean;
 };
 
 export type FormActionResultType<

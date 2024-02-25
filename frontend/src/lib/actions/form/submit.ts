@@ -1,6 +1,6 @@
 import type { ActionReturn } from 'svelte/action';
 import type { SubmitFunction } from '@sveltejs/kit';
-import { enhance } from '$app/forms';
+import { applyAction, enhance } from '$app/forms';
 
 import type { z } from 'zod';
 import type {
@@ -15,6 +15,7 @@ import type {
 import { validate } from './validator';
 import type { ValidatorErrorEvent } from './validator-types';
 import type { StandardFormActionNames } from './utils';
+import { invalidateAll } from '$app/navigation';
 
 export function superEnhance(
 	node: HTMLFormElement
@@ -94,10 +95,25 @@ function _defaultSubmitHandler<
 				);
 			}
 
-			await update({
-				reset: options?.resetOnSubmit,
-				invalidateAll: options?.invalidateAllAfterSubmit ?? true
-			});
+			if (options?.ignoreSamePageConstraint) {
+				if (result.type === 'success') {
+					if (options.resetOnSubmit) {
+						HTMLFormElement.prototype.reset.call(node);
+					}
+					if (options.invalidateAllAfterSubmit ?? true) {
+						await invalidateAll();
+					}
+				}
+
+				if (result.type === 'redirect' || result.type === 'error') {
+					applyAction(result);
+				}
+			} else {
+				await update({
+					reset: options?.resetOnSubmit,
+					invalidateAll: options?.invalidateAllAfterSubmit ?? true
+				});
+			}
 		};
 	};
 }
