@@ -9,16 +9,9 @@ export function slide(
 	return {
 		...svelteSlide,
 		css: (t, u) => {
-			if (t == 0) {
-				slideParas.classes.forEach((value) => {
-					node.classList.add(value);
-				});
-			}
-			if (t == 1) {
-				slideParas.classes.forEach((value) => {
-					node.classList.remove(value);
-				});
-			}
+			slideParas.classes.forEach((value) => {
+				node.classList.add(value);
+			});
 			return svelteSlide['css']?.(t, u) ?? '';
 		}
 	};

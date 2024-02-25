@@ -8,16 +8,9 @@ export function fade(
 	return {
 		...svelteFade,
 		css: (t, u) => {
-			if (t == 0) {
-				fadePrams.classes.forEach((value) => {
-					node.classList.add(value);
-				});
-			}
-			if (t == 1) {
-				fadePrams.classes.forEach((value) => {
-					node.classList.remove(value);
-				});
-			}
+			fadePrams.classes.forEach((value) => {
+				node.classList.add(value);
+			});
 			return svelteFade['css']?.(t, u) ?? '';
 		}
 	};
