@@ -37,7 +37,7 @@
 
 	let componentState = $state<'loading' | 'none'>('loading');
 
-	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories(data.response ?? []));
+	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories(data.response ?? []), true);
 
 	$effect.pre(() => {
 		data;
@@ -53,8 +53,7 @@
 			component: CreateTodoCategory,
 			props: () => {
 				return {
-					form: form,
-					todoCategoriesStore: todoCategoriesStore
+					form: form
 				};
 			},
 			title: 'Create todo categories'
@@ -67,7 +66,6 @@
 			props: () => {
 				return {
 					form: form,
-					todoCategoriesStore: todoCategoriesStore,
 					category: category
 				};
 			},
@@ -94,7 +92,6 @@
 			props: () => {
 				return {
 					form: form,
-					todoCategoriesStore: todoCategoriesStore,
 					todo: todo
 				};
 			},
@@ -108,7 +105,6 @@
 			props: () => {
 				return {
 					form: form,
-					todoCategoriesStore: todoCategoriesStore,
 					categoryId: category.id
 				};
 			},
@@ -150,7 +146,6 @@
 			props: () => {
 				return {
 					form: form,
-					todoCategoriesStore: todoCategoriesStore,
 					todoId: todo.id
 				};
 			},
@@ -164,7 +159,7 @@
 			props: () => {
 				return {
 					form: form,
-					todoCategoriesStore: todoCategoriesStore,
+
 					tag: tag
 				};
 			},
@@ -178,7 +173,6 @@
 			props: () => {
 				return {
 					form: form,
-					todoCategoriesStore: todoCategoriesStore,
 					todo: todo
 				};
 			},

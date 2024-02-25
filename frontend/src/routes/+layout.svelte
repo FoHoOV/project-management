@@ -17,13 +17,16 @@
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import { setProjectsStoreToContext } from '$components/project/utils';
 	import { Projects } from '$lib/stores/projects';
+	import { createRootContextManager } from '$lib/stores/context-manager';
 	import { untrack } from 'svelte';
 </script>
 
 <script lang="ts">
 	const { data, children } = $props();
 
-	const projectsStore = setProjectsStoreToContext(new Projects(data.projects));
+	createRootContextManager();
+
+	const projectsStore = setProjectsStoreToContext(new Projects(data.projects), true);
 
 	$effect.pre(() => {
 		data;

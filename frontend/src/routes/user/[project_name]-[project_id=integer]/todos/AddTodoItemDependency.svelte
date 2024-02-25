@@ -7,18 +7,18 @@
 	import { addTodoItemDependencySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
 		form: ActionData;
-		todoCategoriesStore: TodoCategories;
 		todo: TodoCategoryPartialTodoItem;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoCategoriesStore, todo } = $props<Props>();
+	const { form, todo } = $props<Props>();
+	const todoCategoriesStore = getTodosStoreFromContext();
 </script>
 
 <EnhancedForm

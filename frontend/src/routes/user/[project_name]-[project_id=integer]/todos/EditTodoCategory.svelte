@@ -4,21 +4,21 @@
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
-	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import { editTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
 	import type { TodoCategory } from '$lib/generated-client/models';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
 		form: ActionData;
-		todoCategoriesStore: TodoCategories;
 		category: TodoCategory;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoCategoriesStore, category } = $props<Props>();
+	const { form, category } = $props<Props>();
+	const todoCategoriesStore = getTodosStoreFromContext();
 </script>
 
 <EnhancedForm

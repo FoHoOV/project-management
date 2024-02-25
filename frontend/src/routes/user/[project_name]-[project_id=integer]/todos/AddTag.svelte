@@ -7,17 +7,17 @@
 	import { addTagSchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
 		form: ActionData;
-		todoCategoriesStore: TodoCategories;
 		todoId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoCategoriesStore, todoId } = $props<Props>();
+	const { form, todoId } = $props<Props>();
+	const todoCategoriesStore = getTodosStoreFromContext();
 </script>
 
 <EnhancedForm
@@ -29,7 +29,7 @@
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {
-		todoCategoriesStore.addTag(todoId, event.response);
+		todoCategoriesStore?.addTag(todoId, event.response);
 	}}
 	successfulMessage="Tag created"
 >

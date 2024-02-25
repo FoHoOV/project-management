@@ -7,18 +7,18 @@
 	import { page } from '$app/stores';
 	import type { TodoItemPartialTag } from '$lib/generated-client/models';
 	import { generateTodoListUrl } from '$lib/utils/params/route';
-	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
+	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
 		form: ActionData;
-		todoCategoriesStore: TodoCategories;
 		tag: TodoItemPartialTag;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoCategoriesStore, tag } = $props<Props>();
+	const { form, tag } = $props<Props>();
+	const todoCategoriesStore = getTodosStoreFromContext();
 </script>
 
 <EnhancedForm
