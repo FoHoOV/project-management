@@ -5,9 +5,12 @@ export class TodoComments {
 	private _comments = $state<TodoComment[]>([]);
 	private _todoCategoriesStore?: TodoCategories = undefined;
 
-	set(comments: TodoComment[], todoCategoriesStore?: TodoCategories) {
+	constructor(_todoCategoriesStore?: TodoCategories) {
+		this._todoCategoriesStore = _todoCategoriesStore;
+	}
+
+	set(comments: TodoComment[]) {
 		this._comments = comments;
-		this._todoCategoriesStore = todoCategoriesStore;
 	}
 
 	add(comment: TodoComment) {

@@ -33,8 +33,7 @@
 
 	let deleteCommentConfirms = $state<Confirm[]>([]);
 
-	const todoCategoriesStore = getTodosStoreFromContext();
-	const todoCommentsStore = new TodoComments();
+	const todoCommentsStore = new TodoComments(getTodosStoreFromContext());
 
 	export async function refreshComments() {
 		componentState = 'calling-service';
@@ -44,7 +43,7 @@
 					token: $page.data.token
 				}).listTodoItemComment(todoId);
 
-				todoCommentsStore.set(result, todoCategoriesStore);
+				todoCommentsStore.set(result);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
