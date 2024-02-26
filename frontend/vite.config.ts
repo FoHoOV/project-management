@@ -1,10 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import { readFileSync } from 'fs';
-import { TEST_HTTPS } from '$env/static/private';
+import 'dotenv/config';
 
-let serverSettings = undefined;
-if (TEST_HTTPS == 'true') {
+let serverSettings = {};
+if (process.env.TEST_HTTPS == 'true') {
 	serverSettings = {
 		server: {
 			https: {
