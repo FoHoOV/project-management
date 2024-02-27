@@ -166,7 +166,7 @@ function _setOptionsDefaults<Data extends object>(options: DropZoneOptions<Data>
 }
 
 const _dropZoneNamePrefixUUID =
-	`draggable_action_${crypto.randomUUID()}_DropZoneTargetSymbol_`.toLowerCase();
+	`draggable_action_${crypto?.randomUUID?.() ?? Date.now()}_DropZoneTargetSymbol_`.toLowerCase();
 
 export function generateDropZoneTargetNames(names: string[]) {
 	return `${_dropZoneNamePrefixUUID}:${JSON.stringify(names)}`.toLowerCase();

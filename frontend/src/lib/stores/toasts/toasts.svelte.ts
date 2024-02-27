@@ -12,7 +12,7 @@ class ToastManager {
 	private _toasts = $state<Toast[]>([]);
 
 	addToast(toast: Omit<Toast, 'id'>): Toast {
-		const toastWithId = { ...toast, id: crypto.randomUUID() };
+		const toastWithId = { ...toast, id: crypto?.randomUUID?.() ?? Date.now().toString() };
 
 		setTimeout(() => {
 			this.removeToast(toastWithId);
