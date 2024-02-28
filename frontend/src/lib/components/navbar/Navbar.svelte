@@ -18,7 +18,7 @@
 
 <div class="lg:p-2">
 	<div
-		class="navbar min-h-16 sticky top-0 z-30 flex w-full justify-center rounded-md bg-base-300 bg-opacity-90 text-base-content shadow-2xl backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] {className}"
+		class="navbar sticky top-0 z-30 flex min-h-16 w-full justify-center rounded-md bg-base-300 bg-opacity-90 text-base-content shadow-xl backdrop-blur transition-shadow duration-100 [transform:translate3d(0,0,0)] {className}"
 	>
 		<div class="navbar-start">
 			{#if start}
