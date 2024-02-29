@@ -25,13 +25,17 @@ class TodoCategoryPage implements IPage {
 
 		const modal = await getModal(this.#page);
 
+		// fill in the data
 		await modal.getByPlaceholder('title').fill(title);
 		await modal.getByPlaceholder('title').press('Tab');
 		description && (await modal.getByPlaceholder('description (Optional)').fill(description));
 		await modal.getByRole('button', { name: 'create' }).click();
 		await expect(modal.getByRole('alert')).toContainText('Todo category created');
+
+		// close the modal
 		await modal.getByRole('button', { name: 'Close' }).click();
 
+		// find the created category
 		const createdTodoCategory = await this.#page
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
 				has: this.#page.getByText(title)

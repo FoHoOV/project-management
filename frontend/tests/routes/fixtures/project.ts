@@ -26,6 +26,8 @@ class ProjectsPage implements IPage {
 	}) {
 		await (await getFloatingBtn(this.#page)).click();
 		const modal = await getModal(this.#page);
+
+		// fill the data
 		await modal.getByPlaceholder('title').fill(title);
 		await modal.getByPlaceholder('title').press('Tab');
 		description && (await this.#page.getByPlaceholder('description (Optional)').fill(description));
@@ -36,8 +38,11 @@ class ProjectsPage implements IPage {
 		await modal.getByRole('button', { name: 'reset' }).press('Tab');
 		await modal.getByRole('button', { name: 'create' }).press('Enter');
 		await expect(modal.getByText('Project created')).toHaveCount(1);
+
+		// close the modal
 		await modal.getByRole('button', { name: 'Close' }).click();
 
+		// find the created category
 		const createdProject = await this.#page
 			.locator('.card-title div.flex.items-baseline.gap-2', {
 				has: this.#page.getByText(title)
