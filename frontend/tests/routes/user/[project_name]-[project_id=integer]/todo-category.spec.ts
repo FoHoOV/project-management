@@ -21,7 +21,7 @@ test('create todo category', async ({ page, projectFactory, todoCategoryFactory 
 		description: 'test'
 	});
 
-	expect(
+	await expect(
 		c1.categoryId !== c2.categoryId,
 		'event thought the data is the same but category ids should be different'
 	).toBeTruthy();
@@ -30,13 +30,13 @@ test('create todo category', async ({ page, projectFactory, todoCategoryFactory 
 
 	const categories = await page.locator("div[data-tip='category id'] span.text-info").all();
 
-	expect(categories, 'two categories should exist').toHaveLength(2);
+	await expect(categories, 'two categories should exist').toHaveLength(2);
 
-	expect(categories[0], 'category order should be from oldest to newest').toHaveText(
+	await expect(categories[0], 'category order should be from oldest to newest').toHaveText(
 		`#${c1.categoryId}`
 	);
 
-	expect(categories[1], 'category order should be from oldest to newest').toHaveText(
+	await expect(categories[1], 'category order should be from oldest to newest').toHaveText(
 		`#${c2.categoryId}`
 	);
 });
