@@ -1,3 +1,3 @@
 export interface IPage {
-	goto(): void;
+	goto(...args: unknown): Promise<void>;
 }

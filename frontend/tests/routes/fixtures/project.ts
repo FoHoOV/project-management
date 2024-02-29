@@ -1,5 +1,7 @@
 import { test as auth } from './access-token';
 import { expect, type Page } from '@playwright/test';
+import { getModal } from './modal';
+import { getFloatingBtn } from './floating-btn';
 import { type IPage } from './IPage';
 
 class ProjectsPage implements IPage {
@@ -9,8 +11,8 @@ class ProjectsPage implements IPage {
 		this.#page = page;
 	}
 
-	goto() {
-		this.#page.goto('/user/projects');
+	async goto() {
+		await this.#page.goto('/user/projects');
 	}
 
 	async create({
@@ -22,8 +24,8 @@ class ProjectsPage implements IPage {
 		description?: string;
 		createFromDefaultTemplate?: boolean;
 	}) {
-		await this.#page.locator('button.btn-primary.fixed.bottom-8.right-8.h-16.w-16').click();
-		const modal = this.#page.locator('dialog.modal').first();
+		await (await getFloatingBtn(this.#page)).click();
+		const modal = await getModal(this.#page);
 		await modal.getByPlaceholder('title').fill(title);
 		await modal.getByPlaceholder('title').press('Tab');
 		description && (await this.#page.getByPlaceholder('description (Optional)').fill(description));
@@ -51,8 +53,8 @@ class ProjectsPage implements IPage {
 	}
 }
 
-export const projects = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
-	projectFactory: async ({ page }, use) => {
+export const test = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
+	projectFactory: async ({ page, auth }, use) => {
 		await use({ factory: new ProjectsPage(page) });
 	}
 });

@@ -1,6 +1,45 @@
-import { test } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '../../fixtures/todo-category';
 
-test('create todo category', ({ page }) => {});
+test('create todo category', async ({ page, projectFactory, todoCategoryFactory }) => {
+	await projectFactory.factory.goto();
+
+	const projectTitle = 'test';
+	const project = await projectFactory.factory.create({
+		title: projectTitle,
+		description: 'test'
+	});
+
+	await todoCategoryFactory.factory.goto(projectTitle, project.projectId);
+	const c1 = await todoCategoryFactory.factory.create({
+		title: 'test',
+		description: 'test'
+	});
+
+	const c2 = await todoCategoryFactory.factory.create({
+		title: 'test',
+		description: 'test'
+	});
+
+	expect(
+		c1.categoryId !== c2.categoryId,
+		'event thought the data is the same but category ids should be different'
+	).toBeTruthy();
+
+	// check the order
+
+	const categories = await page.locator("div[data-tip='category id'] span.text-info").all();
+
+	expect(categories, 'two categories should exist').toHaveLength(2);
+
+	expect(categories[0], 'category order should be from oldest to newest').toHaveText(
+		`#${c1.categoryId}`
+	);
+
+	expect(categories[1], 'category order should be from oldest to newest').toHaveText(
+		`#${c2.categoryId}`
+	);
+});
 
 test('update todo category', ({ page }) => {});
 
