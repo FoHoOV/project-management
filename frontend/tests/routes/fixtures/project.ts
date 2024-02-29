@@ -1,7 +1,8 @@
 import { test as auth } from './access-token';
 import { expect, type Page } from '@playwright/test';
+import { type IPage } from './IPage';
 
-class ProjectsPage {
+class ProjectsPage implements IPage {
 	#page: Page;
 
 	constructor(page: Page) {
@@ -51,7 +52,7 @@ class ProjectsPage {
 }
 
 export const projects = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
-	projectFactory: async ({ page, auth }, use) => {
+	projectFactory: async ({ page }, use) => {
 		await use({ factory: new ProjectsPage(page) });
 	}
 });
