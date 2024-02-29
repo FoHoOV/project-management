@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../fixtures/project';
 
 test('create a project', async ({ projectFactory }) => {
-	projectFactory.factory.goto();
+	await projectFactory.factory.goto();
 
 	// expect creating projects from templates to work
 	const p1 = await projectFactory.factory.create({
