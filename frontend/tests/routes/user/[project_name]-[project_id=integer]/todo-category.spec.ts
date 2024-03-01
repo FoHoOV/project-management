@@ -41,7 +41,7 @@ test('create todo category', async ({ enhancedPage, projectFactory, todoCategory
 	);
 });
 
-test('update todo category', async ({  projectFactory, todoCategoryFactory }) => {
+test('update todo category', async ({ projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();
 
 	const projectTitle = 'test';
@@ -78,16 +78,12 @@ test('update todo category', async ({  projectFactory, todoCategoryFactory }) =>
 
 	expect(categoryIds, 'two categories should exist').toHaveLength(2);
 
-	expect(categoryIds[0], 'category order should be from oldest to newest').toEqual(
-		c1.categoryId
-	);
+	expect(categoryIds[0], 'category order should be from oldest to newest').toEqual(c1.categoryId);
 
-	expect(categoryIds[1], 'category order should be from oldest to newest').toEqual(
-		c2.categoryId
-	);
+	expect(categoryIds[1], 'category order should be from oldest to newest').toEqual(c2.categoryId);
 });
 
-test('delete todo category', async ({  projectFactory, todoCategoryFactory }) => {
+test('delete todo category', async ({ projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();
 
 	const projectTitle = 'test';
@@ -145,19 +141,16 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 	});
 
 	const c3 = await todoCategoryFactory.factory.create({
-		title: 'test2',
-		description: 'test2'
+		title: 'test3',
+		description: 'test3'
 	});
 
 	const idsBeforeAtStart = await todoCategoryFactory.factory.getCategoryIds();
 	expect(
-		idsBeforeAtStart.every((current, i) => {
-			if (i === idsBeforeAtStart.length - 1) {
-				return true;
-			}
-			return current < idsBeforeAtStart[i + 1];
-		}),
-		'by default elements should be sorted from oldest to newest'
+		idsBeforeAtStart[0] == c1.categoryId &&
+			idsBeforeAtStart[1] == c2.categoryId &&
+			idsBeforeAtStart[2] == c3.categoryId,
+		`should be ${c1.categoryId} ${c2.categoryId} ${c3.categoryId}, got: ${JSON.stringify(idsBeforeAtStart)}`
 	).toBeTruthy();
 
 	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
@@ -166,7 +159,7 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		idsAfter3MovedBefore2[0] == c1.categoryId &&
 			idsAfter3MovedBefore2[1] == c3.categoryId &&
 			idsAfter3MovedBefore2[2] == c2.categoryId,
-		'should 1 3 2'
+		`should be ${c1.categoryId} ${c3.categoryId} ${c2.categoryId}, got: ${JSON.stringify(idsAfter3MovedBefore2)}`
 	).toBeTruthy();
 
 	// I expect no change here
@@ -176,25 +169,25 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		idsAfter3MovedAfter1[0] == c1.categoryId &&
 			idsAfter3MovedAfter1[1] == c3.categoryId &&
 			idsAfter3MovedAfter1[2] == c2.categoryId,
-		'should be 1 3 2'
+		`should be ${c1.categoryId} ${c3.categoryId} ${c2.categoryId}, got: ${JSON.stringify(idsAfter3MovedAfter1)}`
 	).toBeTruthy();
 
 	await todoCategoryFactory.factory.dragAndDrop(c2.categoryId, c1.categoryId, 'left');
 	const idsAfter2MovedBefore1 = await todoCategoryFactory.factory.getCategoryIds();
 	expect(
 		idsAfter2MovedBefore1[0] == c2.categoryId &&
-			idsAfter3MovedAfter1[1] == c1.categoryId &&
-			idsAfter3MovedAfter1[2] == c3.categoryId,
-		'should be 2 1 3'
+			idsAfter2MovedBefore1[1] == c1.categoryId &&
+			idsAfter2MovedBefore1[2] == c3.categoryId,
+		`should be ${c2.categoryId} ${c1.categoryId} ${c3.categoryId}, got: ${JSON.stringify(idsAfter2MovedBefore1)}`
 	).toBeTruthy();
 
 	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
 	const idsAfter3MovedBefore2SecondTime = await todoCategoryFactory.factory.getCategoryIds();
 	expect(
 		idsAfter3MovedBefore2SecondTime[0] == c3.categoryId &&
-		idsAfter3MovedBefore2SecondTime[1] == c2.categoryId &&
-		idsAfter3MovedBefore2SecondTime[2] == c1.categoryId,
-		'should be 3 2 1'
+			idsAfter3MovedBefore2SecondTime[1] == c2.categoryId &&
+			idsAfter3MovedBefore2SecondTime[2] == c1.categoryId,
+		`should be ${c3.categoryId} ${c2.categoryId} ${c1.categoryId}, got: ${JSON.stringify(idsAfter3MovedBefore2SecondTime)}`
 	).toBeTruthy();
 });
 

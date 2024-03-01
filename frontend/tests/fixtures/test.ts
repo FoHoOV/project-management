@@ -1,10 +1,16 @@
-import { type Page, test as baseTest } from '@playwright/test';
+import { type Page, test as baseTest, type Locator } from '@playwright/test';
 
 export interface EnhancedPage extends Page {
 	goto(
 		url: string,
 		options?: Parameters<Page['goto']>[1] & { waitForHydration?: boolean }
 	): ReturnType<Page['goto']>;
+}
+
+export async function waitForAnimationEnd(locator: Locator) {
+	const handle = await locator.elementHandle();
+	await handle?.waitForElementState('stable');
+	handle?.dispose();
 }
 
 export async function waitForHydration(page: Page) {
@@ -15,7 +21,7 @@ export async function waitForHydration(page: Page) {
 
 export const test = baseTest.extend<{ enhancedPage: EnhancedPage }>({
 	enhancedPage: async ({ page }, use) => {
-		const customPage: EnhancedPage = new Proxy(page, {
+		const customPage = new Proxy(page, {
 			get(target, prop) {
 				if (prop === 'goto') {
 					return (async (url, options) => {
@@ -30,6 +36,6 @@ export const test = baseTest.extend<{ enhancedPage: EnhancedPage }>({
 				return Reflect.get(target, prop);
 			}
 		});
-		await use(customPage);
+		await use(customPage as EnhancedPage);
 	}
 });

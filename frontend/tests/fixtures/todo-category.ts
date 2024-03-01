@@ -4,8 +4,9 @@ import { generateTodoListUrl } from '../../src/lib/utils/params/route';
 import { test as projects } from './project';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
-import { type EnhancedPage } from './test';
+import { waitForAnimationEnd, type EnhancedPage } from './test';
 import { getConfirmAcceptButton } from '../common-locators/confrim';
+import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 
 class TodoCategoryPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -112,12 +113,22 @@ class TodoCategoryPage implements IPage {
 	) {
 		const currentCategory = await this.getCategoryLocatorById(fromCategoryId);
 		const targetCategory = await this.getCategoryLocatorById(targetCategoryId);
+
 		const target =
 			direction == 'right'
 				? await this.getDeleteButton(targetCategoryId)
 				: targetCategory.getByTestId('category-info').locator("div[data-tip='category id']");
+
 		await currentCategory.dragTo(target);
-		await this.#enhancedPage.waitForEvent('requestfinished');
+
+		await expect(
+			targetCategory.getByRole('alert'),
+			'no errors should have occurred'
+		).not.toBeVisible();
+
+		await waitForSpinnerStateToBeIdle(targetCategory);
+		await waitForAnimationEnd(currentCategory);
+		await waitForAnimationEnd(targetCategory);
 	}
 
 	async getCategoryLocatorById(id: number | string) {
