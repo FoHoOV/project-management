@@ -1,7 +1,7 @@
 import { test as auth } from './access-token';
-import { expect, type Page } from '@playwright/test';
-import { getModal } from './modal';
-import { getFloatingBtn } from './floating-btn';
+import { expect } from '@playwright/test';
+import { getModal, closeModal } from '../common-locators/modal';
+import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type IPage } from './IPage';
 import { type EnhancedPage } from './test';
 
@@ -41,7 +41,7 @@ class ProjectsPage implements IPage {
 		await expect(modal.getByText('Project created')).toHaveCount(1);
 
 		// close the modal
-		await modal.getByRole('button', { name: 'Close' }).click();
+		await closeModal(modal);
 
 		// find the created category
 		const createdProject = await this.#enhancedPage

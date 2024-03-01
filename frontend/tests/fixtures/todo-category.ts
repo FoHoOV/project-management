@@ -1,10 +1,11 @@
-import { expect, type Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import type { IPage } from './IPage';
 import { generateTodoListUrl } from '../../src/lib/utils/params/route';
 import { test as projects } from './project';
-import { getModal } from './modal';
-import { getFloatingBtn } from './floating-btn';
+import { getModal, closeModal } from '../common-locators/modal';
+import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type EnhancedPage } from './test';
+import { getConfirmAcceptButton } from '../common-locators/confrim';
 
 class TodoCategoryPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -22,7 +23,7 @@ class TodoCategoryPage implements IPage {
 	}
 
 	async create({ title, description }: { title: string; description?: string }) {
-		await (await getFloatingBtn(this.#enhancedPage)).click();
+		await (await this.getCreateButton()).click();
 
 		const modal = await getModal(this.#enhancedPage);
 
@@ -34,7 +35,7 @@ class TodoCategoryPage implements IPage {
 		await expect(modal.getByRole('alert')).toContainText('Todo category created');
 
 		// close the modal
-		await modal.getByRole('button', { name: 'Close' }).click();
+		await closeModal(modal);
 
 		// find the created category
 		const createdTodoCategory = await this.#enhancedPage
@@ -65,7 +66,7 @@ class TodoCategoryPage implements IPage {
 	}) {
 		const targetCategory = await this.getCategoryLocatorById(categoryId);
 
-		await targetCategory.getByTestId('edit-category').click();
+		await (await this.getEditButton(categoryId)).click();
 
 		const modal = await getModal(this.#enhancedPage);
 
@@ -81,7 +82,7 @@ class TodoCategoryPage implements IPage {
 		);
 
 		// close the modal
-		await modal.getByRole('button', { name: 'Close' }).click();
+		await closeModal(modal);
 
 		await expect(
 			targetCategory.getByTestId('category-info'),
@@ -97,6 +98,13 @@ class TodoCategoryPage implements IPage {
 		).toContainText(description ?? '-');
 	}
 
+	async delete(categoryId: number | string) {
+		const category = await this.getCategoryLocatorById(categoryId);
+		await (await this.getDeleteButton(categoryId)).click();
+		await getConfirmAcceptButton(category).click();
+		await this.#enhancedPage.waitForEvent('response');
+	}
+
 	async getCategoryLocatorById(id: number | string) {
 		const category = await this.#enhancedPage
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
@@ -110,6 +118,25 @@ class TodoCategoryPage implements IPage {
 		).toBeTruthy();
 
 		return category[0];
+	}
+
+	async getDeleteButton(id: number | string) {
+		const category = await this.getCategoryLocatorById(id);
+		return category.getByTestId('delete-category');
+	}
+
+	async getUpdateActionsButton(id: number | string) {
+		const category = await this.getCategoryLocatorById(id);
+		return category.getByTestId('update-category-actions');
+	}
+
+	async getEditButton(id: number | string) {
+		const category = await this.getCategoryLocatorById(id);
+		return category.getByTestId('edit-category');
+	}
+
+	async getCreateButton() {
+		return await getFloatingBtn(this.#enhancedPage);
 	}
 }
 
