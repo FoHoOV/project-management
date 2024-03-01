@@ -9,10 +9,10 @@ test('checking login page contents', async ({ enhancedPage }) => {
 		'login page should have correct hero text'
 	).toBeVisible();
 
-	const loginButton = await enhancedPage.getByRole('button', { name: 'login' });
+	const loginButton = enhancedPage.getByRole('button', { name: 'login' });
 	await loginButton.click();
 
-	await expect(
+	expect(
 		enhancedPage.url().endsWith('/login'),
 		'page should still be on login page because inputs are empty'
 	).toBeTruthy();
@@ -21,7 +21,7 @@ test('checking login page contents', async ({ enhancedPage }) => {
 test('changing entry page from login page', async ({ enhancedPage }) => {
 	await enhancedPage.goto('/login');
 
-	const signUpLink = await enhancedPage.locator('form a[href="/signup"]');
+	const signUpLink = enhancedPage.locator('form a[href="/signup"]');
 	await expect(signUpLink, 'redirect to signup page should exist in login page').toBeVisible();
 
 	await signUpLink.click();
@@ -32,7 +32,7 @@ test('changing entry page from login page', async ({ enhancedPage }) => {
 test('changing entry page from signup page', async ({ enhancedPage }) => {
 	await enhancedPage.goto('/signup');
 
-	const loginLink = await enhancedPage.locator('form a[href="/login"]');
+	const loginLink = enhancedPage.locator('form a[href="/login"]');
 	await expect(loginLink, 'redirect to login page should exist in signup page').toBeVisible();
 
 	await loginLink.click();

@@ -11,7 +11,7 @@ test('create a project', async ({ projectFactory }) => {
 		createFromDefaultTemplate: true
 	});
 
-	await expect(p1.projectId).toBeGreaterThan(0);
+	expect(p1.projectId).toBeGreaterThan(0);
 
 	// expect creating projects without templates to work
 	const p2 = await projectFactory.factory.create({
@@ -20,6 +20,6 @@ test('create a project', async ({ projectFactory }) => {
 		createFromDefaultTemplate: false
 	});
 
-	await expect(p2.projectId).toBeGreaterThan(0);
-	await expect(p2.projectId).not.toEqual(p1.projectId);
+	expect(p2.projectId).toBeGreaterThan(0);
+	expect(p2.projectId).not.toEqual(p1.projectId);
 });

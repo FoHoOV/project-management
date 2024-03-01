@@ -45,11 +45,11 @@ export const test = baseTest.extend<{
 		const cookies = await enhancedPage.context().cookies();
 		const accessTokenCookie = cookies.find((cookie) => cookie.name === 'token');
 
-		await expect(accessTokenCookie, 'token cookie should be present').toBeTruthy();
+		expect(accessTokenCookie, 'token cookie should be present').toBeTruthy();
 
 		const accessToken = JSON.parse(decodeURIComponent(accessTokenCookie!.value))?.access_token;
 
-		await expect(accessToken, 'token cookie should have an access_token property').toBeTruthy();
+		expect(accessToken, 'token cookie should have an access_token property').toBeTruthy();
 
 		// Use the access token for subsequent tests
 		await use({ accessToken: accessToken!, username, password });

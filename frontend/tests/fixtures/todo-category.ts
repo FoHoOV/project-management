@@ -18,7 +18,7 @@ class TodoCategoryPage implements IPage {
 		const response = await this.#enhancedPage.goto(generateTodoListUrl(projectTitle, projectId));
 		if (projectShouldExist) {
 			expect(response, 'response should exist').toBeTruthy();
-			await expect(response!.status() == 200, 'todo category page should exist').toBeTruthy();
+			expect(response!.status() == 200, 'todo category page should exist').toBeTruthy();
 		}
 	}
 
@@ -38,7 +38,7 @@ class TodoCategoryPage implements IPage {
 		await closeModal(modal);
 
 		// find the created category
-		const createdTodoCategory = await this.#enhancedPage
+		const createdTodoCategory = this.#enhancedPage
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
 				has: this.#enhancedPage.getByText(title)
 			})
@@ -127,7 +127,7 @@ class TodoCategoryPage implements IPage {
 			})
 			.all();
 
-		await expect(
+		expect(
 			category.length == 1,
 			'only one category with this id should exist on the page'
 		).toBeTruthy();
