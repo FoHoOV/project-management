@@ -7,7 +7,6 @@ import type {
 } from './drop-zone-types';
 import { _CUSTOM_DRAGGABLE_EVENT_DATA } from './constants';
 import { getDraggingElement } from './shared';
-import { faNotEqual } from '@fortawesome/free-solid-svg-icons';
 
 export function dropzone<Data extends object>(
 	node: HTMLElement,

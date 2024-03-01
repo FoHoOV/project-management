@@ -3,16 +3,16 @@ import { expect, type Page } from '@playwright/test';
 import { getModal } from './modal';
 import { getFloatingBtn } from './floating-btn';
 import { type IPage } from './IPage';
+import { type EnhancedPage } from './test';
 
 class ProjectsPage implements IPage {
-	#page: Page;
+	#enhancedPage: EnhancedPage;
 
-	constructor(page: Page) {
-		this.#page = page;
+	constructor(enhancedPage: EnhancedPage) {
+		this.#enhancedPage = enhancedPage;
 	}
-
 	async goto() {
-		await this.#page.goto('/user/projects');
+		await this.#enhancedPage.goto('/user/projects');
 	}
 
 	async create({
@@ -24,16 +24,17 @@ class ProjectsPage implements IPage {
 		description?: string;
 		createFromDefaultTemplate?: boolean;
 	}) {
-		await (await getFloatingBtn(this.#page)).click();
-		const modal = await getModal(this.#page);
+		await (await getFloatingBtn(this.#enhancedPage)).click();
+		const modal = await getModal(this.#enhancedPage);
 
 		// fill the data
 		await modal.getByPlaceholder('title').fill(title);
 		await modal.getByPlaceholder('title').press('Tab');
-		description && (await this.#page.getByPlaceholder('description (Optional)').fill(description));
+		description &&
+			(await this.#enhancedPage.getByPlaceholder('description (Optional)').fill(description));
 		await modal.getByPlaceholder('description (Optional)').press('Tab');
 		createFromDefaultTemplate &&
-			(await this.#page.getByPlaceholder('Create from default template?').check());
+			(await this.#enhancedPage.getByPlaceholder('Create from default template?').check());
 		await modal.getByPlaceholder('Create from default template?').press('Tab');
 		await modal.getByRole('button', { name: 'reset' }).press('Tab');
 		await modal.getByRole('button', { name: 'create' }).press('Enter');
@@ -43,9 +44,9 @@ class ProjectsPage implements IPage {
 		await modal.getByRole('button', { name: 'Close' }).click();
 
 		// find the created category
-		const createdProject = await this.#page
+		const createdProject = await this.#enhancedPage
 			.locator('.card-title div.flex.items-baseline.gap-2', {
-				has: this.#page.getByText(title)
+				has: this.#enhancedPage.getByText(title)
 			})
 			.locator("div[data-tip='project id'] span.text-info")
 			.last(); // since its ordered from newest to oldest, then the newest one should be at the end
@@ -59,7 +60,7 @@ class ProjectsPage implements IPage {
 }
 
 export const test = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
-	projectFactory: async ({ page, auth }, use) => {
-		await use({ factory: new ProjectsPage(page) });
+	projectFactory: async ({ enhancedPage, auth }, use) => {
+		await use({ factory: new ProjectsPage(enhancedPage) });
 	}
 });

@@ -4,16 +4,17 @@ import { generateTodoListUrl } from '../../../src/lib/utils/params/route';
 import { test as projects } from './project';
 import { getModal } from './modal';
 import { getFloatingBtn } from './floating-btn';
+import { type EnhancedPage } from './test';
 
 class TodoCategoryPage implements IPage {
-	#page: Page;
+	#enhancedPage: EnhancedPage;
 
-	constructor(page: Page) {
-		this.#page = page;
+	constructor(enhancedPage: EnhancedPage) {
+		this.#enhancedPage = enhancedPage;
 	}
 
 	async goto(projectTitle: string, projectId: number, projectShouldExist = true) {
-		const response = await this.#page.goto(generateTodoListUrl(projectTitle, projectId));
+		const response = await this.#enhancedPage.goto(generateTodoListUrl(projectTitle, projectId));
 		if (projectShouldExist) {
 			expect(response, 'response should exist').toBeTruthy();
 			await expect(response!.status() == 200, 'todo category page should exist').toBeTruthy();
@@ -21,9 +22,9 @@ class TodoCategoryPage implements IPage {
 	}
 
 	async create({ title, description }: { title: string; description?: string }) {
-		await (await getFloatingBtn(this.#page)).click();
+		await (await getFloatingBtn(this.#enhancedPage)).click();
 
-		const modal = await getModal(this.#page);
+		const modal = await getModal(this.#enhancedPage);
 
 		// fill in the data
 		await modal.getByPlaceholder('title').fill(title);
@@ -36,9 +37,9 @@ class TodoCategoryPage implements IPage {
 		await modal.getByRole('button', { name: 'Close' }).click();
 
 		// find the created category
-		const createdTodoCategory = await this.#page
+		const createdTodoCategory = await this.#enhancedPage
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
-				has: this.#page.getByText(title)
+				has: this.#enhancedPage.getByText(title)
 			})
 			.locator("div[data-tip='category id'] span.text-info")
 			.last(); // since its ordered from oldest to newest, then the newest one should be at the end
@@ -54,7 +55,7 @@ class TodoCategoryPage implements IPage {
 	}
 
 	async getCategoryLocatorById(id: number) {
-		const category = await this.#page
+		const category = await this.#enhancedPage
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
 				hasText: `#${id}`
 			})
@@ -69,7 +70,7 @@ class TodoCategoryPage implements IPage {
 }
 
 export const test = projects.extend<{ todoCategoryFactory: { factory: TodoCategoryPage } }>({
-	todoCategoryFactory: async ({ page, auth }, use) => {
-		await use({ factory: new TodoCategoryPage(page) });
+	todoCategoryFactory: async ({ enhancedPage, auth }, use) => {
+		await use({ factory: new TodoCategoryPage(enhancedPage) });
 	}
 });

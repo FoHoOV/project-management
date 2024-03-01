@@ -12,5 +12,6 @@ package-lock.json
 openapitools.json
 /src/lib/generated-client
 /test-results
+/playwright-report
 
 /cert

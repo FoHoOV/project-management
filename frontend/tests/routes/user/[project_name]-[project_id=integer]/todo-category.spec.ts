@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/todo-category';
 
-test('create todo category', async ({ page, projectFactory, todoCategoryFactory }) => {
+test('create todo category', async ({ enhancedPage, projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();
 
 	const projectTitle = 'test';
@@ -28,7 +28,7 @@ test('create todo category', async ({ page, projectFactory, todoCategoryFactory 
 
 	// check the order
 
-	const categories = await page.locator("div[data-tip='category id'] span.text-info").all();
+	const categories = await enhancedPage.locator("div[data-tip='category id'] span.text-info").all();
 
 	await expect(categories, 'two categories should exist').toHaveLength(2);
 
@@ -41,12 +41,12 @@ test('create todo category', async ({ page, projectFactory, todoCategoryFactory 
 	);
 });
 
-test('update todo category', ({ page }) => {});
+test('update todo category', ({ enhancedPage }) => {});
 
-test('delete todo category', ({ page }) => {});
+test('delete todo category', ({ enhancedPage }) => {});
 
-test('reorder todo category', ({ page }) => {});
+test('reorder todo category', ({ enhancedPage }) => {});
 
-test('toggle category actions', ({ page }) => {});
+test('toggle category actions', ({ enhancedPage }) => {});
 
-test('toggle `MARK AS DONE` when there are UNDONE todos', ({ page }) => {});
+test('toggle `MARK AS DONE` when there are UNDONE todos', ({ enhancedPage }) => {});

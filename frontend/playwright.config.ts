@@ -7,7 +7,10 @@ const config: PlaywrightTestConfig = {
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(spec)\.[jt]s/,
-	reporter: [['html', { open: 'on-failure', outputDir: 'test-results' }]]
+	reporter: [['html', { open: 'on-failure', outputDir: 'test-results' }]],
+	use: {
+		video: 'retain-on-failure'
+	}
 };
 
 export default config;
