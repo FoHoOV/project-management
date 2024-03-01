@@ -1,4 +1,4 @@
-# todos
+# Project management app
 
 A simple Project management app. The goal of this project is to have most of ASANA's features (step by step tho)
 one day.
