@@ -54,7 +54,50 @@ class TodoCategoryPage implements IPage {
 		};
 	}
 
-	async getCategoryLocatorById(id: number) {
+	async edit({
+		categoryId,
+		title,
+		description
+	}: {
+		categoryId: number | string;
+		title: string;
+		description?: string;
+	}) {
+		const targetCategory = await this.getCategoryLocatorById(categoryId);
+
+		await targetCategory.getByTestId('edit-category').click();
+
+		const modal = await getModal(this.#enhancedPage);
+
+		// fill in the data
+		await modal.getByPlaceholder('title').fill(title);
+		await modal.getByPlaceholder('title').press('Tab');
+		description && (await modal.getByPlaceholder('description (Optional)').fill(description));
+		await modal.getByRole('button', { name: 'edit' }).click();
+
+		// successful message should exist
+		await expect(modal.getByRole('alert'), 'edit successful message should exist').toContainText(
+			'Todo category edited'
+		);
+
+		// close the modal
+		await modal.getByRole('button', { name: 'Close' }).click();
+
+		await expect(
+			targetCategory.getByTestId('category-info'),
+			'selected category should contain the provided id'
+		).toContainText(`#${categoryId}`);
+		await expect(
+			targetCategory.getByTestId('category-info'),
+			'selected category should be updated to the new title'
+		).toContainText(title);
+		await expect(
+			targetCategory.getByTestId('category-info'),
+			'selected category should be updated to the new description'
+		).toContainText(description ?? '-');
+	}
+
+	async getCategoryLocatorById(id: number | string) {
 		const category = await this.#enhancedPage
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
 				hasText: `#${id}`
@@ -65,6 +108,7 @@ class TodoCategoryPage implements IPage {
 			category.length == 1,
 			'only one category with this id should exist on the page'
 		).toBeTruthy();
+
 		return category[0];
 	}
 }
