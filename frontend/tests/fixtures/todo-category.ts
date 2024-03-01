@@ -161,7 +161,7 @@ class TodoCategoryPage implements IPage {
 			.all();
 		const ids: number[] = [];
 
-		for (const i = 0; i < elements.length; i++) {
+		for (let i = 0; i < elements.length; i++) {
 			ids.push(parseInt((await elements[i].innerText()).trim().split('#')[1]));
 		}
 

@@ -41,7 +41,7 @@ test('create todo category', async ({ enhancedPage, projectFactory, todoCategory
 	);
 });
 
-test('update todo category', async ({ enhancedPage, projectFactory, todoCategoryFactory }) => {
+test('update todo category', async ({  projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();
 
 	const projectTitle = 'test';
@@ -79,15 +79,15 @@ test('update todo category', async ({ enhancedPage, projectFactory, todoCategory
 	expect(categoryIds, 'two categories should exist').toHaveLength(2);
 
 	expect(categoryIds[0], 'category order should be from oldest to newest').toEqual(
-		c1.categoryId.toString()
+		c1.categoryId
 	);
 
 	expect(categoryIds[1], 'category order should be from oldest to newest').toEqual(
-		c2.categoryId.toString()
+		c2.categoryId
 	);
 });
 
-test('delete todo category', async ({ enhancedPage, projectFactory, todoCategoryFactory }) => {
+test('delete todo category', async ({  projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();
 
 	const projectTitle = 'test';
@@ -160,7 +160,7 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		'by default elements should be sorted from oldest to newest'
 	).toBeTruthy();
 
-	todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
+	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
 	const idsAfter3MovedBefore2 = await todoCategoryFactory.factory.getCategoryIds();
 	expect(
 		idsAfter3MovedBefore2[0] == c1.categoryId &&
@@ -170,7 +170,7 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 	).toBeTruthy();
 
 	// I expect no change here
-	todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c1.categoryId, 'right');
+	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c1.categoryId, 'right');
 	const idsAfter3MovedAfter1 = await todoCategoryFactory.factory.getCategoryIds();
 	expect(
 		idsAfter3MovedAfter1[0] == c1.categoryId &&
@@ -179,13 +179,22 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		'should be 1 3 2'
 	).toBeTruthy();
 
-	todoCategoryFactory.factory.dragAndDrop(c2.categoryId, c1.categoryId, 'left');
+	await todoCategoryFactory.factory.dragAndDrop(c2.categoryId, c1.categoryId, 'left');
 	const idsAfter2MovedBefore1 = await todoCategoryFactory.factory.getCategoryIds();
 	expect(
 		idsAfter2MovedBefore1[0] == c2.categoryId &&
 			idsAfter3MovedAfter1[1] == c1.categoryId &&
 			idsAfter3MovedAfter1[2] == c3.categoryId,
 		'should be 2 1 3'
+	).toBeTruthy();
+
+	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
+	const idsAfter3MovedBefore2SecondTime = await todoCategoryFactory.factory.getCategoryIds();
+	expect(
+		idsAfter3MovedBefore2SecondTime[0] == c3.categoryId &&
+		idsAfter3MovedBefore2SecondTime[1] == c2.categoryId &&
+		idsAfter3MovedBefore2SecondTime[2] == c1.categoryId,
+		'should be 3 2 1'
 	).toBeTruthy();
 });
 

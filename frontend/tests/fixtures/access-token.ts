@@ -1,5 +1,6 @@
 import { test as baseTest } from './test';
 import { expect } from '@playwright/test';
+import crypto from "crypto"; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
 
 // Define a fixture for creating a new user and logging in to capture the access token
 export const test = baseTest.extend<{

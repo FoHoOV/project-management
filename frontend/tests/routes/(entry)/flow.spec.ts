@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '../../fixtures/test';
+import crypto from "crypto"; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
 
 test('signup then login flow', async ({ enhancedPage }, testInfo) => {
 	testInfo.setTimeout(60 * 1000);
