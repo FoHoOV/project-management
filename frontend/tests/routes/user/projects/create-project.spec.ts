@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from '../../fixtures/project';
+import { test } from '../../../fixtures/project';
 
 test('create a project', async ({ projectFactory }) => {
 	await projectFactory.factory.goto();

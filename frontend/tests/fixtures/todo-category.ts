@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import type { IPage } from './IPage';
-import { generateTodoListUrl } from '../../../src/lib/utils/params/route';
+import { generateTodoListUrl } from '../../src/lib/utils/params/route';
 import { test as projects } from './project';
 import { getModal } from './modal';
 import { getFloatingBtn } from './floating-btn';

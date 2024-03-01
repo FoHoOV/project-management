@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from '../../fixtures/todo-category';
+import { test } from '../../../fixtures/todo-category';
 
 test('create todo category', async ({ enhancedPage, projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();

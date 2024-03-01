@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from '../fixtures/test';
+import { test } from '../../fixtures/test';
 
 test('signup then login flow', async ({ enhancedPage }, testInfo) => {
 	testInfo.setTimeout(60 * 1000);
