@@ -114,12 +114,21 @@ class TodoCategoryPage implements IPage {
 		const currentCategory = await this.getCategoryLocatorById(fromCategoryId);
 		const targetCategory = await this.getCategoryLocatorById(targetCategoryId);
 
-		const target =
-			direction == 'right'
-				? await this.getDeleteButton(targetCategoryId)
-				: targetCategory.getByTestId('category-info').locator("div[data-tip='category id']");
+		await targetCategory.scrollIntoViewIfNeeded();
+		const targetBoundingBox = await targetCategory.boundingBox();
+		expect(targetBoundingBox, 'bounding box cannot be null').toBeTruthy();
 
-		await currentCategory.dragTo(target);
+		if (!targetBoundingBox) {
+			// just for TS
+			throw new Error('bounding box cannot be null');
+		}
+
+		await currentCategory.dragTo(targetCategory, {
+			targetPosition:
+				direction == 'right'
+					? { x: targetBoundingBox.width / 2 + 5, y: 5 }
+					: { x: targetBoundingBox.width / 2 - 5, y: 5 }
+		});
 
 		await expect(
 			targetCategory.getByRole('alert'),

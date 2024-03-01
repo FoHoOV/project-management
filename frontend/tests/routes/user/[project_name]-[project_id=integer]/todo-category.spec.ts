@@ -141,7 +141,7 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 	});
 
 	const c3 = await todoCategoryFactory.factory.create({
-		title: 'test3',
+		title: 'test2',
 		description: 'test3'
 	});
 
@@ -191,4 +191,4 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 	).toBeTruthy();
 });
 
-test('toggle `MARK AS DONE` when there are UNDONE todos', async ({ enhancedPage }) => {});
+test('toggle `MARK AS DONE` when there are UNDONE todos', async () => {});
