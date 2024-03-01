@@ -105,6 +105,21 @@ class TodoCategoryPage implements IPage {
 		await this.#enhancedPage.waitForEvent('response');
 	}
 
+	async dragAndDrop(
+		fromCategoryId: string | number,
+		targetCategoryId: string | number,
+		direction: 'right' | 'left'
+	) {
+		const currentCategory = await this.getCategoryLocatorById(fromCategoryId);
+		const targetCategory = await this.getCategoryLocatorById(targetCategoryId);
+		const target =
+			direction == 'right'
+				? await this.getDeleteButton(targetCategoryId)
+				: targetCategory.getByTestId('category-info').locator("div[data-tip='category id']");
+		await currentCategory.dragTo(target);
+		await this.#enhancedPage.waitForEvent('requestfinished');
+	}
+
 	async getCategoryLocatorById(id: number | string) {
 		const category = await this.#enhancedPage
 			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
@@ -137,6 +152,20 @@ class TodoCategoryPage implements IPage {
 
 	async getCreateButton() {
 		return await getFloatingBtn(this.#enhancedPage);
+	}
+
+	async getCategoryIds() {
+		const elements = await this.#enhancedPage
+			.getByTestId('category-info')
+			.locator("div[data-tip='category id'] span.text-info")
+			.all();
+		const ids: number[] = [];
+
+		for (const i = 0; i < elements.length; i++) {
+			ids.push(parseInt((await elements[i].innerText()).trim().split('#')[1]));
+		}
+
+		return ids;
 	}
 }
 
