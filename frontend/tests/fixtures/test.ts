@@ -24,14 +24,12 @@ export async function dragAndDropTo({
 	from,
 	to,
 	offsetFromCenter = { x: 0, y: 0 },
-	waitFor = 500,
-	steps = 0
+	steps = 1
 }: {
 	page: Page;
 	from: Locator;
 	to: Locator;
 	offsetFromCenter?: { x: number; y: number };
-	waitFor?: number;
 	steps?: number;
 }) {
 	function getPoint(boundingRect: NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>) {
@@ -42,22 +40,28 @@ export async function dragAndDropTo({
 	}
 
 	await from.scrollIntoViewIfNeeded();
+	await expect(from).toBeVisible();
 
 	const fromBoundingRect = await from.boundingBox();
-	const toBoundingRect = await to.boundingBox();
-
 	expect(fromBoundingRect, '`from` bounding box should have a value').not.toBeNull();
-	expect(toBoundingRect, '`to` bounding box should have a value').not.toBeNull();
-
-	if (!fromBoundingRect || !toBoundingRect) {
+	if (!fromBoundingRect) {
 		// just for TS to shutup
-		throw new Error('fromBoundingRect and toBoundingRect must have a value');
+		throw new Error('fromBoundingRect must have a value');
 	}
 
 	await page.mouse.move(getPoint(fromBoundingRect).x, getPoint(fromBoundingRect).y, { steps });
 	await page.mouse.down();
 
-	await new Promise((r) => setTimeout(r, waitFor));
+	await to.scrollIntoViewIfNeeded();
+	await expect(to).toBeVisible();
+
+	const toBoundingRect = await to.boundingBox();
+	expect(toBoundingRect, '`to` bounding box should have a value').not.toBeNull();
+	if (!toBoundingRect) {
+		// just for TS to shutup
+		throw new Error('toBoundingRect must have a value');
+	}
+
 	await page.mouse.move(
 		getPoint(toBoundingRect).x + offsetFromCenter.x,
 		getPoint(toBoundingRect).y + offsetFromCenter.y,
@@ -65,7 +69,6 @@ export async function dragAndDropTo({
 			steps
 		}
 	);
-	await new Promise((r) => setTimeout(r, waitFor));
 
 	await page.mouse.up();
 }

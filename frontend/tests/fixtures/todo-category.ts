@@ -114,8 +114,6 @@ class TodoCategoryPage implements IPage {
 		const currentCategory = await this.getCategoryLocatorById(fromCategoryId);
 		const targetCategory = await this.getCategoryLocatorById(targetCategoryId);
 
-		await targetCategory.scrollIntoViewIfNeeded();
-
 		await dragAndDropTo({
 			page: this.#enhancedPage,
 			from: currentCategory,
