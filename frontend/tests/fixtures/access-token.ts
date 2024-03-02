@@ -1,6 +1,6 @@
 import { test as baseTest } from './test';
 import { expect } from '@playwright/test';
-import crypto from "crypto"; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
+import crypto from 'crypto'; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
 
 // Define a fixture for creating a new user and logging in to capture the access token
 export const test = baseTest.extend<{
@@ -18,14 +18,13 @@ export const test = baseTest.extend<{
 		await enhancedPage.locator('input[name="confirm_password"]').fill(password);
 		await enhancedPage.getByRole('button', { name: 'signup' }).click();
 
-		await enhancedPage.waitForEvent('requestfinished');
-
 		await expect(
 			enhancedPage.locator("form div[role='alert'].alert-error"),
 			'not errors should have occurred when signing up'
 		).not.toBeVisible();
 
 		// Verify redirection to login page after account creation
+		await enhancedPage.waitForURL('/login');
 		await expect(enhancedPage).toHaveURL('/login');
 
 		// Perform login
@@ -33,13 +32,13 @@ export const test = baseTest.extend<{
 		await enhancedPage.locator('input[name="password"]').fill(password);
 		await enhancedPage.getByRole('button', { name: 'login' }).click();
 
-		await enhancedPage.waitForEvent('requestfinished');
-
 		await expect(
 			enhancedPage.locator("form div[role='alert'].alert-error"),
 			'not errors should have occurred when logging in'
 		).not.toBeVisible();
 
+		// Verify redirection to projects page after account creation
+		await enhancedPage.waitForURL('/user/projects');
 		await expect(enhancedPage).toHaveURL('/user/projects');
 
 		// Capture the access_token from cookies
