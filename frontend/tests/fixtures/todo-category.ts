@@ -115,22 +115,12 @@ class TodoCategoryPage implements IPage {
 		const targetCategory = await this.getCategoryLocatorById(targetCategoryId);
 
 		await targetCategory.scrollIntoViewIfNeeded();
-		const targetBoundingBox = await targetCategory.boundingBox();
-		expect(targetBoundingBox, 'bounding box cannot be null').toBeTruthy();
-
-		if (!targetBoundingBox) {
-			// just for TS
-			throw new Error('bounding box cannot be null');
-		}
 
 		await dragAndDropTo({
 			page: this.#enhancedPage,
 			from: currentCategory,
 			to: targetCategory,
-			targetPosition:
-				direction == 'right'
-					? { x: targetBoundingBox.width / 2 + 5, y: 5 }
-					: { x: targetBoundingBox.width / 2 - 5, y: 5 }
+			offsetFromCenter: direction == 'right' ? { x: 5, y: 0 } : { x: -5, y: 0 }
 		});
 
 		await expect(

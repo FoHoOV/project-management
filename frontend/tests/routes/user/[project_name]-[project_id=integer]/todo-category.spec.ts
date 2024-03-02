@@ -141,7 +141,7 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 	});
 
 	const c3 = await todoCategoryFactory.factory.create({
-		title: 'test2',
+		title: 'test3',
 		description: 'test3'
 	});
 

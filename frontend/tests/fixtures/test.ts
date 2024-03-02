@@ -23,17 +23,26 @@ export async function dragAndDropTo({
 	page,
 	from,
 	to,
-	targetPosition = { x: 0, y: 0 },
-	waitFor = 5000,
-	steps = 5
+	offsetFromCenter = { x: 0, y: 0 },
+	waitFor = 500,
+	steps = 0
 }: {
 	page: Page;
 	from: Locator;
 	to: Locator;
-	targetPosition?: { x: number; y: number };
+	offsetFromCenter?: { x: number; y: number };
 	waitFor?: number;
 	steps?: number;
 }) {
+	function getPoint(boundingRect: NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>) {
+		return {
+			x: boundingRect.x + boundingRect.width / 2,
+			y: boundingRect.y + boundingRect.height / 2
+		};
+	}
+
+	await from.scrollIntoViewIfNeeded();
+
 	const fromBoundingRect = await from.boundingBox();
 	const toBoundingRect = await to.boundingBox();
 
@@ -45,13 +54,18 @@ export async function dragAndDropTo({
 		throw new Error('fromBoundingRect and toBoundingRect must have a value');
 	}
 
-	await page.mouse.move(fromBoundingRect.x, fromBoundingRect.y);
+	await page.mouse.move(getPoint(fromBoundingRect).x, getPoint(fromBoundingRect).y, { steps });
 	await page.mouse.down();
-	for (let i = 0; i < steps; i++) {
-		await new Promise((r) => setTimeout(r, waitFor / steps));
-		await page.mouse.move(toBoundingRect.x + targetPosition.x, toBoundingRect.y + targetPosition.y);
-		await new Promise((r) => setTimeout(r, waitFor / steps));
-	}
+
+	await new Promise((r) => setTimeout(r, waitFor));
+	await page.mouse.move(
+		getPoint(toBoundingRect).x + offsetFromCenter.x,
+		getPoint(toBoundingRect).y + offsetFromCenter.y,
+		{
+			steps
+		}
+	);
+	await new Promise((r) => setTimeout(r, waitFor));
 
 	await page.mouse.up();
 }
