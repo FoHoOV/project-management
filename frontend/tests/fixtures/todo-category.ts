@@ -4,8 +4,8 @@ import { generateTodoListUrl } from '../../src/lib/utils/params/route';
 import { test as projects } from './project';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
-import { waitForAnimationEnd, type EnhancedPage } from './test';
-import { getConfirmAcceptButton } from '../common-locators/confrim';
+import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
+import { getConfirmAcceptButton } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 
 class TodoCategoryPage implements IPage {
@@ -123,7 +123,10 @@ class TodoCategoryPage implements IPage {
 			throw new Error('bounding box cannot be null');
 		}
 
-		await currentCategory.dragTo(targetCategory, {
+		await dragAndDropTo({
+			page: this.#enhancedPage,
+			from: currentCategory,
+			to: targetCategory,
 			targetPosition:
 				direction == 'right'
 					? { x: targetBoundingBox.width / 2 + 5, y: 5 }
