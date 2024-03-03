@@ -52,24 +52,26 @@ export async function dragAndDropTo({
 	await page.mouse.move(getPoint(fromBoundingRect).x, getPoint(fromBoundingRect).y, { steps });
 	await page.mouse.down();
 
-	await to.scrollIntoViewIfNeeded();
-	await expect(to).toBeVisible();
+	for (let i = 0; i < steps; i++) {
+		const toBoundingRect = await to.boundingBox();
+		expect(toBoundingRect, '`to` bounding box should have a value').not.toBeNull();
+		if (!toBoundingRect) {
+			// just for TS to shutup
+			throw new Error('toBoundingRect must have a value');
+		}
 
-	const toBoundingRect = await to.boundingBox();
-	expect(toBoundingRect, '`to` bounding box should have a value').not.toBeNull();
-	if (!toBoundingRect) {
-		// just for TS to shutup
-		throw new Error('toBoundingRect must have a value');
+		await page.mouse.move(
+			getPoint(toBoundingRect).x + offsetFromCenter.x,
+			getPoint(toBoundingRect).y + offsetFromCenter.y,
+			{
+				steps
+			}
+		);
+
+		await to.scrollIntoViewIfNeeded();
 	}
 
-	await page.mouse.move(
-		getPoint(toBoundingRect).x + offsetFromCenter.x,
-		getPoint(toBoundingRect).y + offsetFromCenter.y,
-		{
-			steps
-		}
-	);
-
+	await expect(to).toBeVisible();
 	await page.mouse.up();
 }
 
