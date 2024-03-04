@@ -179,7 +179,10 @@
 </script>
 
 <Draggable {todo} {category} disabled={!draggable} onError={(message) => (apiErrorTitle = message)}>
-	<div class="card h-full max-h-full bg-base-200 shadow-xl transition-colors hover:bg-base-300">
+	<div
+		class="card h-full max-h-full bg-base-200 shadow-xl transition-colors hover:bg-base-300"
+		data-testid="todo-item-wrapper"
+	>
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 
 		<Confirm bind:this={confirmDeleteTodo} onConfirmed={handleRemoveTodo}></Confirm>
@@ -251,7 +254,7 @@
 			<div class="flex gap-2 self-end py-1">
 				<div class="indicator self-end">
 					<span class="badge indicator-item badge-secondary">{todo.comments_count}</span>
-					<button class="btn btn-info btn-outline btn-sm" on:click={handleShowComments}>
+					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowComments}>
 						<Fa icon={faComment}></Fa>
 						<span>comments</span>
 					</button>
@@ -259,7 +262,7 @@
 
 				<div class="indicator self-end">
 					<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
-					<button class="btn btn-info btn-outline btn-sm" on:click={handleShowTags}>
+					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowTags}>
 						<Fa icon={faTags}></Fa>
 						<span>tags</span>
 					</button>
@@ -269,7 +272,7 @@
 			<div class="flex gap-2 self-end">
 				<div class="indicator col-start-2 self-end">
 					<span class="badge indicator-item badge-secondary">{todo.dependencies.length}</span>
-					<button class="btn btn-info btn-outline btn-sm" on:click={handleShowDependencies}>
+					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowDependencies}>
 						<Fa icon={faSitemap}></Fa>
 						<span>dependencies</span>
 					</button>

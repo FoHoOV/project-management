@@ -1,3 +1,5 @@
+import { expect } from '@playwright/test';
+import { closeModal, getModal } from '../common-locators/modal';
 import { type IPage } from './IPage';
 import type { EnhancedPage } from './test';
 
@@ -5,11 +7,11 @@ import type { TodoCategoryPage } from './todo-category';
 import { test as todoCategoriesTest } from './todo-category';
 
 class TodoItemPage implements IPage {
-	#page: EnhancedPage;
+	#enhancedPage: EnhancedPage;
 	#todoCategoryFactory: TodoCategoryPage;
 
-	constructor(page: EnhancedPage, todoCategoryFactory: TodoCategoryPage) {
-		this.#page = page;
+	constructor(enhancedPage: EnhancedPage, todoCategoryFactory: TodoCategoryPage) {
+		this.#enhancedPage = enhancedPage;
 		this.#todoCategoryFactory = todoCategoryFactory;
 	}
 
@@ -18,14 +20,55 @@ class TodoItemPage implements IPage {
 	}
 
 	async create({
+		categoryId,
 		title,
 		description,
 		dueDate
 	}: {
+		categoryId: string | number;
 		title: string;
 		description?: string;
 		dueDate?: Date;
-	}) {}
+	}) {
+		const addTodoBtn = await this.#todoCategoryFactory.getAddTodoItemButton(categoryId);
+		await addTodoBtn.click();
+		const modal = await getModal(this.#enhancedPage, true);
+
+		// fill in the data
+		await modal.getByPlaceholder('title').click();
+		await modal.getByPlaceholder('title').fill(title);
+		await modal.getByPlaceholder('title').press('Tab');
+		description && (await modal.getByPlaceholder('description (Optional)').fill(description));
+		await modal.getByPlaceholder('description (Optional)').press('Tab');
+		dueDate &&
+			(await modal
+				.getByPlaceholder('Due date (Optional)')
+				.fill(`${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDay()}`));
+		await modal.getByRole('button', { name: 'create' }).click();
+
+		// successful message should exist
+		await expect(modal.getByRole('alert'), 'create successful message should exist').toContainText(
+			'Todo item created'
+		);
+
+		// close the modal
+		await closeModal(modal);
+
+		// find the created todo item
+		const createdTodoItem = (await this.#todoCategoryFactory.getCategoryLocatorById(categoryId))
+			.getByTestId('todo-item-wrapper')
+			.locator('div', {
+				has: this.#enhancedPage.getByText(title)
+			})
+			.locator("div[data-tip='todo id'] span.text-info")
+			.last(); // since its ordered from oldest to newest, then the newest one should be at the end
+
+		await expect(createdTodoItem, 'created todo item should be present on the page').toHaveCount(1);
+
+		return {
+			todoId: parseInt((await createdTodoItem.innerText()).split('#')[1])
+		};
+	}
 
 	async update({
 		title,

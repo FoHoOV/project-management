@@ -1,11 +1,29 @@
-import { test } from '@playwright/test';
+import { test } from '../../../fixtures/todo-item';
 
-test('creating todo items', ({ page }) => {});
+test.describe('todos test that all depend on a project and a category', () => {
+	test.beforeEach(async ({ todoCategoryFactory, projectFactory }) => {
+		await projectFactory.factory.goto();
 
-test('deleting todo items', ({ page }) => {});
+		const projectTitle = `test${crypto.randomUUID()}`;
+		const project = await projectFactory.factory.create({
+			title: projectTitle,
+			description: 'test'
+		});
 
-test('editing todo items', ({ page }) => {});
+		await todoCategoryFactory.factory.goto(projectTitle, project.projectId);
+		const c1 = await todoCategoryFactory.factory.create({
+			title: `test${crypto.randomUUID()}`,
+			description: 'test1'
+		});
+	});
 
-test('moving todo to another category', ({ page }) => {});
+	test('creating todo items', ({ todoItemFactory, projectFactory }) => {});
 
-test('reorder todo items', ({ page }) => {});
+	test('deleting todo items', ({ page }) => {});
+
+	test('editing todo items', ({ page }) => {});
+
+	test('moving todo to another category', ({ page }) => {});
+
+	test('reorder todo items', ({ page }) => {});
+});
