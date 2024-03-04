@@ -51,8 +51,23 @@ export class TodoCategoryPage implements IPage {
 			'created todo category should be present on the page'
 		).toHaveCount(1);
 
+		const createdTodoCategoryId = parseInt((await createdTodoCategory.innerText()).split('#')[1]);
+		const targetCategory = await this.getCategoryLocatorById(createdTodoCategoryId);
+		await expect(
+			targetCategory.getByTestId('category-info'),
+			'selected category should contain the created id'
+		).toContainText(`#${createdTodoCategoryId}`);
+		await expect(
+			targetCategory.getByTestId('category-info'),
+			'selected category should contain the  title'
+		).toContainText(title);
+		await expect(
+			targetCategory.getByTestId('category-info'),
+			'selected category should be contain the description'
+		).toContainText(description ?? '-');
+
 		return {
-			categoryId: parseInt((await createdTodoCategory.innerText()).split('#')[1])
+			categoryId: createdTodoCategoryId
 		};
 	}
 

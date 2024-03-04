@@ -35,7 +35,8 @@ test('creating todo items', async ({ todoItemUtils, todoCategoryUtils, projectUt
 	const t2 = await todoItemUtils.page.create({
 		categoryId: category.categoryId,
 		title: 't2',
-		description: 'some other random sheit'
+		description: 'some other random sheit',
+		dueDate: new Date(Date.now())
 	});
 
 	const t3 = await todoItemUtils.page.create({
@@ -56,7 +57,22 @@ test('creating todo items', async ({ todoItemUtils, todoCategoryUtils, projectUt
 
 test('deleting todo items', ({ page }) => {});
 
-test('editing todo items', ({ page }) => {});
+test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
+	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
+
+	const t1 = await todoItemUtils.page.create({
+		categoryId: category.categoryId,
+		title: 't1',
+		description: 'some other random sheit'
+	});
+
+	await todoItemUtils.page.edit({
+		todoId: t1.todoId,
+		title: 'new title t1',
+		description: 'new description ',
+		dueDate: new Date(Date.now())
+	});
+});
 
 test('moving todo to another category', ({ page }) => {});
 

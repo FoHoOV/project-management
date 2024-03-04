@@ -206,14 +206,16 @@
 						class:checkbox-error={!todo.is_done}
 						checked={todo.is_done}
 						on:click={handleChangeDoneStatus}
+						data-testid="todo-item-is-done"
 					/>
 					<button
 						on:click={() => restProps.onEditTodoItem?.(todo)}
 						class:hidden={!restProps.onEditTodoItem}
+						data-testid="todo-item-edit"
 					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
-					<button on:click={() => confirmDeleteTodo?.show()}>
+					<button on:click={() => confirmDeleteTodo?.show()} data-testid="todo-item-delete">
 						<Fa icon={faTrashCan} class="text-red-400" />
 					</button>
 				</div>

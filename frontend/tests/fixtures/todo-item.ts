@@ -43,7 +43,7 @@ class TodoItemPage implements IPage {
 		dueDate &&
 			(await modal
 				.getByPlaceholder('Due date (Optional)')
-				.fill(`${dueDate.getFullYear()}-${dueDate.getMonth()}-${dueDate.getDay()}`));
+				.fill(this._convertDateToString(dueDate)));
 		await modal.getByRole('button', { name: 'create' }).click();
 
 		// successful message should exist
@@ -65,22 +65,97 @@ class TodoItemPage implements IPage {
 
 		await expect(createdTodoItem, 'created todo item should be present on the page').toHaveCount(1);
 
+		const createdTodoId = parseInt((await createdTodoItem.innerText()).split('#')[1]);
+		const todoItem = await this.getTodoItemLocatorById(createdTodoId);
+		await expect(
+			todoItem.getByTestId('todo-info'),
+			'selected todo item should contain the provided id'
+		).toContainText(`#${createdTodoId}`);
+		await expect(
+			todoItem.getByTestId('todo-info'),
+			'selected todo item should contain the title'
+		).toContainText(title);
+		await expect(
+			todoItem.getByTestId('todo-item-wrapper'),
+			'selected todo item should contain the description'
+		).toContainText(description ?? '-');
+		await expect(
+			todoItem.getByTestId('todo-item-wrapper'),
+			'selected todo item should updated to the due date'
+		).toContainText(dueDate ? this._convertDateToString(dueDate) : '-');
+
 		return {
-			todoId: parseInt((await createdTodoItem.innerText()).split('#')[1])
+			todoId: createdTodoId
 		};
 	}
 
-	async update({
+	async edit({
+		todoId,
 		title,
 		description,
 		dueDate,
 		markAsDone
 	}: {
-		title?: string;
+		todoId: string | number;
+		title: string;
 		description?: string;
 		dueDate?: Date;
 		markAsDone?: boolean;
-	}) {}
+	}) {
+		const editTodoBtn = await this.getEditButton(todoId);
+		await editTodoBtn.click();
+		const modal = await getModal(this.#enhancedPage, true);
+
+		// fill in the data
+		await modal.getByPlaceholder('title').click();
+		await modal.getByPlaceholder('title').fill(title);
+		await modal.getByPlaceholder('title').press('Tab');
+		description && (await modal.getByPlaceholder('description (Optional)').fill(description));
+		await modal.getByPlaceholder('description (Optional)').press('Tab');
+		dueDate &&
+			(await modal
+				.getByPlaceholder('Due date (Optional)')
+				.fill(this._convertDateToString(dueDate)));
+
+		markAsDone != null && (await (await this.getMarkAsDoneLocator(todoId)).setChecked(markAsDone));
+
+		await modal.getByRole('button', { name: 'edit' }).click();
+
+		// successful message should exist
+		await expect(modal.getByRole('alert'), 'edit successful message should exist').toContainText(
+			'Todo item edited'
+		);
+
+		// close the modal
+		await closeModal(modal);
+
+		// find and validate the edited todo item
+		const todoItem = await this.getTodoItemLocatorById(todoId);
+		await expect(
+			todoItem.getByTestId('todo-info'),
+			'selected todo item should contain the provided id'
+		).toContainText(`#${todoId}`);
+		await expect(
+			todoItem.getByTestId('todo-info'),
+			'selected todo item should be updated to the new title'
+		).toContainText(title);
+		await expect(
+			todoItem.getByTestId('todo-item-wrapper'),
+			'selected todo item should be updated to the new description'
+		).toContainText(description ?? '-');
+
+		await expect(
+			todoItem.getByTestId('todo-item-wrapper'),
+			'selected todo item should be updated to the new due date'
+		).toContainText(dueDate ? this._convertDateToString(dueDate) : '-');
+
+		if (markAsDone != null) {
+			expect(
+				(await (await this.getMarkAsDoneLocator(todoId)).isChecked()) == markAsDone,
+				'mark as done status should be same as input'
+			).toBeTruthy();
+		}
+	}
 
 	async delete(todoId: number | string) {}
 
@@ -94,19 +169,47 @@ class TodoItemPage implements IPage {
 		direction: 'top' | 'bottom';
 	}) {}
 
-	async getTodoItemLocatorById(id: number | string) {}
+	async getTodoItemLocatorById(id: number | string) {
+		const todoItem = await this.#enhancedPage
+			.locator("div[data-testid='todo-item-wrapper']", { hasText: `#${id}` })
+			.all();
 
-	async getDeleteButton(id: number | string) {}
+		expect(
+			todoItem.length == 1,
+			'only one todo-item with this id should exist on the page'
+		).toBeTruthy();
 
-	async getEditButton(id: number | string) {}
+		return todoItem[0];
+	}
 
-	async getCreateButton() {}
+	async getDeleteButton(id: number | string) {
+		const todoItem = await this.getTodoItemLocatorById(id);
+		return todoItem.getByTestId('todo-item-delete');
+	}
 
-	async getManageCommentsButton(id: number | string) {}
+	async getEditButton(id: number | string) {
+		const todoItem = await this.getTodoItemLocatorById(id);
+		return todoItem.getByTestId('todo-item-edit');
+	}
 
-	async getManageTagsButton(id: number | string) {}
+	async getCreateButton(categoryId: number | string) {
+		return await this.#todoCategoryPage.getAddTodoItemButton(categoryId);
+	}
 
-	async getManageDependenciesButton(id: number | string) {}
+	async getManageCommentsButton(id: number | string) {
+		const todoItem = await this.getTodoItemLocatorById(id);
+		return todoItem.getByRole('button', { name: 'comments' });
+	}
+
+	async getManageTagsButton(id: number | string) {
+		const todoItem = await this.getTodoItemLocatorById(id);
+		return todoItem.getByRole('button', { name: 'tags' });
+	}
+
+	async getManageDependenciesButton(id: number | string) {
+		const todoItem = await this.getTodoItemLocatorById(id);
+		return todoItem.getByRole('button', { name: 'dependencies' });
+	}
 
 	async getTodoIdsFor(categoryId: string | number) {
 		const category = await this.#todoCategoryPage.getCategoryLocatorById(categoryId);
@@ -123,6 +226,14 @@ class TodoItemPage implements IPage {
 		}
 
 		return ids;
+	}
+
+	async getMarkAsDoneLocator(id: string | number) {
+		return (await this.getTodoItemLocatorById(id)).getByTestId('todo-item-is-done');
+	}
+
+	private _convertDateToString(date: Date) {
+		return `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
 	}
 }
 
