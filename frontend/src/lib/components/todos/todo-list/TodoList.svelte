@@ -11,7 +11,7 @@
 	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import type { TodoCategory } from '$lib/generated-client';
-	import type { Events as TodoItemEvents } from '../todo-item/TodoItem.svelte';
+	import type { Events as TodoItemEvents } from '$components/todos/todo-item/TodoItem.svelte';
 	import {
 		faInfoCircle,
 		faEdit,
