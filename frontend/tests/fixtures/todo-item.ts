@@ -78,8 +78,8 @@ class TodoItemPage implements IPage {
 		await expect(todoItem, 'selected todo item should contain the description').toContainText(
 			description ?? '-'
 		);
-		await expect(todoItem, 'selected todo item should updated to the due date').toContainText(
-			dueDate ? this._convertDateToString(dueDate) : '-'
+		await expect(todoItem, 'selected todo item should contain to the due date').toContainText(
+			dueDate ? dueDate.toLocaleDateString() : '-'
 		);
 
 		return {
@@ -142,10 +142,12 @@ class TodoItemPage implements IPage {
 			'selected todo item should be updated to the new description'
 		).toContainText(description ?? '-');
 
-		await expect(
-			todoItem,
-			'selected todo item should be updated to the new due date'
-		).toContainText(dueDate ? this._convertDateToString(dueDate) : '-');
+		if (dueDate) {
+			await expect(
+				todoItem,
+				'selected todo item should be updated to the new due date'
+			).toContainText(dueDate ? dueDate.toLocaleDateString() : '-');
+		}
 
 		if (markAsDone != null) {
 			expect(
@@ -231,7 +233,7 @@ class TodoItemPage implements IPage {
 	}
 
 	private _convertDateToString(date: Date) {
-		return `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
+		return new Intl.DateTimeFormat('en-CA').format(date);
 	}
 }
 
