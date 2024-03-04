@@ -76,4 +76,4 @@ test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUti
 
 test('moving todo to another category', ({ page }) => {});
 
-test('reorder todo items', ({ page }) => {});
+test('reorder todo items in same category', ({ page }) => {});
