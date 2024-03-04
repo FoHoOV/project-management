@@ -165,10 +165,7 @@ test('moving todo to another category', async ({
 	});
 	const step1 = await todoItemUtils.page.getTodoIdsFor(c2.categoryId);
 	expect(step1, `c2 should have 3 todo items now`).toHaveLength(3);
-	expect(
-		step1[0] == t1.todoId && step1[1] == t3.todoId && step1[2] == t4.todoId,
-		`should be ${t1.todoId} ${t3.todoId} ${t4.todoId}, got: ${JSON.stringify(step1)}`
-	).toBeTruthy();
+	expect(step1).toEqual([t1.todoId, t3.todoId, t4.todoId]);
 
 	await todoItemUtils.page.dragAndDrop({
 		fromTodoId: t1.todoId,
@@ -177,10 +174,7 @@ test('moving todo to another category', async ({
 	});
 	const step2 = await todoItemUtils.page.getTodoIdsFor(c2.categoryId);
 	expect(step2, `c2 should have 2 todo items now`).toHaveLength(2);
-	expect(
-		step2[0] == t3.todoId && step2[1] == t4.todoId,
-		`should be ${t3.todoId} ${t4.todoId}, got: ${JSON.stringify(step2)}`
-	).toBeTruthy();
+	expect(step2).toEqual([t3.todoId, t4.todoId]);
 
 	await todoItemUtils.page.dragAndDrop({
 		fromTodoId: t3.todoId,
@@ -189,10 +183,7 @@ test('moving todo to another category', async ({
 	});
 	const step3 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
 	expect(step3, `c1 should have 3 todo items now`).toHaveLength(3);
-	expect(
-		step3[0] == t1.todoId && step3[1] == t3.todoId && step3[2] == t2.todoId,
-		`should be ${t1.todoId} ${t3.todoId} ${t2.todoId}, got: ${JSON.stringify(step3)}`
-	).toBeTruthy();
+	expect(step3).toEqual([t1.todoId, t3.todoId, t2.todoId]);
 });
 
 test('reorder todo items in same category', async ({
@@ -200,15 +191,7 @@ test('reorder todo items in same category', async ({
 	todoCategoryUtils,
 	projectUtils
 }) => {
-	const p1 = await projectUtils.page.create({ title: 'p1' });
-	const c1 = await createCategory(todoCategoryUtils.page, projectUtils.page, {
-		projectId: p1.projectId,
-		projectTitle: 'p1'
-	});
-	const c2 = await createCategory(todoCategoryUtils.page, projectUtils.page, {
-		projectId: p1.projectId,
-		projectTitle: 'p1'
-	});
+	const c1 = await createCategory(todoCategoryUtils.page, projectUtils.page);
 
 	const t1 = await todoItemUtils.page.create({
 		categoryId: c1.categoryId,
@@ -221,13 +204,8 @@ test('reorder todo items in same category', async ({
 	});
 
 	const t3 = await todoItemUtils.page.create({
-		categoryId: c2.categoryId,
+		categoryId: c1.categoryId,
 		title: 't3'
-	});
-
-	const t4 = await todoItemUtils.page.create({
-		categoryId: c2.categoryId,
-		title: 't4'
 	});
 
 	await todoItemUtils.page.dragAndDrop({
@@ -236,10 +214,7 @@ test('reorder todo items in same category', async ({
 		direction: 'top'
 	});
 	const step1 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
-	expect(
-		step1[0] == t1.todoId && step1[1] == t2.todoId,
-		`should be ${t1.todoId} ${t2.todoId}, got: ${JSON.stringify(step1)}`
-	).toBeTruthy();
+	expect(step1).toEqual([t1.todoId, t2.todoId, t3.todoId]);
 
 	await todoItemUtils.page.dragAndDrop({
 		fromTodoId: t1.todoId,
@@ -247,8 +222,27 @@ test('reorder todo items in same category', async ({
 		direction: 'bottom'
 	});
 	const step2 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
-	expect(
-		step2[0] == t2.todoId && step2[1] == t1.todoId,
-		`should be ${t1.todoId} ${t2.todoId}, got: ${JSON.stringify(step1)}`
-	).toBeTruthy();
+	expect(step2).toEqual([t2.todoId, t1.todoId, t3.todoId]);
+
+	await todoItemUtils.page.dragAndDrop({
+		fromTodoId: t3.todoId,
+		toTodoId: t2.todoId,
+		direction: 'top'
+	});
+	const step3 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
+	expect(step3).toEqual([t3.todoId, t2.todoId, t1.todoId]);
+
+	const t4 = await todoItemUtils.page.create({
+		categoryId: c1.categoryId,
+		title: 't4'
+	});
+
+	await todoItemUtils.page.dragAndDrop({
+		fromTodoId: t4.todoId,
+		toTodoId: t3.todoId,
+		direction: 'top'
+	});
+
+	const step4 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
+	expect(step4).toEqual([t4.todoId, t3.todoId, t2.todoId, t1.todoId]);
 });
