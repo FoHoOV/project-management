@@ -141,50 +141,25 @@ test('reorder todo category', async ({ projectUtils, todoCategoryUtils }) => {
 		description: 'test3'
 	});
 
-	const idsBeforeAtStart = await todoCategoryUtils.page.getCategoryIds();
-	expect(
-		idsBeforeAtStart[0] == c1.categoryId &&
-			idsBeforeAtStart[1] == c2.categoryId &&
-			idsBeforeAtStart[2] == c3.categoryId,
-		`should be ${c1.categoryId} ${c2.categoryId} ${c3.categoryId}, got: ${JSON.stringify(idsBeforeAtStart)}`
-	).toBeTruthy();
+	const step1 = await todoCategoryUtils.page.getCategoryIds();
+	expect(step1).toEqual([c1.categoryId, c2.categoryId, c3.categoryId]);
 
 	await todoCategoryUtils.page.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
-	const idsAfter3MovedBefore2 = await todoCategoryUtils.page.getCategoryIds();
-	expect(
-		idsAfter3MovedBefore2[0] == c1.categoryId &&
-			idsAfter3MovedBefore2[1] == c3.categoryId &&
-			idsAfter3MovedBefore2[2] == c2.categoryId,
-		`should be ${c1.categoryId} ${c3.categoryId} ${c2.categoryId}, got: ${JSON.stringify(idsAfter3MovedBefore2)}`
-	).toBeTruthy();
+	const step2 = await todoCategoryUtils.page.getCategoryIds();
+	expect(step2).toEqual([c1.categoryId, c3.categoryId, c2.categoryId]);
 
 	// I expect no change here
 	await todoCategoryUtils.page.dragAndDrop(c3.categoryId, c1.categoryId, 'right');
-	const idsAfter3MovedAfter1 = await todoCategoryUtils.page.getCategoryIds();
-	expect(
-		idsAfter3MovedAfter1[0] == c1.categoryId &&
-			idsAfter3MovedAfter1[1] == c3.categoryId &&
-			idsAfter3MovedAfter1[2] == c2.categoryId,
-		`should be ${c1.categoryId} ${c3.categoryId} ${c2.categoryId}, got: ${JSON.stringify(idsAfter3MovedAfter1)}`
-	).toBeTruthy();
+	const step3 = await todoCategoryUtils.page.getCategoryIds();
+	expect(step3).toEqual([c1.categoryId, c3.categoryId, c2.categoryId]);
 
 	await todoCategoryUtils.page.dragAndDrop(c2.categoryId, c1.categoryId, 'left');
-	const idsAfter2MovedBefore1 = await todoCategoryUtils.page.getCategoryIds();
-	expect(
-		idsAfter2MovedBefore1[0] == c2.categoryId &&
-			idsAfter2MovedBefore1[1] == c1.categoryId &&
-			idsAfter2MovedBefore1[2] == c3.categoryId,
-		`should be ${c2.categoryId} ${c1.categoryId} ${c3.categoryId}, got: ${JSON.stringify(idsAfter2MovedBefore1)}`
-	).toBeTruthy();
+	const step4 = await todoCategoryUtils.page.getCategoryIds();
+	expect(step4).toEqual([c2.categoryId, c1.categoryId, c3.categoryId]);
 
 	await todoCategoryUtils.page.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
-	const idsAfter3MovedBefore2SecondTime = await todoCategoryUtils.page.getCategoryIds();
-	expect(
-		idsAfter3MovedBefore2SecondTime[0] == c3.categoryId &&
-			idsAfter3MovedBefore2SecondTime[1] == c2.categoryId &&
-			idsAfter3MovedBefore2SecondTime[2] == c1.categoryId,
-		`should be ${c3.categoryId} ${c2.categoryId} ${c1.categoryId}, got: ${JSON.stringify(idsAfter3MovedBefore2SecondTime)}`
-	).toBeTruthy();
+	const step5 = await todoCategoryUtils.page.getCategoryIds();
+	expect(step5).toEqual([c3.categoryId, c2.categoryId, c1.categoryId]);
 });
 
 // TODO:
