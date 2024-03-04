@@ -239,7 +239,7 @@ class TodoItemPage implements IPage {
 	}
 
 	private _convertDateToString(date: Date) {
-		return new Intl.DateTimeFormat('en-CA').format(date);
+		return new Intl.DateTimeFormat('sv-SE').format(date);
 	}
 }
 
