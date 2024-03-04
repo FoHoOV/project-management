@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import type { ProjectsPage } from '../../../fixtures/project';
 import { TodoCategoryPage } from '../../../fixtures/todo-category';
+import crypto from 'crypto'; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
 import { test } from '../../../fixtures/todo-item';
 
 async function createCategory(todoCategoryPage: TodoCategoryPage, projectsPage: ProjectsPage) {
