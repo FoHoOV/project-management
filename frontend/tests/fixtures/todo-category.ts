@@ -192,7 +192,9 @@ export class TodoCategoryPage implements IPage {
 }
 
 export const test = projects.extend<{ todoCategoryFactory: { factory: TodoCategoryPage } }>({
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoCategoryFactory: async ({ enhancedPage }, use) => {
+		// I have to include auth because we need to be authenticated to use this page
 		await use({ factory: new TodoCategoryPage(enhancedPage) });
 	}
 });

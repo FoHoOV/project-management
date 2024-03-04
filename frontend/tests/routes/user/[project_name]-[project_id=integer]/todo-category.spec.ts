@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../fixtures/todo-category';
 
-test('create todo category', async ({ enhancedPage, projectFactory, todoCategoryFactory }) => {
+test('create todo category', async ({ projectFactory, todoCategoryFactory }) => {
 	await projectFactory.factory.goto();
 
 	const projectTitle = 'test';
@@ -28,17 +28,13 @@ test('create todo category', async ({ enhancedPage, projectFactory, todoCategory
 
 	// check the order
 
-	const categories = await enhancedPage.locator("div[data-tip='category id'] span.text-info").all();
+	const categories = await todoCategoryFactory.factory.getCategoryIds();
 
 	expect(categories, 'two categories should exist').toHaveLength(2);
 
-	await expect(categories[0], 'category order should be from oldest to newest').toHaveText(
-		`#${c1.categoryId}`
-	);
+	expect(categories[0], 'category order should be from oldest to newest').toEqual(c1.categoryId);
 
-	await expect(categories[1], 'category order should be from oldest to newest').toHaveText(
-		`#${c2.categoryId}`
-	);
+	expect(categories[1], 'category order should be from oldest to newest').toEqual(c2.categoryId);
 });
 
 test('update todo category', async ({ projectFactory, todoCategoryFactory }) => {

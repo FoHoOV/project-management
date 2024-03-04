@@ -60,7 +60,9 @@ class ProjectsPage implements IPage {
 }
 
 export const test = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
-	projectFactory: async ({ enhancedPage }, use) => {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	projectFactory: async ({ enhancedPage, auth }, use) => {
+		// I have to include auth because we need to be authenticated to use this page
 		await use({ factory: new ProjectsPage(enhancedPage) });
 	}
 });
