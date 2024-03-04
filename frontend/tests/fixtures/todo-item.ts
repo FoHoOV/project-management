@@ -8,15 +8,15 @@ import { test as todoCategoriesTest } from './todo-category';
 
 class TodoItemPage implements IPage {
 	#enhancedPage: EnhancedPage;
-	#todoCategoryFactory: TodoCategoryPage;
+	#todoCategoryPage: TodoCategoryPage;
 
 	constructor(enhancedPage: EnhancedPage, todoCategoryFactory: TodoCategoryPage) {
 		this.#enhancedPage = enhancedPage;
-		this.#todoCategoryFactory = todoCategoryFactory;
+		this.#todoCategoryPage = todoCategoryFactory;
 	}
 
 	async goto(projectTitle: string, projectId: number, projectShouldExist = true) {
-		await this.#todoCategoryFactory.goto(projectTitle, projectId, projectShouldExist);
+		await this.#todoCategoryPage.goto(projectTitle, projectId, projectShouldExist);
 	}
 
 	async create({
@@ -30,7 +30,7 @@ class TodoItemPage implements IPage {
 		description?: string;
 		dueDate?: Date;
 	}) {
-		const addTodoBtn = await this.#todoCategoryFactory.getAddTodoItemButton(categoryId);
+		const addTodoBtn = await this.#todoCategoryPage.getAddTodoItemButton(categoryId);
 		await addTodoBtn.click();
 		const modal = await getModal(this.#enhancedPage, true);
 
@@ -55,7 +55,7 @@ class TodoItemPage implements IPage {
 		await closeModal(modal);
 
 		// find the created todo item
-		const createdTodoItem = (await this.#todoCategoryFactory.getCategoryLocatorById(categoryId))
+		const createdTodoItem = (await this.#todoCategoryPage.getCategoryLocatorById(categoryId))
 			.getByTestId('todo-item-wrapper')
 			.locator('div', {
 				has: this.#enhancedPage.getByText(title)
@@ -108,7 +108,22 @@ class TodoItemPage implements IPage {
 
 	async getManageDependenciesButton(id: number | string) {}
 
-	async getTodoIdsFor(categoryId: string | number) {}
+	async getTodoIdsFor(categoryId: string | number) {
+		const category = await this.#todoCategoryPage.getCategoryLocatorById(categoryId);
+
+		const elements = await category
+			.getByTestId('todo-info')
+			.locator("div[data-tip='todo id'] span.text-info")
+			.all();
+
+		const ids: number[] = [];
+
+		for (let i = 0; i < elements.length; i++) {
+			ids.push(parseInt((await elements[i].innerText()).trim().split('#')[1]));
+		}
+
+		return ids;
+	}
 }
 
 export const test = todoCategoriesTest.extend<{ todoItemUtils: { page: TodoItemPage } }>({

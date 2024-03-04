@@ -190,7 +190,7 @@
 			<Alert type="error" message={apiErrorTitle} />
 
 			<div class="card-title flex w-full justify-between">
-				<div class="flex w-full items-baseline gap-2">
+				<div class="flex w-full items-baseline gap-2" data-testid="todo-info">
 					<div class="tooltip tooltip-info" data-tip="todo id">
 						<span class="text-lg font-bold text-info">#{todo.id}</span>
 					</div>

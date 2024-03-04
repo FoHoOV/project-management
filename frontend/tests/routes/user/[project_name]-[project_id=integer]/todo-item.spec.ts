@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test';
 import type { ProjectsPage } from '../../../fixtures/project';
 import { TodoCategoryPage } from '../../../fixtures/todo-category';
 import { test } from '../../../fixtures/todo-item';
@@ -25,11 +26,32 @@ async function createCategory(todoCategoryPage: TodoCategoryPage, projectsPage: 
 test('creating todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
 	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
 
-	await todoItemUtils.page.create({
+	const t1 = await todoItemUtils.page.create({
 		categoryId: category.categoryId,
-		title: 'some radom sheit',
+		title: 't1',
 		description: 'some other random sheit'
 	});
+
+	const t2 = await todoItemUtils.page.create({
+		categoryId: category.categoryId,
+		title: 't2',
+		description: 'some other random sheit'
+	});
+
+	const t3 = await todoItemUtils.page.create({
+		categoryId: category.categoryId,
+		title: 't3',
+		description: 'some other random sheit'
+	});
+
+	const ids = await todoItemUtils.page.getTodoIdsFor(category.categoryId);
+
+	expect(ids, '3 todo items should be created').toHaveLength(3);
+
+	expect(
+		ids[0] == t1.todoId && ids[1] == t2.todoId && ids[2] == t3.todoId,
+		'created todos should be ordered from oldest to newest'
+	).toBeTruthy();
 });
 
 test('deleting todo items', ({ page }) => {});
