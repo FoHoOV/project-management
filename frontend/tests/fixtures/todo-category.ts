@@ -8,7 +8,7 @@ import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
 import { getConfirmAcceptButton } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 
-class TodoCategoryPage implements IPage {
+export class TodoCategoryPage implements IPage {
 	#enhancedPage: EnhancedPage;
 
 	constructor(enhancedPage: EnhancedPage) {
@@ -166,6 +166,16 @@ class TodoCategoryPage implements IPage {
 		return await getFloatingBtn(this.#enhancedPage);
 	}
 
+	async getAddTodoItemButton(id: number | string) {
+		const category = await this.getCategoryLocatorById(id);
+		return category.getByRole('button', { name: 'Add todo' });
+	}
+
+	async getAttachToProjectButton(id: number | string) {
+		const category = await this.getCategoryLocatorById(id);
+		return category.getByRole('button', { name: 'Attach to project' });
+	}
+
 	async getCategoryIds() {
 		const elements = await this.#enhancedPage
 			.getByTestId('category-info')
@@ -182,7 +192,7 @@ class TodoCategoryPage implements IPage {
 }
 
 export const test = projects.extend<{ todoCategoryFactory: { factory: TodoCategoryPage } }>({
-	todoCategoryFactory: async ({ enhancedPage, auth }, use) => {
+	todoCategoryFactory: async ({ enhancedPage }, use) => {
 		await use({ factory: new TodoCategoryPage(enhancedPage) });
 	}
 });

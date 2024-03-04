@@ -60,7 +60,7 @@ class ProjectsPage implements IPage {
 }
 
 export const test = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
-	projectFactory: async ({ enhancedPage, auth }, use) => {
+	projectFactory: async ({ enhancedPage }, use) => {
 		await use({ factory: new ProjectsPage(enhancedPage) });
 	}
 });
