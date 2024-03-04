@@ -187,4 +187,5 @@ test('reorder todo category', async ({ projectUtils, todoCategoryUtils }) => {
 	).toBeTruthy();
 });
 
-test('toggle `MARK AS DONE` when there are UNDONE todos', async () => {});
+// TODO:
+// test('toggle `MARK AS DONE` when there are UNDONE todos', async () => {});

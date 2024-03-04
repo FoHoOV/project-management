@@ -1,11 +1,12 @@
 import { expect } from '@playwright/test';
 import { closeModal, getModal } from '../common-locators/modal';
 import { type IPage } from './IPage';
-import type { EnhancedPage } from './test';
+import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
 
 import type { TodoCategoryPage } from './todo-category';
 import { test as todoCategoriesTest } from './todo-category';
 import { getConfirmAcceptButton } from '../common-locators/confirm';
+import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 
 class TodoItemPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -173,7 +174,27 @@ class TodoItemPage implements IPage {
 		fromTodoId: string | number;
 		toTodoId: string | number;
 		direction: 'top' | 'bottom';
-	}) {}
+	}) {
+		const currentTodoItem = await this.getTodoItemLocatorById(fromTodoId);
+		const targetTodoItem = await this.getTodoItemLocatorById(toTodoId);
+
+		await dragAndDropTo({
+			page: this.#enhancedPage,
+			from: currentTodoItem,
+			to: targetTodoItem,
+			offsetFromCenter: direction == 'top' ? { x: 0, y: -5 } : { x: 0, y: 5 },
+			steps: 10 // but like this is a lucky guess :|
+		});
+
+		await expect(
+			targetTodoItem.getByRole('alert'),
+			'no errors should have occurred'
+		).not.toBeVisible();
+
+		await waitForSpinnerStateToBeIdle(targetTodoItem);
+		await waitForAnimationEnd(currentTodoItem);
+		await waitForAnimationEnd(targetTodoItem);
+	}
 
 	async getTodoItemLocatorById(id: number | string) {
 		const todoItem = await this.#enhancedPage

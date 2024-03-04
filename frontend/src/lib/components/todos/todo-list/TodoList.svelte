@@ -92,6 +92,7 @@
 		class:border-dashed={category.projects.length > 1}
 		class:border-warning={category.projects.length > 1}
 		class:border-info={category.projects.length <= 1}
+		data-testid="todo-category-wrapper"
 	>
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<Confirm bind:this={confirmDeleteTodoCategory} onConfirmed={handleDeleteCategory}></Confirm>

@@ -149,15 +149,12 @@ export class TodoCategoryPage implements IPage {
 
 	async getCategoryLocatorById(id: number | string) {
 		const category = await this.#enhancedPage
-			.locator('div.relative.flex.h-full.w-full.rounded-xl', {
+			.locator("div[data-testid='todo-category-wrapper']", {
 				hasText: `#${id}`
 			})
 			.all();
 
-		expect(
-			category.length == 1,
-			'only one category with this id should exist on the page'
-		).toBeTruthy();
+		expect(category, 'only one category with this id should exist on the page').toHaveLength(1);
 
 		return category[0];
 	}
