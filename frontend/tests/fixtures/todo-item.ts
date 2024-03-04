@@ -111,10 +111,10 @@ class TodoItemPage implements IPage {
 	async getTodoIdsFor(categoryId: string | number) {}
 }
 
-export const test = todoCategoriesTest.extend<{ todoItemFactory: { factory: TodoItemPage } }>({
+export const test = todoCategoriesTest.extend<{ todoItemUtils: { page: TodoItemPage } }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	todoItemFactory: async ({ enhancedPage, todoCategoryFactory, auth }, use) => {
+	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, auth }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		await use({ factory: new TodoItemPage(enhancedPage, todoCategoryFactory.factory) });
+		await use({ page: new TodoItemPage(enhancedPage, todoCategoryUtils.page) });
 	}
 });

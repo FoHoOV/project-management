@@ -5,7 +5,7 @@ import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type IPage } from './IPage';
 import { type EnhancedPage } from './test';
 
-class ProjectsPage implements IPage {
+export class ProjectsPage implements IPage {
 	#enhancedPage: EnhancedPage;
 
 	constructor(enhancedPage: EnhancedPage) {
@@ -59,10 +59,10 @@ class ProjectsPage implements IPage {
 	}
 }
 
-export const test = auth.extend<{ projectFactory: { factory: ProjectsPage } }>({
+export const test = auth.extend<{ projectUtils: { page: ProjectsPage } }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	projectFactory: async ({ enhancedPage, auth }, use) => {
+	projectUtils: async ({ enhancedPage, auth }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		await use({ factory: new ProjectsPage(enhancedPage) });
+		await use({ page: new ProjectsPage(enhancedPage) });
 	}
 });

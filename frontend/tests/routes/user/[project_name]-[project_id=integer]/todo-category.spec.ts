@@ -1,22 +1,22 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../fixtures/todo-category';
 
-test('create todo category', async ({ projectFactory, todoCategoryFactory }) => {
-	await projectFactory.factory.goto();
+test('create todo category', async ({ projectUtils, todoCategoryUtils }) => {
+	await projectUtils.page.goto();
 
 	const projectTitle = 'test';
-	const project = await projectFactory.factory.create({
+	const project = await projectUtils.page.create({
 		title: projectTitle,
 		description: 'test'
 	});
 
-	await todoCategoryFactory.factory.goto(projectTitle, project.projectId);
-	const c1 = await todoCategoryFactory.factory.create({
+	await todoCategoryUtils.page.goto(projectTitle, project.projectId);
+	const c1 = await todoCategoryUtils.page.create({
 		title: 'test',
 		description: 'test'
 	});
 
-	const c2 = await todoCategoryFactory.factory.create({
+	const c2 = await todoCategoryUtils.page.create({
 		title: 'test',
 		description: 'test'
 	});
@@ -28,7 +28,7 @@ test('create todo category', async ({ projectFactory, todoCategoryFactory }) => 
 
 	// check the order
 
-	const categories = await todoCategoryFactory.factory.getCategoryIds();
+	const categories = await todoCategoryUtils.page.getCategoryIds();
 
 	expect(categories, 'two categories should exist').toHaveLength(2);
 
@@ -37,40 +37,40 @@ test('create todo category', async ({ projectFactory, todoCategoryFactory }) => 
 	expect(categories[1], 'category order should be from oldest to newest').toEqual(c2.categoryId);
 });
 
-test('update todo category', async ({ projectFactory, todoCategoryFactory }) => {
-	await projectFactory.factory.goto();
+test('update todo category', async ({ projectUtils, todoCategoryUtils }) => {
+	await projectUtils.page.goto();
 
 	const projectTitle = 'test';
-	const project = await projectFactory.factory.create({
+	const project = await projectUtils.page.create({
 		title: projectTitle,
 		description: 'test'
 	});
 
-	await todoCategoryFactory.factory.goto(projectTitle, project.projectId);
-	const c1 = await todoCategoryFactory.factory.create({
+	await todoCategoryUtils.page.goto(projectTitle, project.projectId);
+	const c1 = await todoCategoryUtils.page.create({
 		title: 'test1',
 		description: 'test1'
 	});
 
-	const c2 = await todoCategoryFactory.factory.create({
+	const c2 = await todoCategoryUtils.page.create({
 		title: 'test2',
 		description: 'test2'
 	});
 
-	await todoCategoryFactory.factory.edit({
+	await todoCategoryUtils.page.edit({
 		categoryId: c1.categoryId,
 		title: 'new title1',
 		description: 'new description1'
 	});
 
-	await todoCategoryFactory.factory.edit({
+	await todoCategoryUtils.page.edit({
 		categoryId: c2.categoryId,
 		title: 'new title2',
 		description: 'new description2'
 	});
 
 	// check the order after update
-	const categoryIds = await todoCategoryFactory.factory.getCategoryIds();
+	const categoryIds = await todoCategoryUtils.page.getCategoryIds();
 
 	expect(categoryIds, 'two categories should exist').toHaveLength(2);
 
@@ -79,69 +79,69 @@ test('update todo category', async ({ projectFactory, todoCategoryFactory }) => 
 	expect(categoryIds[1], 'category order should be from oldest to newest').toEqual(c2.categoryId);
 });
 
-test('delete todo category', async ({ projectFactory, todoCategoryFactory }) => {
-	await projectFactory.factory.goto();
+test('delete todo category', async ({ projectUtils, todoCategoryUtils }) => {
+	await projectUtils.page.goto();
 
 	const projectTitle = 'test';
-	const project = await projectFactory.factory.create({
+	const project = await projectUtils.page.create({
 		title: projectTitle,
 		description: 'test'
 	});
 
-	await todoCategoryFactory.factory.goto(projectTitle, project.projectId);
-	const c1 = await todoCategoryFactory.factory.create({
+	await todoCategoryUtils.page.goto(projectTitle, project.projectId);
+	const c1 = await todoCategoryUtils.page.create({
 		title: 'test1',
 		description: 'test1'
 	});
 
-	const c2 = await todoCategoryFactory.factory.create({
+	const c2 = await todoCategoryUtils.page.create({
 		title: 'test2',
 		description: 'test2'
 	});
 
-	await todoCategoryFactory.factory.delete(c1.categoryId);
+	await todoCategoryUtils.page.delete(c1.categoryId);
 
 	// after 1 deletion only category should exist
 	expect(
-		await todoCategoryFactory.factory.getCategoryIds(),
+		await todoCategoryUtils.page.getCategoryIds(),
 		'after 1 deletion only category should exist'
 	).toHaveLength(1);
 
-	await todoCategoryFactory.factory.delete(c2.categoryId);
+	await todoCategoryUtils.page.delete(c2.categoryId);
 
 	// after 2 deletions only no categories should exist
 	expect(
-		await todoCategoryFactory.factory.getCategoryIds(),
+		await todoCategoryUtils.page.getCategoryIds(),
 		'after 2 deletions only no categories should exist'
 	).toHaveLength(0);
 });
 
-test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) => {
-	await projectFactory.factory.goto();
+test('reorder todo category', async ({ projectUtils, todoCategoryUtils }) => {
+	await projectUtils.page.goto();
 
 	const projectTitle = 'test';
-	const project = await projectFactory.factory.create({
+	const project = await projectUtils.page.create({
 		title: projectTitle,
 		description: 'test'
 	});
 
-	await todoCategoryFactory.factory.goto(projectTitle, project.projectId);
-	const c1 = await todoCategoryFactory.factory.create({
+	await todoCategoryUtils.page.goto(projectTitle, project.projectId);
+	const c1 = await todoCategoryUtils.page.create({
 		title: 'test1',
 		description: 'test1'
 	});
 
-	const c2 = await todoCategoryFactory.factory.create({
+	const c2 = await todoCategoryUtils.page.create({
 		title: 'test2',
 		description: 'test2'
 	});
 
-	const c3 = await todoCategoryFactory.factory.create({
+	const c3 = await todoCategoryUtils.page.create({
 		title: 'test3',
 		description: 'test3'
 	});
 
-	const idsBeforeAtStart = await todoCategoryFactory.factory.getCategoryIds();
+	const idsBeforeAtStart = await todoCategoryUtils.page.getCategoryIds();
 	expect(
 		idsBeforeAtStart[0] == c1.categoryId &&
 			idsBeforeAtStart[1] == c2.categoryId &&
@@ -149,8 +149,8 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		`should be ${c1.categoryId} ${c2.categoryId} ${c3.categoryId}, got: ${JSON.stringify(idsBeforeAtStart)}`
 	).toBeTruthy();
 
-	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
-	const idsAfter3MovedBefore2 = await todoCategoryFactory.factory.getCategoryIds();
+	await todoCategoryUtils.page.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
+	const idsAfter3MovedBefore2 = await todoCategoryUtils.page.getCategoryIds();
 	expect(
 		idsAfter3MovedBefore2[0] == c1.categoryId &&
 			idsAfter3MovedBefore2[1] == c3.categoryId &&
@@ -159,8 +159,8 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 	).toBeTruthy();
 
 	// I expect no change here
-	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c1.categoryId, 'right');
-	const idsAfter3MovedAfter1 = await todoCategoryFactory.factory.getCategoryIds();
+	await todoCategoryUtils.page.dragAndDrop(c3.categoryId, c1.categoryId, 'right');
+	const idsAfter3MovedAfter1 = await todoCategoryUtils.page.getCategoryIds();
 	expect(
 		idsAfter3MovedAfter1[0] == c1.categoryId &&
 			idsAfter3MovedAfter1[1] == c3.categoryId &&
@@ -168,8 +168,8 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		`should be ${c1.categoryId} ${c3.categoryId} ${c2.categoryId}, got: ${JSON.stringify(idsAfter3MovedAfter1)}`
 	).toBeTruthy();
 
-	await todoCategoryFactory.factory.dragAndDrop(c2.categoryId, c1.categoryId, 'left');
-	const idsAfter2MovedBefore1 = await todoCategoryFactory.factory.getCategoryIds();
+	await todoCategoryUtils.page.dragAndDrop(c2.categoryId, c1.categoryId, 'left');
+	const idsAfter2MovedBefore1 = await todoCategoryUtils.page.getCategoryIds();
 	expect(
 		idsAfter2MovedBefore1[0] == c2.categoryId &&
 			idsAfter2MovedBefore1[1] == c1.categoryId &&
@@ -177,8 +177,8 @@ test('reorder todo category', async ({ projectFactory, todoCategoryFactory }) =>
 		`should be ${c2.categoryId} ${c1.categoryId} ${c3.categoryId}, got: ${JSON.stringify(idsAfter2MovedBefore1)}`
 	).toBeTruthy();
 
-	await todoCategoryFactory.factory.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
-	const idsAfter3MovedBefore2SecondTime = await todoCategoryFactory.factory.getCategoryIds();
+	await todoCategoryUtils.page.dragAndDrop(c3.categoryId, c2.categoryId, 'left');
+	const idsAfter3MovedBefore2SecondTime = await todoCategoryUtils.page.getCategoryIds();
 	expect(
 		idsAfter3MovedBefore2SecondTime[0] == c3.categoryId &&
 			idsAfter3MovedBefore2SecondTime[1] == c2.categoryId &&
