@@ -11,7 +11,7 @@
 	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import type { TodoCategory } from '$lib/generated-client';
-	import type { Events as TodoItemEvents } from '../todo-item/TodoItem.svelte';
+	import type { Events as TodoItemEvents } from '$components/todos/todo-item/TodoItem.svelte';
 	import {
 		faInfoCircle,
 		faEdit,
@@ -92,12 +92,13 @@
 		class:border-dashed={category.projects.length > 1}
 		class:border-warning={category.projects.length > 1}
 		class:border-info={category.projects.length <= 1}
+		data-testid="todo-category-wrapper"
 	>
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<Confirm bind:this={confirmDeleteTodoCategory} onConfirmed={handleDeleteCategory}></Confirm>
 		<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
 			<Alert class="mb-2" type="error" message={apiErrorTitle}></Alert>
-			<div class="flex w-full max-w-full flex-col self-start">
+			<div class="flex w-full max-w-full flex-col self-start" data-testid="category-info">
 				<div class="flex w-full justify-between">
 					<div class="flex max-w-full items-baseline">
 						<Fa icon={faInfoCircle} class="mx-2 inline" />
@@ -118,13 +119,22 @@
 							on:click={() => restProps.onEditTodoCategory?.(category)}
 							class="text-xl"
 							class:hidden={!restProps.onEditTodoCategory}
+							data-testid="edit-category"
 						>
 							<Fa icon={faEdit} class="text-success" />
 						</button>
-						<button class="text-xl" on:click={handleShowManageActions}>
+						<button
+							class="text-xl"
+							on:click={handleShowManageActions}
+							data-testid="update-category-actions"
+						>
 							<Fa icon={faRuler} class="text-info" />
 						</button>
-						<button class="text-xl" on:click={() => confirmDeleteTodoCategory?.show()}>
+						<button
+							class="text-xl"
+							on:click={() => confirmDeleteTodoCategory?.show()}
+							data-testid="delete-category"
+						>
 							<Fa icon={faTrashCan} class="text-red-400" />
 						</button>
 					</div>

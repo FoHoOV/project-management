@@ -12,6 +12,7 @@
 <div
 	class="align-center glass absolute left-0 top-0 z-10 flex h-full w-full justify-center rounded-lg bg-base-300 opacity-80"
 	class:hidden={!visible}
+	data-testid="spinner-loading-state"
 >
 	<span class="loading loading-spinner loading-md dark:text-black" />
 </div>

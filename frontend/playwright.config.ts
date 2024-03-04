@@ -6,7 +6,11 @@ const config: PlaywrightTestConfig = {
 		port: 5174
 	},
 	testDir: 'tests',
-	testMatch: /(.+\.)?(test|spec)\.[jt]s/
+	testMatch: /(.+\.)?(spec)\.[jt]s/,
+	reporter: [['html', { open: 'on-failure', outputDir: 'test-results' }]],
+	use: {
+		video: 'retain-on-failure'
+	}
 };
 
 export default config;

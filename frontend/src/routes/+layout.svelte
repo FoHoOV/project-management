@@ -18,7 +18,7 @@
 	import { setProjectsStoreToContext } from '$components/project/utils';
 	import { Projects } from '$lib/stores/projects';
 	import { createRootContextManager } from '$lib/stores/context-manager';
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 </script>
 
 <script lang="ts">
@@ -33,6 +33,11 @@
 		untrack(() => {
 			projectsStore.set(data.projects);
 		});
+	});
+
+	onMount(() => {
+		// this is for tests
+		document.body.setAttribute('data-svelte-hydrated', 'true');
 	});
 </script>
 

@@ -39,6 +39,7 @@
 			hide();
 			onCanceled?.();
 		}}
+		data-testid="confirm-cancel"
 	>
 		{cancelText}
 	</button>
@@ -49,6 +50,7 @@
 			hide();
 			onConfirmed?.();
 		}}
+		data-testid="confirm-accept"
 	>
 		{confirmText}
 	</button>

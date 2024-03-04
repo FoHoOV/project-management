@@ -18,7 +18,7 @@ def join_with_permission_query_if_required[
     if any(permission == Permission.ALL for permission in permissions):
         permissions = [Permission.ALL]
 
-    if all(permission != Permission.ALL for permission in permissions):
+    if any(permission != Permission.ALL for permission in permissions):
         permissions = permissions + [Permission.ALL]
 
     # TODO: THERE SHOULD BE A BETTER WAY, but the purpose is that the query should already be joined with Projects table
