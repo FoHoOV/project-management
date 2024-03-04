@@ -55,8 +55,6 @@ test('creating todo items', async ({ todoItemUtils, todoCategoryUtils, projectUt
 	).toBeTruthy();
 });
 
-test('deleting todo items', ({ page }) => {});
-
 test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
 	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
 
@@ -72,6 +70,36 @@ test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUti
 		description: 'new description ',
 		dueDate: new Date(Date.now())
 	});
+});
+
+test('deleting todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
+	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
+
+	const t1 = await todoItemUtils.page.create({
+		categoryId: category.categoryId,
+		title: 't1'
+	});
+
+	const t2 = await todoItemUtils.page.create({
+		categoryId: category.categoryId,
+		title: 't2'
+	});
+
+	await todoItemUtils.page.delete(t1.todoId);
+
+	// after 1 deletion only category should exist
+	expect(
+		await todoItemUtils.page.getTodoIdsFor(category.categoryId),
+		'after 1 deletion only 1 todo item should exist'
+	).toHaveLength(1);
+
+	await todoItemUtils.page.delete(t2.todoId);
+
+	// after 2 deletions only no todos should exist
+	expect(
+		await todoItemUtils.page.getTodoIdsFor(category.categoryId),
+		'after 2 deletions only no todos should exist'
+	).toHaveLength(0);
 });
 
 test('moving todo to another category', ({ page }) => {});

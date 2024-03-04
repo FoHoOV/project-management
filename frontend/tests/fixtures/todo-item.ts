@@ -5,6 +5,7 @@ import type { EnhancedPage } from './test';
 
 import type { TodoCategoryPage } from './todo-category';
 import { test as todoCategoriesTest } from './todo-category';
+import { getConfirmAcceptButton } from '../common-locators/confirm';
 
 class TodoItemPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -157,7 +158,12 @@ class TodoItemPage implements IPage {
 		}
 	}
 
-	async delete(todoId: number | string) {}
+	async delete(todoId: number | string) {
+		const todo = await this.getTodoItemLocatorById(todoId);
+		await (await this.getDeleteButton(todoId)).click();
+		await getConfirmAcceptButton(todo).click();
+		await this.#enhancedPage.waitForEvent('response');
+	}
 
 	async dragAndDrop({
 		fromTodoId,
