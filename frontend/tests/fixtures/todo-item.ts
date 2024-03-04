@@ -162,7 +162,7 @@ class TodoItemPage implements IPage {
 		const todo = await this.getTodoItemLocatorById(todoId);
 		await (await this.getDeleteButton(todoId)).click();
 		await getConfirmAcceptButton(todo).click();
-		await this.#enhancedPage.waitForEvent('response');
+		await todo.waitFor({ state: 'detached' });
 	}
 
 	async dragAndDrop({

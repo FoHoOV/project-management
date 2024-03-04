@@ -86,6 +86,12 @@ test('deleting todo items', async ({ todoItemUtils, todoCategoryUtils, projectUt
 		title: 't2'
 	});
 
+	// before deletions there should be 2 todos
+	expect(
+		await todoItemUtils.page.getTodoIdsFor(category.categoryId),
+		'before deletions there should be 2 todos'
+	).toHaveLength(2);
+
 	await todoItemUtils.page.delete(t1.todoId);
 
 	// after 1 deletion only category should exist

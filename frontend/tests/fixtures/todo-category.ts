@@ -118,7 +118,7 @@ export class TodoCategoryPage implements IPage {
 		const category = await this.getCategoryLocatorById(categoryId);
 		await (await this.getDeleteButton(categoryId)).click();
 		await getConfirmAcceptButton(category).click();
-		await this.#enhancedPage.waitForEvent('response');
+		await category.waitFor({ state: 'detached' });
 	}
 
 	async dragAndDrop(
