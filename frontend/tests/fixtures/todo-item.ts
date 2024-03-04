@@ -75,14 +75,12 @@ class TodoItemPage implements IPage {
 			todoItem.getByTestId('todo-info'),
 			'selected todo item should contain the title'
 		).toContainText(title);
-		await expect(
-			todoItem.getByTestId('todo-item-wrapper'),
-			'selected todo item should contain the description'
-		).toContainText(description ?? '-');
-		await expect(
-			todoItem.getByTestId('todo-item-wrapper'),
-			'selected todo item should updated to the due date'
-		).toContainText(dueDate ? this._convertDateToString(dueDate) : '-');
+		await expect(todoItem, 'selected todo item should contain the description').toContainText(
+			description ?? '-'
+		);
+		await expect(todoItem, 'selected todo item should updated to the due date').toContainText(
+			dueDate ? this._convertDateToString(dueDate) : '-'
+		);
 
 		return {
 			todoId: createdTodoId
@@ -140,12 +138,12 @@ class TodoItemPage implements IPage {
 			'selected todo item should be updated to the new title'
 		).toContainText(title);
 		await expect(
-			todoItem.getByTestId('todo-item-wrapper'),
+			todoItem,
 			'selected todo item should be updated to the new description'
 		).toContainText(description ?? '-');
 
 		await expect(
-			todoItem.getByTestId('todo-item-wrapper'),
+			todoItem,
 			'selected todo item should be updated to the new due date'
 		).toContainText(dueDate ? this._convertDateToString(dueDate) : '-');
 
