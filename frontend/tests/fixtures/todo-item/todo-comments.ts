@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 import { closeModal, getModal } from '../../common-locators/modal';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../test';
@@ -43,5 +43,30 @@ export class TodoCommentPage {
 		);
 
 		expect(commentsCounterBeforeUpdate).toEqual(commentsCounterAfterUpdate - 1);
+	}
+
+	/**
+	 * @param locator - search will be relative to this locator
+	 * @param commentText - will return a delete button for a comment that contains `commentText`
+	 */
+	async getDeleteButton(locator: Locator, commentText: string) {
+		const deleteBtn = await locator
+			.filter({ hasText: commentText })
+			.getByTestId('todo-comment-delete')
+			.all();
+		expect(
+			deleteBtn,
+			'delete button resolved to many comments - use a more specific comment text or a create a unique comment text to make your life easier (for instance by using crypto.randomUUID())'
+		).toHaveLength(1);
+
+		return deleteBtn[0];
+	}
+
+	async getTodoCommentTexts(locator: Locator) {
+		const texts = (await locator.getByTestId('todo-comment-text').all()).map(
+			async (element) => await element.innerText()
+		);
+
+		return Promise.all(texts);
 	}
 }

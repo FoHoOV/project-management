@@ -14,7 +14,8 @@ module.exports = {
 		extraFileExtensions: ['.svelte']
 	},
 	rules: {
-		'@typescript-eslint/no-unused-vars': ['warn']
+		'@typescript-eslint/no-unused-vars': ['warn'],
+		'@typescript-eslint/no-floating-promises': 'warn'
 	},
 	env: {
 		browser: true,

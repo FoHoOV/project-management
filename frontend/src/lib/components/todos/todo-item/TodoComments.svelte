@@ -101,6 +101,7 @@
 					<button
 						class="btn btn-square btn-error btn-sm"
 						on:click={() => deleteCommentConfirms[i].show()}
+						data-testid="todo-comment-delete"
 					>
 						<Fa icon={faTrashCan}></Fa>
 					</button>
@@ -112,7 +113,7 @@
 						<Fa icon={faEdit}></Fa>
 					</button>
 				</div>
-				<p class="whitespace-pre-wrap break-words font-bold">
+				<p class="whitespace-pre-wrap break-words font-bold" data-testid="todo-comment-text">
 					{comment.message}
 				</p>
 			</div>
