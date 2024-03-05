@@ -1,45 +1,8 @@
 import { expect } from '@playwright/test';
-import type { ProjectsPage } from '../../../fixtures/project';
-import { TodoCategoryPage } from '../../../fixtures/todo-category';
-import crypto from 'crypto'; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
 import { test } from '../../../fixtures/todo-item';
 
-async function createCategory(
-	todoCategoryPage: TodoCategoryPage,
-	projectsPage: ProjectsPage,
-	existingProject?: { projectId: number; projectTitle: string }
-) {
-	await projectsPage.goto();
-
-	let createdProject: { projectId: number; projectTitle: string };
-
-	if (!existingProject) {
-		const projectTitle = `test${crypto.getRandomValues(new Uint32Array(1)).join('')}`;
-		const projectId = (
-			await projectsPage.create({
-				title: projectTitle,
-				description: 'test'
-			})
-		).projectId;
-
-		createdProject = { projectId, projectTitle };
-	} else {
-		createdProject = existingProject;
-	}
-
-	await todoCategoryPage.goto(createdProject.projectTitle, createdProject.projectId);
-
-	const categoryTitle = `title-${crypto.randomUUID()}`;
-	const categoryDesc = `desc-${crypto.randomUUID()}`;
-	const createdCategory = await todoCategoryPage.create({
-		title: categoryTitle,
-		description: categoryDesc
-	});
-	return { categoryId: createdCategory.categoryId, categoryTitle, categoryDesc };
-}
-
-test('creating todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
-	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
+test('creating todo items', async ({ todoItemUtils, todoCategoryUtils }) => {
+	const category = await todoCategoryUtils.helpers.createCategory();
 
 	const t1 = await todoItemUtils.page.create({
 		categoryId: category.categoryId,
@@ -71,7 +34,7 @@ test('creating todo items', async ({ todoItemUtils, todoCategoryUtils, projectUt
 });
 
 test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
-	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
+	const category = await todoCategoryUtils.helpers.createCategory();
 
 	const t1 = await todoItemUtils.page.create({
 		categoryId: category.categoryId,
@@ -87,8 +50,8 @@ test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUti
 	});
 });
 
-test('deleting todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
-	const category = await createCategory(todoCategoryUtils.page, projectUtils.page);
+test('deleting todo items', async ({ todoItemUtils, todoCategoryUtils }) => {
+	const category = await todoCategoryUtils.helpers.createCategory();
 
 	const t1 = await todoItemUtils.page.create({
 		categoryId: category.categoryId,
@@ -129,11 +92,11 @@ test('moving todo to another category', async ({
 	projectUtils
 }) => {
 	const p1 = await projectUtils.page.create({ title: 'p1' });
-	const c1 = await createCategory(todoCategoryUtils.page, projectUtils.page, {
+	const c1 = await todoCategoryUtils.helpers.createCategory({
 		projectId: p1.projectId,
 		projectTitle: 'p1'
 	});
-	const c2 = await createCategory(todoCategoryUtils.page, projectUtils.page, {
+	const c2 = await todoCategoryUtils.helpers.createCategory({
 		projectId: p1.projectId,
 		projectTitle: 'p1'
 	});
@@ -186,12 +149,8 @@ test('moving todo to another category', async ({
 	expect(step3).toEqual([t1.todoId, t3.todoId, t2.todoId]);
 });
 
-test('reorder todo items in same category', async ({
-	todoItemUtils,
-	todoCategoryUtils,
-	projectUtils
-}) => {
-	const c1 = await createCategory(todoCategoryUtils.page, projectUtils.page);
+test('reorder todo items in same category', async ({ todoItemUtils, todoCategoryUtils }) => {
+	const c1 = await todoCategoryUtils.helpers.createCategory();
 
 	const t1 = await todoItemUtils.page.create({
 		categoryId: c1.categoryId,
