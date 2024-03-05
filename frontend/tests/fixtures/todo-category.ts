@@ -9,6 +9,8 @@ import { getConfirmAcceptButton } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 import crypto from 'crypto';
 
+export type TodoCategoryUtils = { page: TodoCategoryPage; helpers: TodoCategoryHelpers };
+
 export class TodoCategoryPage implements IPage {
 	#enhancedPage: EnhancedPage;
 
@@ -251,7 +253,7 @@ export class TodoCategoryHelpers {
 }
 
 export const test = projects.extend<{
-	todoCategoryUtils: { page: TodoCategoryPage; helpers: TodoCategoryHelpers };
+	todoCategoryUtils: TodoCategoryUtils;
 }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoCategoryUtils: async ({ enhancedPage, projectUtils }, use) => {

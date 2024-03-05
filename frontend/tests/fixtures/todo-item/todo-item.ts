@@ -1,20 +1,27 @@
 import { expect } from '@playwright/test';
-import { closeModal, getModal } from '../common-locators/modal';
-import { type IPage } from './IPage';
-import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
+import { closeModal, getModal } from '../../common-locators/modal';
+import { type IPage } from '../IPage';
+import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from '../test';
 
-import type { TodoCategoryHelpers, TodoCategoryPage } from './todo-category';
-import { test as todoCategoriesTest } from './todo-category';
-import { getConfirmAcceptButton } from '../common-locators/confirm';
-import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
+import type { TodoCategoryHelpers, TodoCategoryPage, TodoCategoryUtils } from '../todo-category';
+import { test as todoCategoriesTest } from '../todo-category';
+import { getConfirmAcceptButton } from '../../common-locators/confirm';
+import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
+import { TodoCommentPage } from './todo-comments';
 
-class TodoItemPage implements IPage {
+export type TodoItemUtils = { page: TodoItemPage; helpers: TodoItemHelpers };
+
+export class TodoItemPage implements IPage {
 	#enhancedPage: EnhancedPage;
 	#todoCategoryPage: TodoCategoryPage;
-
-	constructor(enhancedPage: EnhancedPage, todoCategoryFactory: TodoCategoryPage) {
+	public readonly comments: TodoCommentPage;
+	constructor(enhancedPage: EnhancedPage, todoCategoryUtils: TodoCategoryUtils) {
 		this.#enhancedPage = enhancedPage;
-		this.#todoCategoryPage = todoCategoryFactory;
+		this.#todoCategoryPage = todoCategoryUtils.page;
+		this.comments = new TodoCommentPage(enhancedPage, {
+			page: this,
+			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
+		});
 	}
 
 	async goto(projectTitle: string, projectId: number, projectShouldExist = true) {
@@ -290,7 +297,7 @@ class TodoItemPage implements IPage {
 	}
 }
 
-class TodoItemHelpers {
+export class TodoItemHelpers {
 	#enhancedPage: EnhancedPage;
 	#todoItemPage: TodoItemPage;
 	#todoCategoryHelpers: TodoCategoryHelpers;
@@ -298,11 +305,11 @@ class TodoItemHelpers {
 	constructor(
 		enhancedPage: EnhancedPage,
 		todoItemPage: TodoItemPage,
-		todoCategoryHelpers: TodoCategoryHelpers
+		todoCategoryUtils: TodoCategoryUtils
 	) {
 		this.#enhancedPage = enhancedPage;
 		this.#todoItemPage = todoItemPage;
-		this.#todoCategoryHelpers = todoCategoryHelpers;
+		this.#todoCategoryHelpers = todoCategoryUtils.helpers;
 	}
 
 	async createTodoItem(existingCategoryId?: number | string) {
@@ -320,15 +327,15 @@ class TodoItemHelpers {
 }
 
 export const test = todoCategoriesTest.extend<{
-	todoItemUtils: { page: TodoItemPage; helpers: TodoItemHelpers };
+	todoItemUtils: TodoItemUtils;
 }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, auth }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils.page);
+		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils);
 		await use({
 			page: todoItemPage,
-			helpers: new TodoItemHelpers(enhancedPage, todoItemPage, todoCategoryUtils.helpers)
+			helpers: new TodoItemHelpers(enhancedPage, todoItemPage, todoCategoryUtils)
 		});
 	}
 });
