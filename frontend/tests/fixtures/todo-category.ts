@@ -1,12 +1,13 @@
 import { expect } from '@playwright/test';
 import type { IPage } from './IPage';
 import { generateTodoListUrl } from '../../src/lib/utils/params/route';
-import { test as projects } from './project';
+import { ProjectsPage, test as projects } from './project';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
 import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
 import { getConfirmAcceptButton } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
+import crypto from 'crypto';
 
 export class TodoCategoryPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -203,10 +204,63 @@ export class TodoCategoryPage implements IPage {
 	}
 }
 
-export const test = projects.extend<{ todoCategoryUtils: { page: TodoCategoryPage } }>({
+export class TodoCategoryHelpers {
+	#enhancedPage: EnhancedPage;
+	#projectsPage: ProjectsPage;
+	#todoCategoryPage: TodoCategoryPage;
+
+	constructor(
+		enhancedPage: EnhancedPage,
+		projectsPage: ProjectsPage,
+		todoCategoryPage: TodoCategoryPage
+	) {
+		this.#enhancedPage = enhancedPage;
+		this.#projectsPage = projectsPage;
+		this.#todoCategoryPage = todoCategoryPage;
+	}
+
+	async createCategory(existingProject?: { projectId: number; projectTitle: string }) {
+		await this.#projectsPage.goto();
+
+		let createdProject: { projectId: number; projectTitle: string };
+
+		if (!existingProject) {
+			const projectTitle = `test${crypto.getRandomValues(new Uint32Array(1)).join('')}`;
+			const projectId = (
+				await this.#projectsPage.create({
+					title: projectTitle,
+					description: 'test'
+				})
+			).projectId;
+
+			createdProject = { projectId, projectTitle };
+		} else {
+			createdProject = existingProject;
+		}
+
+		await this.#todoCategoryPage.goto(createdProject.projectTitle, createdProject.projectId);
+
+		const categoryTitle = `title-${crypto.randomUUID()}`;
+		const categoryDesc = `desc-${crypto.randomUUID()}`;
+		const createdCategory = await this.#todoCategoryPage.create({
+			title: categoryTitle,
+			description: categoryDesc
+		});
+		return { categoryId: createdCategory.categoryId, categoryTitle, categoryDesc };
+	}
+}
+
+export const test = projects.extend<{
+	todoCategoryUtils: { page: TodoCategoryPage; helpers: TodoCategoryHelpers };
+}>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	todoCategoryUtils: async ({ enhancedPage }, use) => {
+	todoCategoryUtils: async ({ enhancedPage, projectUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		await use({ page: new TodoCategoryPage(enhancedPage) });
+
+		const todoCategoryPage = new TodoCategoryPage(enhancedPage);
+		await use({
+			page: todoCategoryPage,
+			helpers: new TodoCategoryHelpers(enhancedPage, projectUtils.page, todoCategoryPage)
+		});
 	}
 });
