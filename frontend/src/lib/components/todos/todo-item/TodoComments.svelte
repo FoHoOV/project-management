@@ -91,11 +91,13 @@
 		<div
 			class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 			animate:flip={{ duration: 200 }}
+			data-testid="todo-comments-wrapper"
 		>
 			<Confirm
 				bind:this={deleteCommentConfirms[i]}
 				onConfirmed={() => handleDeleteComment?.(comment)}
 			></Confirm>
+
 			<div class="card-body">
 				<div class="card-actions justify-end">
 					<button

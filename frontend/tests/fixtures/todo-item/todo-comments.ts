@@ -3,6 +3,7 @@ import { closeModal, getModal } from '../../common-locators/modal';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../test';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
+import { getConfirmAcceptButton } from '../../common-locators/confirm';
 
 export class TodoCommentPage {
 	constructor(
@@ -49,17 +50,49 @@ export class TodoCommentPage {
 	 * @param locator - search will be relative to this locator
 	 * @param commentText - will return a delete button for a comment that contains `commentText`
 	 */
-	async getDeleteButton(locator: Locator, commentText: string) {
-		const deleteBtn = await locator
-			.filter({ hasText: commentText })
-			.getByTestId('todo-comment-delete')
+
+	async delete(locator: Locator, commentText: string) {
+		const comment = await this.getWrapper(locator, commentText);
+
+		await (await this.getDeleteButton(locator, commentText)).click();
+
+		await getConfirmAcceptButton(comment).click();
+		await waitForSpinnerStateToBeIdle(await getModal(this.enhancedPage));
+	}
+
+	/**
+	 * @param locator - search will be relative to this locator
+	 * @param commentText - will return a delete button for a comment that contains `commentText`
+	 */
+	async getWrapper(locator: Locator, commentText: string) {
+		const wrapper = await locator
+			.locator("div[data-testid='todo-comments-wrapper']", { hasText: commentText })
 			.all();
+
 		expect(
-			deleteBtn,
-			'delete button resolved to many comments - use a more specific comment text or a create a unique comment text to make your life easier (for instance by using crypto.randomUUID())'
+			wrapper,
+			'wrapper resolved to many/none comments - use a more specific comment text or a create a unique comment text to make your life easier (for instance by using crypto.randomUUID())'
 		).toHaveLength(1);
 
-		return deleteBtn[0];
+		return wrapper[0];
+	}
+
+	async open(todoId: number | string) {
+		await (await this.todoItemUtils.page.getManageCommentsButton(todoId)).click();
+		const modal = await getModal(this.enhancedPage);
+		await waitForSpinnerStateToBeIdle(modal);
+	}
+
+	/**
+	 * @param locator - search will be relative to this locator
+	 * @param commentText - will return a delete button for a comment that contains `commentText`
+	 */
+	async getDeleteButton(locator: Locator, commentText: string) {
+		const deleteBtn = (await this.getWrapper(locator, commentText)).getByTestId(
+			'todo-comment-delete'
+		);
+
+		return deleteBtn;
 	}
 
 	async getTodoCommentTexts(locator: Locator) {
