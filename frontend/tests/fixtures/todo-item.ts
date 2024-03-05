@@ -3,7 +3,7 @@ import { closeModal, getModal } from '../common-locators/modal';
 import { type IPage } from './IPage';
 import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
 
-import type { TodoCategoryPage } from './todo-category';
+import type { TodoCategoryHelpers, TodoCategoryPage } from './todo-category';
 import { test as todoCategoriesTest } from './todo-category';
 import { getConfirmAcceptButton } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
@@ -264,10 +264,45 @@ class TodoItemPage implements IPage {
 	}
 }
 
-export const test = todoCategoriesTest.extend<{ todoItemUtils: { page: TodoItemPage } }>({
+class TodoItemHelpers {
+	#enhancedPage: EnhancedPage;
+	#todoItemPage: TodoItemPage;
+	#todoCategoryHelpers: TodoCategoryHelpers;
+
+	constructor(
+		enhancedPage: EnhancedPage,
+		todoItemPage: TodoItemPage,
+		todoCategoryHelpers: TodoCategoryHelpers
+	) {
+		this.#enhancedPage = enhancedPage;
+		this.#todoItemPage = todoItemPage;
+		this.#todoCategoryHelpers = todoCategoryHelpers;
+	}
+
+	async createTodoItem(existingCategoryId?: number | string) {
+		let createdCategoryId: string | number = existingCategoryId ?? -1;
+
+		if (!existingCategoryId) {
+			createdCategoryId = (await this.#todoCategoryHelpers.createCategory()).categoryId;
+		}
+
+		return await this.#todoItemPage.create({
+			categoryId: createdCategoryId,
+			title: 't1'
+		});
+	}
+}
+
+export const test = todoCategoriesTest.extend<{
+	todoItemUtils: { page: TodoItemPage; helpers: TodoItemHelpers };
+}>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, auth }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		await use({ page: new TodoItemPage(enhancedPage, todoCategoryUtils.page) });
+		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils.page);
+		await use({
+			page: todoItemPage,
+			helpers: new TodoItemHelpers(enhancedPage, todoItemPage, todoCategoryUtils.helpers)
+		});
 	}
 });
