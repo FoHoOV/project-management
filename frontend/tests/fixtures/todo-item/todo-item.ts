@@ -190,7 +190,7 @@ export class TodoItemPage implements IPage {
 			from: currentTodoItem,
 			to: targetTodoItem,
 			offsetFromCenter: direction == 'top' ? { x: 0, y: -5 } : { x: 0, y: 5 },
-			steps: 10 // but like this is a lucky guess :|
+			steps: 25 // but like this is a lucky guess :|
 		});
 
 		await expect(

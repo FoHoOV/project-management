@@ -137,7 +137,7 @@ export class TodoCategoryPage implements IPage {
 			from: currentCategory,
 			to: targetCategory,
 			offsetFromCenter: direction == 'right' ? { x: 5, y: 0 } : { x: -5, y: 0 },
-			steps: 10 // but like this is a lucky guess :|
+			steps: 25 // but like this is a lucky guess :|
 		});
 
 		await expect(
