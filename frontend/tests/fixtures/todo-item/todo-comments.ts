@@ -48,7 +48,7 @@ export class TodoCommentPage {
 
 	/**
 	 * @param locator - search will be relative to this locator
-	 * @param commentText - will return a delete button for a comment that contains `commentText`
+	 * @param commentText - locator should have a comment that contains `commentText`
 	 */
 
 	async delete(locator: Locator, commentText: string) {
@@ -62,7 +62,7 @@ export class TodoCommentPage {
 
 	/**
 	 * @param locator - search will be relative to this locator
-	 * @param commentText - will return a delete button for a comment that contains `commentText`
+	 * @param commentText - will return the wrapper for a comment that contains `commentText`
 	 */
 	async getWrapper(locator: Locator, commentText: string) {
 		const wrapper = await locator
