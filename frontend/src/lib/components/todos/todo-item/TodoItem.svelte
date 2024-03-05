@@ -254,7 +254,7 @@
 			{/if}
 
 			<div class="flex gap-2 self-end py-1">
-				<div class="indicator self-end">
+				<div class="indicator self-end" data-testid="todo-item-comments">
 					<span class="badge indicator-item badge-secondary">{todo.comments_count}</span>
 					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowComments}>
 						<Fa icon={faComment}></Fa>
@@ -262,7 +262,7 @@
 					</button>
 				</div>
 
-				<div class="indicator self-end">
+				<div class="indicator self-end" data-testid="todo-item-tags">
 					<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
 					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowTags}>
 						<Fa icon={faTags}></Fa>
@@ -272,7 +272,7 @@
 			</div>
 
 			<div class="flex gap-2 self-end">
-				<div class="indicator col-start-2 self-end">
+				<div class="indicator col-start-2 self-end" data-testid="todo-item-dependencies">
 					<span class="badge indicator-item badge-secondary">{todo.dependencies.length}</span>
 					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowDependencies}>
 						<Fa icon={faSitemap}></Fa>

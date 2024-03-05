@@ -12,6 +12,7 @@
     "python.analysis.typeCheckingMode": "basic",
     "[postcss]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "cSpell.words": ["testid"]
   }
 }

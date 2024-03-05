@@ -223,19 +223,45 @@ class TodoItemPage implements IPage {
 		return await this.#todoCategoryPage.getAddTodoItemButton(categoryId);
 	}
 
-	async getManageCommentsButton(id: number | string) {
+	async getManageCommentsWrapper(id: number | string) {
 		const todoItem = await this.getTodoItemLocatorById(id);
-		return todoItem.getByRole('button', { name: 'comments' });
+		return todoItem.getByTestId('todo-item-comments');
+	}
+
+	async getManageCommentsButton(id: number | string) {
+		return (await this.getManageCommentsWrapper(id)).getByRole('button', { name: 'comments' });
+	}
+
+	async getManageCommentsIndicator(id: number | string) {
+		return (await this.getManageCommentsWrapper(id)).locator('span.indicator-item');
+	}
+
+	async getManageTagsWrapper(id: number | string) {
+		const todoItem = await this.getTodoItemLocatorById(id);
+		return todoItem.getByTestId('todo-item-tags');
 	}
 
 	async getManageTagsButton(id: number | string) {
+		return (await this.getManageTagsWrapper(id)).getByRole('button', { name: 'tags' });
+	}
+
+	async getManageTagsIndicator(id: number | string) {
+		return (await this.getManageTagsWrapper(id)).locator('span.indicator-item');
+	}
+
+	async getManageDependenciesWrapper(id: number | string) {
 		const todoItem = await this.getTodoItemLocatorById(id);
-		return todoItem.getByRole('button', { name: 'tags' });
+		return todoItem.getByTestId('todo-item-dependencies');
 	}
 
 	async getManageDependenciesButton(id: number | string) {
-		const todoItem = await this.getTodoItemLocatorById(id);
-		return todoItem.getByRole('button', { name: 'dependencies' });
+		return (await this.getManageDependenciesWrapper(id)).getByRole('button', {
+			name: 'dependencies'
+		});
+	}
+
+	async getManageDependenciesIndicator(id: number | string) {
+		return (await this.getManageDependenciesWrapper(id)).locator('span.indicator-item');
 	}
 
 	async getTodoIdsFor(categoryId: string | number) {
