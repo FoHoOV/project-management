@@ -37,7 +37,7 @@ export async function callServiceInFormActions<
 	TServiceCallResult extends Promise<unknown>,
 	TErrorSchema extends z.AnyZodObject
 >({
-	serviceCall,
+	call,
 	errorSchema
 }: ServiceCallOptions<
 	TServiceCallResult,
@@ -52,12 +52,12 @@ export async function callServiceInFormActions<
 	TErrorSchema extends z.AnyZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 >({
-	serviceCall,
+	call,
 	errorSchema,
-	errorCallback
+	onError
 }: RequiredProperty<
 	ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>,
-	'errorCallback'
+	'onError'
 >): Promise<
 	{ success: true; response: Awaited<TServiceCallResult>; error: never } | TErrorCallbackResult
 >;
@@ -66,9 +66,9 @@ export async function callServiceInFormActions<
 	TErrorSchema extends z.AnyZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 >({
-	serviceCall,
+	call,
 	errorSchema,
-	errorCallback = async (e) => {
+	onError = async (e) => {
 		return await superApplyAction(e);
 	}
 }: ServiceCallOptions<
@@ -77,9 +77,9 @@ export async function callServiceInFormActions<
 	TErrorCallbackResult | ReturnType<typeof superApplyAction<TErrorSchema>>
 >) {
 	const result = await callService({
-		serviceCall: serviceCall,
-		errorSchema: errorSchema,
-		errorCallback: errorCallback
+		call,
+		errorSchema,
+		onError
 	});
 
 	if (result.success) {

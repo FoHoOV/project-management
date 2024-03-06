@@ -42,7 +42,7 @@
 	async function handleDetachTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await TagClient({ token: $page.data.token }).detachFromTodoTag({
 					tag_id: tag.id,
 					todo_id: todo.id
@@ -51,7 +51,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}
@@ -61,13 +61,13 @@
 	async function handleDeleteTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await TagClient({ token: $page.data.token }).deleteTag(tag);
 				todoCategoriesStore?.deleteTag(tag);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

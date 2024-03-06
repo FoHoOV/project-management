@@ -37,7 +37,7 @@
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItemDependencyTodoItem({
 					dependency_id: dependency.id
 				});
@@ -45,7 +45,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

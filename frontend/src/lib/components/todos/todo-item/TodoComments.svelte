@@ -38,7 +38,7 @@
 	export async function refreshComments() {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				const result = await TodoItemCommentClient({
 					token: $page.data.token
 				}).listTodoItemComment(todoId);
@@ -47,7 +47,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}
@@ -57,13 +57,13 @@
 	async function handleDeleteComment(comment: TodoComment) {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
 				todoCommentsStore.remove(comment);
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

@@ -69,7 +69,7 @@
 		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				const result = await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
 					id: event.detail.data.id,
 					new_category_id: todo.category_id,
@@ -83,7 +83,7 @@
 				todoCategoriesStore?.updateTodo(result);
 				componentState = 'none';
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				componentState = 'none';
 
 				if (e.type == ErrorType.API_ERROR) {

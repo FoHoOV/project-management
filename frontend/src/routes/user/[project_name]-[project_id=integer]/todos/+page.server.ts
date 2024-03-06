@@ -43,7 +43,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -64,7 +64,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -85,7 +85,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -106,7 +106,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -133,7 +133,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -154,7 +154,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoItemCommentClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -175,7 +175,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoItemCommentClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -196,7 +196,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -215,7 +215,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -236,7 +236,7 @@ export const actions: Actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch

@@ -34,7 +34,7 @@
 	async function handleDetachProjectFromUser() {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
 					project_id: project.id
 				});
@@ -42,7 +42,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

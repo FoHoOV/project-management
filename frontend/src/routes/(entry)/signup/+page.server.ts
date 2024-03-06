@@ -19,7 +19,7 @@ export const actions: Actions = {
 		}
 
 		return await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				await UserClient({
 					isTokenRequired: false,
 					fetchApi: fetch

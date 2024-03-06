@@ -13,7 +13,7 @@ export const actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				if (validation.data.projectId) {
 					return await TagClient({
 						token: locals.token,

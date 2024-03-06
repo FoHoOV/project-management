@@ -26,7 +26,7 @@
 	async function handleUpdateAction(event: Event) {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				const result = await TodoCategoryClient({ token: $page.data.token }).updateItemTodoCategory(
 					{
 						id: category.id,
@@ -38,7 +38,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 				(event.target as HTMLInputElement).checked = !(event.target as HTMLInputElement).checked;

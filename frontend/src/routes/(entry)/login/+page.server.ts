@@ -20,7 +20,7 @@ export const actions: Actions = {
 		}
 
 		return await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				const token = await OAuthClient({
 					isTokenRequired: false,
 					fetchApi: fetch
@@ -28,7 +28,7 @@ export const actions: Actions = {
 				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
 				redirect(303, '/user/projects');
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				if (e.type === ErrorType.NOT_AUTHENTICATED) {
 					e.preventDefaultHandler = true;
 					return superFail(400, {

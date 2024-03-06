@@ -78,7 +78,7 @@
 		componentState = 'calling-service';
 
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
 					id: event.detail.data.id,
 					project_id: projectId,
@@ -100,7 +100,7 @@
 				);
 				componentState = 'none';
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				onError?.(e.message);
 				componentState = 'none';
 			}
@@ -118,7 +118,7 @@
 
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					id: event.detail.data.id,
 					category_id: event.detail.data.category_id,
@@ -128,7 +128,7 @@
 				todoCategoriesStore?.addTodo(result);
 				componentState = 'none';
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				componentState = 'none';
 				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
 					toasts.addToast({

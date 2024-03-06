@@ -6,13 +6,13 @@ import type { PageLoad } from './$types';
 
 export const load = (async ({ parent, fetch, params }) => {
 	return await callService({
-		serviceCall: async () => {
+		call: async () => {
 			return await TodoCategoryClient({
 				token: (await parent()).token,
 				fetchApi: fetch
 			}).getForUserTodoCategory(Number.parseInt(params.project_id));
 		},
-		errorCallback: async (e) => {
+		onError: async (e) => {
 			if (e.status == 401) {
 				return; // allow default unauthenticated user handling
 			}

@@ -72,7 +72,7 @@
 		componentState = 'calling-service';
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
 					...todo,
 					is_done: !savedTodoStatus
@@ -88,7 +88,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				if (e.type == ErrorType.API_ERROR) {
 					toasts.addToast({
 						type: 'error',
@@ -107,13 +107,13 @@
 	async function handleRemoveTodo() {
 		componentState = 'calling-service';
 		await callServiceInClient({
-			serviceCall: async () => {
+			call: async () => {
 				await TodoItemClient({ token: $page.data.token }).removeTodoItem(todo);
 				todoCategoriesStore?.removeTodo(todo);
 				apiErrorTitle = null;
 				componentState = 'none';
 			},
-			errorCallback: async (e) => {
+			onError: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

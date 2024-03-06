@@ -31,13 +31,13 @@ export async function callServiceInClient<
 	TErrorSchema extends z.AnyZodObject,
 	TErrorCallbackResult extends Promise<unknown> = Promise<ServiceError<TErrorSchema>>
 >({
-	serviceCall,
+	call,
 	errorSchema,
-	errorCallback
+	onError
 }: ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>) {
 	return await callService({
-		serviceCall: serviceCall,
-		errorSchema: errorSchema,
-		errorCallback: errorCallback
+		call,
+		errorSchema,
+		onError
 	});
 }

@@ -8,7 +8,7 @@ export const load = (async ({ locals }) => {
 	let result: Project[] = [];
 	if (locals.token) {
 		const projects = await callService({
-			serviceCall: async () => {
+			call: async () => {
 				return await ProjectClient({ fetchApi: fetch, token: locals.token }).listProject();
 			}
 		});

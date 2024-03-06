@@ -18,7 +18,7 @@ export const actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -39,7 +39,7 @@ export const actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
@@ -60,7 +60,7 @@ export const actions = {
 		}
 
 		const result = await callServiceInFormActions({
-			serviceCall: async () => {
+			call: async () => {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
