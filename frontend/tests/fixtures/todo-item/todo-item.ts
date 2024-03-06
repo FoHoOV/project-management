@@ -9,6 +9,7 @@ import { getConfirmAcceptButton } from '../../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import { TodoCommentPage } from './todo-comments';
 import { TodoTagPage } from './todo-tags';
+import { TodoDependencyPage } from './todo-dependencies';
 
 export type TodoItemUtils = { page: TodoItemPage; helpers: TodoItemHelpers };
 
@@ -17,6 +18,7 @@ export class TodoItemPage implements IPage {
 	#todoCategoryPage: TodoCategoryPage;
 	public readonly comments: TodoCommentPage;
 	public readonly tags: TodoTagPage;
+	public readonly dependencies: TodoDependencyPage;
 	constructor(enhancedPage: EnhancedPage, todoCategoryUtils: TodoCategoryUtils) {
 		this.#enhancedPage = enhancedPage;
 		this.#todoCategoryPage = todoCategoryUtils.page;
@@ -25,6 +27,10 @@ export class TodoItemPage implements IPage {
 			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
 		});
 		this.tags = new TodoTagPage(enhancedPage, {
+			page: this,
+			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
+		});
+		this.dependencies = new TodoDependencyPage(enhancedPage, {
 			page: this,
 			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
 		});
@@ -325,10 +331,13 @@ export class TodoItemHelpers {
 			createdCategoryId = (await this.#todoCategoryHelpers.createCategory()).categoryId;
 		}
 
-		return await this.#todoItemPage.create({
-			categoryId: createdCategoryId,
-			title: 't1'
-		});
+		return {
+			...(await this.#todoItemPage.create({
+				categoryId: createdCategoryId,
+				title: 't1'
+			})),
+			categoryId: createdCategoryId
+		};
 	}
 }
 

@@ -48,21 +48,21 @@ export class TodoTagPage {
 
 	/**
 	 * @param locator - search will be relative to this locator
-	 * @param commentText - locator should have a comment that contains `commentText`
+	 * @param tagName - locator should have a tag that contains `tagName`
 	 */
 
-	async delete(locator: Locator, commentText: string) {
-		const comment = await this.getWrapper(locator, commentText);
+	async delete(locator: Locator, tagName: string) {
+		const tag = await this.getWrapper(locator, tagName);
 
-		await (await this.getDeleteButton(locator, commentText)).click();
+		await (await this.getDeleteButton(locator, tagName)).click();
 
-		await getConfirmAcceptButton(comment).click();
+		await getConfirmAcceptButton(tag).click();
 		await waitForSpinnerStateToBeIdle(await getModal(this.enhancedPage));
 	}
 
 	/**
 	 * @param locator - search will be relative to this locator
-	 * @param tagName - will return the wrapper for a comment that contains `tagName`
+	 * @param tagName - locator should have a tag that contains `tagName`
 	 */
 	async getWrapper(locator: Locator, tagName: string) {
 		const wrapper = await locator
@@ -88,7 +88,7 @@ export class TodoTagPage {
 	 * @param tagName - will return a delete button for a tag that contains `tagName`
 	 */
 	async getDeleteButton(locator: Locator, tagName: string) {
-		const deleteBtn = (await this.getWrapper(locator, tagName)).getByTestId('todo-tags-delete');
+		const deleteBtn = (await this.getWrapper(locator, tagName)).getByTestId('todo-tag-delete');
 
 		return deleteBtn;
 	}

@@ -32,6 +32,7 @@
 <div
 	class="glass absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center gap-2 rounded-2xl bg-base-300"
 	class:hidden={!visible}
+	data-testid="confirm-wrapper"
 >
 	<button
 		class="btn btn-neutral"

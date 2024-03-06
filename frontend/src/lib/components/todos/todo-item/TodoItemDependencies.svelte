@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/Alert.svelte';
+	import Confirm from '$components/Confirm.svelte';
 
 	import { page } from '$app/stores';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
@@ -29,6 +30,7 @@
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
+	let deleteDependencyConfirms = $state<Confirm[]>([]);
 
 	const todoCategoriesStore = getTodosStoreFromContext();
 
@@ -76,20 +78,27 @@
 			{/if}
 		</div>
 	{:else}
-		{#each todo.dependencies as dependency (dependency.id)}
+		{#each todo.dependencies as dependency, i (dependency.id)}
 			<div
-				class="card mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
+				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
+				data-testid="todo-dependency-wrapper"
 			>
+				<Confirm
+					bind:this={deleteDependencyConfirms[i]}
+					onConfirmed={() => handleDeleteDependency?.(dependency)}
+				></Confirm>
+
 				<div class="card-body flex-row-reverse justify-between">
 					<button
 						class="btn btn-square btn-error btn-sm"
-						on:click={() => handleDeleteDependency(dependency)}
+						on:click={() => deleteDependencyConfirms[i].show()}
+						data-testid="todo-dependency-delete"
 					>
 						<Fa icon={faTrashCan}></Fa>
 					</button>
 					<p class="flex items-center gap-1 truncate whitespace-pre-wrap break-words">
-						<span class="text-lg font-bold text-info">
+						<span class="text-lg font-bold text-info" data-testid="todo-dependency-text">
 							#{dependency.dependant_todo_id}
 						</span>
 						{dependency.dependant_todo_title}

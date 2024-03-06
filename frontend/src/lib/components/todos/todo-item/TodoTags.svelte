@@ -35,6 +35,7 @@
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let deleteTagConfirms = $state<Confirm[]>([]);
+	let detachTagConfirms = $state<Confirm[]>([]);
 
 	const todoCategoriesStore = getTodosStoreFromContext();
 
@@ -103,16 +104,19 @@
 			>
 				<Confirm bind:this={deleteTagConfirms[i]} onConfirmed={() => handleDeleteTag(tag)}
 				></Confirm>
+				<Confirm bind:this={detachTagConfirms[i]} onConfirmed={() => handleDetachTag(tag)}
+				></Confirm>
+
 				<div class="card-body">
 					<div class="card-actions box-border justify-end">
 						<div
 							class="tooltip tooltip-top tooltip-left tooltip-warning"
 							data-tip="delete tag from this project"
-							data-testid="todo-tags-delete"
 						>
 							<button
 								class="btn btn-square btn-error btn-sm"
 								on:click={() => deleteTagConfirms[i].show()}
+								data-testid="todo-tag-delete"
 							>
 								<Fa icon={faTrashCan}></Fa>
 							</button>
@@ -122,7 +126,10 @@
 							class="tooltip tooltip-top tooltip-left tooltip-warning"
 							data-tip="detach tag from this item"
 						>
-							<button class="btn btn-square btn-error btn-sm" on:click={() => handleDetachTag(tag)}>
+							<button
+								class="btn btn-square btn-error btn-sm"
+								on:click={() => detachTagConfirms[i].show()}
+							>
 								<Fa icon={faUnlink} class="text-error-content"></Fa>
 							</button>
 						</div>

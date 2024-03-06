@@ -1,9 +1,13 @@
 import type { Locator } from '@playwright/test';
 
 export function getConfirmAcceptButton(locator: Locator) {
-	return locator.getByTestId('confirm-accept');
+	return locator
+		.locator("div[data-testid='confirm-wrapper']:visible")
+		.getByTestId('confirm-accept');
 }
 
 export function getConfirmCancelButton(locator: Locator) {
-	return locator.getByTestId('confirm-cancel');
+	return locator
+		.locator("div[data-testid='confirm-wrapper']:visible")
+		.getByTestId('confirm-cancel');
 }
