@@ -8,6 +8,7 @@ import { test as todoCategoriesTest } from '../todo-category';
 import { getConfirmAcceptButton } from '../../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import { TodoCommentPage } from './todo-comments';
+import { TodoTagPage } from './todo-tags';
 
 export type TodoItemUtils = { page: TodoItemPage; helpers: TodoItemHelpers };
 
@@ -15,10 +16,15 @@ export class TodoItemPage implements IPage {
 	#enhancedPage: EnhancedPage;
 	#todoCategoryPage: TodoCategoryPage;
 	public readonly comments: TodoCommentPage;
+	public readonly tags: TodoTagPage;
 	constructor(enhancedPage: EnhancedPage, todoCategoryUtils: TodoCategoryUtils) {
 		this.#enhancedPage = enhancedPage;
 		this.#todoCategoryPage = todoCategoryUtils.page;
 		this.comments = new TodoCommentPage(enhancedPage, {
+			page: this,
+			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
+		});
+		this.tags = new TodoTagPage(enhancedPage, {
 			page: this,
 			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
 		});

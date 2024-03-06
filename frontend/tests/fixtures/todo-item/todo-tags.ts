@@ -30,8 +30,8 @@ export class TodoTagPage {
 		await modal.getByRole('button', { name: 'add' }).click();
 		await expect(modal).toContainText('Add tags to this todo item');
 
-		await modal.getByPlaceholder('message').focus();
-		await modal.getByPlaceholder('message').fill(tag);
+		await modal.getByPlaceholder('name').focus();
+		await modal.getByPlaceholder('name').fill(tag);
 		await modal.getByRole('button', { name: 'add', exact: true }).click();
 		await modal
 			.locator('div[role="alert"]', { hasText: 'Tag created' })
@@ -93,7 +93,7 @@ export class TodoTagPage {
 		return deleteBtn;
 	}
 
-	async getTodoTagsTexts(locator: Locator) {
+	async getTodoTagTexts(locator: Locator) {
 		const texts = (await locator.getByTestId('todo-tag-text').all()).map(
 			async (element) => await element.innerText()
 		);
