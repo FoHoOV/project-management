@@ -99,6 +99,7 @@
 			<div
 				class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 				animate:flip={{ duration: 200 }}
+				data-testid="todo-tags-wrapper"
 			>
 				<Confirm bind:this={deleteTagConfirms[i]} onConfirmed={() => handleDeleteTag(tag)}
 				></Confirm>
@@ -107,6 +108,7 @@
 						<div
 							class="tooltip tooltip-top tooltip-left tooltip-warning"
 							data-tip="delete tag from this project"
+							data-testid="todo-tags-delete"
 						>
 							<button
 								class="btn btn-square btn-error btn-sm"
@@ -138,7 +140,9 @@
 
 					<div class="flex items-center gap-2">
 						<span>tag name:</span>
-						<span class="whitespace-pre-wrap break-words font-bold">{tag.name}</span>
+						<span class="whitespace-pre-wrap break-words font-bold" data-testid="todo-tag-text"
+							>{tag.name}</span
+						>
 					</div>
 
 					<div class="flex items-center gap-2">
