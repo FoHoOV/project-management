@@ -10,7 +10,21 @@ const config: PlaywrightTestConfig = {
 	reporter: [['html', { open: 'on-failure', outputDir: 'test-results' }]],
 	use: {
 		video: 'retain-on-failure'
-	}
+	},
+	projects: [
+		{
+			name: 'Chromium',
+			use: { browserName: 'chromium' }
+		},
+		{
+			name: 'Firefox',
+			use: { browserName: 'firefox' }
+		},
+		{
+			name: 'WebKit',
+			use: { browserName: 'webkit' }
+		}
+	]
 };
 
 export default config;
