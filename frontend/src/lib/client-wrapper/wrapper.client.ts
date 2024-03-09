@@ -33,11 +33,11 @@ export async function callServiceInClient<
 >({
 	call,
 	errorSchema,
-	onError
+	errorHandler
 }: ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>) {
 	return await callService({
 		call,
 		errorSchema,
-		onError
+		errorHandler
 	});
 }

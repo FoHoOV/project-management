@@ -88,7 +88,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				if (e.type == ErrorType.API_ERROR) {
 					toasts.addToast({
 						type: 'error',
@@ -113,7 +113,7 @@
 				apiErrorTitle = null;
 				componentState = 'none';
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

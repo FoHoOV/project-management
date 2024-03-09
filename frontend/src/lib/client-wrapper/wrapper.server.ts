@@ -54,10 +54,10 @@ export async function callServiceInFormActions<
 >({
 	call,
 	errorSchema,
-	onError
+	errorHandler
 }: RequiredProperty<
 	ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>,
-	'onError'
+	'errorHandler'
 >): Promise<
 	{ success: true; response: Awaited<TServiceCallResult>; error: never } | TErrorCallbackResult
 >;
@@ -68,7 +68,7 @@ export async function callServiceInFormActions<
 >({
 	call,
 	errorSchema,
-	onError = async (e) => {
+	errorHandler = async (e) => {
 		return await superApplyAction(e);
 	}
 }: ServiceCallOptions<
@@ -79,7 +79,7 @@ export async function callServiceInFormActions<
 	const result = await callService({
 		call,
 		errorSchema,
-		onError
+		errorHandler
 	});
 
 	if (result.success) {

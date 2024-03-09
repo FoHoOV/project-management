@@ -51,7 +51,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}
@@ -67,7 +67,7 @@
 				componentState = 'none';
 				apiErrorTitle = null;
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				apiErrorTitle = e.message;
 				componentState = 'none';
 			}

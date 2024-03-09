@@ -28,7 +28,7 @@ export const actions: Actions = {
 				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
 				redirect(303, '/user/projects');
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				if (e.type === ErrorType.NOT_AUTHENTICATED) {
 					e.preventDefaultHandler = true;
 					return superFail(400, {

@@ -12,7 +12,7 @@ export const load = (async ({ parent, fetch, params }) => {
 				fetchApi: fetch
 			}).getForUserTodoCategory(Number.parseInt(params.project_id));
 		},
-		onError: async (e) => {
+		errorHandler: async (e) => {
 			if (e.status == 401) {
 				return; // allow default unauthenticated user handling
 			}

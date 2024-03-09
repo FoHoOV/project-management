@@ -103,7 +103,7 @@ const _defaultUnAuthenticatedUserHandler = async <
 	TSchema extends z.AnyZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 >(
-	onError: Required<ServiceCallOptions<never, TSchema, TErrorCallbackResult>>['onError'],
+	onError: Required<ServiceCallOptions<never, TSchema, TErrorCallbackResult>>['errorHandler'],
 	e: Extract<ServiceError<TSchema>, { type: ErrorType.NOT_AUTHENTICATED }>
 ): Promise<{
 	success: false;
@@ -180,9 +180,15 @@ export type ServiceCallOptions<
 	TErrorSchema extends z.AnyZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 > = {
+	/**
+	 * @returns in case of successful api-call whatever this function returns will be in the return value of service call wrapper
+	 */
 	call: () => TServiceCallResult;
 	errorSchema?: TErrorSchema;
-	onError?: (e: ServiceError<TErrorSchema>) => TErrorCallbackResult;
+	/**
+	 * @returns in case of failed api-call whatever this function returns will be in the return value of service call wrapper
+	 */
+	errorHandler?: (e: ServiceError<TErrorSchema>) => TErrorCallbackResult;
 };
 
 export async function callService<
@@ -192,14 +198,14 @@ export async function callService<
 >({
 	call,
 	errorSchema,
-	onError = (async (e) => {
+	errorHandler = (async (e) => {
 		if (e.type === ErrorType.NOT_AUTHENTICATED) {
 			await handleUnauthenticatedUser();
 		}
 		return e;
 	}) as Required<
 		ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>
-	>['onError']
+	>['errorHandler']
 }: ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>): Promise<
 	| {
 			success: false;
@@ -219,7 +225,7 @@ export async function callService<
 		if (e instanceof FetchError) {
 			return {
 				success: false,
-				error: await onError({
+				error: await errorHandler({
 					type: ErrorType.SERVICE_DOWN_ERROR,
 					status: 503,
 					message:
@@ -235,7 +241,7 @@ export async function callService<
 		if (e instanceof RequiredError) {
 			return {
 				success: false,
-				error: await onError({
+				error: await errorHandler({
 					type: ErrorType.PRE_REQUEST_FAILURE,
 					status: 400,
 					message: e.message,
@@ -253,7 +259,7 @@ export async function callService<
 			} catch {
 				return {
 					success: false,
-					error: await onError({
+					error: await errorHandler({
 						type: ErrorType.API_ERROR,
 						status: _getResponseErrorCode(e.response.status),
 						code: ErrorCode.UnknownError,
@@ -268,7 +274,7 @@ export async function callService<
 			}
 
 			if (e.response.status === 401) {
-				return await _defaultUnAuthenticatedUserHandler(onError, {
+				return await _defaultUnAuthenticatedUserHandler(errorHandler, {
 					type: ErrorType.NOT_AUTHENTICATED,
 					status: _getResponseErrorCode(e.response.status),
 					message: 'Invalid credentials!',
@@ -284,7 +290,7 @@ export async function callService<
 				if (!validationErrors) {
 					return {
 						success: false,
-						error: await onError({
+						error: await errorHandler({
 							type: ErrorType.API_ERROR,
 							status: _getResponseErrorCode(e.response.status),
 							code: ErrorCode.UnknownError,
@@ -296,7 +302,7 @@ export async function callService<
 				} else {
 					return {
 						success: false,
-						error: await onError({
+						error: await errorHandler({
 							type: ErrorType.VALIDATION_ERROR,
 							status: _getResponseErrorCode(e.response.status),
 							code: ErrorCode.InvalidInput,
@@ -313,7 +319,7 @@ export async function callService<
 			if (userFriendlyError.success) {
 				return {
 					success: false,
-					error: await onError({
+					error: await errorHandler({
 						type: ErrorType.API_ERROR,
 						status: _getResponseErrorCode(e.response.status),
 						code: userFriendlyError.data.code,
@@ -325,7 +331,7 @@ export async function callService<
 			}
 			return {
 				success: false,
-				error: await onError({
+				error: await errorHandler({
 					type: ErrorType.API_ERROR,
 					status: _getResponseErrorCode(e.response.status),
 					code: ErrorCode.UnknownError,
@@ -337,7 +343,7 @@ export async function callService<
 		}
 
 		if (e instanceof TokenError) {
-			return await _defaultUnAuthenticatedUserHandler(onError, {
+			return await _defaultUnAuthenticatedUserHandler(errorHandler, {
 				type: ErrorType.NOT_AUTHENTICATED,
 				status: 401,
 				message: e.message,
@@ -349,7 +355,7 @@ export async function callService<
 
 		return {
 			success: false,
-			error: await onError({
+			error: await errorHandler({
 				type: ErrorType.UNKNOWN_ERROR,
 				status: 500,
 				message: 'An unknown error has occurred, please try again',
