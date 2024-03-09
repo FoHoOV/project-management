@@ -95,7 +95,7 @@ export class TodoTagPage {
 
 	async getTodoTagTexts(locator: Locator) {
 		const texts = (await locator.getByTestId('todo-tag-text').all()).map(
-			async (element) => await element.innerText()
+			async (element) => await element.textContent()
 		);
 
 		return Promise.all(texts);

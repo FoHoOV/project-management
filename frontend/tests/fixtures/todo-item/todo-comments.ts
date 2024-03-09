@@ -97,7 +97,7 @@ export class TodoCommentPage {
 
 	async getTodoCommentTexts(locator: Locator) {
 		const texts = (await locator.getByTestId('todo-comment-text').all()).map(
-			async (element) => await element.innerText()
+			async (element) => await element.textContent()
 		);
 
 		return Promise.all(texts);

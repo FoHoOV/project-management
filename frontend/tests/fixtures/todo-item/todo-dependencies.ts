@@ -93,9 +93,13 @@ export class TodoDependencyPage {
 	}
 
 	async getTodoDependencyIds(locator: Locator) {
-		const texts = (await locator.getByTestId('todo-dependency-text').all()).map(async (element) =>
-			parseInt((await element.innerText()).split('#')[1])
-		);
+		const texts = (await locator.getByTestId('todo-dependency-text').all()).map(async (element) => {
+			const content = await element.textContent({ timeout: 500 });
+			if (!content) {
+				throw new Error('content was null for id');
+			}
+			return parseInt(content.trim().split('#')[1]);
+		});
 
 		return Promise.all(texts);
 	}

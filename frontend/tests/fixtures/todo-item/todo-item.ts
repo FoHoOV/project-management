@@ -294,7 +294,11 @@ export class TodoItemPage implements IPage {
 		const ids: number[] = [];
 
 		for (let i = 0; i < elements.length; i++) {
-			ids.push(parseInt((await elements[i].innerText()).trim().split('#')[1]));
+			const content = await elements[i].textContent({ timeout: 500 });
+			if (!content) {
+				throw new Error('content was null for id');
+			}
+			ids.push(parseInt(content.trim().split('#')[1]));
 		}
 
 		return ids;
