@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type IPage } from './IPage';
-import { type EnhancedPage } from './test';
+import { type EnhancedPage } from './enhanced-page';
 
 export class ProjectsPage implements IPage {
 	#enhancedPage: EnhancedPage;

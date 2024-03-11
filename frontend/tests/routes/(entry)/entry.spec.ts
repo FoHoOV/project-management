@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from '../../fixtures/test';
+import { test } from '../../fixtures/enhanced-page';
 
 test('checking login page contents', async ({ enhancedPage }) => {
 	await enhancedPage.goto('/login');

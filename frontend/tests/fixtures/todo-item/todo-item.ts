@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { closeModal, getModal } from '../../common-locators/modal';
 import { type IPage } from '../IPage';
-import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from '../test';
+import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from '../enhanced-page';
 
 import type { TodoCategoryHelpers, TodoCategoryPage, TodoCategoryUtils } from '../todo-category';
 import { test as todoCategoriesTest } from '../todo-category';

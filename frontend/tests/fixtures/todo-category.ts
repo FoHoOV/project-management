@@ -4,7 +4,7 @@ import { generateTodoListUrl } from '../../src/lib/utils/params/route';
 import { ProjectsPage, test as projects } from './project';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
-import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './test';
+import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './enhanced-page';
 import { getConfirmAcceptButton } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 import crypto from 'crypto';
