@@ -83,7 +83,7 @@
 				todoCategoriesStore?.updateTodo(result);
 				componentState = 'none';
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				componentState = 'none';
 
 				if (e.type == ErrorType.API_ERROR) {

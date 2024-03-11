@@ -1,5 +1,5 @@
 import type { IPage } from './IPage';
-import type { EnhancedPage } from './test';
+import type { EnhancedPage } from './enhanced-page';
 import { test as todoItemTest } from './/todo-item/todo-item';
 export type SearchTagsUtils = {
 	page: SearchTagsPage;

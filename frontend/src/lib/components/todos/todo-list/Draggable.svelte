@@ -100,7 +100,7 @@
 				);
 				componentState = 'none';
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				onError?.(e.message);
 				componentState = 'none';
 			}
@@ -128,7 +128,7 @@
 				todoCategoriesStore?.addTodo(result);
 				componentState = 'none';
 			},
-			onError: async (e) => {
+			errorHandler: async (e) => {
 				componentState = 'none';
 				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
 					toasts.addToast({

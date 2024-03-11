@@ -1,7 +1,7 @@
 import { expect, type Locator } from '@playwright/test';
 import { closeModal, getModal } from '../../common-locators/modal';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
-import type { EnhancedPage } from '../test';
+import type { EnhancedPage } from '../enhanced-page';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
 import { getConfirmAcceptButton } from '../../common-locators/confirm';
 

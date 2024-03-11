@@ -27,7 +27,9 @@ export type FormActionResultType<
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = TFormAction extends { response: infer TResult }
 	? Extract<TFormAction, { response: TResult }>['response']
-	: Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { response: any }>['response'];
+	: TKey extends keyof NonNullable<TFormAction>
+		? Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { response: any }>['response']
+		: never;
 
 export type SubmitEvents<
 	TSchema extends z.ZodTypeAny,
