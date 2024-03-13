@@ -60,7 +60,7 @@
 		showProjectsInfo = false,
 		showCategoryInfo = false,
 		...restProps
-	} = $props<Props>();
+	}: Props = $props();
 
 	let apiErrorTitle = $state<string | null>(null);
 	let componentState = $state<CommonComponentStates>('none');

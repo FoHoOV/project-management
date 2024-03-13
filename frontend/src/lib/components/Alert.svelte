@@ -10,7 +10,7 @@
 </script>
 
 <script lang="ts">
-	const { type, message = null, class: className = '' } = $props<Props>();
+	const { type, message = null, class: className = '' }: Props = $props();
 
 	let closed = $state<boolean>(false);
 	let autoClosePercentage = $state<number>(0);

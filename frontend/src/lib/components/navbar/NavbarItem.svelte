@@ -24,7 +24,7 @@
 		setActiveClassOnClick = true,
 		class: className = '',
 		children
-	} = $props<Props>();
+	}: Props = $props();
 </script>
 
 <li class="break-words-legacy max-w-full whitespace-normal break-words">

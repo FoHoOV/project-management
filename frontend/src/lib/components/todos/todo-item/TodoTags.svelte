@@ -30,7 +30,7 @@
 </script>
 
 <script script lang="ts">
-	const { todo, onEditTag, onAddTag } = $props<Props>();
+	const { todo, onEditTag, onAddTag }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);

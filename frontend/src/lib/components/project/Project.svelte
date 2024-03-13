@@ -23,7 +23,7 @@
 </script>
 
 <script lang="ts">
-	const { project, onEditProject, onAttachToUser } = $props<Props>();
+	const { project, onEditProject, onAttachToUser }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);

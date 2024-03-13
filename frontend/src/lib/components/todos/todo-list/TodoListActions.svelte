@@ -16,7 +16,7 @@
 </script>
 
 <script lang="ts">
-	const { category } = $props<Props>();
+	const { category }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);

@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-	const { visible = false } = $props<Props>();
+	const { visible = false }: Props = $props();
 	// it will position absolutely to the nearest position: relative parent.
 </script>
 

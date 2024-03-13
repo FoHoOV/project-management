@@ -13,7 +13,7 @@
 </script>
 
 <script lang="ts">
-	const { form } = $props<Props>();
+	const { form }: Props = $props();
 
 	const projectsStore = getProjectsStoreFromContext();
 </script>

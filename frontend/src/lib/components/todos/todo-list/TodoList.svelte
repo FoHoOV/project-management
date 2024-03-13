@@ -41,7 +41,7 @@
 </script>
 
 <script lang="ts">
-	const { category, projectId, draggable = true, class: className, ...restProps } = $props<Props>();
+	const { category, projectId, draggable = true, class: className, ...restProps }:Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);

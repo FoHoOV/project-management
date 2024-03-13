@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-	const { class: className = '' } = $props<Props>();
+	const { class: className = '' }: Props = $props();
 
 	let modal = $state<Modal | null>(null);
 	const currentStep = $derived(

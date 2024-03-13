@@ -73,7 +73,7 @@
 		actions,
 		inputs,
 		footer
-	} = $props<Props<TFormAction, TSchema, TKey>>();
+	}: Props<TFormAction, TSchema, TKey> = $props();
 
 	let formElement = $state<HTMLFormElement | null>(null);
 	let componentState = $state<ComponentStates>('none');

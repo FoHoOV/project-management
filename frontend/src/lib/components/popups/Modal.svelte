@@ -22,7 +22,7 @@
 		class: modalBodyClasses = '',
 		onOpened,
 		onClosed
-	} = $props<Props>();
+	}: Props = $props();
 
 	let modalElement = $state<HTMLDialogElement | null>(null);
 

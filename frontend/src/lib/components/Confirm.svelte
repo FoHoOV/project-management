@@ -16,7 +16,7 @@
 		cancelText = 'cancel',
 		onConfirmed,
 		onCanceled
-	} = $props<Props>();
+	}: Props = $props();
 
 	export function show() {
 		visible = true;

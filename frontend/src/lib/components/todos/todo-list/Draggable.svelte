@@ -47,7 +47,7 @@
 </script>
 
 <script lang="ts">
-	const { category, projectId, disabled, onError, children } = $props<Props>();
+	const { category, projectId, disabled, onError, children }: Props = $props();
 
 	const todoCategoriesStore = getTodosStoreFromContext();
 	let componentState = $state<ComponentState>('none');

@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-	const { form, project } = $props<Props>();
+	const { form, project }: Props = $props();
 
 	const projectsStore = getProjectsStoreFromContext();
 	let allowAllAccessRights = $state<boolean>(true);

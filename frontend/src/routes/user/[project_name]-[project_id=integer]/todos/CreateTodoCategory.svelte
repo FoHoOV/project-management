@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-	const { form } = $props<Props>();
+	const { form }: Props = $props();
 	const todoCategoriesStore = getTodosStoreFromContext();
 </script>
 

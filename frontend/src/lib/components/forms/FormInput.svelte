@@ -35,7 +35,7 @@
 		labelClasses = '',
 		inputClasses = '',
 		...restProps
-	} = $props<Props>();
+	}: Props = $props();
 
 	export function focus() {
 		input?.focus();

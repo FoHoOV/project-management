@@ -13,7 +13,7 @@
 </script>
 
 <script lang="ts">
-	const { projects, ...restProps } = $props<Props>();
+	const { projects, ...restProps }: Props = $props();
 </script>
 
 <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">

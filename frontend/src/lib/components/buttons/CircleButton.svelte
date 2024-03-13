@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-	const { icon = faClose, class: className = 'h-6 w-6' } = $props<Props>();
+	const { icon = faClose, class: className = 'h-6 w-6' }: Props = $props();
 </script>
 
 <button class="btn btn-circle {className}" on:click on:dblclick on:blur>
