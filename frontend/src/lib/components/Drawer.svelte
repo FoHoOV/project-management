@@ -29,7 +29,7 @@
 		navbarEnd,
 		sidebar,
 		content
-	} = $props<Props>();
+	}: Props = $props();
 
 	let showDrawer = $state<boolean>(false);
 

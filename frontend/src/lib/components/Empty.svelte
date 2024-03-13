@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-	const { text = 'Nothing to see here', class: className = '' } = $props();
+	const { text = 'Nothing to see here', class: className = '' }: Props = $props();
 </script>
 
 <div class="flex items-start align-top {className}">

@@ -26,7 +26,7 @@
 </script>
 
 <script script lang="ts">
-	const { todoId, onEditComment, onCreateComment } = $props<Props>();
+	const { todoId, onEditComment, onCreateComment }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);

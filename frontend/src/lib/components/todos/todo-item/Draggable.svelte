@@ -46,7 +46,7 @@
 </script>
 
 <script lang="ts">
-	const { todo, disabled, category, onError, children } = $props<Props>();
+	const { todo, disabled, category, onError, children }: Props = $props();
 
 	let componentState = $state<ComponentStates>();
 

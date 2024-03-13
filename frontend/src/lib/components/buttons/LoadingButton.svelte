@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-	const { text, loading = false, type = 'button', class: className = '' } = $props<Props>();
+	const { text, loading = false, type = 'button', class: className = '' }: Props = $props();
 </script>
 
 <button on:click class="btn disabled:cursor-not-allowed {className}" disabled={loading} {type}>

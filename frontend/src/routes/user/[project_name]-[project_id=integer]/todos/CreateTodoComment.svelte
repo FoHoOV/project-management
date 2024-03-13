@@ -17,7 +17,7 @@
 </script>
 
 <script lang="ts">
-	const { form, todoCommentsStore, todoId } = $props<Props>();
+	const { form, todoCommentsStore, todoId }: Props = $props();
 </script>
 
 <EnhancedForm

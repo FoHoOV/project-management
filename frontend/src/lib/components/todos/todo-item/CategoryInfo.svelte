@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-	const { todo } = $props<Props>();
+	const { todo }: Props = $props();
 </script>
 
 <div class="flex flex-row items-center gap-2 overflow-y-auto">

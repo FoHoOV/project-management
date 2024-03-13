@@ -26,7 +26,7 @@
 </script>
 
 <script script lang="ts">
-	const { todo, onAddDependency } = $props<Props>();
+	const { todo, onAddDependency }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);

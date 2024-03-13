@@ -15,7 +15,7 @@
 </script>
 
 <script lang="ts">
-	const { visible = false, direction } = $props<Props>();
+	const { visible = false, direction }: Props = $props();
 
 	const { icon, flexDirection } = $derived.by(() => {
 		switch (direction) {

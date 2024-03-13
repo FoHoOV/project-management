@@ -13,7 +13,7 @@
 </script>
 
 <script lang="ts">
-	const { title, titleHref, class: className = '', start, center, end } = $props<Props>();
+	const { title, titleHref, class: className = '', start, center, end }: Props = $props();
 </script>
 
 <div class="lg:p-2">
