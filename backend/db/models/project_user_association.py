@@ -1,8 +1,15 @@
-from typing import List
+from __future__ import annotations
+
+
+from typing import TYPE_CHECKING, List
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy.orm import mapped_column
 from db.models.base import BasesWithCreatedDate
+
+
+if TYPE_CHECKING:
+    from db.models.user_project_permission import UserProjectPermission
 
 
 class ProjectUserAssociation(BasesWithCreatedDate):
@@ -13,7 +20,7 @@ class ProjectUserAssociation(BasesWithCreatedDate):
     project_id: Mapped[int] = mapped_column(
         ForeignKey("project.id", ondelete="CASCADE")
     )
-    permissions: Mapped[List["UserProjectPermission"]] = relationship(  # type: ignore
+    permissions: Mapped[List["UserProjectPermission"]] = relationship(
         "UserProjectPermission",
         back_populates="project_user_association",
         cascade="all, delete-orphan",

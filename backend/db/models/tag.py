@@ -1,9 +1,13 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 from sqlalchemy import CheckConstraint, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
+
+if TYPE_CHECKING:
+    from db.models.project import Project
+    from db.models.todo_item import TodoItem
 
 
 class Tag(BasesWithCreatedDate):
@@ -14,10 +18,10 @@ class Tag(BasesWithCreatedDate):
     project_id: Mapped[int] = mapped_column(
         ForeignKey("project.id", ondelete="CASCADE")
     )
-    project: Mapped[List["Project"]] = relationship(  # type: ignore
+    project: Mapped[List["Project"]] = relationship(
         "Project", back_populates="tags", single_parent=True
     )
-    todos: Mapped[List["TodoItem"]] = relationship(  # type: ignore
+    todos: Mapped[List["TodoItem"]] = relationship(
         "TodoItem",
         secondary="todo_item_tag_association",
         back_populates="tags",
