@@ -34,6 +34,7 @@
 	import { TodoComments } from '$lib/stores/todo-comments';
 	import { setTodosStoreToContext } from '$components/todos/utils';
 	import { drawer } from '$lib/stores/drawer';
+	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
 </script>
 
 <script lang="ts">
@@ -200,7 +201,11 @@
 </svelte:head>
 
 {#snippet settings({ closeDrawer }: DrawerSnippetParams[0])}
-	<NavbarItem href={location.href} name="" icon={faGear} />
+	<NavbarItem
+		href={generateTodoListSettingsUrl($page.params.project_name, $page.params.project_id)}
+		name=""
+		icon={faGear}
+	/>
 {/snippet}
 
 {#if componentState === 'loading'}
