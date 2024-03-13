@@ -96,24 +96,29 @@
 			</div>
 		</div>
 
-		<div class="card-actions justify-end pt-3">
-			<button
-				class="btn btn-success flex-1"
-				on:click={() => onAttachToUser?.(project)}
-				class:hidden={!onAttachToUser}
-			>
-				Share access
-			</button>
-			<button class="btn btn-error flex-1" on:click={() => confirmDetachProject?.show()}>
-				{#if project.users.length == 1}
-					Delete
-				{:else}
-					Detach
-				{/if}
-			</button>
-			<a class="btn btn-info flex-1" href={generateTodoListUrl(project.title, project.id)}>
-				Show todos
-			</a>
+		<div class="card-actions pt-3">
+			<div class="grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
+				<button
+					class="btn btn-success"
+					on:click={() => onAttachToUser?.(project)}
+					class:hidden={!onAttachToUser}
+				>
+					Share access
+				</button>
+				<button class="btn btn-error" on:click={() => confirmDetachProject?.show()}>
+					{#if project.users.length == 1}
+						Delete
+					{:else}
+						Detach
+					{/if}
+				</button>
+				<a
+					class="btn btn-info col-span-2 sm:col-span-1"
+					href={generateTodoListUrl(project.title, project.id)}
+				>
+					Show todos
+				</a>
+			</div>
 		</div>
 	</div>
 </div>
