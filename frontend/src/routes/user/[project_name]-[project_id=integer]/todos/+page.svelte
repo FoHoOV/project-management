@@ -202,7 +202,7 @@
 
 {#snippet settings({ closeDrawer }: DrawerSnippetParams[0])}
 	<NavbarItem
-		href={generateTodoListSettingsUrl($page.params.project_name, $page.params.project_id)}
+		href={generateTodoListSettingsUrl(data.currentProject.title, data.currentProject.id)}
 		name=""
 		icon={faGear}
 	/>

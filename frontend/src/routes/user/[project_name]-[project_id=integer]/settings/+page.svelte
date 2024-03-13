@@ -29,7 +29,7 @@
 
 {#snippet closeSettings({ closeDrawer }: DrawerSnippetParams[0])}
 	<NavbarItem
-		href={generateTodoListUrl($page.params.project_name, $page.params.project_id)}
+		href={generateTodoListUrl(data.currentProject.title, data.currentProject.id)}
 		name=""
 		icon={faClose}
 	/>
