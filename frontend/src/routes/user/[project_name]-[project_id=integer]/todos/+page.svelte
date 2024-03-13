@@ -12,9 +12,12 @@
 	import Empty from '$components/Empty.svelte';
 	import TodoList from '$components/todos/todo-list/TodoList.svelte';
 	import CreateTodoItem from './CreateTodoItem.svelte';
+	import NavbarItem from '$components/navbar/NavbarItem.svelte';
+
+	import type { SnippetParams as DrawerSnippetParams } from '$components/Drawer.svelte';
 
 	import { flip } from 'svelte/animate';
-	import { faPlus } from '@fortawesome/free-solid-svg-icons';
+	import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 	import { onMount, untrack } from 'svelte';
 
@@ -30,6 +33,7 @@
 	import { TodoCategories } from '$lib/stores/todos';
 	import { TodoComments } from '$lib/stores/todo-comments';
 	import { setTodosStoreToContext } from '$components/todos/utils';
+	import { drawer } from '$lib/stores/drawer';
 </script>
 
 <script lang="ts">
@@ -183,12 +187,21 @@
 
 	onMount(() => {
 		componentState = 'none';
+		drawer.navbar.end.push(settings);
+
+		return () => {
+			drawer.navbar.remove('end', settings);
+		};
 	});
 </script>
 
 <svelte:head>
 	<title>todos</title>
 </svelte:head>
+
+{#snippet settings({ closeDrawer }: DrawerSnippetParams[0])}
+	<NavbarItem href={location.href} name="todos settings" icon={faGear} />
+{/snippet}
 
 {#if componentState === 'loading'}
 	<span class="loading loading-ring m-auto block" />

@@ -3,6 +3,7 @@
 	import MultiModal from '$components/popups/MultiModal.svelte';
 	import Drawer from '$components/Drawer.svelte';
 	import Toasts from '$components/popups/Toasts.svelte';
+	import DarkModeSwitch from '$components/DarkModeSwitch.svelte';
 
 	import '../app.css';
 
@@ -72,6 +73,7 @@
 	{/snippet}
 
 	{#snippet navbarEnd()}
+		<DarkModeSwitch />
 		{#if $page.data.token}
 			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
 		{:else}

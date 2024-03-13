@@ -1,5 +1,4 @@
 <script lang="ts" context="module">
-	import DarkModeSwitch from '$components/DarkModeSwitch.svelte';
 	import type { Snippet } from 'svelte';
 
 	export type Props = {
@@ -34,8 +33,7 @@
 			</ul>
 		</div>
 		<div class="navbar-end">
-			<DarkModeSwitch />
-			<ul class="menu px-1">
+			<ul class="menu menu-horizontal px-1">
 				{#if end}
 					{@render end()}
 				{/if}
