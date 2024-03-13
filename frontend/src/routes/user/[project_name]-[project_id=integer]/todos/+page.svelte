@@ -200,7 +200,7 @@
 </svelte:head>
 
 {#snippet settings({ closeDrawer }: DrawerSnippetParams[0])}
-	<NavbarItem href={location.href} name="todos settings" icon={faGear} />
+	<NavbarItem href={location.href} name="" icon={faGear} />
 {/snippet}
 
 {#if componentState === 'loading'}
