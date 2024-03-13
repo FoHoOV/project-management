@@ -80,7 +80,7 @@
 	{/snippet}
 
 	{#snippet content()}
-		<div class="grid h-full overflow-hidden">
+		<div class="relative grid h-full overflow-hidden">
 			<div class="flex-1 overflow-auto px-6 py-4 lg:px-2 lg:py-1.5">
 				{#if $navigating}
 					<span
