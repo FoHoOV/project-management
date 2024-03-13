@@ -3,11 +3,10 @@
 
 	import type { SnippetParams as DrawerSnippetParams } from '$components/Drawer.svelte';
 
-	import { page } from '$app/stores';
 	import { drawer } from '$lib/stores/drawer';
 
-	import { generateTodoListSettingsUrl, generateTodoListUrl } from '$lib/utils/params/route';
-	import { faClose, faGear } from '@fortawesome/free-solid-svg-icons';
+	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 </script>
 
@@ -34,3 +33,12 @@
 		icon={faClose}
 	/>
 {/snippet}
+
+{#each data.currentProject.users as user}
+	<span>accessed by</span>
+	<span>{user.username}</span>
+	<span>permissions</span>
+	{#each user.permissions as permission}
+		<span>{permission}</span>
+	{/each}
+{/each}
