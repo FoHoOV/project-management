@@ -157,31 +157,35 @@ def delete_project(db: Session, project_id: int):
 
 
 def get_project(db: Session, project: ProjectRead, user_id: int):
-    result = (
-        db.query(Project)
-        .filter(Project.id == project.project_id)
-        .join(Project.users)
-        .filter(User.id == user_id)
-        .first()
-    )
+    result = get_projects(db, user_id, project.project_id)
 
-    if result is None:
+    if len(result) == 0:
         raise UserFriendlyError(
             ErrorCode.PROJECT_NOT_FOUND,
             "project doesn't exist or doesn't belong to current user",
         )
 
-    return result
+    return result[0]
 
 
-def get_projects(db: Session, user_id: int):
-    result = (
-        db.query(Project)
-        .join(Project.users)
-        .filter(User.id == user_id)
-        .order_by(Project.id.asc())
-        .all()
-    )
+def get_projects(db: Session, user_id: int, project_id: int | None = None):
+    query = db.query(Project).join(Project.users).filter(User.id == user_id)
+
+    if project_id is not None:
+        query = query.filter(Project.id == project_id)
+
+    result = query.order_by(Project.id.asc()).all()
+
+    for project in result:
+        for user in project.users:
+            user.permissions = [  # type: ignore
+                perm.permission
+                for association in filter(
+                    lambda association: association.project_id == project.id,
+                    user.associations,
+                )
+                for perm in association.permissions
+            ]
 
     return result
 

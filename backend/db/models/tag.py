@@ -19,10 +19,9 @@ class Tag(BasesWithCreatedDate):
         ForeignKey("project.id", ondelete="CASCADE")
     )
     project: Mapped[List["Project"]] = relationship(
-        "Project", back_populates="tags", single_parent=True
+        back_populates="tags", single_parent=True
     )
     todos: Mapped[List["TodoItem"]] = relationship(
-        "TodoItem",
         secondary="todo_item_tag_association",
         back_populates="tags",
         order_by="desc(TodoItem.id)",

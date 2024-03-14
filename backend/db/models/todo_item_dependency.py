@@ -20,14 +20,13 @@ class TodoItemDependency(BasesWithCreatedDate):
     )
 
     todo: Mapped["TodoItem"] = relationship(
-        "TodoItem",
         back_populates="dependencies",
         foreign_keys=[todo_id],
         single_parent=True,
     )
 
     dependant_todo: Mapped["TodoItem"] = relationship(
-        "TodoItem", foreign_keys=[dependant_todo_id], single_parent=True
+        foreign_keys=[dependant_todo_id], single_parent=True
     )
 
     __table_args__ = (UniqueConstraint("todo_id", "dependant_todo_id"),)

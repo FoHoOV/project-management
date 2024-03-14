@@ -29,7 +29,6 @@ class TodoCategoryAction(BasesWithCreatedDate):
     )
     action: Mapped[Action] = mapped_column(Enum(Action, validate_strings=True))
     category: Mapped["TodoCategory"] = relationship(
-        "TodoCategory",
         back_populates="actions",
         single_parent=True,
     )

@@ -55,7 +55,6 @@ class UserProjectPermission(Base):
         Enum(Permission, validate_strings=True)
     )
     project_user_association: Mapped["ProjectUserAssociation"] = relationship(
-        "ProjectUserAssociation",
         back_populates="permissions",
         single_parent=True,
         cascade="all, delete-orphan",

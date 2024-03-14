@@ -6,9 +6,11 @@ from sqlalchemy.orm import relationship
 
 from db.models.base import BasesWithCreatedDate
 
+
 if TYPE_CHECKING:
     from db.models.project import Project
     from db.models.todo_item import TodoItem
+    from db.models.project_user_association import ProjectUserAssociation
 
 
 class User(BasesWithCreatedDate):
@@ -17,8 +19,12 @@ class User(BasesWithCreatedDate):
     username: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String())
     projects: Mapped[List["Project"]] = relationship(
-        "Project", secondary="project_user_association", back_populates="users"
+        secondary="project_user_association", back_populates="users"
     )
     done_todos: Mapped[List["TodoItem"]] = relationship(
-        "TodoItem", back_populates="marked_as_done_by"
+        back_populates="marked_as_done_by"
+    )
+
+    associations: Mapped[List["ProjectUserAssociation"]] = relationship(
+        back_populates="user", viewonly=True
     )

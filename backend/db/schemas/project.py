@@ -65,6 +65,9 @@ class ProjectAttachAssociationResponse(ProjectBase):
 class PartialUser(BaseModel):
     id: int
     username: str
+    permissions: list[Permission]
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PartialTodoCategory(BaseModel):

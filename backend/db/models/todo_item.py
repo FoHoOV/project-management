@@ -29,7 +29,6 @@ class TodoItem(BasesWithCreatedDate):
     )
     due_date: Mapped[datetime | None] = mapped_column(DateTime(), nullable=True)
     category: Mapped["TodoCategory"] = relationship(
-        "TodoCategory",
         back_populates="items",
         single_parent=True,
         cascade="all, delete-orphan",
@@ -38,7 +37,6 @@ class TodoItem(BasesWithCreatedDate):
         ForeignKey("user.id"), nullable=True
     )
     comments: Mapped[List[TodoItemComment]] = relationship(
-        "TodoItemComment",
         foreign_keys=[TodoItemComment.todo_id],
         back_populates="todo",
         cascade="all, delete-orphan",
@@ -52,7 +50,6 @@ class TodoItem(BasesWithCreatedDate):
         cascade="all, delete-orphan",
     )
     order: Mapped[TodoItemOrder | None] = relationship(
-        "TodoItemOrder",
         foreign_keys=[TodoItemOrder.todo_id],
         uselist=False,
         back_populates="todo",
@@ -60,7 +57,6 @@ class TodoItem(BasesWithCreatedDate):
     )
 
     marked_as_done_by: Mapped[Optional["User"]] = relationship(
-        "User",
         uselist=False,
         back_populates="done_todos",
     )

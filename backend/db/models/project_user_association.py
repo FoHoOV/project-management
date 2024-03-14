@@ -9,6 +9,8 @@ from db.models.base import BasesWithCreatedDate
 
 
 if TYPE_CHECKING:
+    from db.models.project import Project
+    from db.models.user import User
     from db.models.user_project_permission import UserProjectPermission
 
 
@@ -21,9 +23,15 @@ class ProjectUserAssociation(BasesWithCreatedDate):
         ForeignKey("project.id", ondelete="CASCADE")
     )
     permissions: Mapped[List["UserProjectPermission"]] = relationship(
-        "UserProjectPermission",
         back_populates="project_user_association",
         cascade="all, delete-orphan",
+    )
+
+    project: Mapped["Project"] = relationship(
+        foreign_keys=[project_id], back_populates="associations", viewonly=True
+    )
+    user: Mapped["User"] = relationship(
+        foreign_keys=[user_id], back_populates="associations", viewonly=True
     )
 
     __table_args__ = (UniqueConstraint("user_id", "project_id"),)

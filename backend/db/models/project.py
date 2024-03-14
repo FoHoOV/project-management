@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from db.models.tag import Tag
     from db.models.todo_category import TodoCategory
     from db.models.user import User
+    from db.models.project_user_association import ProjectUserAssociation
 
 
 class Project(BasesWithCreatedDate):
@@ -20,19 +21,20 @@ class Project(BasesWithCreatedDate):
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     users: Mapped[List["User"]] = relationship(
-        "User", secondary="project_user_association", back_populates="projects"
+        secondary="project_user_association", back_populates="projects"
     )
     todo_categories: Mapped[List["TodoCategory"]] = relationship(
-        argument="TodoCategory",
         secondary="todo_category_project_association",
         back_populates="projects",
         order_by="desc(TodoCategory.id)",
     )
     tags: Mapped[List["Tag"]] = relationship(
-        "Tag",
         back_populates="project",
         cascade="all, delete-orphan",
         order_by="desc(Tag.id)",
+    )
+    associations: Mapped[List["ProjectUserAssociation"]] = relationship(
+        back_populates="project", viewonly=True
     )
 
     # TODO: i dont know about the performance implications of these hybrid queries... like does sqlalchemy remove the need to query the db again if the object is already there?
