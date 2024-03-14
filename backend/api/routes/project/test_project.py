@@ -1,3 +1,4 @@
+from tkinter import ALL
 from typing import Callable, Dict
 import pytest
 from fastapi.testclient import TestClient
@@ -8,6 +9,7 @@ from api.conftest import (
 from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
+from db.schemas.todo_category import TodoCategory
 from error.exceptions import ErrorCode
 
 
@@ -150,6 +152,64 @@ def test_cannot_share_project_to_same_user_multiple_times(
             Permission.UPDATE_TODO_CATEGORY,
         ],
     )
+
+
+def test_user_permissions_per_project(
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+    test_client: TestClient,
+):
+    user_a = test_users[0]  # Owner
+    user_b = test_users[1]  # Shared user with permission
+
+    # Create the projects
+    project_one = test_project_factory(user_a)
+    project_two = test_project_factory(
+        user_b
+    )  # just created this project because this should leak into project one permissions list
+
+    # Share project_two with user_a with CREATE_TODO_CATEGORY permission just make sure permissions don't leak to other projects
+    test_attach_project_to_user(
+        user_b, user_a, project_two.id, [Permission.CREATE_TODO_CATEGORY]
+    )
+
+    # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
+    test_attach_project_to_user(
+        user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
+    )
+
+    projects_json = test_client.get(
+        "/project/list", headers=auth_header_factory(user_a)
+    ).json()
+    parsed_projects = [Project.model_validate(x, strict=True) for x in projects_json]
+    assert len(parsed_projects) == 2, "both project should exist"
+
+    parsed_project_one = list(
+        filter(lambda project: project.id == project_one.id, parsed_projects)
+    )[0]
+
+    parsed_project_two = list(
+        filter(lambda project: project.id == project_two.id, parsed_projects)
+    )[0]
+
+    assert (
+        len(parsed_project_one.users) == 2
+    ), "project one should be associated with two users"
+
+    assert parsed_project_one.users[0].username == user_a["username"]
+    assert parsed_project_one.users[1].username == user_b["username"]
+
+    assert parsed_project_one.users[0].permissions == [Permission.ALL]
+    assert parsed_project_one.users[1].permissions == [Permission.UPDATE_TODO_CATEGORY]
+
+    assert parsed_project_one.users[0].username == user_b["username"]
+    assert parsed_project_one.users[1].username == user_a["username"]
+    assert parsed_project_two.users[0].permissions == [Permission.ALL]
+    assert parsed_project_one.users[1].permissions == [Permission.CREATE_TODO_CATEGORY]
 
 
 def _reattach_project_to_user(
