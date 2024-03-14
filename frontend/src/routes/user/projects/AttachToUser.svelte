@@ -33,6 +33,7 @@
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {
 			username: event.formData.username,
+			permissions: event.formData.permissions,
 			id: event.response.user_id
 		});
 		allowAllAccessRights = true;
