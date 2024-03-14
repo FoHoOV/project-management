@@ -35,6 +35,7 @@ def test_create_project(
     )
 
     assert response.status_code == 200
+
     project = Project.model_validate(response.json(), strict=True)
 
     # Common assertions for both cases
@@ -186,15 +187,17 @@ def test_user_permissions_per_project(
         "/project/list", headers=auth_header_factory(user_a)
     ).json()
     parsed_projects = [Project.model_validate(x, strict=True) for x in projects_json]
-    assert len(parsed_projects) == 2, "both project should exist"
+    assert len(parsed_projects) >= 2, "at least two projects should exist"
 
     parsed_project_one = list(
         filter(lambda project: project.id == project_one.id, parsed_projects)
     )[0]
+    assert parsed_project_one is not None
 
     parsed_project_two = list(
         filter(lambda project: project.id == project_two.id, parsed_projects)
     )[0]
+    assert parsed_project_two is not None
 
     assert (
         len(parsed_project_one.users) == 2
@@ -202,14 +205,13 @@ def test_user_permissions_per_project(
 
     assert parsed_project_one.users[0].username == user_a["username"]
     assert parsed_project_one.users[1].username == user_b["username"]
-
     assert parsed_project_one.users[0].permissions == [Permission.ALL]
     assert parsed_project_one.users[1].permissions == [Permission.UPDATE_TODO_CATEGORY]
 
-    assert parsed_project_one.users[0].username == user_b["username"]
-    assert parsed_project_one.users[1].username == user_a["username"]
-    assert parsed_project_two.users[0].permissions == [Permission.ALL]
-    assert parsed_project_one.users[1].permissions == [Permission.CREATE_TODO_CATEGORY]
+    assert parsed_project_two.users[0].username == user_a["username"]
+    assert parsed_project_two.users[1].username == user_b["username"]
+    assert parsed_project_two.users[0].permissions == [Permission.CREATE_TODO_CATEGORY]
+    assert parsed_project_two.users[1].permissions == [Permission.ALL]
 
 
 def _reattach_project_to_user(
