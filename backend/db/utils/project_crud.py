@@ -174,20 +174,7 @@ def get_projects(db: Session, user_id: int, project_id: int | None = None):
     if project_id is not None:
         query = query.filter(Project.id == project_id)
 
-    result = query.order_by(Project.id.asc()).all()
-
-    for project in result:
-        for user in project.users:
-            user.permissions = [  # type: ignore
-                perm.permission
-                for association in filter(
-                    lambda association: association.project_id == project.id,
-                    user.associations,
-                )
-                for perm in association.permissions
-            ]
-
-    return result
+    return query.order_by(Project.id.asc()).all()
 
 
 def add_default_template_categories(db, project_id: int, user_id: int):

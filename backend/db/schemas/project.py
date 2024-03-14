@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import json
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, computed_field
 
 from db.models.user_project_permission import Permission
 
@@ -62,12 +62,32 @@ class ProjectAttachAssociationResponse(ProjectBase):
     user_id: int
 
 
+class UserProjectPermission(BaseModel):
+    permission: Permission
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProjectUserAssociation(BaseModel):
+    user_id: int
+    project_id: int
+    permissions: list[UserProjectPermission]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class PartialUser(BaseModel):
     id: int
     username: str
-    permissions: list[Permission]
+    associations: list[ProjectUserAssociation]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PartialUserWithPermission(BaseModel):
+    id: int
+    username: str
+    permissions: list[Permission]
 
 
 class PartialTodoCategory(BaseModel):
@@ -82,13 +102,36 @@ class ProjectPartialTag(BaseModel):
     id: int
     name: str
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class Project(ProjectBase):
     id: int
     title: str
     description: str
-    users: list[PartialUser]
     todo_categories: list[PartialTodoCategory]
     tags: list[ProjectPartialTag]
     done_todos_count: int
     pending_todos_count: int
+
+    users_: list[PartialUser] = Field(exclude=True, alias="users")
+
+    @computed_field
+    @property
+    def users(self) -> list[PartialUserWithPermission]:
+        return [
+            PartialUserWithPermission(
+                **user.model_dump(),
+                permissions=[
+                    perm.permission
+                    for association in filter(
+                        lambda association: association.project_id == self.id,
+                        user.associations,
+                    )
+                    for perm in association.permissions
+                ],
+            )
+            for user in self.users_
+        ]
+
+    model_config = ConfigDict(from_attributes=True)
