@@ -18,9 +18,11 @@ class ProjectUserAssociation(BasesWithCreatedDate):
     __tablename__ = "project_user_association"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+    )
     project_id: Mapped[int] = mapped_column(
-        ForeignKey("project.id", ondelete="CASCADE")
+        ForeignKey("project.id", ondelete="CASCADE"), nullable=False
     )
     permissions: Mapped[List["UserProjectPermission"]] = relationship(
         back_populates="project_user_association",

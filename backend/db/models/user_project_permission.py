@@ -49,7 +49,7 @@ class UserProjectPermission(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_user_association_id: Mapped[int] = mapped_column(
-        ForeignKey("project_user_association.id", ondelete="CASCADE")
+        ForeignKey("project_user_association.id", ondelete="CASCADE"), nullable=False
     )
     permission: Mapped[Permission] = mapped_column(
         Enum(Permission, validate_strings=True)
