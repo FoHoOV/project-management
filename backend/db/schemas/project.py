@@ -126,6 +126,11 @@ class Project(ProjectBase):
     @computed_field
     @property
     def users(self) -> list[PartialUserWithPermission]:
+        # TODO: think of another way, this way sux ass also is shitty performance wise,
+        # new solution should follow these:
+        # 1- for each project's user's permissions we should NOT perform a new query to the database (if user has 10000 associations then 9999 of them could be redundant :}) because accessing project.users[x].association is a new query then association.permissions is also another query
+        # 2- it should be universal, whenever I return a project schema, the permissions should be there per user (even in create we return the project which should contain the user who created it with the associated permission)
+        # (preferred) 3- removes the associations as a relationship property on User and Project models
         return [
             PartialUserWithPermission(
                 **user.model_dump(),
