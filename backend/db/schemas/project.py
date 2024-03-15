@@ -43,6 +43,7 @@ class ProjectUpdate(ProjectCreate):
 
 class ProjectDetachAssociation(ProjectBase):
     project_id: int
+    user_id: int | None = Field(default=None)
 
 
 class ProjectAttachAssociation(ProjectBase):

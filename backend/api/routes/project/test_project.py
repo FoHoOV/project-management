@@ -8,7 +8,11 @@ from api.conftest import (
 )
 from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission
-from db.schemas.project import Project
+from db.schemas.project import (
+    Project,
+    ProjectAttachAssociation,
+    ProjectAttachAssociationResponse,
+)
 from db.schemas.todo_category import TodoCategory
 from error.exceptions import ErrorCode
 
@@ -107,6 +111,59 @@ def test_project_accessibility(
     assert (
         search_response_b_after_share.status_code == 200
     ), "user B should be able to see user A's project after it was shared"
+
+
+def test_owner_detaching_projects(
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]],
+        ProjectAttachAssociationResponse,
+    ],
+    test_users: list[TestUserType],
+    test_client: TestClient,
+):
+
+    # Project creation by user A
+    user_a = test_users[0]
+    user_b = test_users[1]
+    project = test_project_factory(user_a)
+
+    attach_response = test_attach_project_to_user(
+        user_a, user_b, project.id, [Permission.CREATE_COMMENT]
+    )
+
+    detach_by_owner_response_json = test_client.post(
+        "/project/detach-from-user",
+        headers=auth_header_factory(user_a),
+        json={
+            "project_id": project.id,
+            "user_id": attach_response.user_id,
+        },
+    )
+
+    assert (
+        detach_by_owner_response_json.status_code == 200
+    ), "owner should be detach from other users"
+
+    test_attach_project_to_user(user_a, user_b, project.id, [Permission.CREATE_COMMENT])
+
+    attach_to_user_c_response = test_attach_project_to_user(
+        user_a, test_users[2], project.id, [Permission.CREATE_COMMENT]
+    )
+
+    detach_by_user_response_json = test_client.post(
+        "/project/detach-from-user",
+        headers=auth_header_factory(user_b),
+        json={
+            "project_id": project.id,
+            "user_id": attach_to_user_c_response.user_id,
+        },
+    )
+
+    assert (
+        detach_by_user_response_json.status_code == 400
+    ), "none-owner shouldn't be able to detach projects from other users"
 
 
 def test_cannot_share_project_to_same_user_multiple_times(

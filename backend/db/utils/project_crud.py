@@ -106,12 +106,19 @@ def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id
         db,
         association.project_id,
         user_id,
-        None,
+        [Permission.ALL] if association.user_id is not None else None,
     )
+
+    target_user_id = association.user_id if association.user_id is not None else user_id
+
+    if target_user_id != user_id:
+        validate_project_belongs_to_user(
+            db, association.project_id, target_user_id, None
+        )
 
     db.query(ProjectUserAssociation).filter(
         ProjectUserAssociation.project_id == association.project_id,
-        ProjectUserAssociation.user_id == user_id,
+        ProjectUserAssociation.user_id == target_user_id,
     ).delete()
 
     if (
