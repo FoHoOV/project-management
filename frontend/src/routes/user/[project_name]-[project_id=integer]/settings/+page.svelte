@@ -47,7 +47,9 @@
 	{#each data.currentProject.users as user, i}
 		<div class="collapse mb-2 bg-neutral text-neutral-content">
 			<input type="checkbox" class="peer" />
-			<div class="collapse-title flex items-center justify-between">
+			<div
+				class="collapse-title flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
+			>
 				<div class="flex items-center gap-1">
 					<span class="text-sm"> username: </span>
 					<span class="font-bold">
