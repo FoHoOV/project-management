@@ -45,7 +45,7 @@
 <div class="rounded-sm p-1">
 	<h1 class="mb-5 text-lg text-info">Accessibility</h1>
 	{#each data.currentProject.users as user, i}
-		<div class="collapse mb-2 bg-neutral text-neutral-content">
+		<div class="collapse mb-2 bg-base-200 shadow-sm">
 			<input type="checkbox" class="peer" />
 			<div
 				class="collapse-title flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
