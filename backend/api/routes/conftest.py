@@ -110,7 +110,7 @@ def test_attach_project_to_user(
         ), "Sharing project with permissions failed"
 
         return ProjectAttachAssociationResponse.model_validate(
-            attach_to_user_response, strict=True
+            attach_to_user_response.json(), strict=True
         )
 
     return _attach_to_user

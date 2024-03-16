@@ -133,8 +133,9 @@ def test_owner_detaching_projects(
         user_a, user_b, project.id, [Permission.CREATE_COMMENT]
     )
 
-    detach_by_owner_response_json = test_client.post(
-        "/project/detach-from-user",
+    detach_by_owner_response_json = test_client.request(
+        method="delete",
+        url="/project/detach-from-user",
         headers=auth_header_factory(user_a),
         json={
             "project_id": project.id,
@@ -152,8 +153,9 @@ def test_owner_detaching_projects(
         user_a, test_users[2], project.id, [Permission.CREATE_COMMENT]
     )
 
-    detach_by_user_response_json = test_client.post(
-        "/project/detach-from-user",
+    detach_by_user_response_json = test_client.request(
+        method="delete",
+        url="/project/detach-from-user",
         headers=auth_header_factory(user_b),
         json={
             "project_id": project.id,
