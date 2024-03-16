@@ -1,5 +1,6 @@
 from re import I
-from fastapi import FastAPI, Request
+import typing
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
@@ -16,10 +17,13 @@ from db import init_db
 from error.exceptions import UserFriendlyError
 
 
-def db_excepted_exception_handler(request: Request, ex: UserFriendlyError):
+def db_excepted_exception_handler(request: Request, ex: Exception):
     return JSONResponse(
         status_code=400,
-        content={"code": ex.code, "message": ex.description},
+        content={
+            "code": typing.cast(UserFriendlyError, ex).code,
+            "message": typing.cast(UserFriendlyError, ex).description,
+        },
     )
 
 
