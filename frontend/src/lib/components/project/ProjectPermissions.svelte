@@ -15,7 +15,9 @@
 <script lang="ts">
 	const { preCheckedPermissions, onChange }: Props = $props();
 
-	let allowAllAccessRights = $state<boolean>(preCheckedPermissions ? false : true);
+	let allowAllAccessRights = $state<boolean>(
+		preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false
+	);
 	let allowedPermissions = $state<Set<Permission>>(
 		preCheckedPermissions ? new Set(preCheckedPermissions) : null ?? new Set([Permission.All])
 	);
