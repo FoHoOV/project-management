@@ -6,13 +6,17 @@
 
 	import { drawer } from '$lib/stores/drawer';
 
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListSettingsUrl, generateTodoListUrl } from '$lib/utils/params/route';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 </script>
 
 <script lang="ts">
-	const { data } = $props();
+	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '$components/forms/FormInput.svelte';
+	import { detachSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
+
+	const { data, form } = $props();
 
 	let showConfirmChanges = $state<boolean[]>(
 		new Array<boolean>(data.currentProject.users.length).fill(false)
@@ -63,7 +67,26 @@
 						</button>
 						<button class="btn btn-success flex-1"> save changes </button>
 					{:else}
-						<button class="btn btn-error"> detach </button>
+						<EnhancedForm
+							action="{generateTodoListSettingsUrl(
+								data.currentProject.title,
+								data.currentProject.id
+							)}?/detach"
+							enhancerConfig={{
+								form: form,
+								validate: { schema: detachSchema },
+								action: 'detach'
+							}}
+						>
+							{#snippet inputs()}
+								<FormInput type="hidden" wrapperClasses="hidden" name="project_id" value={data.currentProject.id}
+								></FormInput>
+								<FormInput type="hidden" wrapperClasses="hidden" name="user_id" value={user.id}></FormInput>
+							{/snippet}
+							{#snippet actions()}
+								<button class="btn btn-error"> detach </button>
+							{/snippet}
+						</EnhancedForm>
 					{/if}
 				</div>
 			</div>
