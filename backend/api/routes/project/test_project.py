@@ -177,7 +177,7 @@ def test_owner_detaching_projects(
         },
     )
     assert (
-        detach_by_owner_response_json.status_code == 400
+        detach_by_owner_response_json.status_code == 200
     ), "owner should be able to detach projects from other users"
 
 
