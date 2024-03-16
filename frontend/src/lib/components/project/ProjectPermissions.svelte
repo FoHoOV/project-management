@@ -24,7 +24,6 @@
 </script>
 
 <FormInput
-	id="permissions:{Permission.All}"
 	name="permissions[]"
 	value={Permission.All}
 	checked={allowAllAccessRights}
@@ -44,7 +43,6 @@
 <div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
 	{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
 		<FormInput
-			id="permissions:{permission}"
 			name="permissions[]"
 			value={permission}
 			label={permission.replaceAll('_', ' ')}
