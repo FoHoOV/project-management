@@ -167,6 +167,19 @@ def test_owner_detaching_projects(
         detach_by_user_response_json.status_code == 400
     ), "none-owner shouldn't be able to detach projects from other users"
 
+    detach_by_owner_response_json = test_client.request(
+        method="delete",
+        url="/project/detach-from-user",
+        headers=auth_header_factory(user_a),
+        json={
+            "project_id": project.id,
+            "user_id": attach_to_user_c_response.user_id,
+        },
+    )
+    assert (
+        detach_by_owner_response_json.status_code == 400
+    ), "owner should be able to detach projects from other users"
+
 
 def test_cannot_share_project_to_same_user_multiple_times(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
