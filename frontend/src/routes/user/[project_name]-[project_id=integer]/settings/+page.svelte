@@ -72,9 +72,10 @@
 							)}?/detach"
 							enhancerConfig={{
 								form: form,
-								validate: { schema: detachSchema },
+								validator: { schema: detachSchema },
 								action: 'detach'
 							}}
+							successfulMessage="project detached from user"
 						>
 							{#snippet inputs()}
 								<FormInput
