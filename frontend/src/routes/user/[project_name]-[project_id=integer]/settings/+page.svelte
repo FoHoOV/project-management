@@ -7,6 +7,7 @@
 
 	import { drawer } from '$lib/stores/drawer';
 
+	import { Permission } from '$lib';
 	import { generateTodoListSettingsUrl, generateTodoListUrl } from '$lib/utils/params/route';
 	import { detachSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
@@ -47,11 +48,14 @@
 		<div class="collapse mb-2 bg-neutral text-neutral-content">
 			<input type="checkbox" class="peer" />
 			<div class="collapse-title flex items-center justify-between">
-				<div>
+				<div class="flex items-center gap-1">
 					<span class="text-sm"> username: </span>
 					<span class="font-bold">
 						{user.username}
 					</span>
+					{#if user.permissions.indexOf(Permission.All) != -1}
+						<span class="text-sm text-success">(owner)</span>
+					{/if}
 				</div>
 				<div class="z-50 flex gap-2">
 					{#if showConfirmChanges[i]}
@@ -76,6 +80,7 @@
 								action: 'detach'
 							}}
 							successfulMessage="project detached from user"
+							showResetButton={false}
 						>
 							{#snippet inputs()}
 								<FormInput
