@@ -39,6 +39,10 @@ export function superEnhance<
 	TFormAction = never,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
+	if (options?.action && !node.action.endsWith(`?/${options.action.toString()}`)) {
+		throw new Error('form.action should end with the passed action in enhancer options');
+	}
+
 	const handleSubmit =
 		options?.submit ?? _defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
 
