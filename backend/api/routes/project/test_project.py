@@ -10,6 +10,7 @@ from api.routes.error import UserFriendlyErrorSchema
 from api.routes.user import test_user
 from db.models.user_project_permission import Permission
 from db.schemas.project import (
+    PartialUserWithPermission,
     Project,
     ProjectAttachAssociation,
     ProjectAttachAssociationResponse,
@@ -344,7 +345,7 @@ def test_updating_user_permissions(
         headers=auth_header_factory(user_a),
         json={
             "project_id": project_one.id,
-            "user_id": test_users[2],
+            "user_id": test_users[2]["id"],
             "permissions": [Permission.ALL],
         },
     )
@@ -364,6 +365,51 @@ def test_updating_user_permissions(
             "permissions": [Permission.ALL],
         },
     )
+    assert change_user_b_permissions.status_code == 200
+    assert PartialUserWithPermission.model_validate(
+        change_user_b_permissions.json()
+    ).permissions == [Permission.ALL]
+
+    change_user_a_permissions = test_client.patch(
+        "/project/update-user-permissions",
+        headers=auth_header_factory(user_b),
+        json={
+            "project_id": project_one.id,
+            "user_id": user_a["id"],
+            "permissions": [Permission.DELETE_COMMENT, Permission.DELETE_TODO_ITEM],
+        },
+    )
+
+    assert change_user_a_permissions.status_code == 200
+    assert (
+        PartialUserWithPermission.model_validate(
+            change_user_a_permissions.json()
+        ).permissions.sort()
+        == [Permission.DELETE_COMMENT, Permission.DELETE_TODO_ITEM].sort()
+    )
+
+    searched_project = Project.model_validate(
+        test_client.get(
+            "/project/search",
+            headers=auth_header_factory(user_a),
+            params={"project_id": project_one.id},
+        ).json()
+    )
+
+    assert len(searched_project.users) == 2
+
+    user_a_permissions = next(
+        filter(lambda user: user.id == user_a["id"], searched_project.users)
+    )
+    user_b_permissions = next(
+        filter(lambda user: user.id == user_b["id"], searched_project.users)
+    )
+
+    assert (
+        user_a_permissions.permissions.sort()
+        == [Permission.DELETE_COMMENT, Permission.DELETE_TODO_ITEM].sort()
+    )
+    assert user_b_permissions.permissions == [Permission.ALL]
 
 
 def _reattach_project_to_user(
