@@ -47,10 +47,12 @@
 	labelClasses="border border-info"
 	onchange={(e)=>{
         allowAllAccessRights = (e.target as HTMLInputElement).checked;
-		if(allowAllAccessRights) {
+		if (allowAllAccessRights) {
 			allowedPermissions = new Set([Permission.All]);
-			onChange?.(allowedPermissions);
+		} else {
+			allowedPermissions.delete(Permission.All);
 		}
+		onChange?.(allowedPermissions);
     }}
 ></FormInput>
 <div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>

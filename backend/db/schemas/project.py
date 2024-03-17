@@ -46,7 +46,7 @@ class ProjectDetachAssociation(ProjectBase):
     user_id: int | None = Field(default=None)
 
 
-class Permissions(BaseModel):
+class _Permissions(BaseModel):
     permissions: list[Permission] = Field(min_length=1)
 
     @field_validator("permissions")
@@ -60,7 +60,7 @@ class Permissions(BaseModel):
         if len(set(permissions)) != len(permissions):
             raise ValueError("repetitive values in permissions list is not allowed")
 
-        return permissions
+        return list(set(permissions))
 
     @field_validator("permissions", mode="after")
     @classmethod
@@ -77,7 +77,7 @@ class Permissions(BaseModel):
         return permissions
 
 
-class ProjectAttachAssociation(ProjectBase, Permissions):
+class ProjectAttachAssociation(ProjectBase, _Permissions):
     project_id: int
     username: str = Field(min_length=3, max_length=100)
 
@@ -87,7 +87,7 @@ class ProjectAttachAssociationResponse(ProjectBase):
     user_id: int
 
 
-class ProjectUpdateUserPermissions(ProjectBase, Permissions):
+class ProjectUpdateUserPermissions(ProjectBase, _Permissions):
     project_id: int
     user_id: int
 
@@ -114,7 +114,7 @@ class _PartialUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PartialUserWithPermission(Permissions):
+class PartialUserWithPermission(_Permissions):
     id: int
     username: str
 
