@@ -14,7 +14,7 @@ import type {
 } from './submit-types';
 import { validate } from './validator';
 import type { ValidatorErrorEvent } from './validator-types';
-import type { StandardFormActionNames } from './utils';
+import { convertFormDataToObject, type StandardFormActionNames } from './utils';
 import { invalidateAll } from '$app/navigation';
 
 export function superEnhance(
@@ -78,11 +78,23 @@ function _defaultSubmitHandler<
 				console.debug('s-form-result');
 				console.debug(_getResultFromFormAction(result.data, options));
 				console.debug('e-form-result');
+
+				const parsedFormData = await options?.validator?.schema.safeParseAsync(
+					convertFormDataToObject(formData)
+				);
+
+				if (parsedFormData && !parsedFormData?.success) {
+					throw new Error(
+						"for some reason server-side validations succeeded but the client-side validations didn't, OR the client data changed since the form has been submitted"
+					);
+				}
+
 				node.dispatchEvent(
 					new CustomEvent('submitsucceeded', {
 						detail: {
 							response: _getResultFromFormAction(result.data, options),
-							formData: Object.fromEntries(formData) as z.infer<TSchema>
+							formData: convertFormDataToObject(formData),
+							parsedFormData: parsedFormData?.data
 						}
 					}) satisfies SubmitSucceededEventType<TSchema, TFormAction, TKey>
 				);

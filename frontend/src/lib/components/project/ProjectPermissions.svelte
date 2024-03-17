@@ -2,6 +2,7 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { Permission } from '$lib';
+	import { onMount } from 'svelte';
 
 	export type Events = {
 		onChange?: (permissions: Set<Permission>) => void;
@@ -15,12 +16,23 @@
 <script lang="ts">
 	const { preCheckedPermissions, onChange }: Props = $props();
 
-	let allowAllAccessRights = $state<boolean>(
-		preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false
-	);
-	let allowedPermissions = $state<Set<Permission>>(
-		preCheckedPermissions ? new Set(preCheckedPermissions) : null ?? new Set([Permission.All])
-	);
+	let allowAllAccessRights = $state<boolean>();
+	let allowedPermissions = $state<Set<Permission>>(new Set());
+
+	function setInitValues() {
+		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false;
+		allowedPermissions = preCheckedPermissions
+			? new Set(preCheckedPermissions)
+			: null ?? new Set([Permission.All]);
+	}
+
+	export function reset() {
+		setInitValues();
+	}
+
+	onMount(() => {
+		setInitValues();
+	});
 </script>
 
 <FormInput

@@ -19,7 +19,6 @@
 	const { form, project }: Props = $props();
 
 	const projectsStore = getProjectsStoreFromContext();
-	let allowAllAccessRights = $state<boolean>(true);
 </script>
 
 <EnhancedForm
@@ -33,11 +32,10 @@
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {
-			username: event.formData.username,
-			permissions: event.formData.permissions,
+			username: event.parsedFormData.username,
+			permissions: event.parsedFormData.permissions,
 			id: event.response.user_id
 		});
-		allowAllAccessRights = true;
 	}}
 	successfulMessage="Project is now shared with the specified user"
 >

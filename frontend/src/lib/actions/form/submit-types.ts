@@ -1,7 +1,7 @@
 import type { SubmitFunction } from '@sveltejs/kit';
 import type { z } from 'zod';
 import type { ValidatorOptions } from './validator-types';
-import type { StandardFormActionNames } from './utils';
+import type { ParsedFormData, StandardFormActionNames } from './utils';
 
 export type EnhanceOptions<
 	TSchema extends z.ZodTypeAny,
@@ -48,7 +48,7 @@ export type SubmitEndedEventType = CustomEvent<void>;
 
 export type SubmitRedirectedEventType<TSchema extends z.ZodTypeAny> = CustomEvent<{
 	redirectUrl: URL;
-	formData: z.infer<TSchema>;
+	formData: ParsedFormData;
 }>;
 
 export type SubmitSucceededEventType<
@@ -57,5 +57,6 @@ export type SubmitSucceededEventType<
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = CustomEvent<{
 	response: FormActionResultType<TFormAction, TKey>;
-	formData: z.infer<TSchema>;
+	formData: ParsedFormData;
+	parsedFormData: z.infer<TSchema>;
 }>;

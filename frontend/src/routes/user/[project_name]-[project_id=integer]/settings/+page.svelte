@@ -20,6 +20,7 @@
 	let showConfirmChanges = $state<boolean[]>(
 		new Array<boolean>(data.currentProject.users.length).fill(false)
 	);
+	let projectPermissionsRefs = $state<ProjectPermissions[]>([]);
 
 	onMount(() => {
 		drawer.navbar.end.push(closeSettings);
@@ -64,6 +65,7 @@
 						<button
 							class="btn btn-warning z-50 flex-1"
 							onclick={(e) => {
+								projectPermissionsRefs[i].reset();
 								showConfirmChanges[i] = false;
 							}}
 						>
@@ -103,9 +105,10 @@
 			</div>
 			<div class="collapse-content z-50">
 				<ProjectPermissions
+					bind:this={projectPermissionsRefs[i]}
 					preCheckedPermissions={user.permissions}
-					onChange={() => {
-						showConfirmChanges[i] = true;
+					onChange={(permissions) => {
+						showConfirmChanges[i] = ![...permissions].every((iv) => user.permissions.includes(iv));
 					}}
 				></ProjectPermissions>
 			</div>
