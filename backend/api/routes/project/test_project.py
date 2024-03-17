@@ -7,6 +7,7 @@ from api.conftest import (
     TestUserType,
 )
 from api.routes.error import UserFriendlyErrorSchema
+from api.routes.user import test_user
 from db.models.user_project_permission import Permission
 from db.schemas.project import (
     Project,
@@ -284,6 +285,30 @@ def test_user_permissions_per_project(
     assert parsed_project_two.users[1].username == user_b["username"]
     assert parsed_project_two.users[0].permissions == [Permission.CREATE_TODO_CATEGORY]
     assert parsed_project_two.users[1].permissions == [Permission.ALL]
+
+
+@pytest.mark.parametrize("values", [[], "", None])
+def test_cannot_pass_empty_permissions_to_attach_association(
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_users: list[TestUserType],
+    test_client: TestClient,
+    values: str | list | None,
+):
+    p1 = test_project_factory(test_users[0])
+    response = test_client.post(
+        "/project/attach-to-user",
+        headers=auth_header_factory(test_users[0]),
+        json={
+            "project_id": p1.id,
+            "username": test_users[1],
+            "permissions": values,
+        },
+    )
+
+    assert (
+        response.status_code == 422
+    ), "we shouldn't be able to pass empty permissions lists to this service"
 
 
 def _reattach_project_to_user(

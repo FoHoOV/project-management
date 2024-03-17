@@ -49,7 +49,7 @@ class ProjectDetachAssociation(ProjectBase):
 class ProjectAttachAssociation(ProjectBase):
     project_id: int
     username: str = Field(min_length=3, max_length=100)
-    permissions: list[Permission]
+    permissions: list[Permission] = Field(min_length=1)
 
     @field_validator("permissions")
     @classmethod
