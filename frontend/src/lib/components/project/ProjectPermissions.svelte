@@ -16,6 +16,12 @@
 <script lang="ts">
 	const { preCheckedPermissions, onChange }: Props = $props();
 
+	export const selectedPermissions = $derived.by(() => allowedPermissions);
+
+	export function reset() {
+		setInitValues();
+	}
+
 	let allowAllAccessRights = $state<boolean>();
 	let allowedPermissions = $state<Set<Permission>>(new Set());
 
@@ -24,11 +30,6 @@
 		allowedPermissions = preCheckedPermissions
 			? new Set(preCheckedPermissions)
 			: null ?? new Set([Permission.All]);
-	}
-
-	export const selectedPermissions = $derived(allowedPermissions);
-	export function reset() {
-		setInitValues();
 	}
 
 	onMount(() => {
