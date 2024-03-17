@@ -11,6 +11,7 @@ from db.schemas.project import (
     ProjectDetachAssociation,
     ProjectRead,
     ProjectUpdate,
+    ProjectUpdateUserPermissions,
 )
 from sqlalchemy.orm import Session
 from db.schemas.todo_category import TodoCategoryCreate
@@ -58,6 +59,53 @@ def update(db: Session, project: ProjectUpdate, user_id: int):
     db.refresh(db_item)
 
     return db_item
+
+
+def update_user_permissions(
+    db: Session, permissions: ProjectUpdateUserPermissions, user_id: int
+):
+    # check if current user is owner
+    validate_project_belongs_to_user(
+        db, permissions.project_id, user_id, [Permission.ALL]
+    )
+
+    # check if the user we are changing has access to this project
+    try:
+        validate_project_belongs_to_user(
+            db, permissions.project_id, permissions.user_id, None
+        )
+    except UserFriendlyError as ex:
+        raise UserFriendlyError(
+            ErrorCode.USER_DOESNT_HAVE_ACCESS_TO_PROJECT,
+            "The user that you are trying to update doesn't have access to this project or doesn't exist",
+        )
+
+    association = (
+        db.query(ProjectUserAssociation)
+        .filter(
+            ProjectUserAssociation.project_id == permissions.project_id,
+            ProjectUserAssociation.user_id == permissions.user_id,
+        )
+        .first()
+    )
+
+    if association is None:
+        raise  # not possible, just to mute type-hints
+
+    db.query(UserProjectPermission).filter(
+        UserProjectPermission.project_user_association_id == association.id
+    ).delete()
+
+    for permission in permissions.permissions:
+        db.add(
+            UserProjectPermission(
+                project_user_association_id=association.id, permission=permission
+            )
+        )
+
+    db.commit()
+
+    return get_project(db, ProjectRead(project_id=permissions.project_id), user_id)
 
 
 def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: int):

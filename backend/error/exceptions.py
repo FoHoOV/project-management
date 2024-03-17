@@ -23,6 +23,7 @@ class ErrorCode(StrEnum):
     CANT_CHANGE_ACTION = auto()
     ACTION_PREVENTED_TODO_UPDATE = auto()
     PERMISSION_DENIED = auto()
+    USER_DOESNT_HAVE_ACCESS_TO_PROJECT = auto()
 
 
 class UserFriendlyError(Exception):

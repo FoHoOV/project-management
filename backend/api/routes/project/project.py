@@ -1,3 +1,4 @@
+import builtins
 from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 from starlette.status import HTTP_200_OK
@@ -6,6 +7,7 @@ from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.project import (
+    PartialUserWithPermission,
     Project,
     ProjectAttachAssociationResponse,
     ProjectCreate,
@@ -13,6 +15,7 @@ from db.schemas.project import (
     ProjectRead,
     ProjectAttachAssociation,
     ProjectUpdate,
+    ProjectUpdateUserPermissions,
 )
 from db.utils import project_crud
 
@@ -55,6 +58,26 @@ def detach_from_user(
 ):
     project_crud.detach_from_user(db, association, current_user.id)
     return Response(status_code=HTTP_200_OK)
+
+
+@router.patch(path="/update-user-permissions", response_model=PartialUserWithPermission)
+def update_permissions(
+    current_user: Annotated[User, Depends(get_current_user)],
+    permissions: ProjectUpdateUserPermissions,
+    db: Session = Depends(get_db),
+):
+    updated_project = project_crud.update_user_permissions(
+        db, permissions, current_user.id
+    )
+
+    user = builtins.list(
+        filter(
+            lambda user: user.id == permissions.user_id,
+            Project.model_validate(updated_project).users,
+        )
+    )[0]
+
+    return user
 
 
 @router.get("/search", response_model=Project)

@@ -70,6 +70,12 @@ class ProjectAttachAssociationResponse(ProjectBase):
     user_id: int
 
 
+class ProjectUpdateUserPermissions(ProjectBase):
+    project_id: int
+    user_id: int
+    permissions: list[Permission] = Field(min_length=1)
+
+
 class UserProjectPermission(BaseModel):
     permission: Permission
 
