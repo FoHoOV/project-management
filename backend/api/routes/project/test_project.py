@@ -311,6 +311,61 @@ def test_cannot_pass_empty_permissions_to_attach_association(
     ), "we shouldn't be able to pass empty permissions lists to this service"
 
 
+def test_updating_user_permissions(
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+    test_client: TestClient,
+):
+    user_a = test_users[0]  # Owner
+    user_b = test_users[1]  # Shared user with permission
+
+    # Create the projects
+    project_one = test_project_factory(user_a)
+    project_two = test_project_factory(
+        user_b
+    )  # just created this project because this should leak into project one permissions list
+
+    # Share project_two with user_a with CREATE_TODO_CATEGORY permission just make sure permissions don't leak to other projects
+    test_attach_project_to_user(
+        user_b, user_a, project_two.id, [Permission.CREATE_TODO_CATEGORY]
+    )
+
+    # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
+    test_attach_project_to_user(
+        user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
+    )
+
+    user_no_access_response = test_client.patch(
+        "/project/update-user-permissions",
+        headers=auth_header_factory(user_a),
+        json={
+            "project_id": project_one.id,
+            "user_id": test_users[2],
+            "permissions": [Permission.ALL],
+        },
+    )
+
+    assert user_no_access_response.status_code == 400
+    assert (
+        UserFriendlyErrorSchema.model_validate(user_no_access_response.json()).code
+        == ErrorCode.USER_DOESNT_HAVE_ACCESS_TO_PROJECT
+    )
+
+    change_user_b_permissions = test_client.patch(
+        "/project/update-user-permissions",
+        headers=auth_header_factory(user_a),
+        json={
+            "project_id": project_one.id,
+            "user_id": user_b["id"],
+            "permissions": [Permission.ALL],
+        },
+    )
+
+
 def _reattach_project_to_user(
     auth_header_factory: Callable[[TestUserType], dict[str, str]],
     test_users: list[TestUserType],
