@@ -9,7 +9,10 @@
 
 	import { Permission } from '$lib';
 	import { generateTodoListSettingsUrl, generateTodoListUrl } from '$lib/utils/params/route';
-	import { detachSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
+	import {
+		detachSchema,
+		updateUserPermissionsSchema
+	} from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 </script>
@@ -71,7 +74,41 @@
 						>
 							cancel
 						</button>
-						<button class="btn btn-success flex-1"> save changes </button>
+						<EnhancedForm
+							action="{generateTodoListSettingsUrl(
+								data.currentProject.title,
+								data.currentProject.id
+							)}?/updatePermissions"
+							enhancerConfig={{
+								form: form,
+								validator: { schema: updateUserPermissionsSchema },
+								action: 'updatePermissions'
+							}}
+							successfulMessage="project permissions updated"
+							showResetButton={false}
+						>
+							{#snippet inputs()}
+								<FormInput
+									type="hidden"
+									wrapperClasses="hidden"
+									name="project_id"
+									value={data.currentProject.id}
+								></FormInput>
+								<FormInput type="hidden" wrapperClasses="hidden" name="user_id" value={user.id}
+								></FormInput>
+								{#each projectPermissionsRefs[i].selectedPermissions as permission}
+									<FormInput
+										name="permissions[]"
+										value={permission}
+										type="hidden"
+										wrapperClasses="hidden"
+									></FormInput>
+								{/each}
+							{/snippet}
+							{#snippet actions()}
+								<button class="btn btn-success flex-1"> save changes </button>
+							{/snippet}
+						</EnhancedForm>
 					{:else}
 						<EnhancedForm
 							action="{generateTodoListSettingsUrl(

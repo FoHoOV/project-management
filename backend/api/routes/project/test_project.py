@@ -214,7 +214,6 @@ def test_cannot_share_project_to_same_user_multiple_times(
         project,
         [
             Permission.ALL,
-            Permission.CREATE_TODO_ITEM,
         ],
     )
     _reattach_project_to_user(
@@ -224,7 +223,6 @@ def test_cannot_share_project_to_same_user_multiple_times(
         project,
         [
             Permission.ALL,
-            Permission.UPDATE_TODO_CATEGORY,
         ],
     )
 
@@ -410,6 +408,32 @@ def test_updating_user_permissions(
         == [Permission.DELETE_COMMENT, Permission.DELETE_TODO_ITEM].sort()
     )
     assert user_b_permissions.permissions == [Permission.ALL]
+
+
+def test_cannot_set_all_with_other_permissions(
+    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    test_project_factory: Callable[[TestUserType], Project],
+    test_users: list[TestUserType],
+    test_client: TestClient,
+):
+    user_a = test_users[0]  # Owner
+
+    # Create the projects
+    project_one = test_project_factory(user_a)
+
+    attach_to_user_response = test_client.post(
+        "/project/attach-to-user",
+        headers=auth_header_factory(user_a),
+        json={
+            "project_id": project_one.id,
+            "username": test_users[1]["username"],
+            "permissions": [Permission.ALL, Permission.CREATE_COMMENT],
+        },
+    )
+
+    assert (
+        attach_to_user_response.status_code == 422
+    ), "shouldn't be able to set ALL permission alongside other permissions to one user"
 
 
 def _reattach_project_to_user(

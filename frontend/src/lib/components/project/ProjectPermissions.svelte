@@ -26,6 +26,7 @@
 			: null ?? new Set([Permission.All]);
 	}
 
+	export const selectedPermissions = $derived(allowedPermissions);
 	export function reset() {
 		setInitValues();
 	}

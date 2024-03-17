@@ -203,7 +203,7 @@ def test_todo_item_permissions(
         user_a,
         user_b,
         project_two.id,
-        [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
+        [Permission.ALL],
     )
 
     # Create a todo item in project_one's category

@@ -37,7 +37,7 @@ def test_todo_category_permissions(
         user_a,
         user_b,
         project_two.id,
-        [Permission.ALL, Permission.DELETE_TODO_CATEGORY],
+        [Permission.ALL],
     )
 
     # Try updating a category by user_c (should fail)

@@ -46,9 +46,7 @@ class ProjectDetachAssociation(ProjectBase):
     user_id: int | None = Field(default=None)
 
 
-class ProjectAttachAssociation(ProjectBase):
-    project_id: int
-    username: str = Field(min_length=3, max_length=100)
+class Permissions(BaseModel):
     permissions: list[Permission] = Field(min_length=1)
 
     @field_validator("permissions")
@@ -64,44 +62,61 @@ class ProjectAttachAssociation(ProjectBase):
 
         return permissions
 
+    @field_validator("permissions", mode="after")
+    @classmethod
+    def has_other_permissions_with_owner_permission(
+        cls, permissions: list[Permission]
+    ) -> list[Permission]:
+        if (
+            len(list(filter(lambda perm: perm == Permission.ALL, permissions))) == 1
+            and len(permissions) > 1
+        ):
+            raise ValueError(
+                "if a user has the `ALL` permission then setting other permissions to them is not allowed"
+            )
+        return permissions
+
+
+class ProjectAttachAssociation(ProjectBase, Permissions):
+    project_id: int
+    username: str = Field(min_length=3, max_length=100)
+
 
 class ProjectAttachAssociationResponse(ProjectBase):
     project_id: int
     user_id: int
 
 
-class ProjectUpdateUserPermissions(ProjectBase):
+class ProjectUpdateUserPermissions(ProjectBase, Permissions):
     project_id: int
     user_id: int
-    permissions: list[Permission] = Field(min_length=1)
 
 
-class UserProjectPermission(BaseModel):
+class _UserProjectPermission(BaseModel):
     permission: Permission
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class ProjectUserAssociation(BaseModel):
+class _ProjectUserAssociation(BaseModel):
     user_id: int
     project_id: int
-    permissions: list[UserProjectPermission]
+    permissions: list[_UserProjectPermission]
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class PartialUser(BaseModel):
+class _PartialUser(BaseModel):
     id: int
     username: str
-    associations: list[ProjectUserAssociation]
+    associations: list[_ProjectUserAssociation]
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class PartialUserWithPermission(BaseModel):
+class PartialUserWithPermission(Permissions):
     id: int
     username: str
-    permissions: list[Permission]
 
 
 class PartialTodoCategory(BaseModel):
@@ -128,7 +143,7 @@ class Project(ProjectBase):
     done_todos_count: int
     pending_todos_count: int
 
-    users_: list[PartialUser] = Field(exclude=True, default=[], alias="users")
+    users_: list[_PartialUser] = Field(exclude=True, default=[], alias="users")
 
     @computed_field
     @property
