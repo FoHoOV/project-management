@@ -65,15 +65,6 @@
 				</div>
 				<div class="z-50 flex gap-2">
 					{#if showConfirmChanges[i]}
-						<button
-							class="btn btn-warning z-50 flex-1"
-							onclick={(e) => {
-								projectPermissionsRefs[i].reset();
-								showConfirmChanges[i] = false;
-							}}
-						>
-							cancel
-						</button>
 						<EnhancedForm
 							action="{generateTodoListSettingsUrl(
 								data.currentProject.title,
@@ -106,6 +97,16 @@
 								{/each}
 							{/snippet}
 							{#snippet actions()}
+								<button
+									class="btn btn-warning z-50 flex-1"
+									onclick={(e) => {
+										projectPermissionsRefs[i].reset();
+										showConfirmChanges[i] = false;
+									}}
+									type="button"
+								>
+									cancel
+								</button>
 								<button class="btn btn-success flex-1"> save changes </button>
 							{/snippet}
 						</EnhancedForm>
