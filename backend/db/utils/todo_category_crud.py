@@ -23,7 +23,11 @@ from db.schemas.todo_category import (
     TodoCategoryUpdateItem,
     TodoCategoryUpdateOrder,
 )
-from db.utils.shared.permission_query import join_with_permission_query_if_required
+from db.utils.shared.permission_query import (
+    join_with_permission_query_if_required,
+    PermissionsType,
+    validate_item_exists_with_permissions,
+)
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
 
@@ -265,7 +269,7 @@ def validate_todo_category_belongs_to_user(
     db: Session,
     category_id: int,
     user_id: int,
-    permissions: typing.Sequence[Permission | set[Permission]] | None,
+    permissions: PermissionsType,
 ):
     query = (
         db.query(TodoCategory)
@@ -277,11 +281,12 @@ def validate_todo_category_belongs_to_user(
 
     query = join_with_permission_query_if_required(query, permissions)
 
-    if query.count() < (len(permissions) if permissions is not None else 1):
-        raise UserFriendlyError(
-            ErrorCode.TODO_CATEGORY_NOT_FOUND,
-            "todo category doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
-        )
+    validate_item_exists_with_permissions(
+        query,
+        permissions,
+        ErrorCode.TODO_CATEGORY_NOT_FOUND,
+        "todo category doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
+    )
 
 
 def _update_actions(

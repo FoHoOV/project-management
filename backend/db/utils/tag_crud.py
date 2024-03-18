@@ -17,7 +17,11 @@ from db.schemas.tag import (
     TagSearch,
     TagUpdate,
 )
-from db.utils.shared.permission_query import join_with_permission_query_if_required
+from db.utils.shared.permission_query import (
+    join_with_permission_query_if_required,
+    PermissionsType,
+    validate_item_exists_with_permissions,
+)
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import (
     validate_project_belongs_to_user,
@@ -197,7 +201,7 @@ def validate_tag_belongs_to_user_by_name(
     tag_name: str,
     project_id: int | None,
     user_id: int,
-    permissions: typing.Sequence[Permission | set[Permission]] | None,
+    permissions: PermissionsType,
 ):
     query = (
         db.query(Tag)
@@ -212,18 +216,19 @@ def validate_tag_belongs_to_user_by_name(
 
     query = join_with_permission_query_if_required(query, permissions)
 
-    if query.count() < (len(permissions) if permissions is not None else 1):
-        raise UserFriendlyError(
-            ErrorCode.TAG_NOT_FOUND,
-            "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
-        )
+    validate_item_exists_with_permissions(
+        query,
+        permissions,
+        ErrorCode.TAG_NOT_FOUND,
+        "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
+    )
 
 
 def validate_tag_belongs_to_user_by_id(
     db: Session,
     tag_id: int,
     user_id: int,
-    permissions: typing.Sequence[Permission | set[Permission]] | None,
+    permissions: PermissionsType,
 ):
     query = (
         db.query(Tag)
@@ -234,8 +239,9 @@ def validate_tag_belongs_to_user_by_id(
     )
     query = join_with_permission_query_if_required(query, permissions)
 
-    if query.count() < (len(permissions) if permissions is not None else 1):
-        raise UserFriendlyError(
-            ErrorCode.TAG_NOT_FOUND,
-            "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
-        )
+    validate_item_exists_with_permissions(
+        query,
+        permissions,
+        ErrorCode.TAG_NOT_FOUND,
+        "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
+    )

@@ -6,10 +6,20 @@ from db.models.project_user_association import ProjectUserAssociation
 from db.models.user_project_permission import Permission, UserProjectPermission
 from sqlalchemy.orm import Query
 
+from error.exceptions import ErrorCode, UserFriendlyError
+
+PermissionsType = typing.Sequence[Permission | set[Permission]] | None
+
 
 def join_with_permission_query_if_required[
     T: Base
-](query: Query[T], permissions: typing.Sequence[Permission | set[Permission]] | None):
+](query: Query[T], permissions: PermissionsType):
+    """join the the current query with a permissions query
+
+    :param permissions: takes an array of permissions, for example: 1- has A and B = [A, B], 2- has (A or B) and C = [{A, B}, C]
+    Return: a new query with permissions query joined with it
+    """
+
     if permissions is None:
         return query
 
@@ -48,3 +58,16 @@ def join_with_permission_query_if_required[
     )
 
     return query
+
+
+def validate_item_exists_with_permissions(
+    query: Query,
+    permissions: PermissionsType,
+    error_code: ErrorCode,
+    error_message: str,
+):
+    if query.count() < (len(permissions) if permissions is not None else 1):
+        raise UserFriendlyError(
+            error_code,
+            error_message,
+        )

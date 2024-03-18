@@ -16,7 +16,11 @@ from db.schemas.project import (
 )
 from sqlalchemy.orm import Session
 from db.schemas.todo_category import TodoCategoryCreate
-from db.utils.shared.permission_query import join_with_permission_query_if_required
+from db.utils.shared.permission_query import (
+    join_with_permission_query_if_required,
+    PermissionsType,
+    validate_item_exists_with_permissions,
+)
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.models.todo_category import TodoCategory
 
@@ -255,7 +259,7 @@ def validate_project_belongs_to_user(
     db: Session,
     project_id: int,
     user_id: int,
-    permissions: typing.Sequence[Permission | set[Permission]] | None,
+    permissions: PermissionsType,
 ):
     query = (
         db.query(Project)
@@ -266,8 +270,9 @@ def validate_project_belongs_to_user(
 
     query = join_with_permission_query_if_required(query, permissions)
 
-    if query.count() < (len(permissions) if permissions is not None else 1):
-        raise UserFriendlyError(
-            ErrorCode.PROJECT_NOT_FOUND,
-            "project doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
-        )
+    validate_item_exists_with_permissions(
+        query,
+        permissions,
+        ErrorCode.PROJECT_NOT_FOUND,
+        "project doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
+    )
