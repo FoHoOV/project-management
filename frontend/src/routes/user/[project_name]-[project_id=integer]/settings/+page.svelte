@@ -9,7 +9,7 @@
 	import type { SnippetParams as DrawerSnippetParams } from '$components/Drawer.svelte';
 
 	import { drawer } from '$lib/stores/drawer';
-	import { toasts } from '$lib/stores/toasts/toasts.svelte.js';
+	import { toasts } from '$lib/stores/toasts';
 
 	import { Permission } from '$lib';
 	import { generateTodoListSettingsUrl, generateTodoListItemsUrl } from '$lib/utils/params/route';

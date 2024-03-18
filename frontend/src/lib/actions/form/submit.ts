@@ -131,6 +131,15 @@ function _defaultSubmitHandler<
 						}
 					}) satisfies SubmitFailedEventType<TFormAction>
 				);
+			} else if (result.type == 'failure') {
+				node.dispatchEvent(
+					new CustomEvent('submitfailed', {
+						detail: {
+							error: getFormErrors(result.data as any),
+							formData: convertFormDataToObject(formData)
+						}
+					}) satisfies SubmitFailedEventType<TFormAction>
+				);
 			}
 
 			if (options?.ignoreSamePageConstraint) {
