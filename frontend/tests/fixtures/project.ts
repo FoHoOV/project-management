@@ -64,7 +64,7 @@ export class ProjectsPage implements IPage {
 
 		// fill the data
 		await modal.getByPlaceholder('username').fill(username);
-		await modal.getByPlaceholder('title').press('Tab');
+		await modal.getByPlaceholder('username').press('Tab');
 		await modal.getByRole('button', { name: 'reset' }).press('Tab');
 		await modal.getByRole('button', { name: 'share' }).press('Enter');
 		await expect(modal.getByText('Project is now shared with the specified user')).toHaveCount(1);
