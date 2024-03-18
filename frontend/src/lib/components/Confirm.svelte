@@ -17,7 +17,7 @@
 	const {
 		confirmText = 'confirm',
 		cancelText = 'cancel',
-		confirmButtonType = "button",
+		confirmButtonType = 'button',
 		onConfirmed,
 		onCanceled
 	}: Props = $props();
@@ -34,7 +34,7 @@
 </script>
 
 <div
-	class="glass absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center gap-2 rounded-2xl bg-base-300"
+	class="glass absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center gap-2 rounded-2xl bg-base-300"
 	class:hidden={!visible}
 	data-testid="confirm-wrapper"
 >

@@ -56,7 +56,7 @@
 		<div class="collapse relative mb-2 bg-base-200 shadow-sm">
 			<input type="checkbox" class="peer" />
 			<div
-				class="collapse-title flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
+				class="collapse-title static flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
 			>
 				<div class="flex items-center gap-1">
 					<span class="text-sm"> username: </span>
@@ -67,7 +67,7 @@
 						<span class="text-sm text-success">(owner)</span>
 					{/if}
 				</div>
-				<div class="z-50 flex gap-2">
+				<div class="z-10 flex gap-2">
 					{#if showConfirmChanges[i]}
 						<EnhancedForm
 							action="{generateTodoListSettingsUrl(
@@ -102,7 +102,7 @@
 							{/snippet}
 							{#snippet actions()}
 								<button
-									class="btn btn-warning z-50 flex-1"
+									class="btn btn-warning flex-1"
 									onclick={(e) => {
 										projectPermissionsRefs[i].reset();
 										showConfirmChanges[i] = false;
@@ -165,13 +165,14 @@
 					{/if}
 				</div>
 			</div>
-			<div class="collapse-content z-50">
+			<div class="collapse-content z-auto">
 				<ProjectPermissions
 					bind:this={projectPermissionsRefs[i]}
 					preCheckedPermissions={user.permissions}
 					onChange={(permissions) => {
-						console.log(permissions);
-						showConfirmChanges[i] = !user.permissions.every((iv) => [...permissions].includes(iv));
+						showConfirmChanges[i] =
+							permissions.size !== user.permissions.length ||
+							![...permissions].every((iv) => user.permissions.includes(iv));
 					}}
 				></ProjectPermissions>
 			</div>
