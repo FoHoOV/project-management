@@ -17,7 +17,8 @@
 		type CommonComponentStates,
 		type TodoCategory,
 		callServiceInClient,
-		ErrorType
+		ErrorType,
+		ReactiveString
 	} from '$lib';
 	import {
 		faEdit,
@@ -187,7 +188,7 @@
 
 		<Confirm bind:this={confirmDeleteTodo} onConfirmed={handleRemoveTodo}></Confirm>
 		<div class="card-body pb-4">
-			<Alert type="error" message={apiErrorTitle} />
+			<Alert type="error" message={new ReactiveString(apiErrorTitle)} />
 
 			<div class="card-title flex w-full justify-between">
 				<div class="flex w-full items-baseline gap-2" data-testid="todo-info">

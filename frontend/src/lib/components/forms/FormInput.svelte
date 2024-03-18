@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import Alert from '$components/Alert.svelte';
-	import { untrack } from 'svelte';
+	import { ReactiveString } from '$lib';
 	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';
 
 	export type Props = (
@@ -47,15 +47,11 @@
 
 	let input = $state<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
-	let errorMessage = $state<string | null>();
-	$effect(() => {
-		// TODO: do something about this hack
-		errorMessage = null;
-
+	let errorMessage = $derived.by(() => {
 		if (typeof errors === 'string') {
-			errorMessage = errors;
+			return new ReactiveString(errors);
 		} else {
-			errorMessage = errors?.at?.(0);
+			return new ReactiveString(errors?.at?.(0));
 		}
 	});
 

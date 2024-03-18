@@ -1,9 +1,10 @@
 <script lang="ts" context="module">
 	import Fa from 'svelte-fa';
 	import { faClose, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+	import type { ReactiveString } from '$lib';
 
 	export type Props = {
-		message?: string | null;
+		message?: ReactiveString | null;
 		type?: 'success' | 'error' | 'info';
 		class?: string;
 	};
@@ -51,10 +52,10 @@
 	});
 </script>
 
-{#if message && !closed}
+{#if message?.val && !closed}
 	<div role="alert" class="alert alert-{alertClassName} rounded-md {className}">
 		<Fa icon={faExclamationCircle} />
-		<span>{message}</span>
+		<span>{message.val}</span>
 		<button class="h-8 w-8" onclick={() => (closed = true)} tabindex="-1">
 			<div
 				class="radial-progress max-h-full max-w-full overflow-hidden"

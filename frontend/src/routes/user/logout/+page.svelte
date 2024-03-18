@@ -4,6 +4,7 @@
 
 	import { page } from '$app/stores';
 	import { superEnhance } from '$lib/actions/form';
+	import { ReactiveString } from '$lib';
 </script>
 
 <script lang="ts">
@@ -15,7 +16,7 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center">
-	<Alert type="error" message={$page.error?.message} />
+	<Alert type="error" message={new ReactiveString($page.error?.message)} />
 	<h2>Are sure you are gonna miss out on this?</h2>
 	<form
 		method="post"

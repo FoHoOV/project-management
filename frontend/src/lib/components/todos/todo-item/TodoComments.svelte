@@ -12,7 +12,7 @@
 	import { onMount } from 'svelte';
 	import { TodoComments } from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
-	import type { CommonComponentStates } from '$lib';
+	import { ReactiveString, type CommonComponentStates } from '$lib';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
@@ -77,7 +77,7 @@
 
 <div class="flex flex-col">
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
-	<Alert type="error" message={apiErrorTitle} class="mb-2" />
+	<Alert type="error" message={new ReactiveString(apiErrorTitle)} class="mb-2" />
 	<button
 		on:click={() => onCreateComment?.(todoId, todoCommentsStore)}
 		class="btn btn-square btn-success w-full"
