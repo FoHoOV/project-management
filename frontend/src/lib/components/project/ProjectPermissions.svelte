@@ -70,13 +70,13 @@
 				inputClasses="checkbox-warning"
 				labelClasses="border border-info"
 				onchange={(e)=>{
-			if ((e.target as HTMLInputElement).checked) {
-				allowedPermissions.add(permission)
-			} else {
-				allowedPermissions.delete(permission);
-			}
-			onChange?.(allowedPermissions);
-		}}
+					if ((e.target as HTMLInputElement).checked) {
+						allowedPermissions.add(permission)
+					} else {
+						allowedPermissions.delete(permission);
+					}
+					onChange?.(allowedPermissions);
+				}}
 				checked={allowedPermissions.has(permission) ? true : null}
 			></FormInput>
 		{/each}

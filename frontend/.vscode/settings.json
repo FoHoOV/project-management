@@ -14,8 +14,5 @@
 		"Todos"
 	],
 	"typescript.preferences.importModuleSpecifier": "project-relative",
-	"javascript.preferences.importModuleSpecifier": "project-relative",
-	"[svelte]": {
-		"editor.defaultFormatter": "svelte.svelte-vscode"
-	}
+	"javascript.preferences.importModuleSpecifier": "project-relative"
 }
