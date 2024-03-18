@@ -1,3 +1,4 @@
+import typing
 from sqlalchemy import and_
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category_action import Action, TodoCategoryAction
@@ -118,25 +119,29 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
 
 
 def update_order(db: Session, moving_item: TodoCategoryUpdateOrder, user_id: int):
+    required_permissions = [
+        {Permission.UPDATE_TODO_CATEGORY, Permission.CREATE_TODO_CATEGORY}
+    ]
+
     validate_todo_category_belongs_to_user(
         db,
         moving_item.id,
         user_id,
-        [Permission.UPDATE_TODO_CATEGORY],
+        required_permissions,
     )
     if moving_item.left_id is not None:
         validate_todo_category_belongs_to_user(
-            db, moving_item.left_id, user_id, [Permission.UPDATE_TODO_CATEGORY]
+            db, moving_item.left_id, user_id, required_permissions
         )
     if moving_item.right_id is not None:
         validate_todo_category_belongs_to_user(
-            db, moving_item.right_id, user_id, [Permission.UPDATE_TODO_CATEGORY]
+            db, moving_item.right_id, user_id, required_permissions
         )
     validate_project_belongs_to_user(
         db,
         moving_item.project_id,
         user_id,
-        [Permission.UPDATE_TODO_CATEGORY],
+        required_permissions,
     )
 
     def create_order(id: int, left_id: int | None, right_id: int | None):
@@ -257,7 +262,10 @@ def detach_from_project(
 
 
 def validate_todo_category_belongs_to_user(
-    db: Session, category_id: int, user_id: int, permissions: list[Permission] | None
+    db: Session,
+    category_id: int,
+    user_id: int,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     query = (
         db.query(TodoCategory)

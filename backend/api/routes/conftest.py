@@ -60,6 +60,11 @@ def test_category_factory(
                 "project_id": project_id,
             },
         )
+
+        assert (
+            response.status_code == 200
+        ), "category should be created with status = 200"
+
         category = TodoCategory.model_validate(response.json(), strict=True)
         return category
 

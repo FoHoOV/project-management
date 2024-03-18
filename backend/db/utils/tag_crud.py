@@ -1,3 +1,4 @@
+import typing
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from db.models.project import Project
@@ -196,7 +197,7 @@ def validate_tag_belongs_to_user_by_name(
     tag_name: str,
     project_id: int | None,
     user_id: int,
-    permissions: list[Permission] | None,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     query = (
         db.query(Tag)
@@ -222,7 +223,7 @@ def validate_tag_belongs_to_user_by_id(
     db: Session,
     tag_id: int,
     user_id: int,
-    permissions: list[Permission] | None,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     query = (
         db.query(Tag)

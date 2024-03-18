@@ -8,6 +8,28 @@ from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
 
 
+def test_todo_category_create(
+    test_project_factory: Callable[[TestUserType], Project],
+    test_category_factory: Callable[[TestUserType, int], TodoCategory],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+):
+    user_a = test_users[0]  # Owner
+    user_b = test_users[1]  # Shared user with permission
+
+    # Create a project
+    project_one = test_project_factory(user_a)
+
+    # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
+    test_attach_project_to_user(
+        user_a, user_b, project_one.id, [Permission.CREATE_TODO_CATEGORY]
+    )
+
+    test_category_factory(user_b, project_one.id)
+
+
 def test_todo_category_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
     test_project_factory: Callable[[TestUserType], Project],

@@ -1,3 +1,4 @@
+import typing
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
@@ -254,7 +255,7 @@ def validate_project_belongs_to_user(
     db: Session,
     project_id: int,
     user_id: int,
-    permissions: list[Permission] | None,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     query = (
         db.query(Project)

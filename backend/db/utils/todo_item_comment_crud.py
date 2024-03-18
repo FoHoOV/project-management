@@ -1,3 +1,4 @@
+import typing
 import builtins
 from sqlalchemy.orm import Session
 from db.models.todo_item import TodoItem
@@ -68,7 +69,7 @@ def validate_todo_comment_belongs_to_user(
     db: Session,
     todo_comment_id: int,
     user_id: int,
-    permissions: builtins.list[Permission] | None,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     todo_comment = (
         db.query(TodoItemComment).filter(TodoItemComment.id == todo_comment_id).first()

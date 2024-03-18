@@ -1,3 +1,4 @@
+import typing
 import datetime
 from types import NoneType
 from typing import List
@@ -316,7 +317,10 @@ def remove_todo_dependency(
 
 
 def validate_todo_item_belongs_to_user(
-    db: Session, todo_id: int, user_id: int, permissions: list[Permission] | None
+    db: Session,
+    todo_id: int,
+    user_id: int,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     query = (
         db.query(TodoItem)
@@ -399,7 +403,10 @@ def _update_done_status(
 
 
 def _validate_dependencies_are_resolved(
-    db: Session, todo: TodoItem, user_id: int, permissions: list[Permission]
+    db: Session,
+    todo: TodoItem,
+    user_id: int,
+    permissions: typing.Sequence[Permission | set[Permission]] | None,
 ):
     for dependency in todo.dependencies:
         try:
