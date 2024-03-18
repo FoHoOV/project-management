@@ -41,6 +41,7 @@ export class ProjectSettingsPage implements IPage {
 			await waitForToastType(this.#enhancedPage, 'error', 1000);
 		} else {
 			await waitForToastMessage(this.#enhancedPage, 'project permissions updated', 1000);
+			await expect(await this.getDetachButtonLocator(username)).toBeVisible();
 		}
 	}
 
@@ -52,8 +53,16 @@ export class ProjectSettingsPage implements IPage {
 		return row;
 	}
 
-	async isOwner(locator: Locator) {
-		return (await locator.textContent())?.includes('(owner)');
+	async isOwner(username: string) {
+		return (await (await this.getUserPermissionsRowLocator(username)).textContent())?.includes(
+			'(owner)'
+		);
+	}
+
+	async getDetachButtonLocator(username: string) {
+		return (await this.getUserPermissionsRowLocator(username)).getByRole('button', {
+			name: 'detach'
+		});
 	}
 }
 
