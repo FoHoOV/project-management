@@ -14,7 +14,7 @@ import type {
 	SubmitFailedEventType
 } from './submit-types';
 import { validate } from './validator';
-import type { ValidatorErrorEvents } from './validator-types';
+import type { SubmitClientErrorEventType, ValidatorErrorEvents } from './validator-types';
 import {
 	convertFormDataToObject,
 	getFormErrors,
@@ -56,11 +56,18 @@ export function superEnhance<
 	const enhancer = enhance(node, handleSubmit);
 	node.addEventListener('reset', _superResetHandler);
 
+	function _handleClientSideError(event: Event) {
+		_fireSubmitFailureForClientSideError(node, event as SubmitClientErrorEventType<TSchema>);
+	}
+
+	node.addEventListener('submitclienterror', _handleClientSideError);
+
 	return {
 		destroy() {
 			validator?.destroy && validator.destroy();
 			enhancer.destroy();
 			node.removeEventListener('reset', _superResetHandler);
+			node.removeEventListener('submitclienterror', _handleClientSideError);
 		}
 	};
 }
@@ -166,6 +173,23 @@ function _getResultFromFormAction<
 	}
 
 	return data[options.action as string]['response'];
+}
+
+function _fireSubmitFailureForClientSideError<
+	TSchema extends z.ZodTypeAny,
+	TFormAction extends StandardFormActionError
+>(node: HTMLFormElement, event: SubmitClientErrorEventType<TSchema>) {
+	node.dispatchEvent(
+		new CustomEvent('submitfailed', {
+			detail: {
+				error: {
+					errors: event.detail.errors as any,
+					message: 'Invalid form, please review your inputs'
+				},
+				formData: event.detail.formData
+			}
+		}) satisfies SubmitFailedEventType<TFormAction>
+	);
 }
 
 function _superResetHandler(event: Event) {

@@ -45,7 +45,9 @@ export type SubmitEvents<
 	'on:submitended'?: (e: SubmitEndedEventType) => void;
 	'on:submitredirected'?: (e: SubmitRedirectedEventType<TSchema>) => void;
 	'on:submitsucceeded'?: (e: SubmitSucceededEventType<TSchema, TFormAction, TKey>) => void;
-	'on:submitfailed'?: (e: SubmitFailedEventType<TFormAction>) => void;
+	'on:submitfailed'?: (
+		e: SubmitFailedEventType<TFormAction>
+	) => void /*** called on both client-side and server-side errors*/;
 };
 
 export type SubmitStartEventType = CustomEvent<void>;

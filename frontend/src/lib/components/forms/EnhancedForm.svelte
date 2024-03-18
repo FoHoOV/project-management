@@ -101,16 +101,7 @@
 	{action}
 	use:superEnhance={enhancerConfig}
 	on:submitclienterror={(e) => {
-		formErrors = {
-			errors: e.detail.errors as any,
-			message: 'Invalid form, please review your inputs'
-		};
-		componentState = 'none';
 		onClientSideValidationErrors?.(e.detail.errors);
-		onSubmitFailed?.({
-			formData: e.detail.formData,
-			error: formErrors
-		});
 	}}
 	on:submitstarted={(e) => {
 		componentState = 'submitting';
@@ -128,6 +119,7 @@
 		onRedirected?.(e.detail);
 	}}
 	on:submitfailed={async (e) => {
+		componentState = 'none';
 		formErrors = e.detail.error;
 		onSubmitFailed?.(e.detail);
 	}}
