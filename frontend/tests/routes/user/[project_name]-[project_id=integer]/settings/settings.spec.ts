@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../../../fixtures/todo-category';
 import { generateTodoListSettingsUrl } from '../../../../../src/lib/utils/params/route';
 
-test('create todo category', async ({ enhancedPage, projectUtils, authUtils }) => {
+test('test change permissions', async ({ enhancedPage, projectUtils, authUtils }) => {
 	const lastUser = authUtils.currentLoggedInUser!;
 
 	await authUtils.logout();

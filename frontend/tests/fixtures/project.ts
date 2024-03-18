@@ -101,7 +101,7 @@ export const test = auth.extend<{ projectUtils: { page: ProjectsPage } }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	projectUtils: async ({ enhancedPage, authUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		authUtils.login();
+		await authUtils.login();
 		await use({ page: new ProjectsPage(enhancedPage) });
 	}
 });
