@@ -13,7 +13,7 @@
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialDependency
 	} from '$lib/generated-client';
-	import type { CommonComponentStates } from '$lib';
+	import { ReactiveString, type CommonComponentStates } from '$lib';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
@@ -59,7 +59,7 @@
 
 <div class="relative flex flex-col">
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
-	<Alert type="error" message={apiErrorTitle} class="mb-2" />
+	<Alert type="error" message={new ReactiveString(apiErrorTitle)} class="mb-2" />
 	<button
 		on:click={handleCreateDependency}
 		class="btn btn-square btn-success w-full"

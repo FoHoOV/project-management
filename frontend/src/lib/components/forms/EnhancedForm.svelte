@@ -2,15 +2,16 @@
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import Alert from '$components/Alert.svelte';
 
-	import type {
-		EnhanceOptions,
-		StandardFormActionError,
-		StandardFormActionNames,
-		SubmitFailedEventType,
-		SubmitRedirectedEventType,
-		SubmitStartEventType,
-		SubmitSucceededEventType,
-		ValidatorErrorsType
+	import {
+		ReactiveString,
+		type EnhanceOptions,
+		type StandardFormActionError,
+		type StandardFormActionNames,
+		type SubmitFailedEventType,
+		type SubmitRedirectedEventType,
+		type SubmitStartEventType,
+		type SubmitSucceededEventType,
+		type ValidatorErrorsType
 	} from '$lib';
 	import { z } from 'zod';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
@@ -131,9 +132,13 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={componentState == 'submit-successful' ? successfulMessage : ''}
+			message={new ReactiveString(componentState == 'submit-successful' ? successfulMessage : '')}
 		/>
-		<Alert class="mb-1" type="error" message={showErrors ? formErrors?.message : null} />
+		<Alert
+			class="mb-1"
+			type="error"
+			message={new ReactiveString(showErrors ? formErrors?.message : null)}
+		/>
 
 		{@render inputs({ formErrors: formErrors, reset: resetForm })}
 		<div class="mt-1 flex w-full flex-wrap items-start justify-end gap-2 {actionsWrapperClasses}">

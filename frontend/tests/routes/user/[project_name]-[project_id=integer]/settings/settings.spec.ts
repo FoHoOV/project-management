@@ -4,8 +4,9 @@ import {
 	expectPermissionsToBeEqual,
 	setPermissions
 } from '../../../../common-locators/project-permissions';
+import { expect } from '@playwright/test';
 
-test('test change permissions', async ({ projectUtils, projectSettings, authUtils }) => {
+test('change user permissions', async ({ projectUtils, projectSettings, authUtils }) => {
 	const lastUser = authUtils.currentLoggedInUser!;
 
 	await authUtils.logout();
@@ -26,6 +27,7 @@ test('test change permissions', async ({ projectUtils, projectSettings, authUtil
 	});
 
 	await projectSettings.page.goto(projectTitle, project.projectId);
+	expect(await projectSettings.page.isOwner(authUtils.currentLoggedInUser?.username!)).toBeTruthy();
 
 	await projectSettings.page.changePermissions({
 		username: lastUser.username,
@@ -42,6 +44,9 @@ test('test change permissions', async ({ projectUtils, projectSettings, authUtil
 		permissions: [Permission.All],
 		expectError: true
 	});
+	expect(
+		await projectSettings.page.isOwner(authUtils.currentLoggedInUser?.username!)
+	).not.toBeTruthy();
 });
 
 test('canceling the change should reset back to default permissions', async ({
