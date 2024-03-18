@@ -4,6 +4,8 @@ import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type IPage } from './IPage';
 import { type EnhancedPage } from './enhanced-page';
+import type { Permission } from '../../src/lib/generated-client';
+import { getPermissions, setPermissions } from '../common-locators/project-permissions';
 
 export class ProjectsPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -58,9 +60,20 @@ export class ProjectsPage implements IPage {
 		};
 	}
 
-	async attachToUser({ projectId, username }: { projectId: number | string; username: string }) {
+	async attachToUser({
+		projectId,
+		username,
+		permissions
+	}: {
+		projectId: number | string;
+		username: string;
+		permissions: Permission[];
+	}) {
 		(await this.getShareAccessButtonLocator(projectId)).click();
 		const modal = await getModal(this.#enhancedPage);
+
+		await setPermissions(modal, permissions);
+		expect((await getPermissions(modal)).sort()).toEqual(permissions.sort());
 
 		// fill the data
 		await modal.getByPlaceholder('username').fill(username);

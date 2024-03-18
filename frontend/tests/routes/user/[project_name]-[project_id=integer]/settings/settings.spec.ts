@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../../fixtures/todo-category';
 import { generateTodoListSettingsUrl } from '../../../../../src/lib/utils/params/route';
+import { Permission } from '../../../../../src/lib/generated-client';
 
 test('test change permissions', async ({ enhancedPage, projectUtils, authUtils }) => {
 	const lastUser = authUtils.currentLoggedInUser!;
@@ -18,7 +19,8 @@ test('test change permissions', async ({ enhancedPage, projectUtils, authUtils }
 
 	await projectUtils.page.attachToUser({
 		projectId: project.projectId,
-		username: lastUser.username
+		username: lastUser.username,
+		permissions: [Permission.All]
 	});
 
 	await enhancedPage.goto(generateTodoListSettingsUrl(projectTitle, project.projectId));
