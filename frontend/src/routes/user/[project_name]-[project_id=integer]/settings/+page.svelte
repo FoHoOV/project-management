@@ -181,7 +181,8 @@
 								<FormInput type="hidden" wrapperClasses="hidden" name="user_id" value={user.id}
 								></FormInput>
 							{/snippet}
-							{#snippet actions()}
+							{#snippet actions({ loading })}
+								<Spinner visible={loading}></Spinner>
 								<button
 									class="btn btn-error"
 									type="button"
