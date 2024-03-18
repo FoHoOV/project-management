@@ -1,9 +1,7 @@
-import { expect } from '@playwright/test';
-import { test } from '../../../../fixtures/todo-category';
-import { generateTodoListSettingsUrl } from '../../../../../src/lib/utils/params/route';
+import { test } from '../../../../fixtures/project-settings';
 import { Permission } from '../../../../../src/lib/generated-client';
 
-test('test change permissions', async ({ enhancedPage, projectUtils, authUtils }) => {
+test('test change permissions', async ({ projectUtils, projectSettings, authUtils }) => {
 	const lastUser = authUtils.currentLoggedInUser!;
 
 	await authUtils.logout();
@@ -20,8 +18,24 @@ test('test change permissions', async ({ enhancedPage, projectUtils, authUtils }
 	await projectUtils.page.attachToUser({
 		projectId: project.projectId,
 		username: lastUser.username,
+		permissions: [Permission.CreateTag]
+	});
+
+	await projectSettings.page.goto(projectTitle, project.projectId);
+
+	await projectSettings.page.changePermissions({
+		username: lastUser.username,
 		permissions: [Permission.All]
 	});
 
-	await enhancedPage.goto(generateTodoListSettingsUrl(projectTitle, project.projectId));
+	await projectSettings.page.changePermissions({
+		username: authUtils.currentLoggedInUser?.username!,
+		permissions: [Permission.CreateComment]
+	});
+
+	await projectSettings.page.changePermissions({
+		username: authUtils.currentLoggedInUser?.username!,
+		permissions: [Permission.All],
+		expectError: true
+	});
 });

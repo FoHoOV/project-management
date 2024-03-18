@@ -73,7 +73,6 @@ export class ProjectsPage implements IPage {
 		const modal = await getModal(this.#enhancedPage);
 
 		await setPermissions(modal, permissions);
-		expect((await getPermissions(modal)).sort()).toEqual(permissions.sort());
 
 		// fill the data
 		await modal.getByPlaceholder('username').fill(username);
