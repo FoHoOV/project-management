@@ -1,4 +1,4 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 from sqlalchemy import String, func, select
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -7,26 +7,34 @@ from db.models.base import BasesWithCreatedDate
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
+if TYPE_CHECKING:
+    from db.models.tag import Tag
+    from db.models.todo_category import TodoCategory
+    from db.models.user import User
+    from db.models.project_user_association import ProjectUserAssociation
+
+
 class Project(BasesWithCreatedDate):
     __tablename__ = "project"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
-    users: Mapped[List["User"]] = relationship(  # type: ignore
-        "User", secondary="project_user_association", back_populates="projects"
+    users: Mapped[List["User"]] = relationship(
+        secondary="project_user_association", back_populates="projects"
     )
-    todo_categories: Mapped[List["TodoCategory"]] = relationship(  # type: ignore
-        argument="TodoCategory",
+    todo_categories: Mapped[List["TodoCategory"]] = relationship(
         secondary="todo_category_project_association",
         back_populates="projects",
         order_by="desc(TodoCategory.id)",
     )
-    tags: Mapped[List["Tag"]] = relationship(  # type: ignore
-        "Tag",
+    tags: Mapped[List["Tag"]] = relationship(
         back_populates="project",
         cascade="all, delete-orphan",
         order_by="desc(Tag.id)",
+    )
+    associations: Mapped[List["ProjectUserAssociation"]] = relationship(
+        back_populates="project", viewonly=True
     )
 
     # TODO: i dont know about the performance implications of these hybrid queries... like does sqlalchemy remove the need to query the db again if the object is already there?
@@ -57,7 +65,10 @@ class Project(BasesWithCreatedDate):
         for todo_category in self.todo_categories:
             pending_todos += len(
                 list(
-                    filter(lambda todo_item: todo_item.is_done == False, todo_category.items)  # type: ignore
+                    filter(
+                        lambda todo_item: todo_item.is_done == False,
+                        todo_category.items,
+                    )
                 )
             )
         return pending_todos

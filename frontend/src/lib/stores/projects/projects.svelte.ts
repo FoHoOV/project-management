@@ -1,4 +1,4 @@
-import type { PartialUser, Project } from '$lib/generated-client/models';
+import type { PartialUserWithPermission, Project } from '$lib/generated-client/models';
 import { sortByIdInPlace } from '../todos/sort';
 
 export class Projects {
@@ -32,7 +32,7 @@ export class Projects {
 		this._projects = this._projects.filter((value) => value.id != project.id);
 	}
 
-	addAssociation(project: Project, newUser: PartialUser) {
+	addAssociation(project: Project, newUser: PartialUserWithPermission) {
 		const target = this._projects.find((value) => value.id == project.id);
 		if (!target) {
 			throw new Error('project not found in the store');

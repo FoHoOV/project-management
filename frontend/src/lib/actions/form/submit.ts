@@ -10,11 +10,17 @@ import type {
 	SubmitRedirectedEventType,
 	SubmitStartEventType,
 	SubmitEndedEventType,
-	SubmitSucceededEventType
+	SubmitSucceededEventType,
+	SubmitFailedEventType
 } from './submit-types';
 import { validate } from './validator';
-import type { ValidatorErrorEvent } from './validator-types';
-import type { StandardFormActionNames } from './utils';
+import type { SubmitClientErrorEventType, ValidatorErrorEvents } from './validator-types';
+import {
+	convertFormDataToObject,
+	getFormErrors,
+	type StandardFormActionError,
+	type StandardFormActionNames
+} from './utils';
 import { invalidateAll } from '$app/navigation';
 
 export function superEnhance(
@@ -25,20 +31,24 @@ export function superEnhance(
 >;
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	node: HTMLFormElement,
 	options: EnhanceOptions<TSchema, TFormAction, TKey>
 ): ActionReturn<
 	EnhanceOptions<TSchema, TFormAction, TKey>,
-	ValidatorErrorEvent<TSchema> & SubmitEvents<TSchema, TFormAction, TKey>
+	ValidatorErrorEvents<TSchema> & SubmitEvents<TSchema, TFormAction, TKey>
 >;
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
-	TFormAction = never,
+	TFormAction extends StandardFormActionError = never,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
+	if (options?.action && !node.action.endsWith(`?/${options.action.toString()}`)) {
+		throw new Error('form.action should end with the passed action in enhancer options');
+	}
+
 	const handleSubmit =
 		options?.submit ?? _defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
 
@@ -46,18 +56,25 @@ export function superEnhance<
 	const enhancer = enhance(node, handleSubmit);
 	node.addEventListener('reset', _superResetHandler);
 
+	function _handleClientSideError(event: Event) {
+		_fireSubmitFailureForClientSideError(node, event as SubmitClientErrorEventType<TSchema>);
+	}
+
+	node.addEventListener('submitclienterror', _handleClientSideError);
+
 	return {
 		destroy() {
 			validator?.destroy && validator.destroy();
 			enhancer.destroy();
 			node.removeEventListener('reset', _superResetHandler);
+			node.removeEventListener('submitclienterror', _handleClientSideError);
 		}
 	};
 }
 
 function _defaultSubmitHandler<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	node: HTMLFormElement,
@@ -74,11 +91,23 @@ function _defaultSubmitHandler<
 				console.debug('s-form-result');
 				console.debug(_getResultFromFormAction(result.data, options));
 				console.debug('e-form-result');
+
+				const parsedFormData = await options?.validator?.schema.safeParseAsync(
+					convertFormDataToObject(formData)
+				);
+
+				if (parsedFormData && !parsedFormData?.success) {
+					throw new Error(
+						"for some reason server-side validations succeeded but the client-side validations didn't, OR the client data changed since the form has been submitted"
+					);
+				}
+
 				node.dispatchEvent(
 					new CustomEvent('submitsucceeded', {
 						detail: {
 							response: _getResultFromFormAction(result.data, options),
-							formData: Object.fromEntries(formData) as z.infer<TSchema>
+							formData: convertFormDataToObject(formData),
+							parsedFormData: parsedFormData?.data
 						}
 					}) satisfies SubmitSucceededEventType<TSchema, TFormAction, TKey>
 				);
@@ -89,9 +118,27 @@ function _defaultSubmitHandler<
 							redirectUrl: result.location.startsWith('/')
 								? new URL(location.origin + result.location)
 								: new URL(result.location),
-							formData: Object.fromEntries(formData)
+							formData: convertFormDataToObject(formData)
 						}
 					}) satisfies SubmitRedirectedEventType<TSchema>
+				);
+			} else if (result.type == 'error') {
+				node.dispatchEvent(
+					new CustomEvent('submitfailed', {
+						detail: {
+							error: getFormErrors(result),
+							formData: convertFormDataToObject(formData)
+						}
+					}) satisfies SubmitFailedEventType<TFormAction>
+				);
+			} else if (result.type == 'failure') {
+				node.dispatchEvent(
+					new CustomEvent('submitfailed', {
+						detail: {
+							error: getFormErrors(result.data as any),
+							formData: convertFormDataToObject(formData)
+						}
+					}) satisfies SubmitFailedEventType<TFormAction>
 				);
 			}
 
@@ -120,7 +167,7 @@ function _defaultSubmitHandler<
 
 function _getResultFromFormAction<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	data: Record<string, any> | undefined,
@@ -135,6 +182,23 @@ function _getResultFromFormAction<
 	}
 
 	return data[options.action as string]['response'];
+}
+
+function _fireSubmitFailureForClientSideError<
+	TSchema extends z.ZodTypeAny,
+	TFormAction extends StandardFormActionError
+>(node: HTMLFormElement, event: SubmitClientErrorEventType<TSchema>) {
+	node.dispatchEvent(
+		new CustomEvent('submitfailed', {
+			detail: {
+				error: {
+					errors: event.detail.errors as any,
+					message: 'Invalid form, please review your inputs'
+				},
+				formData: event.detail.formData
+			}
+		}) satisfies SubmitFailedEventType<TFormAction>
+	);
 }
 
 function _superResetHandler(event: Event) {

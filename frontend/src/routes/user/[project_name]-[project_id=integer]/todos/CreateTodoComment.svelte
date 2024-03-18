@@ -7,7 +7,7 @@
 	import { createTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
 	import { TodoComments } from '$lib/stores/todo-comments';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 
 	export type Props = {
 		form: ActionData;
@@ -21,7 +21,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListUrl(
+	action="{generateTodoListItemsUrl(
 		$page.params.project_name,
 		$page.params.project_id
 	)}?/createTodoComment"

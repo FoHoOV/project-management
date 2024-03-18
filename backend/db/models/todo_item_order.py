@@ -1,8 +1,12 @@
-from sqlalchemy import CheckConstraint, Connection, ForeignKey, event
-from sqlalchemy.orm import Mapped, Session, Mapper
+from typing import TYPE_CHECKING
+from sqlalchemy import CheckConstraint, ForeignKey
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BaseOrderedItem, BasesWithCreatedDate
+
+if TYPE_CHECKING:
+    from db.models.todo_item import TodoItem
 
 
 class TodoItemOrder(BasesWithCreatedDate, BaseOrderedItem):
@@ -18,7 +22,7 @@ class TodoItemOrder(BasesWithCreatedDate, BaseOrderedItem):
     right_id: Mapped[int | None] = mapped_column(
         ForeignKey("todo_item.id", ondelete="CASCADE"), nullable=True, unique=True
     )
-    todo: Mapped["TodoItem"] = relationship(  # type: ignore
+    todo: Mapped["TodoItem"] = relationship(
         foreign_keys=[todo_id], single_parent=True, back_populates="order"
     )
 

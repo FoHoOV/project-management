@@ -2,10 +2,11 @@
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
-	import { Permission, type Project } from '$lib/generated-client/models';
+	import { type Project } from '$lib/generated-client/models';
 	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Props = {
@@ -18,7 +19,6 @@
 	const { form, project }: Props = $props();
 
 	const projectsStore = getProjectsStoreFromContext();
-	let allowAllAccessRights = $state<boolean>(true);
 </script>
 
 <EnhancedForm
@@ -32,42 +32,16 @@
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {
-			username: event.formData.username,
+			username: event.parsedFormData.username,
+			permissions: event.parsedFormData.permissions,
 			id: event.response.user_id
 		});
-		allowAllAccessRights = true;
 	}}
 	successfulMessage="Project is now shared with the specified user"
 >
 	{#snippet inputs({ formErrors })}
 		<span> permissions </span>
-		<FormInput
-			id="permissions:{Permission.All}"
-			name="permissions[]"
-			value={Permission.All}
-			checked={allowAllAccessRights}
-			label="Allow all permissions"
-			type="toggle"
-			inputClasses="toggle toggle-success"
-			labelClasses="border border-info"
-			onchange={(e)=>{
-				allowAllAccessRights = (e.target as HTMLInputElement).checked;
-			}}
-		></FormInput>
-		<div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
-			{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
-				<FormInput
-					id="permissions:{permission}"
-					name="permissions[]"
-					value={permission}
-					label={permission.replaceAll('_', ' ')}
-					type="checkbox"
-					disabled={allowAllAccessRights}
-					inputClasses="checkbox-warning"
-					labelClasses="border border-info"
-				></FormInput>
-			{/each}
-		</div>
+		<ProjectPermissions></ProjectPermissions>
 
 		<FormInput
 			name="project_id"

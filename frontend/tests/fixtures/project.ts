@@ -1,9 +1,11 @@
-import { test as auth } from './access-token';
+import { test as auth } from './auth';
 import { expect } from '@playwright/test';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type IPage } from './IPage';
 import { type EnhancedPage } from './enhanced-page';
+import type { Permission } from '../../src/lib/generated-client';
+import { getPermissions, setPermissions } from '../common-locators/project-permissions';
 
 export class ProjectsPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -57,12 +59,61 @@ export class ProjectsPage implements IPage {
 			projectId: parseInt((await createdProject.innerText()).split('#')[1])
 		};
 	}
+
+	async attachToUser({
+		projectId,
+		username,
+		permissions
+	}: {
+		projectId: number | string;
+		username: string;
+		permissions: Permission[];
+	}) {
+		(await this.getShareAccessButtonLocator(projectId)).click();
+		const modal = await getModal(this.#enhancedPage);
+
+		await setPermissions(modal, permissions);
+
+		// fill the data
+		await modal.getByPlaceholder('username').fill(username);
+		await modal.getByPlaceholder('username').press('Tab');
+		await modal.getByRole('button', { name: 'reset' }).press('Tab');
+		await modal.getByRole('button', { name: 'share' }).press('Enter');
+		await expect(modal.getByText('Project is now shared with the specified user')).toHaveCount(1);
+
+		// close the modal
+		await closeModal(modal);
+
+		await expect(await this.getProjectWrapperById(projectId)).toContainText(username);
+	}
+
+	getResultsWrapperLocator() {
+		return this.#enhancedPage.getByTestId('project-item-wrapper');
+	}
+
+	async getShareAccessButtonLocator(projectId: string | number) {
+		return (await this.getProjectWrapperById(projectId)).getByTestId('share-project-access');
+	}
+	async getProjectWrapperById(id: string | number) {
+		const project = await this.#enhancedPage
+			.locator("div[data-testid='project-item-wrapper']", {
+				has: this.#enhancedPage.locator("div[data-tip='project id'] span.text-info", {
+					hasText: `#${id}`
+				})
+			})
+			.all();
+
+		expect(project, 'only one project with this id should exist on the page').toHaveLength(1);
+
+		return project[0];
+	}
 }
 
 export const test = auth.extend<{ projectUtils: { page: ProjectsPage } }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	projectUtils: async ({ enhancedPage, auth }, use) => {
+	projectUtils: async ({ enhancedPage, authUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
+		await authUtils.login();
 		await use({ page: new ProjectsPage(enhancedPage) });
 	}
 });

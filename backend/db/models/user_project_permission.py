@@ -1,17 +1,21 @@
+from __future__ import annotations
+
+
 import enum
-from db.models.base import Base, BasesWithCreatedDate
+from typing import TYPE_CHECKING
+from db.models.base import Base
 from sqlalchemy import (
-    CheckConstraint,
-    Connection,
     Enum,
     ForeignKey,
     UniqueConstraint,
-    event,
 )
-from sqlalchemy.orm import Mapped, Session, Mapper
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from db.models.base import BaseOrderedItem, BasesWithCreatedDate
+
+
+if TYPE_CHECKING:
+    from db.models.project_user_association import ProjectUserAssociation
 
 
 class Permission(enum.StrEnum):
@@ -45,13 +49,12 @@ class UserProjectPermission(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_user_association_id: Mapped[int] = mapped_column(
-        ForeignKey("project_user_association.id", ondelete="CASCADE")
+        ForeignKey("project_user_association.id", ondelete="CASCADE"), nullable=False
     )
     permission: Mapped[Permission] = mapped_column(
         Enum(Permission, validate_strings=True)
     )
-    project_user_association: Mapped["ProjectUserAssociation"] = relationship(  # type: ignore
-        "ProjectUserAssociation",
+    project_user_association: Mapped["ProjectUserAssociation"] = relationship(
         back_populates="permissions",
         single_parent=True,
         cascade="all, delete-orphan",

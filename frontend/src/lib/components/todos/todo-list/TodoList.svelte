@@ -41,7 +41,7 @@
 </script>
 
 <script lang="ts">
-	const { category, projectId, draggable = true, class: className, ...restProps }:Props = $props();
+	const { category, projectId, draggable = true, class: className, ...restProps }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
@@ -148,7 +148,7 @@
 					</span>
 				</div>
 			</div>
-			<div class="mt-2 flex w-full gap-2">
+			<div class="mt-2 grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
 				<button
 					class="btn btn-success flex-1"
 					class:hidden={!restProps.onCreateTodoItem}

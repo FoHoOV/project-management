@@ -1,4 +1,5 @@
 import enum
+from typing import TYPE_CHECKING
 from sqlalchemy import (
     Enum,
     ForeignKey,
@@ -8,6 +9,10 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
+
+
+if TYPE_CHECKING:
+    from db.models.todo_category import TodoCategory
 
 
 class Action(enum.StrEnum):
@@ -23,8 +28,7 @@ class TodoCategoryAction(BasesWithCreatedDate):
         ForeignKey("todo_category.id", ondelete="CASCADE")
     )
     action: Mapped[Action] = mapped_column(Enum(Action, validate_strings=True))
-    category: Mapped["TodoCategory"] = relationship(  # type: ignore
-        "TodoCategory",
+    category: Mapped["TodoCategory"] = relationship(
         back_populates="actions",
         single_parent=True,
     )

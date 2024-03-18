@@ -1,3 +1,4 @@
+import typing
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from db.models.project import Project
@@ -11,10 +12,15 @@ from db.schemas.project import (
     ProjectDetachAssociation,
     ProjectRead,
     ProjectUpdate,
+    ProjectUpdateUserPermissions,
 )
 from sqlalchemy.orm import Session
 from db.schemas.todo_category import TodoCategoryCreate
-from db.utils.shared.permission_query import join_with_permission_query_if_required
+from db.utils.shared.permission_query import (
+    join_with_permission_query_if_required,
+    PermissionsType,
+    validate_item_exists_with_permissions,
+)
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.models.todo_category import TodoCategory
 
@@ -58,6 +64,53 @@ def update(db: Session, project: ProjectUpdate, user_id: int):
     db.refresh(db_item)
 
     return db_item
+
+
+def update_user_permissions(
+    db: Session, permissions: ProjectUpdateUserPermissions, user_id: int
+):
+    # check if current user is owner
+    validate_project_belongs_to_user(
+        db, permissions.project_id, user_id, [Permission.ALL]
+    )
+
+    # check if the user we are changing has access to this project
+    try:
+        validate_project_belongs_to_user(
+            db, permissions.project_id, permissions.user_id, None
+        )
+    except UserFriendlyError as ex:
+        raise UserFriendlyError(
+            ErrorCode.USER_DOESNT_HAVE_ACCESS_TO_PROJECT,
+            "The user that you are trying to update doesn't have access to this project or doesn't exist",
+        )
+
+    association = (
+        db.query(ProjectUserAssociation)
+        .filter(
+            ProjectUserAssociation.project_id == permissions.project_id,
+            ProjectUserAssociation.user_id == permissions.user_id,
+        )
+        .first()
+    )
+
+    if association is None:
+        raise  # not possible, just to mute type-hints
+
+    db.query(UserProjectPermission).filter(
+        UserProjectPermission.project_user_association_id == association.id
+    ).delete()
+
+    for permission in permissions.permissions:
+        db.add(
+            UserProjectPermission(
+                project_user_association_id=association.id, permission=permission
+            )
+        )
+
+    db.commit()
+
+    return get_project(db, ProjectRead(project_id=permissions.project_id), user_id)
 
 
 def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: int):
@@ -106,12 +159,19 @@ def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id
         db,
         association.project_id,
         user_id,
-        None,
+        [Permission.ALL] if association.user_id is not None else None,
     )
+
+    target_user_id = association.user_id if association.user_id is not None else user_id
+
+    if target_user_id != user_id:
+        validate_project_belongs_to_user(
+            db, association.project_id, target_user_id, None
+        )
 
     db.query(ProjectUserAssociation).filter(
         ProjectUserAssociation.project_id == association.project_id,
-        ProjectUserAssociation.user_id == user_id,
+        ProjectUserAssociation.user_id == target_user_id,
     ).delete()
 
     if (
@@ -157,33 +217,24 @@ def delete_project(db: Session, project_id: int):
 
 
 def get_project(db: Session, project: ProjectRead, user_id: int):
-    result = (
-        db.query(Project)
-        .filter(Project.id == project.project_id)
-        .join(Project.users)
-        .filter(User.id == user_id)
-        .first()
-    )
+    result = get_projects(db, user_id, project.project_id)
 
-    if result is None:
+    if len(result) == 0:
         raise UserFriendlyError(
             ErrorCode.PROJECT_NOT_FOUND,
             "project doesn't exist or doesn't belong to current user",
         )
 
-    return result
+    return result[0]
 
 
-def get_projects(db: Session, user_id: int):
-    result = (
-        db.query(Project)
-        .join(Project.users)
-        .filter(User.id == user_id)
-        .order_by(Project.id.asc())
-        .all()
-    )
+def get_projects(db: Session, user_id: int, project_id: int | None = None):
+    query = db.query(Project).join(Project.users).filter(User.id == user_id)
 
-    return result
+    if project_id is not None:
+        query = query.filter(Project.id == project_id)
+
+    return query.order_by(Project.id.asc()).all()
 
 
 def add_default_template_categories(db, project_id: int, user_id: int):
@@ -208,7 +259,7 @@ def validate_project_belongs_to_user(
     db: Session,
     project_id: int,
     user_id: int,
-    permissions: list[Permission] | None,
+    permissions: PermissionsType,
 ):
     query = (
         db.query(Project)
@@ -219,8 +270,9 @@ def validate_project_belongs_to_user(
 
     query = join_with_permission_query_if_required(query, permissions)
 
-    if query.count() < (len(permissions) if permissions is not None else 1):
-        raise UserFriendlyError(
-            ErrorCode.PROJECT_NOT_FOUND,
-            "project doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
-        )
+    validate_item_exists_with_permissions(
+        query,
+        permissions,
+        ErrorCode.PROJECT_NOT_FOUND,
+        "project doesn't exist or doesn't belong to user or you don't have the permission to perform the requested action",
+    )

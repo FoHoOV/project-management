@@ -7,7 +7,7 @@
 	import type { TodoCategories } from '$lib/stores/todos/todos.svelte';
 	import { editTodoItemSchema } from './validator';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
@@ -23,7 +23,10 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTodoItem"
+	action="{generateTodoListItemsUrl(
+		$page.params.project_name,
+		$page.params.project_id
+	)}?/editTodoItem"
 	enhancerConfig={{
 		validator: { schema: editTodoItemSchema },
 		form: form,

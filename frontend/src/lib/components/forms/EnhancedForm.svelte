@@ -6,6 +6,7 @@
 		EnhanceOptions,
 		StandardFormActionError,
 		StandardFormActionNames,
+		SubmitFailedEventType,
 		SubmitRedirectedEventType,
 		SubmitStartEventType,
 		SubmitSucceededEventType,
@@ -13,7 +14,6 @@
 	} from '$lib';
 	import { z } from 'zod';
 	import { getFormErrors, superEnhance } from '$lib/actions/form';
-	import { untrack } from 'svelte';
 	import type { Snippet } from 'svelte';
 
 	type ComponentStates = 'submitting' | 'submit-successful' | 'none';
@@ -26,6 +26,10 @@
 		onSubmitSucceeded?: (
 			event: SubmitSucceededEventType<TSchema, TFormAction, TKey>['detail']
 		) => void;
+		/**
+		 * called on both client-side and server-side errors
+		 */
+		onSubmitFailed?: (event: SubmitFailedEventType<TFormAction>['detail']) => void;
 		onSubmitStarted?: (event: SubmitStartEventType['detail']) => void;
 		onRedirected?: (event: SubmitRedirectedEventType<TSchema>['detail']) => void;
 		onClientSideValidationErrors?: (event: ValidatorErrorsType<TSchema>) => void;
@@ -40,11 +44,12 @@
 		enhancerConfig: EnhanceOptions<TSchema, TFormAction, TKey>;
 		actions: Snippet<[{ loading: boolean; reset: () => void }]>;
 		inputs: Snippet<
-			[{ formErrors: ReturnType<typeof getFormErrors<TFormAction>>; reset: () => void }]
+			[{ formErrors: ReturnType<typeof getFormErrors<TFormAction>> | undefined; reset: () => void }]
 		>;
 		defaultActions?: Snippet<[{ reset: () => void }]>;
 		footer?: Snippet;
 		method?: 'post' | 'get';
+		showErrors?: boolean;
 		successfulMessage?: string;
 		showResetButton?: boolean;
 		formWrapperClasses?: string;
@@ -62,11 +67,13 @@
 		enhancerConfig,
 		successfulMessage = '',
 		method = 'post',
+		showErrors = true,
 		showResetButton = true,
 		formWrapperClasses = '',
 		inputsWrapperClasses = '',
 		actionsWrapperClasses = '',
 		onSubmitSucceeded,
+		onSubmitFailed,
 		onSubmitStarted,
 		onClientSideValidationErrors,
 		onRedirected,
@@ -77,14 +84,7 @@
 
 	let formElement = $state<HTMLFormElement | null>(null);
 	let componentState = $state<ComponentStates>('none');
-	let formErrors = $state(getFormErrors(enhancerConfig.form));
-
-	$effect(() => {
-		enhancerConfig.form;
-		untrack(() => {
-			formErrors = getFormErrors(enhancerConfig.form);
-		});
-	});
+	let formErrors = $state<ReturnType<typeof getFormErrors<TFormAction>>>();
 
 	export function resetForm() {
 		enhancerConfig.resetOnSubmit !== false && formElement?.reset();
@@ -101,12 +101,7 @@
 	{action}
 	use:superEnhance={enhancerConfig}
 	on:submitclienterror={(e) => {
-		formErrors = {
-			errors: e.detail as any,
-			message: 'Invalid form, please review your inputs'
-		};
-		componentState = 'none';
-		onClientSideValidationErrors?.(e.detail);
+		onClientSideValidationErrors?.(e.detail.errors);
 	}}
 	on:submitstarted={(e) => {
 		componentState = 'submitting';
@@ -123,6 +118,11 @@
 	on:submitredirected={async (e) => {
 		onRedirected?.(e.detail);
 	}}
+	on:submitfailed={async (e) => {
+		componentState = 'none';
+		formErrors = e.detail.error;
+		onSubmitFailed?.(e.detail);
+	}}
 	bind:this={formElement}
 	{method}
 	class="w-full {formWrapperClasses}"
@@ -133,7 +133,8 @@
 			type="success"
 			message={componentState == 'submit-successful' ? successfulMessage : ''}
 		/>
-		<Alert class="mb-1" type="error" message={formErrors?.message} />
+		<Alert class="mb-1" type="error" message={showErrors ? formErrors?.message : null} />
+
 		{@render inputs({ formErrors: formErrors, reset: resetForm })}
 		<div class="mt-1 flex w-full flex-wrap items-start justify-end gap-2 {actionsWrapperClasses}">
 			{#if showResetButton}

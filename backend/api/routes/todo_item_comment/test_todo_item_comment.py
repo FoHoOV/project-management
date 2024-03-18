@@ -39,8 +39,6 @@ def test_todo_comment_permissions(
         test_users[1],
         project_two.id,
         [
-            Permission.CREATE_COMMENT,
-            Permission.DELETE_COMMENT,
             Permission.ALL,
         ],
     )

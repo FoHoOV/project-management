@@ -1,8 +1,9 @@
 <script lang="ts" context="module">
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import MultiModal from '$components/popups/MultiModal.svelte';
+	import MultiStepModal from '$components/popups/MultiStepModal.svelte';
 	import Drawer from '$components/Drawer.svelte';
 	import Toasts from '$components/popups/Toasts.svelte';
+	import DarkModeSwitch from '$components/DarkModeSwitch.svelte';
 
 	import '../app.css';
 
@@ -14,7 +15,7 @@
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { setProjectsStoreToContext } from '$components/project/utils';
 	import { Projects } from '$lib/stores/projects';
 	import { createRootContextManager } from '$lib/stores/context-manager';
@@ -55,7 +56,7 @@
 					{#each projectsStore.current as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
-							href={generateTodoListUrl(project.title, project.id)}
+							href={generateTodoListItemsUrl(project.title, project.id)}
 							name={project.title + ' (' + '#' + project.id + ')'}
 							on:click={closeDrawer}
 						/>
@@ -72,6 +73,7 @@
 	{/snippet}
 
 	{#snippet navbarEnd()}
+		<DarkModeSwitch />
 		{#if $page.data.token}
 			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
 		{:else}
@@ -80,7 +82,7 @@
 	{/snippet}
 
 	{#snippet content()}
-		<div class="grid h-full overflow-hidden">
+		<div class="relative grid h-full overflow-hidden">
 			<div class="flex-1 overflow-auto px-6 py-4 lg:px-2 lg:py-1.5">
 				{#if $navigating}
 					<span
@@ -90,7 +92,7 @@
 					<div class="mx-auto h-full overflow-y-auto">
 						{@render children()}
 						<Toasts></Toasts>
-						<MultiModal class="border border-success border-opacity-20"></MultiModal>
+						<MultiStepModal class="border border-success border-opacity-20"></MultiStepModal>
 					</div>
 				{/if}
 			</div>

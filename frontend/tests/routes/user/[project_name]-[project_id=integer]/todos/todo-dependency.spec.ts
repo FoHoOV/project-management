@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
-import { getModal } from '../../../common-locators/modal';
-import { test } from '../../../fixtures/todo-item/todo-item';
+import { getModal } from '../../../../common-locators/modal';
+import { test } from '../../../../fixtures/todo-item/todo-item';
 
 test('create a dependency', async ({ enhancedPage, todoItemUtils }) => {
 	const t1 = await todoItemUtils.helpers.createTodoItem();

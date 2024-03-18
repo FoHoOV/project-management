@@ -4,7 +4,11 @@ import pytest
 
 from api.conftest import TestUserType
 from db.models.user_project_permission import Permission
-from db.schemas.project import Project
+from db.schemas.project import (
+    Project,
+    ProjectAttachAssociation,
+    ProjectAttachAssociationResponse,
+)
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
 
@@ -56,6 +60,11 @@ def test_category_factory(
                 "project_id": project_id,
             },
         )
+
+        assert (
+            response.status_code == 200
+        ), "category should be created with status = 200"
+
         category = TodoCategory.model_validate(response.json(), strict=True)
         return category
 
@@ -104,5 +113,9 @@ def test_attach_project_to_user(
         assert (
             attach_to_user_response.status_code == 200
         ), "Sharing project with permissions failed"
+
+        return ProjectAttachAssociationResponse.model_validate(
+            attach_to_user_response.json(), strict=True
+        )
 
     return _attach_to_user

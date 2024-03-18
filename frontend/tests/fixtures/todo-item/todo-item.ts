@@ -349,7 +349,7 @@ export const test = todoCategoriesTest.extend<{
 	todoItemUtils: TodoItemUtils;
 }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, auth }, use) => {
+	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, authUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
 		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils);
 		await use({

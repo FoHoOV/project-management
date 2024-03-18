@@ -1,3 +1,4 @@
+import typing
 import builtins
 from sqlalchemy.orm import Session
 from db.models.todo_item import TodoItem
@@ -9,6 +10,7 @@ from db.schemas.todo_item_comment import (
     TodoCommentSearch,
     TodoCommentUpdate,
 )
+from db.utils.shared.permission_query import PermissionsType
 from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
 
@@ -68,7 +70,7 @@ def validate_todo_comment_belongs_to_user(
     db: Session,
     todo_comment_id: int,
     user_id: int,
-    permissions: builtins.list[Permission] | None,
+    permissions: PermissionsType,
 ):
     todo_comment = (
         db.query(TodoItemComment).filter(TodoItemComment.id == todo_comment_id).first()
@@ -87,4 +89,4 @@ def validate_todo_comment_belongs_to_user(
             db, todo_comment.todo_id, user_id, permissions
         )
     except UserFriendlyError:
-        raise error
+        raise

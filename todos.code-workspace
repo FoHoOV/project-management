@@ -13,6 +13,7 @@
     "[postcss]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "cSpell.words": ["testid"]
+    "cSpell.words": ["autouse", "testid"],
+    "svelte.enable-ts-plugin": true
   }
 }

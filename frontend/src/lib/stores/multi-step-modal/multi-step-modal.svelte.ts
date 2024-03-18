@@ -7,6 +7,7 @@ type ModalStep<TComponent extends SvelteComponent> = {
 	component: SvelteComponentClass<TComponent>;
 	props: ComponentPropsGenerator<TComponent>;
 	title: string;
+	closeModalButtonText?: string;
 };
 
 class MultiStepModal {

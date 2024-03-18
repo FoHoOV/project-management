@@ -8,7 +8,7 @@
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/generated-client/models';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
 	import type { CommonComponentStates } from '$lib';
 	import { getProjectsStoreFromContext } from '$components/project/utils';
@@ -52,6 +52,7 @@
 
 <div
 	class="card relative border border-transparent border-opacity-10 bg-base-300 text-base-content transition-colors hover:border-primary"
+	data-testid="project-item-wrapper"
 >
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
@@ -96,24 +97,30 @@
 			</div>
 		</div>
 
-		<div class="card-actions justify-end pt-3">
-			<button
-				class="btn btn-success flex-1"
-				on:click={() => onAttachToUser?.(project)}
-				class:hidden={!onAttachToUser}
-			>
-				Share access
-			</button>
-			<button class="btn btn-error flex-1" on:click={() => confirmDetachProject?.show()}>
-				{#if project.users.length == 1}
-					Delete
-				{:else}
-					Detach
-				{/if}
-			</button>
-			<a class="btn btn-info flex-1" href={generateTodoListUrl(project.title, project.id)}>
-				Show todos
-			</a>
+		<div class="card-actions pt-3">
+			<div class="grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
+				<button
+					class="btn btn-success"
+					on:click={() => onAttachToUser?.(project)}
+					class:hidden={!onAttachToUser}
+					data-testid="share-project-access"
+				>
+					Share access
+				</button>
+				<button class="btn btn-error" on:click={() => confirmDetachProject?.show()}>
+					{#if project.users.length == 1}
+						Delete
+					{:else}
+						Detach
+					{/if}
+				</button>
+				<a
+					class="btn btn-info col-span-2 sm:col-span-1"
+					href={generateTodoListItemsUrl(project.title, project.id)}
+				>
+					Show todos
+				</a>
+			</div>
 		</div>
 	</div>
 </div>

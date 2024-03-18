@@ -1,3 +1,4 @@
+import type { ParsedFormData } from '$lib/actions/form/utils';
 import type { z } from 'zod';
 
 export type ValidatorErrorsType<T extends z.ZodTypeAny> = z.typeToFlattenedError<
@@ -8,10 +9,11 @@ export type ValidatorOptions<TSchema extends z.ZodTypeAny> = {
 	schema: TSchema;
 };
 
-export type ValidatorErrorEvent<TSchema extends z.ZodTypeAny> = {
-	'on:submitclienterror': (e: CustomEvent<ValidatorErrorsType<TSchema>>) => void;
+export type ValidatorErrorEvents<TSchema extends z.ZodTypeAny> = {
+	'on:submitclienterror': (e: SubmitClientErrorEventType<TSchema>) => void;
 };
 
-export type SubmitClientErrorEventType<TSchema extends z.ZodTypeAny> = CustomEvent<
-	ValidatorErrorsType<TSchema>
->;
+export type SubmitClientErrorEventType<TSchema extends z.ZodTypeAny> = CustomEvent<{
+	errors: ValidatorErrorsType<TSchema>;
+	formData: ParsedFormData;
+}>;

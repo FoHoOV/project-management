@@ -51,7 +51,7 @@
 			value={true}
 			wrapperClasses="w-full !flex-row items-center !justify-start gap-3"
 			inputClasses="!checkbox !btn-square !checkbox-success"
-			errors={formErrors.errors?.create_from_default_template?.toString()}
+			errors={formErrors?.errors?.create_from_default_template?.toString()}
 		/>
 	{/snippet}
 

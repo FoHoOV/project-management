@@ -4,11 +4,12 @@
 
 	export type Props = {
 		class?: string;
+		closeButtonText?: string;
 	};
 </script>
 
 <script lang="ts">
-	const { class: className = '' }: Props = $props();
+	const { class: className = '', closeButtonText = 'close' }: Props = $props();
 
 	let modal = $state<Modal | null>(null);
 	const currentStep = $derived(
@@ -33,16 +34,19 @@
 </script>
 
 <Modal title={currentStep?.title} class={className} onClosed={handleClose} bind:this={modal}>
-	<svelte:component this={currentStep?.component} slot="body" {...componentProps}
-	></svelte:component>
+	{#snippet body({ show, close })}
+		<svelte:component this={currentStep?.component} {...componentProps}></svelte:component>
+	{/snippet}
 
-	<button
-		slot="actions"
-		type="button"
-		class="btn btn-neutral m-auto"
-		class:hidden={!showGoBackButton}
-		on:click={handleGoBack}
-	>
-		go back
-	</button>
+	{#snippet actions()}
+		<button
+			type="button"
+			class="btn btn-neutral m-auto"
+			class:hidden={!showGoBackButton}
+			on:click={handleGoBack}
+		>
+			go back
+		</button>
+		<button class="btn btn-neutral">{currentStep?.closeModalButtonText ?? 'close'}</button>
+	{/snippet}
 </Modal>

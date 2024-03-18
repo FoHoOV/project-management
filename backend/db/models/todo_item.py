@@ -8,7 +8,13 @@ from db.models.todo_item_comments import TodoItemComment
 from db.models.todo_item_dependency import TodoItemDependency
 from db.models.todo_item_order import TodoItemOrder
 from sqlalchemy.ext.hybrid import hybrid_property
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
+
+
+if TYPE_CHECKING:
+    from db.models.user import User
+    from db.models.tag import Tag
+    from db.models.todo_category import TodoCategory
 
 
 class TodoItem(BasesWithCreatedDate):
@@ -22,8 +28,7 @@ class TodoItem(BasesWithCreatedDate):
         ForeignKey("todo_category.id", ondelete="CASCADE")
     )
     due_date: Mapped[datetime | None] = mapped_column(DateTime(), nullable=True)
-    category: Mapped["TodoCategory"] = relationship(  # type: ignore
-        "TodoCategory",
+    category: Mapped["TodoCategory"] = relationship(
         back_populates="items",
         single_parent=True,
         cascade="all, delete-orphan",
@@ -32,29 +37,26 @@ class TodoItem(BasesWithCreatedDate):
         ForeignKey("user.id"), nullable=True
     )
     comments: Mapped[List[TodoItemComment]] = relationship(
-        "TodoItemComment",
         foreign_keys=[TodoItemComment.todo_id],
         back_populates="todo",
         cascade="all, delete-orphan",
     )
-    tags: Mapped[List["Tag"]] = relationship(  # type: ignore
+    tags: Mapped[List["Tag"]] = relationship(
         secondary="todo_item_tag_association", back_populates="todos"
     )
-    dependencies: Mapped[List["TodoItemDependency"]] = relationship(  # type: ignore
+    dependencies: Mapped[List["TodoItemDependency"]] = relationship(
         foreign_keys=[TodoItemDependency.todo_id],
         back_populates="todo",
         cascade="all, delete-orphan",
     )
     order: Mapped[TodoItemOrder | None] = relationship(
-        "TodoItemOrder",
         foreign_keys=[TodoItemOrder.todo_id],
         uselist=False,
         back_populates="todo",
         cascade="all, delete-orphan",
     )
 
-    marked_as_done_by: Mapped[Optional["User"]] = relationship(  # type: ignore
-        "User",
+    marked_as_done_by: Mapped[Optional["User"]] = relationship(
         uselist=False,
         back_populates="done_todos",
     )

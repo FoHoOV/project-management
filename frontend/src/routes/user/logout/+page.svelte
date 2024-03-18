@@ -28,6 +28,7 @@
 			text="Yes 👋🏾"
 			loading={status === 'submitting'}
 			type="submit"
+			data-testid="logout-btn"
 		/>
 	</form>
 </div>

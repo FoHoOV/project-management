@@ -6,7 +6,7 @@
 	import type { ActionData } from './$types';
 	import { addTodoItemDependencySchema } from './validator';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
@@ -22,7 +22,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListUrl(
+	action="{generateTodoListItemsUrl(
 		$page.params.project_name,
 		$page.params.project_id
 	)}?/addTodoItemDependency"
@@ -51,7 +51,7 @@
 			label="depends on (todo id)"
 			wrapperClasses="w-full"
 			autofocus={true}
-			errors={formErrors.errors?.dependant_todo_id?.toString()}
+			errors={formErrors?.errors?.dependant_todo_id?.toString()}
 		/>
 	{/snippet}
 
