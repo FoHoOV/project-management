@@ -24,12 +24,23 @@
 <script lang="ts">
 	const { data, form } = $props();
 
-	let showConfirmChanges = $state<boolean[]>(
-		new Array<boolean>(data.currentProject.users.length).fill(false)
-	);
 	let projectPermissionsRefs = $state<ProjectPermissions[]>([]);
 	let changePermissionsConfirmRefs = $state<Confirm[]>([]);
 	let detachProjectConfirmRefs = $state<Confirm[]>([]);
+
+	const showConfirmChanges = $derived.by(() => {
+		return data.currentProject.users.map((user, i) => {
+			if (i >= projectPermissionsRefs.length) {
+				return false; // ref are not bound yet
+			}
+			return (
+				projectPermissionsRefs[i].selectedPermissions.size !== user.permissions.length ||
+				![...projectPermissionsRefs[i].selectedPermissions].every((iv) =>
+					user.permissions.includes(iv)
+				)
+			);
+		});
+	});
 
 	onMount(() => {
 		drawer.navbar.end.push(closeSettings);
@@ -54,7 +65,7 @@
 
 <div class="rounded-sm p-1">
 	<h1 class="mb-5 text-lg text-info">Accessibility</h1>
-	{#each data.currentProject.users as user, i}
+	{#each data.currentProject.users as user, i (user.id)}
 		<div
 			class="collapse relative mb-2 bg-base-200 shadow-sm"
 			data-testid="user-permissions-wrapper"
@@ -206,11 +217,6 @@
 				<ProjectPermissions
 					bind:this={projectPermissionsRefs[i]}
 					preCheckedPermissions={user.permissions}
-					onChange={(permissions) => {
-						showConfirmChanges[i] =
-							permissions.size !== user.permissions.length ||
-							![...permissions].every((iv) => user.permissions.includes(iv));
-					}}
 				></ProjectPermissions>
 			</div>
 		</div>
