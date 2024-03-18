@@ -26,6 +26,9 @@
 		onSubmitSucceeded?: (
 			event: SubmitSucceededEventType<TSchema, TFormAction, TKey>['detail']
 		) => void;
+		/**
+		 * called on both client-side and server-side errors
+		 */
 		onSubmitFailed?: (event: SubmitFailedEventType<TFormAction>['detail']) => void;
 		onSubmitStarted?: (event: SubmitStartEventType['detail']) => void;
 		onRedirected?: (event: SubmitRedirectedEventType<TSchema>['detail']) => void;
