@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import MultiModal from '$components/popups/MultiModal.svelte';
+	import MultiStepModal from '$components/popups/MultiStepModal.svelte';
 	import Drawer from '$components/Drawer.svelte';
 	import Toasts from '$components/popups/Toasts.svelte';
 	import DarkModeSwitch from '$components/DarkModeSwitch.svelte';
@@ -92,7 +92,7 @@
 					<div class="mx-auto h-full overflow-y-auto">
 						{@render children()}
 						<Toasts></Toasts>
-						<MultiModal class="border border-success border-opacity-20"></MultiModal>
+						<MultiStepModal class="border border-success border-opacity-20"></MultiStepModal>
 					</div>
 				{/if}
 			</div>
