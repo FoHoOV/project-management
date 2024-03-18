@@ -4,11 +4,12 @@
 
 	export type Props = {
 		class?: string;
+		closeButtonText?: string;
 	};
 </script>
 
 <script lang="ts">
-	const { class: className = '' }: Props = $props();
+	const { class: className = '', closeButtonText = 'close' }: Props = $props();
 
 	let modal = $state<Modal | null>(null);
 	const currentStep = $derived(
@@ -46,5 +47,6 @@
 		>
 			go back
 		</button>
+		<button class="btn btn-neutral">{currentStep?.closeModalButtonText ?? 'close'}</button>
 	{/snippet}
 </Modal>

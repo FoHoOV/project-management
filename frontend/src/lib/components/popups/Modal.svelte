@@ -71,9 +71,10 @@
 			<form method="dialog">
 				{#if actions}
 					{@render actions()}
+				{:else}
+					<!-- if there is a button in form, it will close the modal -->
+					<button class="btn btn-neutral">Close</button>
 				{/if}
-				<!-- if there is a button in form, it will close the modal -->
-				<button class="btn btn-neutral">Close</button>
 			</form>
 		</div>
 	</div>
