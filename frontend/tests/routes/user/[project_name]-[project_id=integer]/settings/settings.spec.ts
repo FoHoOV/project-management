@@ -6,7 +6,7 @@ import {
 } from '../../../../common-locators/project-permissions';
 import { expect } from '@playwright/test';
 
-test('test change permissions', async ({ projectUtils, projectSettings, authUtils }) => {
+test('change user permissions', async ({ projectUtils, projectSettings, authUtils }) => {
 	const lastUser = authUtils.currentLoggedInUser!;
 
 	await authUtils.logout();
