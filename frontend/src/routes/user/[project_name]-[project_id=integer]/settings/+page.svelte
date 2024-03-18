@@ -1,8 +1,10 @@
 <script lang="ts" context="module">
+	import Confirm from '$components/Confirm.svelte';
 	import NavbarItem from '$components/navbar/NavbarItem.svelte';
 	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
+
 	import type { SnippetParams as DrawerSnippetParams } from '$components/Drawer.svelte';
 
 	import { drawer } from '$lib/stores/drawer';
@@ -18,8 +20,6 @@
 </script>
 
 <script lang="ts">
-	import Confirm from '$components/Confirm.svelte';
-
 	const { data, form } = $props();
 
 	let showConfirmChanges = $state<boolean[]>(
