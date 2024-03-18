@@ -44,7 +44,7 @@
 			hide();
 			onCanceled?.();
 		}}
-		type={confirmButtonType}
+		type="button"
 		data-testid="confirm-cancel"
 	>
 		{cancelText}
@@ -56,7 +56,7 @@
 			hide();
 			onConfirmed?.();
 		}}
-		type="button"
+		type={confirmButtonType}
 		data-testid="confirm-accept"
 	>
 		{confirmText}
