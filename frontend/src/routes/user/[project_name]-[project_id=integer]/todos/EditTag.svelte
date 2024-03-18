@@ -6,7 +6,7 @@
 	import type { ActionData } from './$types';
 	import { page } from '$app/stores';
 	import type { TodoItemPartialTag } from '$lib/generated-client/models';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
@@ -22,7 +22,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/editTag"
+	action="{generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}?/editTag"
 	enhancerConfig={{
 		validator: { schema: editTagSchema },
 		form: form,

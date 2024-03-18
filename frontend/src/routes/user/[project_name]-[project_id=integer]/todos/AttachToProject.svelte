@@ -7,7 +7,7 @@
 	import { attachToProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 
 	export type Props = {
 		form: ActionData;
@@ -20,7 +20,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListUrl(
+	action="{generateTodoListItemsUrl(
 		$page.params.project_name,
 		$page.params.project_id
 	)}?/attachToProject"
@@ -31,7 +31,9 @@
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
-		await invalidate(`${generateTodoListUrl($page.params.project_name, $page.params.project_id)}`);
+		await invalidate(
+			`${generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}`
+		);
 	}}
 	successfulMessage="Todo category is now shared with the specified project"
 >

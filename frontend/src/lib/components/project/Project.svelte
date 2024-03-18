@@ -8,7 +8,7 @@
 	import { ProjectClient } from '$lib/client-wrapper/clients';
 	import type { Project } from '$lib/generated-client/models';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
 	import type { CommonComponentStates } from '$lib';
 	import { getProjectsStoreFromContext } from '$components/project/utils';
@@ -52,6 +52,7 @@
 
 <div
 	class="card relative border border-transparent border-opacity-10 bg-base-300 text-base-content transition-colors hover:border-primary"
+	data-testid="project-item-wrapper"
 >
 	<div class="card-body">
 		<Alert type="error" message={apiErrorTitle} />
@@ -102,6 +103,7 @@
 					class="btn btn-success"
 					on:click={() => onAttachToUser?.(project)}
 					class:hidden={!onAttachToUser}
+					data-testid="share-project-access"
 				>
 					Share access
 				</button>
@@ -113,8 +115,8 @@
 					{/if}
 				</button>
 				<a
-					class="btn btn-info col-span-2 sm:col-span-1"
-					href={generateTodoListUrl(project.title, project.id)}
+					class=generateTodoListItemsUrlpan-2 sm:col-span-1"
+					href={generateTodoListItemsUrl(project.title, project.id)}
 				>
 					Show todos
 				</a>

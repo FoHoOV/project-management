@@ -15,7 +15,7 @@
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { setProjectsStoreToContext } from '$components/project/utils';
 	import { Projects } from '$lib/stores/projects';
 	import { createRootContextManager } from '$lib/stores/context-manager';
@@ -56,7 +56,7 @@
 					{#each projectsStore.current as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
-							href={generateTodoListUrl(project.title, project.id)}
+							href={generateTodoListItemsUrl(project.title, project.id)}
 							name={project.title + ' (' + '#' + project.id + ')'}
 							on:click={closeDrawer}
 						/>

@@ -2,7 +2,7 @@ export function generateBaseTodoListUrl(projectName: string, projectId: number |
 	return `/user/${projectName.replaceAll(' ', '')}-${projectId}`;
 }
 
-export function generateTodoListUrl(projectName: string, projectId: number | string): string {
+export function generateTodoListItemsUrl(projectName: string, projectId: number | string): string {
 	return `${generateBaseTodoListUrl(projectName, projectId)}/todos`;
 }
 

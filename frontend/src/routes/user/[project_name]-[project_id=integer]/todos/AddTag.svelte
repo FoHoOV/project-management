@@ -6,7 +6,7 @@
 	import type { ActionData } from './$types';
 	import { addTagSchema } from './validator';
 	import { page } from '$app/stores';
-	import { generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
@@ -21,7 +21,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListUrl($page.params.project_name, $page.params.project_id)}?/addTag"
+	action="{generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}?/addTag"
 	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,

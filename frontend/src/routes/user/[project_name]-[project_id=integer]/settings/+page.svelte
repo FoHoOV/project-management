@@ -10,7 +10,7 @@
 	import { drawer } from '$lib/stores/drawer';
 
 	import { Permission } from '$lib';
-	import { generateTodoListSettingsUrl, generateTodoListUrl } from '$lib/utils/params/route';
+	import { generateTodoListSettingsUrl, generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import {
 		detachSchema,
 		updateUserPermissionsSchema
@@ -45,7 +45,7 @@
 
 {#snippet closeSettings({ closeDrawer }: DrawerSnippetParams[0])}
 	<NavbarItem
-		href={generateTodoListUrl(data.currentProject.title, data.currentProject.id)}
+		href={generateTodoListItemsUrl(data.currentProject.title, data.currentProject.id)}
 		name=""
 		icon={faClose}
 	/>
