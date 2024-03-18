@@ -4,10 +4,12 @@
 	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
+	import Spinner from '$components/Spinner.svelte';
 
 	import type { SnippetParams as DrawerSnippetParams } from '$components/Drawer.svelte';
 
 	import { drawer } from '$lib/stores/drawer';
+	import { toasts } from '$lib/stores/toasts/toasts.svelte.js';
 
 	import { Permission } from '$lib';
 	import { generateTodoListSettingsUrl, generateTodoListItemsUrl } from '$lib/utils/params/route';
@@ -17,7 +19,6 @@
 	} from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import toasts from '$lib/stores/toasts/toasts.svelte.js';
 </script>
 
 <script lang="ts">
@@ -116,7 +117,8 @@
 									></FormInput>
 								{/each}
 							{/snippet}
-							{#snippet actions()}
+							{#snippet actions({ loading })}
+								<Spinner visible={loading}></Spinner>
 								<button
 									class="btn btn-warning flex-1"
 									onclick={(e) => {

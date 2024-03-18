@@ -115,7 +115,7 @@
 					{/if}
 				</button>
 				<a
-					class=generateTodoListItemsUrlpan-2 sm:col-span-1"
+					class="btn btn-info col-span-2 sm:col-span-1"
 					href={generateTodoListItemsUrl(project.title, project.id)}
 				>
 					Show todos
