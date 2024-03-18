@@ -1,4 +1,6 @@
 <script lang="ts" context="module">
+	import type { HTMLButtonAttributes } from 'svelte/elements';
+
 	export type Events = {
 		onConfirmed?: () => void;
 		onCanceled?: () => void;
@@ -7,6 +9,7 @@
 	export type Props = {
 		confirmText?: string;
 		cancelText?: string;
+		confirmButtonType?: HTMLButtonAttributes['type'];
 	} & Events;
 </script>
 
@@ -14,6 +17,7 @@
 	const {
 		confirmText = 'confirm',
 		cancelText = 'cancel',
+		confirmButtonType = "button",
 		onConfirmed,
 		onCanceled
 	}: Props = $props();
@@ -40,6 +44,7 @@
 			hide();
 			onCanceled?.();
 		}}
+		type={confirmButtonType}
 		data-testid="confirm-cancel"
 	>
 		{cancelText}
@@ -51,6 +56,7 @@
 			hide();
 			onConfirmed?.();
 		}}
+		type="button"
 		data-testid="confirm-accept"
 	>
 		{confirmText}

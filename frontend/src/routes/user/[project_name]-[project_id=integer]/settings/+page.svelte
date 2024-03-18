@@ -18,12 +18,16 @@
 </script>
 
 <script lang="ts">
+	import Confirm from '$components/Confirm.svelte';
+
 	const { data, form } = $props();
 
 	let showConfirmChanges = $state<boolean[]>(
 		new Array<boolean>(data.currentProject.users.length).fill(false)
 	);
 	let projectPermissionsRefs = $state<ProjectPermissions[]>([]);
+	let changePermissionsConfirmRefs = $state<Confirm[]>([]);
+	let detachProjectConfirmRefs = $state<Confirm[]>([]);
 
 	onMount(() => {
 		drawer.navbar.end.push(closeSettings);
@@ -49,7 +53,7 @@
 <div class="rounded-sm p-1">
 	<h1 class="mb-5 text-lg text-info">Accessibility</h1>
 	{#each data.currentProject.users as user, i}
-		<div class="collapse mb-2 bg-base-200 shadow-sm">
+		<div class="collapse relative mb-2 bg-base-200 shadow-sm">
 			<input type="checkbox" class="peer" />
 			<div
 				class="collapse-title flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
@@ -107,7 +111,17 @@
 								>
 									cancel
 								</button>
-								<button class="btn btn-success flex-1"> save changes </button>
+								<button
+									type="button"
+									class="btn btn-success flex-1"
+									onclick={() => {
+										changePermissionsConfirmRefs[i].show();
+									}}
+								>
+									save changes
+								</button>
+								<Confirm bind:this={changePermissionsConfirmRefs[i]} confirmButtonType="submit"
+								></Confirm>
 							{/snippet}
 						</EnhancedForm>
 					{:else}
@@ -135,7 +149,17 @@
 								></FormInput>
 							{/snippet}
 							{#snippet actions()}
-								<button class="btn btn-error"> detach </button>
+								<button
+									class="btn btn-error"
+									type="button"
+									onclick={() => {
+										detachProjectConfirmRefs[i].show();
+									}}
+								>
+									detach
+								</button>
+								<Confirm bind:this={detachProjectConfirmRefs[i]} confirmButtonType="submit"
+								></Confirm>
 							{/snippet}
 						</EnhancedForm>
 					{/if}
@@ -146,7 +170,8 @@
 					bind:this={projectPermissionsRefs[i]}
 					preCheckedPermissions={user.permissions}
 					onChange={(permissions) => {
-						showConfirmChanges[i] = ![...permissions].every((iv) => user.permissions.includes(iv));
+						console.log(permissions);
+						showConfirmChanges[i] = !user.permissions.every((iv) => [...permissions].includes(iv));
 					}}
 				></ProjectPermissions>
 			</div>
