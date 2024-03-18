@@ -43,7 +43,7 @@ export async function setPermissions(locator: Locator, permissions: Permission[]
 		})
 	);
 
-	expect((await getPermissions(locator)).sort()).toEqual(permissions.sort());
+	await expectPermissionsToBeEqual(locator, permissions);
 }
 
 export async function getPermissions(locator: Locator): Promise<Permission[]> {
@@ -59,4 +59,8 @@ export async function getPermissions(locator: Locator): Promise<Permission[]> {
 		})
 	);
 	return result;
+}
+
+export async function expectPermissionsToBeEqual(locator: Locator, permissions: Permission[]) {
+	expect((await getPermissions(locator)).sort()).toEqual(permissions.sort());
 }
