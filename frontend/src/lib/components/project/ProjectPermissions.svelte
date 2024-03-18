@@ -4,6 +4,8 @@
 	import { Permission } from '$lib';
 	import { onMount } from 'svelte';
 
+	import { Set } from 'svelte/reactivity';
+
 	export type Events = {
 		onChange?: (permissions: Set<Permission>) => void;
 	};
@@ -57,24 +59,26 @@
     }}
 ></FormInput>
 <div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
-	{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
-		<FormInput
-			name="permissions[]"
-			value={permission}
-			label={permission.replaceAll('_', ' ')}
-			type="checkbox"
-			disabled={allowAllAccessRights}
-			inputClasses="checkbox-warning"
-			labelClasses="border border-info"
-			onchange={(e)=>{
-				if ((e.target as HTMLInputElement).checked) {
-					allowedPermissions.add(permission)
-				} else {
-					allowedPermissions.delete(permission);
-				}
-				onChange?.(allowedPermissions);
-			}}
-			checked={preCheckedPermissions?.find((v) => v == permission) ? true : null}
-		></FormInput>
-	{/each}
+	{#key allowedPermissions}
+		{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
+			<FormInput
+				name="permissions[]"
+				value={permission}
+				label={permission.replaceAll('_', ' ')}
+				type="checkbox"
+				disabled={allowAllAccessRights ? true : null}
+				inputClasses="checkbox-warning"
+				labelClasses="border border-info"
+				onchange={(e)=>{
+			if ((e.target as HTMLInputElement).checked) {
+				allowedPermissions.add(permission)
+			} else {
+				allowedPermissions.delete(permission);
+			}
+			onChange?.(allowedPermissions);
+		}}
+				checked={allowedPermissions.has(permission) ? true : null}
+			></FormInput>
+		{/each}
+	{/key}
 </div>
