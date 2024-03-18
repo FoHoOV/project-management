@@ -51,7 +51,7 @@
 			label="depends on (todo id)"
 			wrapperClasses="w-full"
 			autofocus={true}
-			errors={formErrors.errors?.dependant_todo_id?.toString()}
+			errors={formErrors?.errors?.dependant_todo_id?.toString()}
 		/>
 	{/snippet}
 

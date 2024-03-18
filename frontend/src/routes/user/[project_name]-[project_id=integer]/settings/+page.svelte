@@ -17,6 +17,7 @@
 	} from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
+	import toasts from '$lib/stores/toasts/toasts.svelte.js';
 </script>
 
 <script lang="ts">
@@ -79,8 +80,23 @@
 								validator: { schema: updateUserPermissionsSchema },
 								action: 'updatePermissions'
 							}}
-							successfulMessage="project permissions updated"
+							onSubmitSucceeded={() => {
+								toasts.addToast({
+									message: 'project permissions updated',
+									type: 'success',
+									time: 5000
+								});
+							}}
+							onSubmitFailed={(e) => {
+								toasts.addToast({
+									message: e.error.message ?? 'some errors occurred',
+									type: 'error',
+									time: 5000
+								});
+							}}
+							successfulMessage=""
 							showResetButton={false}
+							showErrors={false}
 						>
 							{#snippet inputs()}
 								<FormInput
@@ -135,8 +151,23 @@
 								validator: { schema: detachSchema },
 								action: 'detach'
 							}}
-							successfulMessage="project detached from user"
+							onSubmitSucceeded={() => {
+								toasts.addToast({
+									message: 'project detached from user',
+									type: 'success',
+									time: 5000
+								});
+							}}
+							onSubmitFailed={(e) => {
+								toasts.addToast({
+									message: e.error.message ?? 'some errors occurred',
+									type: 'error',
+									time: 5000
+								});
+							}}
+							successfulMessage=""
 							showResetButton={false}
+							showErrors={false}
 						>
 							{#snippet inputs()}
 								<FormInput

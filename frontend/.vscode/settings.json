@@ -9,6 +9,7 @@
 		"Fwal",
 		"submitclienterror",
 		"submitended",
+		"submitfailed",
 		"submitredirected",
 		"submitstarted",
 		"submitsucceeded",

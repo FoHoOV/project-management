@@ -3,7 +3,7 @@ import type { z } from 'zod';
 import { convertFormDataToObject } from './utils';
 import type {
 	ValidatorOptions,
-	ValidatorErrorEvent,
+	ValidatorErrorEvents,
 	ValidatorErrorsType,
 	SubmitClientErrorEventType
 } from './validator-types';
@@ -11,7 +11,7 @@ import type {
 export function validate<TSchema extends z.ZodTypeAny>(
 	node: HTMLFormElement,
 	options: ValidatorOptions<TSchema>
-): ActionReturn<ValidatorOptions<TSchema>, ValidatorErrorEvent<TSchema>> {
+): ActionReturn<ValidatorOptions<TSchema>, ValidatorErrorEvents<TSchema>> {
 	const formClientSideValidateHandler = async (event: SubmitEvent) => {
 		if (!options) {
 			return;
@@ -27,7 +27,7 @@ export function validate<TSchema extends z.ZodTypeAny>(
 		event.stopImmediatePropagation();
 		node.dispatchEvent(
 			new CustomEvent('submitclienterror', {
-				detail: errors
+				detail: { errors, formData: convertFormDataToObject(new FormData(node)) }
 			}) satisfies SubmitClientErrorEventType<TSchema>
 		);
 	};

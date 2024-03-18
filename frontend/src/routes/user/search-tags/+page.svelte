@@ -65,13 +65,13 @@
 	showResetButton={false}
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput type="text" label="tag name" name="name" errors={formErrors.errors?.name}
+		<FormInput type="text" label="tag name" name="name" errors={formErrors?.errors?.name}
 		></FormInput>
 		<FormInput
 			type="text"
 			label="project id (Optional)"
 			name="projectId"
-			errors={formErrors.errors?.projectId?.toString()}
+			errors={formErrors?.errors?.projectId?.toString()}
 		></FormInput>
 	{/snippet}
 

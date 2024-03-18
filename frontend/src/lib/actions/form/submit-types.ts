@@ -1,11 +1,16 @@
 import type { SubmitFunction } from '@sveltejs/kit';
 import type { z } from 'zod';
 import type { ValidatorOptions } from './validator-types';
-import type { ParsedFormData, StandardFormActionNames } from './utils';
+import type {
+	ParsedFormData,
+	StandardFormActionError,
+	StandardFormActionNames,
+	getFormErrors
+} from './utils';
 
 export type EnhanceOptions<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
 	form: TFormAction;
@@ -23,7 +28,7 @@ export type EnhanceOptions<
 };
 
 export type FormActionResultType<
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = TFormAction extends { response: infer TResult }
 	? Extract<TFormAction, { response: TResult }>['response']
@@ -33,13 +38,14 @@ export type FormActionResultType<
 
 export type SubmitEvents<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
 	'on:submitstarted'?: (e: SubmitStartEventType) => void;
 	'on:submitended'?: (e: SubmitEndedEventType) => void;
 	'on:submitredirected'?: (e: SubmitRedirectedEventType<TSchema>) => void;
 	'on:submitsucceeded'?: (e: SubmitSucceededEventType<TSchema, TFormAction, TKey>) => void;
+	'on:submitfailed'?: (e: SubmitFailedEventType<TFormAction>) => void;
 };
 
 export type SubmitStartEventType = CustomEvent<void>;
@@ -53,10 +59,15 @@ export type SubmitRedirectedEventType<TSchema extends z.ZodTypeAny> = CustomEven
 
 export type SubmitSucceededEventType<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = CustomEvent<{
 	response: FormActionResultType<TFormAction, TKey>;
 	formData: ParsedFormData;
 	parsedFormData: z.infer<TSchema>;
+}>;
+
+export type SubmitFailedEventType<TFormAction extends StandardFormActionError> = CustomEvent<{
+	formData: ParsedFormData;
+	error: ReturnType<typeof getFormErrors<TFormAction>>;
 }>;

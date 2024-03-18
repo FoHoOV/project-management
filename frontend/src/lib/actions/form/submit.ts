@@ -10,11 +10,17 @@ import type {
 	SubmitRedirectedEventType,
 	SubmitStartEventType,
 	SubmitEndedEventType,
-	SubmitSucceededEventType
+	SubmitSucceededEventType,
+	SubmitFailedEventType
 } from './submit-types';
 import { validate } from './validator';
-import type { ValidatorErrorEvent } from './validator-types';
-import { convertFormDataToObject, type StandardFormActionNames } from './utils';
+import type { ValidatorErrorEvents } from './validator-types';
+import {
+	convertFormDataToObject,
+	getFormErrors,
+	type StandardFormActionError,
+	type StandardFormActionNames
+} from './utils';
 import { invalidateAll } from '$app/navigation';
 
 export function superEnhance(
@@ -25,18 +31,18 @@ export function superEnhance(
 >;
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	node: HTMLFormElement,
 	options: EnhanceOptions<TSchema, TFormAction, TKey>
 ): ActionReturn<
 	EnhanceOptions<TSchema, TFormAction, TKey>,
-	ValidatorErrorEvent<TSchema> & SubmitEvents<TSchema, TFormAction, TKey>
+	ValidatorErrorEvents<TSchema> & SubmitEvents<TSchema, TFormAction, TKey>
 >;
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,
-	TFormAction = never,
+	TFormAction extends StandardFormActionError = never,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
 	if (options?.action && !node.action.endsWith(`?/${options.action.toString()}`)) {
@@ -61,7 +67,7 @@ export function superEnhance<
 
 function _defaultSubmitHandler<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	node: HTMLFormElement,
@@ -105,9 +111,18 @@ function _defaultSubmitHandler<
 							redirectUrl: result.location.startsWith('/')
 								? new URL(location.origin + result.location)
 								: new URL(result.location),
-							formData: Object.fromEntries(formData)
+							formData: convertFormDataToObject(formData)
 						}
 					}) satisfies SubmitRedirectedEventType<TSchema>
+				);
+			} else if (result.type == 'error') {
+				node.dispatchEvent(
+					new CustomEvent('submitfailed', {
+						detail: {
+							error: getFormErrors(result),
+							formData: convertFormDataToObject(formData)
+						}
+					}) satisfies SubmitFailedEventType<TFormAction>
 				);
 			}
 
@@ -136,7 +151,7 @@ function _defaultSubmitHandler<
 
 function _getResultFromFormAction<
 	TSchema extends z.ZodTypeAny,
-	TFormAction,
+	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
 	data: Record<string, any> | undefined,
