@@ -1,6 +1,7 @@
 import { render, screen, type RenderResult } from '@testing-library/svelte/svelte5';
 import Alert from './Alert.svelte';
 import { expect, test } from 'vitest';
+import { tick } from 'svelte';
 
 function getAlertText(locator: RenderResult<Alert>) {
 	return locator.queryByTestId('alert-message');
@@ -12,8 +13,10 @@ function getDismissAlertButton(locator: RenderResult<Alert>) {
 
 test('shows error message when has value', async () => {
 	const element = render(Alert, { type: 'error', message: 'test' });
-
 	expect(getAlertText(element)).toHaveTextContent('test');
+
+	await element.rerender({ type: 'error', message: new String('test2') });
+	expect(getAlertText(element)).toHaveTextContent('test2');
 });
 
 test('doesnt show error message when null or undefined', async () => {
@@ -37,17 +40,20 @@ test('message closes', async () => {
 	expect(dismissBtn).toBeVisible();
 	dismissBtn!.click();
 
+	await tick();
+
+	expect(getDismissAlertButton(element)).toBeNull();
 	expect(getAlertText(element)).toBeNull();
 });
 
 test('after message is closed it will popup again if the same value is passed again', async () => {
-	const element = render(Alert, { type: 'error', message: 'test' });
+	const element = render(Alert, { type: 'error', message: new String('test') });
 
 	const dismissBtn = getDismissAlertButton(element);
 	expect(dismissBtn).toBeVisible();
 	dismissBtn!.click();
 
-	await element.rerender({ type: 'error', message: 'test' });
+	await element.rerender({ type: 'error', message: new String('test') });
 
 	expect(getAlertText(element)).toBeVisible();
 });
