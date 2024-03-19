@@ -5,12 +5,11 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { drawer } from '$lib/stores/drawer';
 	import { toasts } from '$lib/stores/toasts';
 
 	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
 	import { updateUserPermissionsSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
-	import { onMount } from 'svelte';
+    
 	import type { ActionData, PageData } from './$types';
 	import type { PartialUserWithPermission } from '$lib';
 

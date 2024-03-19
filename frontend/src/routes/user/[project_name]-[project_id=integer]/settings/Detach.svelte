@@ -1,11 +1,9 @@
 <script lang="ts" context="module">
 	import Confirm from '$components/Confirm.svelte';
-	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { drawer } from '$lib/stores/drawer';
 	import { toasts } from '$lib/stores/toasts';
 
 	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
