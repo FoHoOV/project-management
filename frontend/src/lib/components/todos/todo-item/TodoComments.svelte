@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/Alert.svelte';
+	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
 	import { page } from '$app/stores';
@@ -12,7 +12,7 @@
 	import { onMount } from 'svelte';
 	import { TodoComments } from '$lib/stores/todo-comments';
 	import { flip } from 'svelte/animate';
-	import { ReactiveString, type CommonComponentStates } from '$lib';
+	import { type CommonComponentStates } from '$lib';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
@@ -77,7 +77,7 @@
 
 <div class="flex flex-col">
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
-	<Alert type="error" message={new ReactiveString(apiErrorTitle)} class="mb-2" />
+	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<button
 		on:click={() => onCreateComment?.(todoId, todoCommentsStore)}
 		class="btn btn-square btn-success w-full"
