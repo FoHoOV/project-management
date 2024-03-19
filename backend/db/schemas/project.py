@@ -171,28 +171,29 @@ class Project(ProjectBase):
     @field_validator("users_", mode="before")
     @classmethod
     def ignore_if_users_provided(cls, value, validation_data):
-        if (
+        if not (
             isinstance(value, list)
             and len(value) > 0
             and not isinstance(value[0], Base)
         ):
-            return [
-                {
-                    "id": user["id"],
-                    "username": user["username"],
-                    "associations": [
-                        {
-                            "user_id": user["id"],
-                            "project_id": validation_data.data["id"],
-                            "permissions": [
-                                {"permission": Permission(perm)}
-                                for perm in user["permissions"]
-                            ],
-                        }
-                    ],
-                }
-                for user in value
-            ]
-        return value
+            return value
+
+        return [
+            {
+                "id": user["id"],
+                "username": user["username"],
+                "associations": [
+                    {
+                        "user_id": user["id"],
+                        "project_id": validation_data.data["id"],
+                        "permissions": [
+                            {"permission": Permission(perm)}
+                            for perm in user["permissions"]
+                        ],
+                    }
+                ],
+            }
+            for user in value
+        ]
 
     model_config = ConfigDict(from_attributes=True)
