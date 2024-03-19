@@ -1,13 +1,13 @@
 <script lang="ts" context="module">
 	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/Alert.svelte';
+	import Alert from '$components/alerts/Alert.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { page } from '$app/stores';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { Action, type TodoCategory } from '$lib/generated-client';
-	import { ReactiveString, type CommonComponentStates } from '$lib';
+	import { type CommonComponentStates } from '$lib';
 	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Props = {
@@ -48,7 +48,7 @@
 </script>
 
 <div class="relative my-2">
-	<Alert type="error" message={new ReactiveString(apiErrorTitle)} class="mb-2" />
+	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	{#each Object.values(Action) as action}
 		<FormInput

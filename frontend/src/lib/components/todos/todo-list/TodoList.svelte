@@ -2,19 +2,13 @@
 	import Confirm from '$components/Confirm.svelte';
 	import Draggable from './Draggable.svelte';
 	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/Alert.svelte';
+	import Alert from '$components/alerts/Alert.svelte';
 	import TodoItem from '../todo-item/TodoItem.svelte';
 	import Empty from '$components/Empty.svelte';
 	import TodoListActions from './TodoListActions.svelte';
 
 	import { page } from '$app/stores';
-	import {
-		callServiceInClient,
-		receive,
-		send,
-		type CommonComponentStates,
-		ReactiveString
-	} from '$lib';
+	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import type { TodoCategory } from '$lib/generated-client';
 	import type { Events as TodoItemEvents } from '$components/todos/todo-item/TodoItem.svelte';
@@ -103,7 +97,7 @@
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<Confirm bind:this={confirmDeleteTodoCategory} onConfirmed={handleDeleteCategory}></Confirm>
 		<div class="flex max-h-full w-full flex-col items-center overflow-y-auto p-5 {className}">
-			<Alert class="mb-2" type="error" message={new ReactiveString(apiErrorTitle)}></Alert>
+			<Alert class="mb-2" type="error" message={new String(apiErrorTitle)}></Alert>
 			<div class="flex w-full max-w-full flex-col self-start" data-testid="category-info">
 				<div class="flex w-full justify-between">
 					<div class="flex max-w-full items-baseline">

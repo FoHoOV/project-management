@@ -1,10 +1,9 @@
 <script lang="ts" context="module">
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/Alert.svelte';
+	import Alert from '$components/alerts/Alert.svelte';
 
 	import { page } from '$app/stores';
 	import { superEnhance } from '$lib/actions/form';
-	import { ReactiveString } from '$lib';
 </script>
 
 <script lang="ts">
@@ -16,7 +15,7 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center">
-	<Alert type="error" message={new ReactiveString($page.error?.message)} />
+	<Alert type="error" message={new String($page.error?.message)} />
 	<h2>Are sure you are gonna miss out on this?</h2>
 	<form
 		method="post"

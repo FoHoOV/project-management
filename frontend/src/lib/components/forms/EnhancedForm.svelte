@@ -1,9 +1,8 @@
 <script lang="ts" context="module">
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/Alert.svelte';
+	import Alert from '$components/alerts/Alert.svelte';
 
 	import {
-		ReactiveString,
 		type EnhanceOptions,
 		type StandardFormActionError,
 		type StandardFormActionNames,
@@ -132,12 +131,12 @@
 		<Alert
 			class="mb-1"
 			type="success"
-			message={new ReactiveString(componentState == 'submit-successful' ? successfulMessage : '')}
+			message={componentState == 'submit-successful' ? new String(successfulMessage) : null}
 		/>
 		<Alert
 			class="mb-1"
 			type="error"
-			message={new ReactiveString(showErrors ? formErrors?.message : null)}
+			message={showErrors ? new String(formErrors?.message) : null}
 		/>
 
 		{@render inputs({ formErrors: formErrors, reset: resetForm })}

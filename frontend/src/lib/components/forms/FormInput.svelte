@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	import Alert from '$components/Alert.svelte';
-	import { ReactiveString } from '$lib';
+	import Alert from '$components/alerts/Alert.svelte';
+
 	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';
 
 	export type Props = (
@@ -49,9 +49,9 @@
 
 	let errorMessage = $derived.by(() => {
 		if (typeof errors === 'string') {
-			return new ReactiveString(errors);
+			return new String(errors);
 		} else {
-			return new ReactiveString(errors?.at?.(0));
+			return errors?.at?.(0) ? new String(errors[0]) : null;
 		}
 	});
 

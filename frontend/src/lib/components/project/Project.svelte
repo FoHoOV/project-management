@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import Alert from '$components/Alert.svelte';
+	import Alert from '$components/alerts/Alert.svelte';
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
 
@@ -10,7 +10,7 @@
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
-	import { ReactiveString, type CommonComponentStates } from '$lib';
+	import { type CommonComponentStates } from '$lib';
 	import { getProjectsStoreFromContext } from '$components/project/utils';
 
 	export type Events = {
@@ -55,7 +55,7 @@
 	data-testid="project-item-wrapper"
 >
 	<div class="card-body">
-		<Alert type="error" message={new ReactiveString(apiErrorTitle)} />
+		<Alert type="error" message={new String(apiErrorTitle)} />
 		<Spinner visible={componentState === 'calling-service'}></Spinner>
 		<Confirm bind:this={confirmDetachProject} onConfirmed={handleDetachProjectFromUser}></Confirm>
 		<div class="card-title justify-between">
