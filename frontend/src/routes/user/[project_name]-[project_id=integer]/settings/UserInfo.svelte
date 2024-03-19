@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-	import type { PartialUserWithPermission, Token } from '$lib';
+	import { type PartialUserWithPermission, type Token, getUsername } from '$lib';
 	import { Permission } from '$lib/generated-client/models';
 
 	export type Props = {
@@ -9,8 +9,6 @@
 </script>
 
 <script lang="ts">
-	import { getUsername } from '$lib';
-
 	const { user, token }: Props = $props();
 </script>
 

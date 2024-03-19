@@ -1,6 +1,9 @@
 <script lang="ts" context="module">
 	import NavbarItem from '$components/navbar/NavbarItem.svelte';
 	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
+	import SaveChanges from '$routes/user/[project_name]-[project_id=integer]/settings/SaveChanges.svelte';
+	import Detach from '$routes/user/[project_name]-[project_id=integer]/settings/Detach.svelte';
+	import UserInfo from '$routes/user/[project_name]-[project_id=integer]/settings/UserInfo.svelte';
 
 	import { drawer } from '$lib/stores/drawer';
 
@@ -10,10 +13,6 @@
 </script>
 
 <script lang="ts">
-	import SaveChanges from '$routes/user/[project_name]-[project_id=integer]/settings/SaveChanges.svelte';
-	import Detach from '$routes/user/[project_name]-[project_id=integer]/settings/Detach.svelte';
-	import UserInfo from '$routes/user/[project_name]-[project_id=integer]/settings/UserInfo.svelte';
-
 	const { data, form } = $props();
 
 	let projectPermissionsRefs = $state<ProjectPermissions[]>([]);
