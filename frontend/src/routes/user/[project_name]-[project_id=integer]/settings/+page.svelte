@@ -4,7 +4,6 @@
 
 	import { drawer } from '$lib/stores/drawer';
 
-	import { Permission } from '$lib';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
@@ -13,6 +12,7 @@
 <script lang="ts">
 	import SaveChanges from '$routes/user/[project_name]-[project_id=integer]/settings/SaveChanges.svelte';
 	import Detach from '$routes/user/[project_name]-[project_id=integer]/settings/Detach.svelte';
+	import UserInfo from '$routes/user/[project_name]-[project_id=integer]/settings/UserInfo.svelte';
 
 	const { data, form } = $props();
 
@@ -64,15 +64,7 @@
 			<div
 				class="collapse-title static flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
 			>
-				<div class="flex items-center gap-1">
-					<span class="text-sm"> username: </span>
-					<span class="font-bold">
-						{user.username}
-					</span>
-					{#if user.permissions.indexOf(Permission.All) != -1}
-						<span class="text-sm text-success">(owner)</span>
-					{/if}
-				</div>
+				<UserInfo {user} token={data.token!}></UserInfo>
 				<div class="z-10 flex gap-2">
 					{#if showConfirmChanges[i]}
 						<SaveChanges {data} {form} {user} projectPermissionsRef={projectPermissionsRefs[i]}

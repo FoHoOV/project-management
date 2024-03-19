@@ -19,3 +19,13 @@ export async function isTokenExpirationDateValidAsync(token?: string) {
 
 	return true;
 }
+
+export function getUsername(token: string) {
+	const parsedToken: JWTPayload = decodeJwt(token);
+
+	if (!parsedToken.sub) {
+		throw new Error("username doesn't exist in the token");
+	}
+
+	return parsedToken.sub as string;
+}
