@@ -27,6 +27,12 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 	});
 
 	await projectSettings.page.goto(projectTitle, project.projectId);
+
+	expect(await projectSettings.page.isMySelf(lastUser.username)).not.toBeTruthy();
+
+	expect(
+		await projectSettings.page.isMySelf(authUtils.currentLoggedInUser?.username!)
+	).toBeTruthy();
 	expect(await projectSettings.page.isOwner(authUtils.currentLoggedInUser?.username!)).toBeTruthy();
 
 	await projectSettings.page.changePermissions({
@@ -44,6 +50,10 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 		permissions: [Permission.All],
 		expectError: true
 	});
+
+	expect(
+		await projectSettings.page.isMySelf(authUtils.currentLoggedInUser?.username!)
+	).toBeTruthy();
 	expect(
 		await projectSettings.page.isOwner(authUtils.currentLoggedInUser?.username!)
 	).not.toBeTruthy();
