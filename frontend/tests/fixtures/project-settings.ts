@@ -59,6 +59,12 @@ export class ProjectSettingsPage implements IPage {
 		);
 	}
 
+	async isMySelf(username: string) {
+		return (await (await this.getUserPermissionsRowLocator(username)).textContent())?.includes(
+			'(myself)'
+		);
+	}
+
 	async getDetachButtonLocator(username: string) {
 		return (await this.getUserPermissionsRowLocator(username)).getByRole('button', {
 			name: 'detach'
