@@ -49,38 +49,28 @@
 						<Fa icon={faBarsStaggered} />
 					</label>
 				</div>
-				{#if navbarStart}
-					{@render navbarStart({ closeDrawer })}
-				{/if}
+				{@render navbarStart?.({ closeDrawer })}
 			{/snippet}
 
 			{#snippet center()}
-				{#if navbarCenter}
-					{@render navbarCenter({ closeDrawer })}
-				{/if}
+				{@render navbarCenter?.({ closeDrawer })}
 			{/snippet}
 
 			{#snippet end()}
 				{#each drawer.navbar.end as snippet}
 					{@render snippet({ closeDrawer })}
 				{/each}
-				{#if navbarEnd}
-					{@render navbarEnd({ closeDrawer })}
-				{/if}
+				{@render navbarEnd?.({ closeDrawer })}
 			{/snippet}
 		</Navbar>
-		{#if content}
-			{@render content({ closeDrawer })}
-		{/if}
+		{@render content?.({ closeDrawer })}
 	</div>
 	<div class="drawer-side z-40 lg:!z-10 lg:p-2">
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul
 			class="menu box-border min-h-full w-80 rounded-md bg-base-300 bg-opacity-90 p-4 text-base-content backdrop-blur transition-shadow lg:shadow-2xl"
 		>
-			{#if sidebar}
-				{@render sidebar({ closeDrawer })}
-			{/if}
+			{@render sidebar?.({ closeDrawer })}
 		</ul>
 	</div>
 </div>

@@ -43,7 +43,5 @@
 		{name}
 	</a>
 
-	{#if children}
-		{@render children()}
-	{/if}
+	{@render children?.()}
 </li>

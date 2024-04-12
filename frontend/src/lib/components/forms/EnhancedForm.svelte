@@ -148,8 +148,6 @@
 			{@render actions({ loading: componentState == 'submitting', reset: resetForm })}
 		</div>
 
-		{#if footer}
-			{@render footer()}
-		{/if}
+		{@render footer?.()}
 	</div>
 </form>

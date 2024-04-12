@@ -64,9 +64,7 @@
 >
 	<div class="modal-box {modalBodyClasses}">
 		<h3 class="mb-3 text-lg font-bold">{title}</h3>
-		{#if body}
-			{@render body({ show, close })}
-		{/if}
+		{@render body?.({ show, close })}
 		<div class="modal-action">
 			<form method="dialog">
 				{#if actions}
