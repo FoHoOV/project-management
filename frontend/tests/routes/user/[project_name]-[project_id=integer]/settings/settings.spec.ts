@@ -83,4 +83,29 @@ test('canceling the change should reset back to default permissions', async ({
 	await row.getByRole('button', { name: 'cancel' }).click();
 
 	await expectPermissionsToBeEqual(row, [Permission.All]);
+	await expect(row.getByRole('button', { name: 'detach' })).toBeVisible();
+});
+
+test('when no changes are applied "save-changes" and "cancel" button should be invisible and "detach" button should be visible', async ({
+	projectUtils,
+	projectSettings,
+	authUtils
+}) => {
+	await projectUtils.page.goto();
+
+	const projectTitle = 'test';
+	const project = await projectUtils.page.create({
+		title: projectTitle,
+		description: 'test'
+	});
+
+	await projectSettings.page.goto(projectTitle, project.projectId);
+
+	const row = await projectSettings.page.getUserPermissionsRowLocator(
+		authUtils.currentLoggedInUser?.username!
+	);
+
+	await expect(row.getByRole('button', { name: 'save changes' })).not.toBeVisible();
+	await expect(row.getByRole('button', { name: 'cancel' })).not.toBeVisible();
+	await expect(row.getByRole('button', { name: 'detach' })).toBeVisible();
 });
