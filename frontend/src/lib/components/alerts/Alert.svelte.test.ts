@@ -1,4 +1,4 @@
-import { render, screen, type RenderResult } from '@testing-library/svelte/svelte5';
+import { render, type RenderResult } from '@testing-library/svelte/svelte5';
 import Alert from './Alert.svelte';
 import { expect, test } from 'vitest';
 import { tick } from 'svelte';
