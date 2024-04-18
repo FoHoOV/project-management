@@ -11,15 +11,18 @@ function getDismissAlertButton(locator: RenderResult<Alert>) {
 	return locator.queryByTestId('alert-close-dismiss-btn');
 }
 
-test('shows error message when has value', async () => {
+test('shows error messages when they have a value', async () => {
 	const element = render(Alert, { type: 'error', message: 'test' });
 	expect(getAlertText(element)).toHaveTextContent('test');
 
-	await element.rerender({ type: 'error', message: new String('test2') });
+	await element.rerender({ type: 'error', message: 'test2' });
 	expect(getAlertText(element)).toHaveTextContent('test2');
+
+	await element.rerender({ type: 'error', message: new String('test3') });
+	expect(getAlertText(element)).toHaveTextContent('test3');
 });
 
-test('doesnt show error message when null or undefined', async () => {
+test("doesn't show error messages when null or undefined", async () => {
 	const element = render(Alert, { type: 'error' });
 	expect(getAlertText(element)).toBeNull();
 
@@ -36,7 +39,7 @@ test('doesnt show error message when null or undefined', async () => {
 	expect(getAlertText(element)).toBeNull();
 });
 
-test('message closes', async () => {
+test('message closes when dismissed', async () => {
 	const element = render(Alert, { type: 'error', message: 'test' });
 
 	const dismissBtn = getDismissAlertButton(element);
@@ -49,7 +52,11 @@ test('message closes', async () => {
 	expect(getAlertText(element)).toBeNull();
 });
 
-test('after message is closed it will popup again if the same value is passed again', async () => {
+/**
+ * why this test?
+ * see https://github.com/sveltejs/svelte/issues/10615
+ */
+test('after message is dismissed it will re-popup if the same value is passed as the message prop', async () => {
 	const element = render(Alert, { type: 'error', message: new String('test') });
 
 	const dismissBtn = getDismissAlertButton(element);
