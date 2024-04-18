@@ -1,4 +1,4 @@
-This is the backend app for my simple todos app.
+This is the backend app for my project management app.
 
 ## Building the project
 First you will need to install the packages from requirements.txt
