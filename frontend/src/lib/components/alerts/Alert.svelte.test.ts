@@ -20,7 +20,10 @@ test('shows error message when has value', async () => {
 });
 
 test('doesnt show error message when null or undefined', async () => {
-	const element = render(Alert, { type: 'error', message: null });
+	const element = render(Alert, { type: 'error' });
+	expect(getAlertText(element)).toBeNull();
+
+	await element.rerender({ type: 'error', message: null });
 	expect(getAlertText(element)).toBeNull();
 
 	await element.rerender({ type: 'error', message: undefined });
