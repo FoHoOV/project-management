@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "autoflush",
+    "autouse",
     "DOESNT",
     "fastapi",
     "pydantic",
