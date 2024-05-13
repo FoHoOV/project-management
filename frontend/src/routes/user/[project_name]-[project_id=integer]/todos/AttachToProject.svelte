@@ -27,7 +27,7 @@
 	enhancerConfig={{
 		validator: { schema: attachToProjectSchema },
 		form: form,
-		action: 'attachToProject',
+		actionName: 'attachToProject',
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {

@@ -25,7 +25,7 @@
 	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,
-		action: 'addTag',
+		actionName: 'addTag',
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {

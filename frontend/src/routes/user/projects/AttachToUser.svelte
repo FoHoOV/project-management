@@ -26,7 +26,7 @@
 	enhancerConfig={{
 		validator: { schema: attachProjectSchema },
 		form: form,
-		action: 'attach',
+		actionName: 'attach',
 		resetOnSubmit: false,
 		invalidateAllAfterSubmit: false
 	}}

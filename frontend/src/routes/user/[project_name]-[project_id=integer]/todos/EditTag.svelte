@@ -26,7 +26,7 @@
 	enhancerConfig={{
 		validator: { schema: editTagSchema },
 		form: form,
-		action: 'editTag',
+		actionName: 'editTag',
 		resetOnSubmit: false,
 		invalidateAllAfterSubmit: false
 	}}

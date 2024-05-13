@@ -16,7 +16,7 @@ export type EnhanceOptions<
 	form: TFormAction;
 	validator: ValidatorOptions<TSchema>;
 	submit?: SubmitFunction;
-	action?: TKey;
+	actionName?: TKey;
 	resetOnSubmit?: boolean;
 	invalidateAllAfterSubmit?: boolean;
 	/**

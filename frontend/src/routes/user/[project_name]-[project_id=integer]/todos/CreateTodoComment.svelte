@@ -28,7 +28,7 @@
 	enhancerConfig={{
 		validator: { schema: createTodoCommentSchema },
 		form: form,
-		action: 'createTodoComment',
+		actionName: 'createTodoComment',
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {

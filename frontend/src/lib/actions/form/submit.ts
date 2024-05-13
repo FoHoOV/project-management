@@ -45,7 +45,7 @@ export function superEnhance<
 	TFormAction extends StandardFormActionError = never,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
-	if (options?.action && !node.action.endsWith(`?/${options.action.toString()}`)) {
+	if (options?.actionName && !node.action.endsWith(`?/${options.actionName.toString()}`)) {
 		throw new Error('form.action should end with the passed action in enhancer options');
 	}
 
@@ -177,11 +177,11 @@ function _getResultFromFormAction<
 		throw new Error("form action didn't return anything which is an unexpected behavior");
 	}
 
-	if (!options || !options.action) {
+	if (!options || !options.actionName) {
 		return data['response'];
 	}
 
-	return data[options.action as string]['response'];
+	return data[options.actionName as string]['response'];
 }
 
 function _fireSubmitFailureForClientSideError<

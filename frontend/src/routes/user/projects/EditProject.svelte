@@ -24,7 +24,7 @@
 	enhancerConfig={{
 		validator: { schema: editProjectSchema },
 		form: form,
-		action: 'edit',
+		actionName: 'edit',
 		resetOnSubmit: false,
 		invalidateAllAfterSubmit: false
 	}}

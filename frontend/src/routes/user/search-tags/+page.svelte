@@ -55,7 +55,7 @@
 	action="/user/search-tags?/search"
 	enhancerConfig={{
 		form: form,
-		action: 'search',
+		actionName: 'search',
 		resetOnSubmit: false,
 		validator: { schema: searchTagSchema }
 	}}

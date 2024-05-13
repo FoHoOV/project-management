@@ -29,7 +29,7 @@
 	enhancerConfig={{
 		validator: { schema: editTodoCommentSchema },
 		form: form,
-		action: 'editTodoComment',
+		actionName: 'editTodoComment',
 		resetOnSubmit: false,
 		invalidateAllAfterSubmit: false
 	}}

@@ -29,7 +29,7 @@
 	enhancerConfig={{
 		form: form,
 		validator: { schema: detachSchema },
-		action: 'detach'
+		actionName: 'detach'
 	}}
 	onSubmitSucceeded={() => {
 		toasts.addToast({

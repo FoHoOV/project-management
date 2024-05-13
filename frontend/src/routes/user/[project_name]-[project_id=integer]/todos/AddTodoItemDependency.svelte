@@ -29,7 +29,7 @@
 	enhancerConfig={{
 		validator: { schema: addTodoItemDependencySchema },
 		form: form,
-		action: 'addTodoItemDependency',
+		actionName: 'addTodoItemDependency',
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {

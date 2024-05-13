@@ -35,7 +35,7 @@
 	enhancerConfig={{
 		form: form,
 		validator: { schema: updateUserPermissionsSchema },
-		action: 'updatePermissions'
+		actionName: 'updatePermissions'
 	}}
 	onSubmitSucceeded={() => {
 		toasts.addToast({
