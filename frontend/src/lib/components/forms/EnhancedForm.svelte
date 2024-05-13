@@ -142,7 +142,7 @@
 		{@render inputs({ formErrors: formErrors, reset: resetForm })}
 		<div class="mt-1 flex w-full flex-wrap items-start justify-end gap-2 {actionsWrapperClasses}">
 			{#if showResetButton}
-				<LoadingButton text="reset" class="btn-warning flex-1" type="button" on:click={resetForm} />
+				<LoadingButton text="reset" class="btn-warning flex-1" type="button" onclick={resetForm} />
 			{/if}
 
 			{@render actions({ loading: componentState == 'submitting', reset: resetForm })}

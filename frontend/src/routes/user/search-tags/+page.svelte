@@ -77,7 +77,7 @@
 
 	{#snippet actions({ loading, reset })}
 		<LoadingButton text="Search" class="btn-success flex-1" type="submit" {loading} />
-		<LoadingButton text="Reset" class="btn-warning flex-1" type="button" on:click={reset} />
+		<LoadingButton text="Reset" class="btn-warning flex-1" type="button" onclick={reset} />
 	{/snippet}
 </EnhancedForm>
 
