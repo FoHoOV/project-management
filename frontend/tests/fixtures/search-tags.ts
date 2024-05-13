@@ -55,7 +55,9 @@ export const test = todoItemTest.extend<{
 }>({
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	searchTagsUtils: async ({ enhancedPage, authUtils }, use) => {
-		await authUtils.login();
+		if (!authUtils.isAuthenticated) {
+			await authUtils.login();
+		}
 		// I have to include auth because we need to be authenticated to use this page
 		const searchTags = new SearchTagsPage(enhancedPage);
 		await use({

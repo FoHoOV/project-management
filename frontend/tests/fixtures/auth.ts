@@ -17,6 +17,9 @@ export class Auth {
 	}
 
 	async login() {
+		if (this.isAuthenticated) {
+			throw new Error('already logged in, try logging out first.');
+		}
 		// Generate new user credentials
 		const username = 'test' + crypto.getRandomValues(new Uint32Array(1)).join('');
 		const password = username;
@@ -79,6 +82,10 @@ export class Auth {
 
 	get currentLoggedInUser() {
 		return this.#currentLoggedInUser;
+	}
+
+	get isAuthenticated(){
+		return this.#currentLoggedInUser !== undefined;
 	}
 }
 
