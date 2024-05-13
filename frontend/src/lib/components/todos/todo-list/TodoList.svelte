@@ -116,7 +116,7 @@
 					</div>
 					<div class="flex gap-2">
 						<button
-							on:click={() => restProps.onEditTodoCategory?.(category)}
+							onclick={() => restProps.onEditTodoCategory?.(category)}
 							class="text-xl"
 							class:hidden={!restProps.onEditTodoCategory}
 							data-testid="edit-category"
@@ -125,14 +125,14 @@
 						</button>
 						<button
 							class="text-xl"
-							on:click={handleShowManageActions}
+							onclick={handleShowManageActions}
 							data-testid="update-category-actions"
 						>
 							<Fa icon={faRuler} class="text-info" />
 						</button>
 						<button
 							class="text-xl"
-							on:click={() => confirmDeleteTodoCategory?.show()}
+							onclick={() => confirmDeleteTodoCategory?.show()}
 							data-testid="delete-category"
 						>
 							<Fa icon={faTrashCan} class="text-red-400" />
@@ -152,7 +152,7 @@
 				<button
 					class="btn btn-success flex-1"
 					class:hidden={!restProps.onCreateTodoItem}
-					on:click={() => restProps.onCreateTodoItem?.(category)}
+					onclick={() => restProps.onCreateTodoItem?.(category)}
 				>
 					<Fa icon={faCirclePlus} />
 					Add todo
@@ -160,7 +160,7 @@
 				<button
 					class="btn btn-info flex-1"
 					class:hidden={!restProps.onAttachToProject}
-					on:click={() => restProps.onAttachToProject?.(category)}
+					onclick={() => restProps.onAttachToProject?.(category)}
 				>
 					<Fa icon={faPaperclip} />
 					Attach to project

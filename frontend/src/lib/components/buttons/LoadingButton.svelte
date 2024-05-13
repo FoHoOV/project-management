@@ -18,14 +18,13 @@
 </script>
 
 <button
-	on:click
 	class="btn disabled:cursor-not-allowed {className}"
 	disabled={loading}
 	{type}
 	{...restProps}
 >
 	{#if loading}
-		<span class="loading loading-dots loading-sm" />
+		<span class="loading loading-dots loading-sm"></span>
 	{:else}
 		{text}
 	{/if}

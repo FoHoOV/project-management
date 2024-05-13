@@ -53,7 +53,7 @@
 	{/snippet}
 
 	{#snippet footer()}
-		<span class="divider divider-vertical" />
+		<span class="divider divider-vertical"></span>
 
 		<a class="flex flex-col items-start self-start" href="/login">
 			<h5>Already have an account?</h5>

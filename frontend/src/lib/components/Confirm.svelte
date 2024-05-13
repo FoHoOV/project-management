@@ -40,7 +40,7 @@
 >
 	<button
 		class="btn btn-neutral"
-		on:click={() => {
+		onclick={() => {
 			hide();
 			onCanceled?.();
 		}}
@@ -52,7 +52,7 @@
 
 	<button
 		class="btn btn-warning"
-		on:click={() => {
+		onclick={() => {
 			hide();
 			onConfirmed?.();
 		}}

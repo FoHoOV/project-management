@@ -10,7 +10,7 @@ export type ValidatorOptions<TSchema extends z.ZodTypeAny> = {
 };
 
 export type ValidatorErrorEvents<TSchema extends z.ZodTypeAny> = {
-	'on:submitclienterror': (e: SubmitClientErrorEventType<TSchema>) => void;
+	onsubmitclienterror: (e: SubmitClientErrorEventType<TSchema>) => void;
 };
 
 export type SubmitClientErrorEventType<TSchema extends z.ZodTypeAny> = CustomEvent<{

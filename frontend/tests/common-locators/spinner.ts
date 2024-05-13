@@ -7,8 +7,5 @@ export function getSpinnerIn(locator: Locator) {
 export async function waitForSpinnerStateToBeIdle(locator: Locator, timeout?: number) {
 	const spinner = getSpinnerIn(locator);
 	await spinner.waitFor({ state: 'hidden', timeout });
-	await expect(
-		spinner,
-		'no loading state should be visible'
-	).not.toBeVisible();
+	await expect(spinner, 'no loading state should be visible').not.toBeVisible();
 }

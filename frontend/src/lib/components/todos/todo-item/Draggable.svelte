@@ -143,9 +143,9 @@
 		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE],
 		disabled: componentState === 'calling-service' || disabled
 	}}
-	on:dropped={handleUpdateTodoItemOrder}
-	on:dragHover={handleDragHover}
-	on:dragLeft={handleDragLeft}
+	ondropped={handleUpdateTodoItemOrder}
+	ondragHover={handleDragHover}
+	ondragLeft={handleDragLeft}
 >
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<DropZoneHelper

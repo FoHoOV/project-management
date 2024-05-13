@@ -18,8 +18,8 @@ export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
 };
 
 export type DropZoneEvents<Data extends object> = {
-	'on:dropped': (event: DropEvent<Data>) => void;
-	'on:dragEntered'?: (event: CustomDragEvent) => void;
-	'on:dragLeft'?: (event: CustomDragEvent) => void;
-	'on:dragHover'?: (event: CustomDragEvent) => void;
+	ondropped: (event: DropEvent<Data>) => void;
+	ondragEntered?: (event: CustomDragEvent) => void;
+	ondragLeft?: (event: CustomDragEvent) => void;
+	ondragHover?: (event: CustomDragEvent) => void;
 };

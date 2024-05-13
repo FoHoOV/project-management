@@ -205,17 +205,17 @@
 						class:checkbox-success={todo.is_done}
 						class:checkbox-error={!todo.is_done}
 						checked={todo.is_done}
-						on:click={handleChangeDoneStatus}
+						onclick={handleChangeDoneStatus}
 						data-testid="todo-item-is-done"
 					/>
 					<button
-						on:click={() => restProps.onEditTodoItem?.(todo)}
+						onclick={() => restProps.onEditTodoItem?.(todo)}
 						class:hidden={!restProps.onEditTodoItem}
 						data-testid="todo-item-edit"
 					>
 						<Fa icon={faEdit} class="text-success" />
 					</button>
-					<button on:click={() => confirmDeleteTodo?.show()} data-testid="todo-item-delete">
+					<button onclick={() => confirmDeleteTodo?.show()} data-testid="todo-item-delete">
 						<Fa icon={faTrashCan} class="text-red-400" />
 					</button>
 				</div>
@@ -256,7 +256,7 @@
 			<div class="flex gap-2 self-end py-1">
 				<div class="indicator self-end" data-testid="todo-item-comments">
 					<span class="badge indicator-item badge-secondary">{todo.comments_count}</span>
-					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowComments}>
+					<button class="btn btn-outline btn-info btn-sm" onclick={handleShowComments}>
 						<Fa icon={faComment}></Fa>
 						<span>comments</span>
 					</button>
@@ -264,7 +264,7 @@
 
 				<div class="indicator self-end" data-testid="todo-item-tags">
 					<span class="badge indicator-item badge-secondary">{todo.tags.length}</span>
-					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowTags}>
+					<button class="btn btn-outline btn-info btn-sm" onclick={handleShowTags}>
 						<Fa icon={faTags}></Fa>
 						<span>tags</span>
 					</button>
@@ -274,7 +274,7 @@
 			<div class="flex gap-2 self-end">
 				<div class="indicator col-start-2 self-end" data-testid="todo-item-dependencies">
 					<span class="badge indicator-item badge-secondary">{todo.dependencies.length}</span>
-					<button class="btn btn-outline btn-info btn-sm" on:click={handleShowDependencies}>
+					<button class="btn btn-outline btn-info btn-sm" onclick={handleShowDependencies}>
 						<Fa icon={faSitemap}></Fa>
 						<span>dependencies</span>
 					</button>

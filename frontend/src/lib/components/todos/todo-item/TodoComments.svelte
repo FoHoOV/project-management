@@ -79,7 +79,7 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<button
-		on:click={() => onCreateComment?.(todoId, todoCommentsStore)}
+		onclick={() => onCreateComment?.(todoId, todoCommentsStore)}
 		class="btn btn-square btn-success w-full"
 		class:hidden={!onCreateComment}
 	>
@@ -102,7 +102,7 @@
 				<div class="card-actions justify-end">
 					<button
 						class="btn btn-square btn-error btn-sm"
-						on:click={() => deleteCommentConfirms[i].show()}
+						onclick={() => deleteCommentConfirms[i].show()}
 						data-testid="todo-comment-delete"
 					>
 						<Fa icon={faTrashCan}></Fa>
@@ -110,7 +110,7 @@
 					<button
 						class="btn btn-square btn-info btn-sm"
 						class:hidden={!onEditComment}
-						on:click={() => onEditComment?.(comment, todoCommentsStore)}
+						onclick={() => onEditComment?.(comment, todoCommentsStore)}
 					>
 						<Fa icon={faEdit}></Fa>
 					</button>

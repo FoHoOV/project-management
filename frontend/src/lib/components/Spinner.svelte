@@ -33,5 +33,5 @@
 	class:hidden={!_internalVisible}
 	data-testid="spinner-loading-state"
 >
-	<span class="loading loading-spinner loading-md dark:text-black" />
+	<span class="loading loading-spinner loading-md dark:text-black"></span>
 </div>

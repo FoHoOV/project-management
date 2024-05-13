@@ -13,7 +13,17 @@
     "[postcss]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "cSpell.words": ["autouse", "testid"],
+    "cSpell.words": [
+      "autouse",
+      "ondropped",
+      "onsubmitclienterror",
+      "onsubmitended",
+      "onsubmitfailed",
+      "onsubmitredirected",
+      "onsubmitstarted",
+      "onsubmitsucceeded",
+      "testid"
+    ],
     "svelte.enable-ts-plugin": true
   }
 }

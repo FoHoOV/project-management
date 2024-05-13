@@ -41,7 +41,7 @@
 	{/snippet}
 
 	{#snippet footer()}
-		<span class="divider divider-vertical" />
+		<span class="divider divider-vertical"></span>
 
 		<a class="flex flex-col items-start self-start" href="/signup">
 			<h5>Don't have an account yet?</h5>

@@ -61,7 +61,7 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<button
-		on:click={handleCreateDependency}
+		onclick={handleCreateDependency}
 		class="btn btn-square btn-success w-full"
 		class:hidden={!onAddDependency}
 	>
@@ -92,7 +92,7 @@
 				<div class="card-body flex-row-reverse justify-between">
 					<button
 						class="btn btn-square btn-error btn-sm"
-						on:click={() => deleteDependencyConfirms[i].show()}
+						onclick={() => deleteDependencyConfirms[i].show()}
 						data-testid="todo-dependency-delete"
 					>
 						<Fa icon={faTrashCan}></Fa>

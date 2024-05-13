@@ -9,7 +9,7 @@
 
 	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
 	import { updateUserPermissionsSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
-    
+
 	import type { ActionData, PageData } from './$types';
 	import type { PartialUserWithPermission } from '$lib';
 

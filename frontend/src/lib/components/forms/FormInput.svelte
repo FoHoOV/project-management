@@ -87,7 +87,7 @@
 				class="{defaultInputClasses} {inputClasses}"
 				value={value?.toString()}
 				{...restProps as HTMLTextareaAttributes}
-			/>
+			></textarea>
 		{:else}
 			<input
 				bind:this={input}

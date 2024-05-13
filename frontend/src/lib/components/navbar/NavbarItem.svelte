@@ -5,6 +5,7 @@
 	import { toggleClass } from '$lib/actions';
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import type { Snippet } from 'svelte';
+	import type { HTMLAnchorAttributes } from 'svelte/elements';
 
 	export type Props = {
 		name: string;
@@ -13,7 +14,7 @@
 		setActiveClassOnClick?: boolean;
 		class?: string;
 		children?: Snippet;
-	};
+	} & Partial<Omit<HTMLAnchorAttributes, 'class' | 'href'>>;
 </script>
 
 <script lang="ts">
@@ -23,19 +24,20 @@
 		icon = null,
 		setActiveClassOnClick = true,
 		class: className = '',
-		children
+		children,
+		...restProps
 	}: Props = $props();
 </script>
 
 <li class="break-words-legacy max-w-full whitespace-normal break-words">
 	<a
-		on:click
 		class="text-xl normal-case {className}"
 		{href}
 		use:toggleClass={{
 			classes: ['active'],
 			isActive: setActiveClassOnClick && $page.url.href.endsWith(href)
 		}}
+		{...restProps}
 	>
 		{#if icon}
 			<Fa {icon} />

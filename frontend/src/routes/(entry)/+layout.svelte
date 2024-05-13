@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-		import { page } from '$app/stores';
+	import { page } from '$app/stores';
 </script>
 
 <script lang="ts">

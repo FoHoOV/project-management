@@ -44,13 +44,13 @@
 
 <Drawer id="app-drawer" navbarTitle="Todos" navbarTitleHref="/user/projects">
 	{#snippet sidebar({ closeDrawer })}
-		<NavbarItem icon={faHome} href="/" name="Home" on:click={closeDrawer} />
+		<NavbarItem icon={faHome} href="/" name="Home" onclick={closeDrawer} />
 		{#if $page.data.token}
 			<NavbarItem
 				icon={faProjectDiagram}
 				href="/user/projects"
 				name="Projects"
-				on:click={closeDrawer}
+				onclick={closeDrawer}
 			>
 				<ul>
 					{#each projectsStore.current as project (project.id)}
@@ -58,7 +58,7 @@
 							icon={faArrowRight}
 							href={generateTodoListItemsUrl(project.title, project.id)}
 							name={project.title + ' (' + '#' + project.id + ')'}
-							on:click={closeDrawer}
+							onclick={closeDrawer}
 						/>
 					{/each}
 				</ul>
@@ -67,7 +67,7 @@
 				icon={faSearch}
 				href="/user/search-tags"
 				name="Search by tag"
-				on:click={closeDrawer}
+				onclick={closeDrawer}
 			></NavbarItem>
 		{/if}
 	{/snippet}
@@ -87,7 +87,7 @@
 				{#if $navigating}
 					<span
 						class="loading loading-ball loading-lg absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
-					/>
+					></span>
 				{:else}
 					<div class="mx-auto h-full overflow-y-auto">
 						{@render children()}

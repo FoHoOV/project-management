@@ -64,5 +64,5 @@
 <CircleButton
 	icon={faPlus}
 	class="btn-primary fixed bottom-8 right-8 h-16 w-16"
-	on:click={handleCreateProject}
+	onclick={handleCreateProject}
 />

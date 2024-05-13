@@ -20,8 +20,8 @@
 	<form
 		method="post"
 		use:superEnhance
-		on:submitstarted={() => (status = 'submitting')}
-		on:submitended={() => (status = 'none')}
+		onsubmitstarted={() => (status = 'submitting')}
+		onsubmitended={() => (status = 'none')}
 	>
 		<LoadingButton
 			class="btn-warning btn-wide mt-2"

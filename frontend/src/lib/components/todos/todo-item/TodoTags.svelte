@@ -79,7 +79,7 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<button
-		on:click={() => onAddTag?.(todo)}
+		onclick={() => onAddTag?.(todo)}
 		class="btn btn-square btn-success w-full"
 		class:hidden={!onAddTag}
 	>
@@ -115,7 +115,7 @@
 						>
 							<button
 								class="btn btn-square btn-error btn-sm"
-								on:click={() => deleteTagConfirms[i].show()}
+								onclick={() => deleteTagConfirms[i].show()}
 								data-testid="todo-tag-delete"
 							>
 								<Fa icon={faTrashCan}></Fa>
@@ -128,7 +128,7 @@
 						>
 							<button
 								class="btn btn-square btn-error btn-sm"
-								on:click={() => detachTagConfirms[i].show()}
+								onclick={() => detachTagConfirms[i].show()}
 							>
 								<Fa icon={faUnlink} class="text-error-content"></Fa>
 							</button>
@@ -139,7 +139,7 @@
 							class="tooltip tooltip-top tooltip-left tooltip-info"
 							data-tip="edit tag name"
 						>
-							<button class="btn btn-square btn-info btn-sm" on:click={() => onEditTag?.(tag)}>
+							<button class="btn btn-square btn-info btn-sm" onclick={() => onEditTag?.(tag)}>
 								<Fa icon={faEdit} class="text-info-content"></Fa>
 							</button>
 						</div>

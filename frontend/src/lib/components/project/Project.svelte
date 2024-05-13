@@ -67,7 +67,7 @@
 					>{project.title}</span
 				>
 			</div>
-			<button on:click={() => onEditProject?.(project)} class:hidden={!onEditProject}>
+			<button onclick={() => onEditProject?.(project)} class:hidden={!onEditProject}>
 				<Fa icon={faEdit} class="text-success" />
 			</button>
 		</div>
@@ -101,13 +101,13 @@
 			<div class="grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
 				<button
 					class="btn btn-success"
-					on:click={() => onAttachToUser?.(project)}
+					onclick={() => onAttachToUser?.(project)}
 					class:hidden={!onAttachToUser}
 					data-testid="share-project-access"
 				>
 					Share access
 				</button>
-				<button class="btn btn-error" on:click={() => confirmDetachProject?.show()}>
+				<button class="btn btn-error" onclick={() => confirmDetachProject?.show()}>
 					{#if project.users.length == 1}
 						Delete
 					{:else}

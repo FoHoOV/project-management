@@ -100,25 +100,25 @@
 <form
 	{action}
 	use:superEnhance={enhancerConfig}
-	on:submitclienterror={(e) => {
+	onsubmitclienterror={(e) => {
 		onClientSideValidationErrors?.(e.detail.errors);
 	}}
-	on:submitstarted={(e) => {
+	onsubmitstarted={(e) => {
 		componentState = 'submitting';
 		onSubmitStarted?.(e.detail);
 	}}
-	on:submitended={() => {
+	onsubmitended={() => {
 		componentState = 'none';
 	}}
-	on:submitsucceeded={async (e) => {
+	onsubmitsucceeded={async (e) => {
 		resetForm();
 		componentState = 'submit-successful';
 		onSubmitSucceeded?.(e.detail);
 	}}
-	on:submitredirected={async (e) => {
+	onsubmitredirected={async (e) => {
 		onRedirected?.(e.detail);
 	}}
-	on:submitfailed={async (e) => {
+	onsubmitfailed={async (e) => {
 		componentState = 'none';
 		formErrors = e.detail.error;
 		onSubmitFailed?.(e.detail);

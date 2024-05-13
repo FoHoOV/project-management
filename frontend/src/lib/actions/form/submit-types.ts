@@ -41,11 +41,11 @@ export type SubmitEvents<
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
-	'on:submitstarted'?: (e: SubmitStartEventType) => void;
-	'on:submitended'?: (e: SubmitEndedEventType) => void;
-	'on:submitredirected'?: (e: SubmitRedirectedEventType<TSchema>) => void;
-	'on:submitsucceeded'?: (e: SubmitSucceededEventType<TSchema, TFormAction, TKey>) => void;
-	'on:submitfailed'?: (
+	onsubmitstarted?: (e: SubmitStartEventType) => void;
+	onsubmitended?: (e: SubmitEndedEventType) => void;
+	onsubmitredirected?: (e: SubmitRedirectedEventType<TSchema>) => void;
+	onsubmitsucceeded?: (e: SubmitSucceededEventType<TSchema, TFormAction, TKey>) => void;
+	onsubmitfailed?: (
 		e: SubmitFailedEventType<TFormAction>
 	) => void /*** called on both client-side and server-side errors*/;
 };

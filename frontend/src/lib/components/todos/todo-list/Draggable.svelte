@@ -171,9 +171,9 @@
 		targetDropZoneNames: [TODO_CATEGORY_ORDER_DROP_ZONE],
 		disabled: componentState === 'calling-service' || disabled
 	}}
-	on:dragHover={handleDragHover}
-	on:dragLeft={handleDragLeft}
-	on:dropped={handleOnDrop}
+	ondragHover={handleDragHover}
+	ondragLeft={handleDragLeft}
+	ondropped={handleOnDrop}
 	class="relative h-full"
 >
 	<Spinner visible={componentState === 'calling-service'}></Spinner>

@@ -27,7 +27,7 @@ export function superEnhance(
 	node: HTMLFormElement
 ): ActionReturn<
 	undefined,
-	Pick<SubmitEvents<never, never, never>, 'on:submitstarted' | 'on:submitended'>
+	Pick<SubmitEvents<never, never, never>, 'onsubmitstarted' | 'onsubmitended'>
 >;
 export function superEnhance<
 	TSchema extends z.ZodTypeAny,

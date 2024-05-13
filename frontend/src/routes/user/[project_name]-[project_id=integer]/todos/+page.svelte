@@ -209,7 +209,7 @@
 {/snippet}
 
 {#if componentState === 'loading'}
-	<span class="loading loading-ring m-auto block" />
+	<span class="loading loading-ring m-auto block"></span>
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
 		{#each todoCategoriesStore.current as category (category.id)}
@@ -238,6 +238,6 @@
 	<CircleButton
 		icon={faPlus}
 		class="btn-primary fixed bottom-8 right-8 h-16 w-16"
-		on:click={handleCreateTodoCategory}
+		onclick={handleCreateTodoCategory}
 	/>
 {/if}

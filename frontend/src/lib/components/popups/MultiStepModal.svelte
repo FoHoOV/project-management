@@ -43,7 +43,7 @@
 			type="button"
 			class="btn btn-neutral m-auto"
 			class:hidden={!showGoBackButton}
-			on:click={handleGoBack}
+			onclick={handleGoBack}
 		>
 			go back
 		</button>

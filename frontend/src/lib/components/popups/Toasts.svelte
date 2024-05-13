@@ -34,7 +34,7 @@
 
 			<button
 				class="btn btn-square btn-sm"
-				on:click={() => {
+				onclick={() => {
 					toasts.removeToast(toast);
 				}}
 			>
