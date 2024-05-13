@@ -1,7 +1,7 @@
 from datetime import timedelta
 import datetime
 from click import DateTime
-from jose import jwt
+from joserfc import jwt
 from sqlalchemy.orm import Session
 from config import settings
 
@@ -25,6 +25,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.datetime.now(datetime.UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+        {"alg": settings.ALGORITHM}, to_encode, settings.SECRET_KEY
     )
     return encoded_jwt
