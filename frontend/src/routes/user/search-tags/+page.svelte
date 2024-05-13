@@ -65,19 +65,31 @@
 	showResetButton={false}
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput type="text" label="tag name" name="name" errors={formErrors?.errors?.name}
+		<FormInput
+			type="text"
+			label="tag name"
+			name="name"
+			errors={formErrors?.errors?.name}
+			data-testid="tag-name-input"
 		></FormInput>
 		<FormInput
 			type="text"
 			label="project id (Optional)"
 			name="projectId"
 			errors={formErrors?.errors?.projectId?.toString()}
+			data-testid="project-id-input"
 		></FormInput>
 	{/snippet}
 
 	{#snippet actions({ loading, reset })}
 		<LoadingButton text="Search" class="btn-success flex-1" type="submit" {loading} />
-		<LoadingButton text="Reset" class="btn-warning flex-1" type="button" onclick={reset} />
+		<LoadingButton
+			text="Reset"
+			class="btn-warning flex-1"
+			type="button"
+			onclick={reset}
+			data-testid="tags-reset-btn"
+		/>
 	{/snippet}
 </EnhancedForm>
 

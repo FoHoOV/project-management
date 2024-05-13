@@ -16,15 +16,27 @@ export class SearchTagsPage implements IPage {
 	}
 
 	async search({ tagName, projectId }: { tagName: string; projectId?: number }) {
-		await this.#enhancedPage.getByPlaceholder('tag name').click();
-		await this.#enhancedPage.getByPlaceholder('tag name').fill(tagName);
-		await this.#enhancedPage.getByPlaceholder('tag name').press('Tab');
-		projectId && (await this.#enhancedPage.getByPlaceholder('project id (Optional)').fill('1'));
+		await this.getTagNameInput().click();
+		await this.getTagNameInput().fill(tagName);
+		await this.getTagNameInput().press('Tab');
+		projectId && (await this.getProjectIdInput().fill('1'));
 		await this.#enhancedPage.getByRole('button', { name: 'Search' }).click();
 	}
 
 	getResultsWrapperLocator() {
 		return this.#enhancedPage.getByTestId('search-tags-results-wrapper');
+	}
+
+	getResetButton() {
+		return this.#enhancedPage.getByTestId('tags-reset-btn');
+	}
+
+	getTagNameInput() {
+		return this.#enhancedPage.getByTestId('tag-name-input');
+	}
+
+	getProjectIdInput() {
+		return this.#enhancedPage.getByTestId('project-id-input');
 	}
 
 	async expectNotFoundError() {

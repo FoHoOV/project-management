@@ -86,8 +86,8 @@
 	let componentState = $state<ComponentStates>('none');
 	let formErrors = $state<ReturnType<typeof getFormErrors<TFormAction>>>();
 
-	export function resetForm() {
-		enhancerConfig.resetOnSubmit !== false && formElement?.reset();
+	export function resetForm(force: boolean = false) {
+		(force || enhancerConfig.resetOnSubmit === true) && formElement?.reset();
 		formErrors = { errors: undefined, message: undefined };
 		componentState = 'none';
 	}
@@ -139,13 +139,30 @@
 			message={showErrors ? new String(formErrors?.message) : null}
 		/>
 
-		{@render inputs({ formErrors: formErrors, reset: resetForm })}
+		{@render inputs({
+			formErrors: formErrors,
+			reset: () => {
+				resetForm(true);
+			}
+		})}
 		<div class="mt-1 flex w-full flex-wrap items-start justify-end gap-2 {actionsWrapperClasses}">
 			{#if showResetButton}
-				<LoadingButton text="reset" class="btn-warning flex-1" type="button" onclick={resetForm} />
+				<LoadingButton
+					text="reset"
+					class="btn-warning flex-1"
+					type="button"
+					onclick={() => {
+						resetForm(true);
+					}}
+				/>
 			{/if}
 
-			{@render actions({ loading: componentState == 'submitting', reset: resetForm })}
+			{@render actions({
+				loading: componentState == 'submitting',
+				reset: () => {
+					resetForm(true);
+				}
+			})}
 		</div>
 
 		{@render footer?.()}
