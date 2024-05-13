@@ -3,11 +3,10 @@ from typing import Callable, Dict
 import pytest
 from fastapi.testclient import TestClient
 
-from api.conftest import (
+from tests.api.conftest import (
     TestUserType,
 )
 from api.routes.error import UserFriendlyErrorSchema
-from api.routes.user import test_user
 from db.models.user_project_permission import Permission
 from db.schemas.project import (
     PartialUserWithPermission,

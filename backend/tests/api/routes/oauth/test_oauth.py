@@ -2,7 +2,7 @@ from secrets import choice
 from fastapi.testclient import TestClient
 import pytest
 
-from api.conftest import TestUserType
+from tests.api.conftest import TestUserType
 
 
 @pytest.mark.parametrize("username_case", ["lower", "upper"])

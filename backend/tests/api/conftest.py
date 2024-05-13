@@ -8,7 +8,7 @@ from api import create_app
 from api.dependencies.db import get_db
 
 from db.schemas.user import User
-from db.test import init_db, SessionLocalTest
+from tests.db.test import init_db, SessionLocalTest
 
 
 TestUserType = TypedDict("TestUserType", {"id": int, "username": str, "password": str})

@@ -2,7 +2,7 @@ from typing import Callable, Dict
 import pytest
 from fastapi.testclient import TestClient
 
-from api.conftest import TestUserType
+from tests.api.conftest import TestUserType
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory

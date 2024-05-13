@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from api.conftest import TestUserType
+from tests.api.conftest import TestUserType
 
 
 def test_new_user_signup(test_client: TestClient):

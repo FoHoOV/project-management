@@ -2,7 +2,6 @@ from typing import Callable, Dict
 from fastapi.testclient import TestClient
 import pytest
 
-from api.conftest import TestUserType
 from db.models.user_project_permission import Permission
 from db.schemas.project import (
     Project,
@@ -11,6 +10,7 @@ from db.schemas.project import (
 )
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
+from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")

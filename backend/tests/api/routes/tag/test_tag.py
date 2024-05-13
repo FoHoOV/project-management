@@ -1,7 +1,7 @@
 from typing import Callable, Dict
 from fastapi.testclient import TestClient
 
-from api.conftest import (
+from tests.api.conftest import (
     TestUserType,
 )
 from db.models.user_project_permission import Permission

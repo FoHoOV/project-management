@@ -1,5 +1,4 @@
 from typing import Annotated
-from unittest import result
 from fastapi import APIRouter, Depends, HTTPException, Response
 from starlette.status import HTTP_200_OK
 
