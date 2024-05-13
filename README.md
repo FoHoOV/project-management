@@ -31,9 +31,7 @@ You can find the demo at [this](https://todos-fohoov.vercel.app/) url (it might 
 2. goto the frontend project and follow the steps of its README.md
 
 # known bugs
-1. animation bugs(this bug basically destroys my UX but whatever :D): https://github.com/sveltejs/svelte/issues/10493
-2. reassignment not causing rerender (affects Alert component dismiss functionality): https://github.com/sveltejs/svelte/issues/10593
-# important
+  * nothing for now >_<
 
 you might need to delete the database after an update. I'll not implement migrations until I'm completely happy with the project. If you are required to delete the db after an update I'll mention it in the release notes (_/ω＼_)
 
