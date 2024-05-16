@@ -3,7 +3,8 @@ import { closeModal, getModal } from '../../common-locators/modal';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../enhanced-page';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
-import { getConfirmAcceptButton } from '../../common-locators/confirm';
+import { acceptConfirmDialog } from '../../common-locators/confirm';
+import { getByTestId } from '../../common-locators/builtins';
 
 export class TodoTagPage {
 	constructor(
@@ -56,7 +57,7 @@ export class TodoTagPage {
 
 		await (await this.getDeleteButton(locator, tagName)).click();
 
-		await getConfirmAcceptButton(tag).click();
+		await acceptConfirmDialog(tag);
 		await waitForSpinnerStateToBeIdle(await getModal(this.enhancedPage));
 	}
 
@@ -65,9 +66,9 @@ export class TodoTagPage {
 	 * @param tagName - locator should have a tag that contains `tagName`
 	 */
 	async getWrapper(locator: Locator, tagName: string) {
-		const wrapper = await locator
-			.locator("div[data-testid='todo-tags-wrapper']", { hasText: tagName })
-			.all();
+		const wrapper = await getByTestId(locator, 'todo-tags-wrapper', {
+			hasText: tagName
+		}).all();
 
 		expect(
 			wrapper,

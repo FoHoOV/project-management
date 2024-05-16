@@ -5,7 +5,7 @@ import { ProjectsPage, test as projects } from './project';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
 import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './enhanced-page';
-import { getConfirmAcceptButton } from '../common-locators/confirm';
+import { acceptConfirmDialog } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 import crypto from 'crypto';
 
@@ -122,7 +122,7 @@ export class TodoCategoryPage implements IPage {
 	async delete(categoryId: number | string) {
 		const category = await this.getCategoryLocatorById(categoryId);
 		await (await this.getDeleteButton(categoryId)).click();
-		await getConfirmAcceptButton(category).click();
+		await acceptConfirmDialog(category);
 		await category.waitFor({ state: 'detached' });
 	}
 
@@ -154,7 +154,7 @@ export class TodoCategoryPage implements IPage {
 
 	async getCategoryLocatorById(id: number | string) {
 		const category = await this.#enhancedPage
-			.locator("div[data-testid='todo-category-wrapper']", {
+			.getByTestId('todo-category-wrapper', {
 				has: this.#enhancedPage.getByTestId('category-info').locator('span', { hasText: `#${id}` })
 			})
 			.all();
