@@ -7,7 +7,7 @@ import { setPermissions } from '../common-locators/project-permissions';
 import { generateTodoListSettingsUrl } from '../../src/lib/utils/params/route';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 import { waitForToastMessage, waitForToastType } from '../common-locators/toast';
-import { getConfirmAcceptButton } from '../common-locators/confirm';
+import { acceptConfirmDialog } from '../common-locators/confirm';
 
 export class ProjectSettingsPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -34,7 +34,7 @@ export class ProjectSettingsPage implements IPage {
 
 		await setPermissions(row, permissions);
 		await row.getByRole('button', { name: 'save changes' }).click();
-		await getConfirmAcceptButton(row).click();
+		await acceptConfirmDialog(row);
 		await waitForSpinnerStateToBeIdle(row);
 
 		if (expectError) {

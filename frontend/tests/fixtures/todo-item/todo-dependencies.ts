@@ -3,7 +3,7 @@ import { closeModal, getModal } from '../../common-locators/modal';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../enhanced-page';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
-import { getConfirmAcceptButton } from '../../common-locators/confirm';
+import { acceptConfirmDialog } from '../../common-locators/confirm';
 
 export class TodoDependencyPage {
 	constructor(
@@ -56,7 +56,7 @@ export class TodoDependencyPage {
 
 		await (await this.getDeleteButton(locator, dependencyId)).click();
 
-		await getConfirmAcceptButton(dependency).click();
+		await acceptConfirmDialog(dependency);
 		await waitForSpinnerStateToBeIdle(await getModal(this.enhancedPage));
 	}
 

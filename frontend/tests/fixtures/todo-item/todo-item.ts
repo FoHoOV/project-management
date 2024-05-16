@@ -5,7 +5,7 @@ import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from '../enhanc
 
 import type { TodoCategoryHelpers, TodoCategoryPage, TodoCategoryUtils } from '../todo-category';
 import { test as todoCategoriesTest } from '../todo-category';
-import { getConfirmAcceptButton } from '../../common-locators/confirm';
+import { acceptConfirmDialog } from '../../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import { TodoCommentPage } from './todo-comments';
 import { TodoTagPage } from './todo-tags';
@@ -181,7 +181,7 @@ export class TodoItemPage implements IPage {
 	async delete(todoId: number | string) {
 		const todo = await this.getTodoItemLocatorById(todoId);
 		await (await this.getDeleteButton(todoId)).click();
-		await getConfirmAcceptButton(todo).click();
+		await acceptConfirmDialog(todo);
 		await todo.waitFor({ state: 'detached' });
 	}
 

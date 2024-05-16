@@ -3,7 +3,7 @@ import { closeModal, getModal } from '../../common-locators/modal';
 import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../enhanced-page';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
-import { getConfirmAcceptButton } from '../../common-locators/confirm';
+import { acceptConfirmDialog } from '../../common-locators/confirm';
 
 export class TodoTagPage {
 	constructor(
@@ -56,7 +56,7 @@ export class TodoTagPage {
 
 		await (await this.getDeleteButton(locator, tagName)).click();
 
-		await getConfirmAcceptButton(tag).click();
+		await acceptConfirmDialog(tag);
 		await waitForSpinnerStateToBeIdle(await getModal(this.enhancedPage));
 	}
 
