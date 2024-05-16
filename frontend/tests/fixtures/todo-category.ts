@@ -154,7 +154,7 @@ export class TodoCategoryPage implements IPage {
 
 	async getCategoryLocatorById(id: number | string) {
 		const category = await this.#enhancedPage
-			.locator("div[data-testid='todo-category-wrapper']", {
+			.getByTestId('todo-category-wrapper', {
 				has: this.#enhancedPage.getByTestId('category-info').locator('span', { hasText: `#${id}` })
 			})
 			.all();

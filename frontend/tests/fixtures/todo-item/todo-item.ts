@@ -217,7 +217,7 @@ export class TodoItemPage implements IPage {
 
 	async getTodoItemLocatorById(id: number | string) {
 		const todoItem = await this.#enhancedPage
-			.locator("div[data-testid='todo-item-wrapper']", { hasText: `#${id}` })
+			.getByTestId('todo-item-wrapper', { hasText: `#${id}` })
 			.all();
 
 		expect(

@@ -96,7 +96,7 @@ export class ProjectsPage implements IPage {
 	}
 	async getProjectWrapperById(id: string | number) {
 		const project = await this.#enhancedPage
-			.locator("div[data-testid='project-item-wrapper']", {
+			.getByTestId('project-item-wrapper', {
 				has: this.#enhancedPage.locator("div[data-tip='project id'] span.text-info", {
 					hasText: `#${id}`
 				})

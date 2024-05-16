@@ -4,6 +4,7 @@ import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../enhanced-page';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
 import { acceptConfirmDialog } from '../../common-locators/confirm';
+import { getByTestId } from '../../common-locators/builtins';
 
 export class TodoCommentPage {
 	constructor(
@@ -65,9 +66,9 @@ export class TodoCommentPage {
 	 * @param commentText - will return the wrapper for a comment that contains `commentText`
 	 */
 	async getWrapper(locator: Locator, commentText: string) {
-		const wrapper = await locator
-			.locator("div[data-testid='todo-comments-wrapper']", { hasText: commentText })
-			.all();
+		const wrapper = await getByTestId(locator, 'todo-comments-wrapper', {
+			hasText: commentText
+		}).all();
 
 		expect(
 			wrapper,

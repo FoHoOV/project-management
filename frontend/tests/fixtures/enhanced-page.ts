@@ -1,10 +1,17 @@
 import { type Page, test as baseTest, type Locator, expect } from '@playwright/test';
+import { getByTestId } from '../common-locators/builtins';
+import { PLAYWRIGHT_TEST_ID_ATTRIBUTE } from '../../playwright.config';
 
 export interface EnhancedPage extends Page {
 	goto(
 		url: string,
 		options?: Parameters<Page['goto']>[1] & { waitForHydration?: boolean }
 	): ReturnType<Page['goto']>;
+
+	getByTestId(
+		testId: string,
+		options?: Parameters<Page['locator']>[1]
+	): ReturnType<Page['locator']>;
 }
 
 export async function waitForAnimationEnd(locator: Locator) {
@@ -88,6 +95,10 @@ export const test = baseTest.extend<{ enhancedPage: EnhancedPage }>({
 						}
 						return result;
 					}) satisfies EnhancedPage['goto'];
+				} else if (prop === 'getByTestId') {
+					return ((testId, options) => {
+						return getByTestId(target, testId, options);
+					}) satisfies EnhancedPage['getByTestId'];
 				}
 				return Reflect.get(target, prop);
 			}

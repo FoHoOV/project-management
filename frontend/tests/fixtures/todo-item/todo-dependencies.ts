@@ -4,6 +4,7 @@ import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import type { EnhancedPage } from '../enhanced-page';
 import type { TodoItemHelpers, TodoItemPage } from './todo-item';
 import { acceptConfirmDialog } from '../../common-locators/confirm';
+import { getByTestId } from '../../common-locators/builtins';
 
 export class TodoDependencyPage {
 	constructor(
@@ -65,9 +66,9 @@ export class TodoDependencyPage {
 	 * @param dependencyId - locator should have a text that contains `dependencyId`
 	 */
 	async getWrapper(locator: Locator, dependencyId: number) {
-		const wrapper = await locator
-			.locator("div[data-testid='todo-dependency-wrapper']", { hasText: `#${dependencyId}` })
-			.all();
+		const wrapper = await getByTestId(locator, 'todo-dependency-wrapper', {
+			hasText: `#${dependencyId}`
+		}).all();
 
 		expect(wrapper, 'wrapper resolved to many/none dependencies').toHaveLength(1);
 
