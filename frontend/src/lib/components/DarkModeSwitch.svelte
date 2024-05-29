@@ -1,20 +1,28 @@
 <script lang="ts" context="module">
 	import Fa from 'svelte-fa';
 
-	import { onMount } from 'svelte';
-	import { themeChange } from 'theme-change';
 	import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+	import { getSelectedTheme$, setTheme } from '$lib/stores/theme';
 </script>
 
 <script lang="ts">
-	onMount(() => {
-		themeChange(false);
+	const theme = getSelectedTheme$();
+
+	function handleModeChange(e: Event) {
+		if (theme.current == 'dark') {
+			setTheme('light');
+			return;
+		}
+		setTheme('dark');
+	}
+
+	$effect(() => {
+		document.documentElement.dataset.theme = theme.current;
 	});
 </script>
 
-<label class="swap swap-rotate">
-	<!-- this hidden checkbox controls the state -->
-	<input type="checkbox" class="theme-controller" />
+<label class="btn btn-ghost swap swap-rotate text-xl">
+	<input type="checkbox" class="theme-controller" onchange={handleModeChange} />
 
 	<span class="swap-on" data-key="theme" data-set-theme="dark">
 		<Fa icon={faSun} class="w-10 fill-current" />
