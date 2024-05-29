@@ -22,9 +22,13 @@ export class TodoCategoryPage implements IPage {
 		const response = await this.#enhancedPage.goto(
 			generateTodoListItemsUrl(projectTitle, projectId)
 		);
+
+		expect(response, 'response should exist').toBeTruthy();
+
 		if (projectShouldExist) {
-			expect(response, 'response should exist').toBeTruthy();
 			expect(response!.status() == 200, 'todo category page should exist').toBeTruthy();
+		} else {
+			expect(response!.status() == 404, 'todo category page should not exist').toBeTruthy();
 		}
 	}
 
