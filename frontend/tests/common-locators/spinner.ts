@@ -1,7 +1,7 @@
 import { expect, type Locator } from '@playwright/test';
 
 export function getSpinnerIn(locator: Locator) {
-	return locator.getByTestId('spinner-loading-state');
+	return locator.getByTestId('spinner-loading-state').and(locator.locator(':visible'));
 }
 
 export async function waitForSpinnerStateToBeIdle(locator: Locator, timeout?: number) {
