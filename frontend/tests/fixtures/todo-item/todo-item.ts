@@ -220,10 +220,7 @@ export class TodoItemPage implements IPage {
 			.getByTestId('todo-item-wrapper', { hasText: `#${id}` })
 			.all();
 
-		expect(
-			todoItem.length == 1,
-			'only one todo-item with this id should exist on the page'
-		).toBeTruthy();
+		expect(todoItem.length, 'only one todo-item with this id should exist on the page').toEqual(1);
 
 		return todoItem[0];
 	}

@@ -17,7 +17,7 @@ export interface EnhancedPage extends Page {
 export async function waitForAnimationEnd(locator: Locator) {
 	const handle = await locator.elementHandle();
 	await handle?.waitForElementState('stable');
-	handle?.dispose();
+	await handle?.dispose();
 }
 
 export async function waitForHydration(page: Page) {
