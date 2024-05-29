@@ -2,18 +2,18 @@ import { ROOT_CONTEXT_MANAGER_KEY } from './constants';
 import { getContext, setContext } from 'svelte';
 
 class ContextManager {
-	private _contexts: Record<string, unknown> = $state({});
+	private _contexts: Record<any, unknown> = $state({});
 
-	add<TContext>(key: string, value: TContext) {
+	add<TContext>(key: any, value: TContext) {
 		this._contexts[key] = value;
 		return value;
 	}
 
-	delete(key: string) {
+	delete(key: any) {
 		delete this._contexts[key];
 	}
 
-	get<TContext>(key: string): TContext | undefined {
+	get<TContext>(key: any): TContext | undefined {
 		return this._contexts[key] as TContext;
 	}
 }

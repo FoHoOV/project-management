@@ -1,4 +1,4 @@
-import type { Projects } from '../../stores/projects';
+import type { Projects } from '$lib/stores/projects';
 import { PROJECTS_CONTEXT_NAME } from './constants';
 import { getRootContextManager } from '$lib/stores/context-manager';
 import { getContext, setContext } from 'svelte';

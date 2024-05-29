@@ -1,1 +1,1 @@
-export const PROJECTS_CONTEXT_NAME = 'PROJECTS_CONTEXT_NAME' as const;
+export const PROJECTS_CONTEXT_NAME = Symbol();

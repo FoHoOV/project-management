@@ -1,1 +1,1 @@
-export const ROOT_CONTEXT_MANAGER_KEY = 'ROOT_CONTEXT_MANAGER_KEY_19327SCj$OASI' as const;
+export const ROOT_CONTEXT_MANAGER_KEY = Symbol();

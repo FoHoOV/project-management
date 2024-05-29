@@ -5,14 +5,14 @@ export type Toast = {
 	time: MilliSeconds;
 	message: string;
 	type: MessageType;
-	id: string;
+	readonly id: symbol;
 };
 
 class ToastManager {
 	private _toasts = $state<Toast[]>([]);
 
 	addToast(toast: Omit<Toast, 'id'>): Toast {
-		const toastWithId = { ...toast, id: crypto?.randomUUID?.() ?? Date.now().toString() };
+		const toastWithId = { ...toast, id: Symbol() as symbol };
 
 		setTimeout(() => {
 			this.removeToast(toastWithId);
