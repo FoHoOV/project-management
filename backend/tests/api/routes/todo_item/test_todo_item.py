@@ -119,7 +119,7 @@ def test_reorder_todos(
     category = test_category_factory(user, project.id)
 
     # Add todos to the created category
-    for i in range(number_of_todos_to_create):
+    for _ in range(number_of_todos_to_create):
         test_todo_item_factory(user, category.id)
 
     # Query all todos for this category to get their initial order
