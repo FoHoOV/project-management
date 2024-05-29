@@ -5,7 +5,8 @@ import { getFloatingBtn } from '../common-locators/floating-btn';
 import { type IPage } from './IPage';
 import { type EnhancedPage } from './enhanced-page';
 import type { Permission } from '../../src/lib/generated-client';
-import { getPermissions, setPermissions } from '../common-locators/project-permissions';
+import { setPermissions } from '../common-locators/project-permissions';
+import { acceptConfirmDialog } from '../common-locators/confirm';
 
 export class ProjectsPage implements IPage {
 	#enhancedPage: EnhancedPage;
@@ -60,6 +61,15 @@ export class ProjectsPage implements IPage {
 		};
 	}
 
+	async detach({ projectId }: { projectId: number | string }) {
+		(await this.getDetachButtonLocator(projectId)).click();
+
+		const projectLocator = await this.getProjectWrapperById(projectId);
+
+		await acceptConfirmDialog(projectLocator);
+		await projectLocator.waitFor({ state: 'detached' });
+	}
+
 	async attachToUser({
 		projectId,
 		username,
@@ -94,6 +104,11 @@ export class ProjectsPage implements IPage {
 	async getShareAccessButtonLocator(projectId: string | number) {
 		return (await this.getProjectWrapperById(projectId)).getByTestId('share-project-access');
 	}
+
+	async getDetachButtonLocator(projectId: string | number) {
+		return (await this.getProjectWrapperById(projectId)).getByTestId('detach-project');
+	}
+
 	async getProjectWrapperById(id: string | number) {
 		const project = await this.#enhancedPage
 			.getByTestId('project-item-wrapper', {

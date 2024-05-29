@@ -107,7 +107,11 @@
 				>
 					Share access
 				</button>
-				<button class="btn btn-error" onclick={() => confirmDetachProject?.show()}>
+				<button
+					class="btn btn-error"
+					onclick={() => confirmDetachProject?.show()}
+					data-testid="detach-project"
+				>
 					{#if project.users.length == 1}
 						Delete
 					{:else}

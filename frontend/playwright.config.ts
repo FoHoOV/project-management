@@ -14,7 +14,7 @@ const config: PlaywrightTestConfig = {
 		testIdAttribute: PLAYWRIGHT_TEST_ID_ATTRIBUTE,
 		video: 'retain-on-failure'
 	},
-	timeout: 2 * 60 * 1000,
+	timeout: (1 / 2) * 60 * 1000,
 	projects: [
 		{
 			name: 'Chromium',
