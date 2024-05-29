@@ -281,7 +281,7 @@ export class TodoCategories {
 		return result;
 	}
 
-	get current() {
+	get value$() {
 		return this._todoCategories;
 	}
 }

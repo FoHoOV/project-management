@@ -97,7 +97,7 @@
 	class="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"
 	data-testid="search-tags-results-wrapper"
 >
-	{#each todoCategoriesStore.current as category (category.id)}
+	{#each todoCategoriesStore.value$ as category (category.id)}
 		{#each category.items as todo (todo.id)}
 			<TodoItem {todo} showCategoryInfo={true} showProjectsInfo={true} draggable={false}></TodoItem>
 		{/each}

@@ -13,10 +13,12 @@
 
 	let modal = $state<Modal | null>(null);
 	const currentStep = $derived(
-		multiStepModal.steps.length > 0 ? multiStepModal.steps[multiStepModal.steps.length - 1] : null
+		multiStepModal.steps$.length > 0
+			? multiStepModal.steps$[multiStepModal.steps$.length - 1]
+			: null
 	);
 	const componentProps = $derived(currentStep?.props());
-	const showGoBackButton = $derived(multiStepModal.steps.length > 1);
+	const showGoBackButton = $derived(multiStepModal.steps$.length > 1);
 
 	function handleClose() {
 		multiStepModal.clear();
@@ -27,7 +29,7 @@
 	}
 
 	$effect(() => {
-		if (multiStepModal.showing) {
+		if (multiStepModal.showing$) {
 			modal?.show();
 		}
 	});

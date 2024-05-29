@@ -3,7 +3,7 @@ import type { SnippetParams } from '$components/Drawer.svelte';
 
 type NavbarPosition = 'start' | 'end' | 'center';
 class Navbar {
-	public end: Snippet<SnippetParams>[] = $state([]);
+	public end$: Snippet<SnippetParams>[] = $state([]);
 
 	remove(from: NavbarPosition, snippet: Snippet<SnippetParams>) {
 		switch (from) {
@@ -16,7 +16,7 @@ class Navbar {
 				break;
 			}
 			case 'end': {
-				this.end = this.end.filter((value) => value != snippet);
+				this.end$ = this.end$.filter((value) => value != snippet);
 				break;
 			}
 		}
@@ -24,10 +24,10 @@ class Navbar {
 }
 
 class Drawer {
-	public readonly navbar: Navbar;
+	public readonly navbar$: Navbar;
 
 	constructor() {
-		this.navbar = new Navbar();
+		this.navbar$ = new Navbar();
 	}
 }
 

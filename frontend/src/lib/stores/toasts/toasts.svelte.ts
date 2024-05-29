@@ -27,7 +27,7 @@ class ToastManager {
 		this._toasts = this._toasts.filter((item) => item.id !== toast.id);
 	}
 
-	public get current() {
+	public get value$() {
 		return this._toasts;
 	}
 }

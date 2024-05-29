@@ -56,7 +56,7 @@
 </svelte:head>
 
 <ProjectList
-	projects={projectsStore?.current}
+	projects={projectsStore?.value$}
 	onAttachToUser={handleAttachToUser}
 	onEditProject={handleEditProject}
 ></ProjectList>

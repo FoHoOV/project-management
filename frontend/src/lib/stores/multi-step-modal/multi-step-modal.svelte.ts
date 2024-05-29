@@ -41,11 +41,11 @@ class MultiStepModal {
 		this.hide();
 	}
 
-	get steps() {
+	get steps$() {
 		return this._steps;
 	}
 
-	get showing() {
+	get showing$() {
 		return this._show;
 	}
 }

@@ -13,8 +13,17 @@ class ContextManager {
 		delete this._contexts[key];
 	}
 
-	get<TContext>(key: any): TContext | undefined {
+	get<TContext>(key: any) {
 		return this._contexts[key] as TContext;
+	}
+
+	get$<TContext>(key: any) {
+		const self = this;
+		return {
+			get value$() {
+				return self._contexts[key] as TContext;
+			}
+		};
 	}
 }
 export const contextManager = new ContextManager();

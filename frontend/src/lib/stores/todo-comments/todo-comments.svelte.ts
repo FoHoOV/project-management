@@ -32,7 +32,7 @@ export class TodoComments {
 		this._todoCategoriesStore?.decreaseTodoCommentsCounter(comment.todo_id);
 	}
 
-	get current() {
+	get value$() {
 		return this._comments;
 	}
 }

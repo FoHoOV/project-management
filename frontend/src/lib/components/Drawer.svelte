@@ -57,7 +57,7 @@
 			{/snippet}
 
 			{#snippet end()}
-				{#each drawer.navbar.end as snippet}
+				{#each drawer.navbar$.end$ as snippet}
 					{@render snippet({ closeDrawer })}
 				{/each}
 				{@render navbarEnd?.({ closeDrawer })}

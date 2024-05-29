@@ -87,7 +87,7 @@
 		<p>add comment</p>
 	</button>
 
-	{#each todoCommentsStore.current as comment, i (comment.id)}
+	{#each todoCommentsStore.value$ as comment, i (comment.id)}
 		<div
 			class="card relative mt-4 max-h-44 overflow-y-auto !bg-base-200 shadow-xl hover:bg-base-100"
 			animate:flip={{ duration: 200 }}

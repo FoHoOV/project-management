@@ -188,10 +188,10 @@
 
 	onMount(() => {
 		componentState = 'none';
-		drawer.navbar.end.push(settings);
+		drawer.navbar$.end$.push(settings);
 
 		return () => {
-			drawer.navbar.remove('end', settings);
+			drawer.navbar$.remove('end', settings);
 		};
 	});
 </script>
@@ -212,7 +212,7 @@
 	<span class="loading loading-ring m-auto block"></span>
 {:else}
 	<div class="flex h-full gap-5 overflow-auto">
-		{#each todoCategoriesStore.current as category (category.id)}
+		{#each todoCategoriesStore.value$ as category (category.id)}
 			<div
 				class="mb-3 max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 				animate:flip={{ duration: 200 }}

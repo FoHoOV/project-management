@@ -86,7 +86,7 @@
 						category,
 						event.detail.data,
 						moveLeft,
-						todoCategoriesStore.current
+						todoCategoriesStore.value$
 					)
 				});
 				todoCategoriesStore?.updateCategoriesSort(
@@ -95,7 +95,7 @@
 						category,
 						event.detail.data,
 						moveLeft,
-						todoCategoriesStore.current
+						todoCategoriesStore.value$
 					)
 				);
 				componentState = 'none';

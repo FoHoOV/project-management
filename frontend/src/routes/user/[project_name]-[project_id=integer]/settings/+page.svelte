@@ -32,10 +32,10 @@
 	});
 
 	onMount(() => {
-		drawer.navbar.end.push(closeSettings);
+		drawer.navbar$.end$.push(closeSettings);
 
 		return () => {
-			drawer.navbar.remove('end', closeSettings);
+			drawer.navbar$.remove('end', closeSettings);
 		};
 	});
 </script>

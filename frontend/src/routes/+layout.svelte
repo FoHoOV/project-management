@@ -55,7 +55,7 @@
 				onclick={closeDrawer}
 			>
 				<ul>
-					{#each projectsStore.current as project (project.id)}
+					{#each projectsStore.value$ as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
 							href={generateTodoListItemsUrl(project.title, project.id)}

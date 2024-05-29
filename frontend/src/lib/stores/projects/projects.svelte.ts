@@ -10,12 +10,12 @@ export class Projects {
 
 	set(projects: Project[]) {
 		this._projects = projects;
-		sortByIdInPlace(this.current, true);
+		sortByIdInPlace(this.value$, true);
 	}
 
 	add(project: Project) {
 		this._projects.push(project);
-		sortByIdInPlace(this.current, true);
+		sortByIdInPlace(this.value$, true);
 	}
 
 	update(project: Project) {
@@ -25,7 +25,7 @@ export class Projects {
 			}
 			return project;
 		});
-		sortByIdInPlace(this.current, true);
+		sortByIdInPlace(this.value$, true);
 	}
 
 	remove(project: Project) {
@@ -40,7 +40,7 @@ export class Projects {
 		target.users.push(newUser);
 	}
 
-	get current() {
+	get value$() {
 		return this._projects;
 	}
 }
