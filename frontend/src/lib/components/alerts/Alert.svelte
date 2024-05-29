@@ -64,6 +64,7 @@
 		<span data-testid="alert-message">{message}</span>
 		<button
 			class="h-8 w-8"
+			type="button"
 			onclick={() => (closed = true)}
 			tabindex="-1"
 			data-testid="alert-close-dismiss-btn"
