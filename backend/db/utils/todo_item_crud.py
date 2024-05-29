@@ -84,8 +84,7 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
 
     db_item = TodoItem(**todo.model_dump())
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    db.flush()
 
     update_order(
         db,
@@ -108,8 +107,6 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
         db_item.marked_as_done_by_user_id = user_id
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 
@@ -164,7 +161,6 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
     db.commit()
-    db.refresh(db_item)
     return db_item
 
 
@@ -208,7 +204,7 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
             db_item.id,
         )
         db_item.category_id = moving_item.new_category_id
-        db.commit()
+        db.flush()
 
     def create_order(id: int, left_id: int | None, right_id: int | None):
         db.add(TodoItemOrder(todo_id=id, left_id=left_id, right_id=right_id))
@@ -227,7 +223,6 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
     )
 
     db.commit()
-    db.refresh(db_item)
     return db_item
 
 
@@ -293,8 +288,6 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
     db.add(db_item)
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 

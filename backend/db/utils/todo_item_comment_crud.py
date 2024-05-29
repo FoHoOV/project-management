@@ -24,8 +24,6 @@ def create(db: Session, comment: TodoCommentCreate, user_id: int):
     db.add(db_item)
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 
@@ -53,8 +51,6 @@ def edit(db: Session, comment: TodoCommentUpdate, user_id: int):
     db_item.message = comment.message
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 

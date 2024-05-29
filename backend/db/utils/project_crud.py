@@ -33,24 +33,23 @@ def create(db: Session, project: ProjectCreate, user_id: int):
 
     db_item = Project(**project.model_dump())
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    db.flush()
 
     association = ProjectUserAssociation(user_id=user_id, project_id=db_item.id)
     db.add(association)
-    db.commit()
-    db.refresh(association)
+    db.flush()
 
     db.add(
         UserProjectPermission(
             project_user_association_id=association.id, permission=Permission.ALL
         )
     )
-    db.commit()
+    db.flush()
 
     if project.create_from_default_template:
         add_default_template_categories(db, db_item.id, user_id)
 
+    db.commit()
     return db_item
 
 
@@ -61,8 +60,6 @@ def update(db: Session, project: ProjectUpdate, user_id: int):
     db_item.description = project.description
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 
@@ -133,8 +130,7 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
 
     try:
         db.add(association_db_item)
-        db.commit()
-        db.refresh(association_db_item)
+        db.flush()
     except IntegrityError:
         raise UserFriendlyError(
             ErrorCode.USER_ASSOCIATION_ALREADY_EXISTS,
@@ -237,7 +233,7 @@ def get_projects(db: Session, user_id: int, project_id: int | None = None):
     return query.order_by(Project.id.asc()).all()
 
 
-def add_default_template_categories(db, project_id: int, user_id: int):
+def add_default_template_categories(db: Session, project_id: int, user_id: int):
     from .todo_category_crud import create as create_category
 
     default_categories = [
@@ -253,6 +249,7 @@ def add_default_template_categories(db, project_id: int, user_id: int):
             TodoCategoryCreate.model_validate({**category, "project_id": project_id}),
             user_id,
         )
+    db.commit()
 
 
 def validate_project_belongs_to_user(

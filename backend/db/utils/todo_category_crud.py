@@ -68,14 +68,13 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
 
     db_item = TodoCategory(**category.model_dump())
     db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
+    db.flush()
 
     association = TodoCategoryProjectAssociation(
         project_id=category.project_id, category_id=db_item.id
     )
     db.add(association)
-    db.commit()
+    db.flush()
 
     update_order(
         db,
@@ -118,7 +117,6 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
         _update_actions(db, db_item, category.actions)
 
     db.commit()
-    db.refresh(db_item)
     return db_item
 
 
@@ -198,8 +196,7 @@ def attach_to_project(
 
     try:
         db.add(association_db_item)
-        db.commit()
-        db.refresh(association_db_item)
+        db.flush()
     except IntegrityError:
         raise UserFriendlyError(
             ErrorCode.CATEGORY_PROJECT_ASSOCIATION_ALREADY_EXISTS,
@@ -221,6 +218,7 @@ def attach_to_project(
         user_id,
     )
 
+    db.commit()
     return association_db_item
 
 

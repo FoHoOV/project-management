@@ -47,24 +47,24 @@ def update_element_order[
             order_class.left_id == moving_item["left_id"],
             item_id_column != moving_item["item_id"],
         ).update({"left_id": moving_item["item_id"]})
-        db.commit()
+        db.flush()
 
         order_query.filter(item_id_column == moving_item["left_id"]).update(
             {"right_id": moving_item["item_id"]}
         )
-        db.commit()
+        db.flush()
 
     if moving_item["right_id"] is not None:
         order_query.filter(
             order_class.right_id == moving_item["right_id"],
             item_id_column != moving_item["item_id"],
         ).update({"right_id": moving_item["item_id"]})
-        db.commit()
+        db.flush()
 
         order_query.filter(item_id_column == moving_item["right_id"]).update(
             {"left_id": moving_item["item_id"]}
         )
-        db.commit()
+        db.flush()
 
     db_moving_element_order = order_query.filter(
         item_id_column == moving_item["item_id"]
@@ -78,7 +78,7 @@ def update_element_order[
             moving_item["item_id"], moving_item["left_id"], moving_item["right_id"]
         )
 
-    db.commit()
+    db.flush()
 
 
 def delete_item_from_sorted_items[
@@ -96,7 +96,7 @@ def delete_item_from_sorted_items[
 
     # the validation that deleting_item_id exists and belongs to user is callers responsibility
     order_query.filter(item_id_column == deleting_item_id).delete()
-    db.commit()
+    db.flush()
 
 
 def _remove_item_from_sorted_items_in_position[
@@ -120,7 +120,7 @@ def _remove_item_from_sorted_items_in_position[
     if removing_item_order is not None:
         removing_item_order.left_id = None
         removing_item_order.right_id = None
-        db.commit()
+        db.flush()
 
     order_query.filter(order_class.right_id == removing_item_id).update(
         {"right_id": removing_item_order_right_id},
@@ -130,7 +130,7 @@ def _remove_item_from_sorted_items_in_position[
         {"left_id": removing_item_order_left_id},
     )
 
-    db.commit()
+    db.flush()
 
     if removing_item_order is None:
         return

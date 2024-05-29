@@ -53,8 +53,6 @@ def create(db: Session, tag: TagCreate, user_id: int):
     db.add(db_item)
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 
@@ -102,8 +100,6 @@ def edit(db: Session, tag: TagUpdate, user_id: int):
     db_item.name = tag.name
 
     db.commit()
-    db.refresh(db_item)
-
     return db_item
 
 
@@ -166,8 +162,6 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     db.add(db_item)
 
     db.commit()
-    db.refresh(tag)
-
     return tag
 
 
