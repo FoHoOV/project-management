@@ -11,6 +11,12 @@
 			"type": "node-terminal"
 		},
 		{
+			"command": "pnpm run dev",
+			"name": "pnpm:dev",
+			"request": "launch",
+			"type": "node-terminal"
+		},
+		{
 			"command": "npm run open-api:generate:linux",
 			"name": "npm:open-api:generate:linux",
 			"request": "launch",
