@@ -27,12 +27,14 @@
 
 	createRootContextManager();
 
-	const projectsStore = setProjectsStoreToContext(new Projects(data.projects), true);
+	// we are creating a new array because we should not mutate the data passed from server -_-
+	// mutating data should be warning in general I guess?
+	const projectsStore = setProjectsStoreToContext(new Projects([...data.projects]), true);
 
 	$effect.pre(() => {
 		data;
 		untrack(() => {
-			projectsStore.set(data.projects);
+			projectsStore.set([...data.projects]);
 		});
 	});
 

@@ -24,7 +24,7 @@
 		validator: { schema: createProjectSchema },
 		form: form,
 		actionName: 'create',
-		invalidateAllAfterSubmit: false
+		invalidateAllAfterSubmit: true
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.add(event.response);
