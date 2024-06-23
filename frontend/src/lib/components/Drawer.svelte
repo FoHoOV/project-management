@@ -5,6 +5,7 @@
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
 	import type { Snippet } from 'svelte';
 	import { getNavbar } from '$lib/stores';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	export type SnippetParams = [{ closeDrawer: () => void }];
 
@@ -17,7 +18,7 @@
 		navbarEnd?: Snippet<SnippetParams>;
 		sidebar?: Snippet<SnippetParams>;
 		content?: Snippet<SnippetParams>;
-	};
+	} & HTMLAttributes<HTMLDivElement>;
 </script>
 
 <script lang="ts">
@@ -29,7 +30,9 @@
 		navbarCenter,
 		navbarEnd,
 		sidebar,
-		content
+		content,
+		class: className,
+		...restProps
 	}: Props = $props();
 
 	const navbarStore = getNavbar();
@@ -40,7 +43,7 @@
 	}
 </script>
 
-<div class="drawer lg:drawer-open">
+<div class="drawer lg:drawer-open {className}" {...restProps}>
 	<input {id} type="checkbox" bind:checked={showDrawer} class="drawer-toggle" />
 	<div class="drawer-content z-40 flex h-[100vh] flex-col">
 		<Navbar title={navbarTitle} titleHref={navbarTitleHref}>

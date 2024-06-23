@@ -1,18 +1,15 @@
 import { getContext, setContext } from '$lib/stores';
-import type { Theme } from './theme.svelte';
+import type { Theme, ThemeManager } from './theme.svelte';
 import { Persisted } from '$lib/stores/persisted';
 
 type StoreType = ReturnType<typeof Persisted.cookie$<{ theme: Theme }>>;
 
-export const CACHED_THEME_KEY_NAME = 'CACHED_THEME_KEY_NAME' as const;
+export const THEME_CONTEXT_KEY = Symbol();
 
 export function getTheme() {
-	return getContext<StoreType>(CACHED_THEME_KEY_NAME);
+	return getContext<ThemeManager>(THEME_CONTEXT_KEY);
 }
 
-export function setTheme(value: Theme, setToRoot: boolean = true) {
-	const store: StoreType = Persisted.cookie$(CACHED_THEME_KEY_NAME, {
-		initializer: { theme: value }
-	});
-	return setContext(store, CACHED_THEME_KEY_NAME, setToRoot);
+export function setTheme(themeManager: ThemeManager, setToRoot: boolean = true) {
+	return setContext(themeManager, THEME_CONTEXT_KEY, setToRoot);
 }

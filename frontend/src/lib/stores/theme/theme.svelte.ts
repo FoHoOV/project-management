@@ -1,30 +1,18 @@
-import { browser } from '$app/environment';
-import { getTheme as getThemeFromContext, setTheme as setThemToContext } from './context';
+import { Persisted } from '../persisted';
+import { THEME_COOKIE_KEY } from './constants';
 
 export type Theme = 'dark' | 'light';
 
-export function getSelectedTheme$() {
-	const theme: Theme = $derived.by(() => {
-		if (!browser) {
-			return 'dark';
-		}
-		if (
-			getThemeFromContext()?.current.theme === 'light' ||
-			!window.matchMedia('(prefers-color-scheme: dark)').matches
-		) {
-			return 'light';
-		}
-
-		return 'dark';
+export class ThemeManager {
+	#storedTheme = Persisted.cookie$<{ value: Theme }>(THEME_COOKIE_KEY, {
+		initializer: { value: 'dark' }
 	});
 
-	return {
-		get current() {
-			return theme;
-		}
-	};
-}
+	get value$() {
+		return this.#storedTheme.current.value;
+	}
 
-export function changeTheme(theme: Theme) {
-	setThemToContext(theme);
+	change(theme: Theme) {
+		this.#storedTheme.current = { value: theme };
+	}
 }
