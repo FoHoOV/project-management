@@ -31,7 +31,7 @@
 		});
 	});
 
-	navbarStore.end$.push(closeSettings);
+	navbarStore.add('end', closeSettings);
 
 	onMount(() => {
 		return () => {

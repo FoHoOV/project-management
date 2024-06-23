@@ -44,7 +44,7 @@
 	const multiStepModalStore = getMultiStepModal();
 	const navbarStore = getNavbar();
 
-	navbarStore.end$.push(settings);
+	navbarStore.add('end', settings);
 
 	$effect.pre(() => {
 		data;
