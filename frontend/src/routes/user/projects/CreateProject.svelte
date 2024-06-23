@@ -5,7 +5,7 @@
 
 	import type { ActionData } from './$types';
 	import { createProjectSchema } from './validator';
-	import { getProjectsStoreFromContext } from '$components/project/utils';
+	import { getProjects } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -15,7 +15,7 @@
 <script lang="ts">
 	const { form }: Props = $props();
 
-	const projectsStore = getProjectsStoreFromContext();
+	const projectsStore = getProjects();
 </script>
 
 <EnhancedForm

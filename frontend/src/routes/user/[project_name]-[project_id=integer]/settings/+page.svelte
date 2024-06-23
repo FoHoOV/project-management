@@ -5,17 +5,17 @@
 	import Detach from '$routes/user/[project_name]-[project_id=integer]/settings/Detach.svelte';
 	import UserInfo from '$routes/user/[project_name]-[project_id=integer]/settings/UserInfo.svelte';
 
-	import { drawer } from '$lib/stores/drawer';
-
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
+	import { getNavbar } from '$lib/stores/index.js';
 </script>
 
 <script lang="ts">
 	const { data, form } = $props();
 
 	let projectPermissionsRefs = $state<ProjectPermissions[]>([]);
+	const navbarStore = getNavbar();
 
 	const showConfirmChanges = $derived.by(() => {
 		return data.currentProject.users.map((user, i) => {
@@ -31,11 +31,11 @@
 		});
 	});
 
-	onMount(() => {
-		drawer.navbar$.end$.push(closeSettings);
+	navbarStore.add('end', closeSettings);
 
+	onMount(() => {
 		return () => {
-			drawer.navbar$.remove('end', closeSettings);
+			navbarStore.remove('end', closeSettings);
 		};
 	});
 </script>

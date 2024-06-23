@@ -84,7 +84,7 @@ export class Auth {
 		return this.#currentLoggedInUser;
 	}
 
-	get isAuthenticated(){
+	get isAuthenticated() {
 		return this.#currentLoggedInUser !== undefined;
 	}
 }

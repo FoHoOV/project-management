@@ -1,8 +1,8 @@
 import Fwal from '$components/popups/Fwal.svelte';
-import { multiStepModal } from '$lib/stores/multi-step-modal';
+import { getMultiStepModal } from '../../stores';
 
 export function popup(message: string) {
-	multiStepModal.add({
+	getMultiStepModal()?.add({
 		component: Fwal,
 		props: () => {
 			return {

@@ -7,7 +7,7 @@
 	import { createTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getTodoCategories } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -16,7 +16,7 @@
 
 <script lang="ts">
 	const { form }: Props = $props();
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm

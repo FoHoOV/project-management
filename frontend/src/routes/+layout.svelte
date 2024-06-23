@@ -3,7 +3,7 @@
 	import MultiStepModal from '$components/popups/MultiStepModal.svelte';
 	import Drawer from '$components/Drawer.svelte';
 	import Toasts from '$components/popups/Toasts.svelte';
-	import DarkModeSwitch from '$components/DarkModeSwitch.svelte';
+	import ThemeSwitch from '$components/ThemeSwitch.svelte';
 
 	import '../app.css';
 
@@ -16,10 +16,19 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { setProjectsStoreToContext } from '$components/project/utils';
-	import { Projects } from '$lib/stores/projects';
+	import { Projects, setProjects } from '$lib/stores/projects';
 	import { createRootContextManager } from '$lib/stores/context-manager';
 	import { onMount, untrack } from 'svelte';
+	import {
+		Navbar,
+		ToastManager,
+		setMultiStepModal,
+		setNavbar,
+		setToastManager,
+		setTheme,
+		MultiStepModal as MultiStepModalStore,
+		ThemeManager
+	} from '$lib/stores';
 </script>
 
 <script lang="ts">
@@ -28,8 +37,8 @@
 	createRootContextManager();
 
 	// we are creating a new array because we should not mutate the data passed from server -_-
-	// mutating data should be warning in general I guess?
-	const projectsStore = setProjectsStoreToContext(new Projects([...data.projects]), true);
+	// mutating data sent from server should be a warning in general I guess?
+	const { projectsStore, themeManager } = initializeGlobalStores();
 
 	$effect.pre(() => {
 		data;
@@ -38,13 +47,28 @@
 		});
 	});
 
+	function initializeGlobalStores() {
+		return {
+			projectsStore: setProjects(new Projects([...data.projects])),
+			navbarStore: setNavbar(new Navbar()),
+			toastManagerStore: setToastManager(new ToastManager()),
+			multiStepModalStore: setMultiStepModal(new MultiStepModalStore([], false)),
+			themeManager: setTheme(new ThemeManager())
+		};
+	}
+
 	onMount(() => {
 		// this is for tests
 		document.body.setAttribute('data-svelte-hydrated', 'true');
 	});
 </script>
 
-<Drawer id="app-drawer" navbarTitle="Todos" navbarTitleHref="/user/projects">
+<Drawer
+	id="app-drawer"
+	navbarTitle="Todos"
+	navbarTitleHref="/user/projects"
+	data-theme={themeManager.value$}
+>
 	{#snippet sidebar({ closeDrawer })}
 		<NavbarItem icon={faHome} href="/" name="Home" onclick={closeDrawer} />
 		{#if $page.data.token}
@@ -75,7 +99,7 @@
 	{/snippet}
 
 	{#snippet navbarEnd()}
-		<DarkModeSwitch />
+		<ThemeSwitch />
 		{#if $page.data.token}
 			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
 		{:else}

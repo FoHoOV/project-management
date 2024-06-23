@@ -1,1 +1,1 @@
-export const CACHED_THEME_KEY_NAME = 'CACHED_THEME_KEY_NAME';
+export const THEME_COOKIE_KEY = 'THEME_NAME' as const;

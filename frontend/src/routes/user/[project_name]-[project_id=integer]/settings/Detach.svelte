@@ -4,12 +4,11 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { toasts } from '$lib/stores/toasts';
-
 	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
 	import { detachSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 	import type { ActionData, PageData } from './$types';
 	import type { PartialUserWithPermission } from '$lib';
+	import { getToastManager } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -22,6 +21,7 @@
 	const { data, form, user }: Props = $props();
 
 	let detachProjectConfirmRef = $state<Confirm | null>();
+	const toastManagerStore = getToastManager();
 </script>
 
 <EnhancedForm
@@ -32,14 +32,14 @@
 		actionName: 'detach'
 	}}
 	onSubmitSucceeded={() => {
-		toasts.addToast({
+		toastManagerStore.addToast({
 			message: 'project detached from user',
 			type: 'success',
 			time: 5000
 		});
 	}}
 	onSubmitFailed={(e) => {
-		toasts.addToast({
+		toastManagerStore.addToast({
 			message: e.error.message ?? 'some errors occurred',
 			type: 'error',
 			time: 5000

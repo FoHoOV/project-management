@@ -5,13 +5,12 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { toasts } from '$lib/stores/toasts';
-
 	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
 	import { updateUserPermissionsSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 
 	import type { ActionData, PageData } from './$types';
 	import type { PartialUserWithPermission } from '$lib';
+	import { getToastManager } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -25,6 +24,7 @@
 	const { data, form, user, projectPermissionsRef }: Props = $props();
 
 	let changePermissionsConfirmRef = $state<Confirm | null>();
+	const toastsMangerStore = getToastManager();
 </script>
 
 <EnhancedForm
@@ -38,14 +38,14 @@
 		actionName: 'updatePermissions'
 	}}
 	onSubmitSucceeded={() => {
-		toasts.addToast({
+		toastsMangerStore.addToast({
 			message: 'project permissions updated',
 			type: 'success',
 			time: 5000
 		});
 	}}
 	onSubmitFailed={(e) => {
-		toasts.addToast({
+		toastsMangerStore.addToast({
 			message: e.error.message ?? 'some errors occurred',
 			type: 'error',
 			time: 5000

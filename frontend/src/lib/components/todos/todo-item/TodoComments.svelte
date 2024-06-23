@@ -10,10 +10,9 @@
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { TodoComments } from '$lib/stores/todo-comments';
+	import { TodoComments, getTodoComments, setTodoComments, getTodoCategories } from '$lib/stores';
 	import { flip } from 'svelte/animate';
 	import { type CommonComponentStates } from '$lib';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
 
 	export type Events = {
 		onEditComment?: (comment: TodoComment, store: TodoComments) => void;
@@ -33,7 +32,7 @@
 
 	let deleteCommentConfirms = $state<Confirm[]>([]);
 
-	const todoCommentsStore = new TodoComments(getTodosStoreFromContext());
+	const todoCommentsStore = setTodoComments(new TodoComments(getTodoCategories()), false);
 
 	export async function refreshComments() {
 		componentState = 'calling-service';

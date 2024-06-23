@@ -11,7 +11,7 @@
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
 	import { type CommonComponentStates } from '$lib';
-	import { getProjectsStoreFromContext } from '$components/project/utils';
+	import { getProjects } from '$lib/stores';
 
 	export type Events = {
 		onEditProject?: (project: Project) => void;
@@ -29,7 +29,7 @@
 	let apiErrorTitle = $state<string | null>(null);
 	let confirmDetachProject = $state<Confirm | null>(null);
 
-	const projectsStore = getProjectsStoreFromContext();
+	const projectsStore = getProjects();
 
 	async function handleDetachProjectFromUser() {
 		componentState = 'calling-service';

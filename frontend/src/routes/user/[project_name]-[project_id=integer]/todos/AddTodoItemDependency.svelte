@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getTodoCategories } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 	const { form, todo }: Props = $props();
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm

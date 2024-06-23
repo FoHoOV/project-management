@@ -29,12 +29,10 @@
 
 	import type { TodoComment } from '$lib/generated-client/zod/schemas';
 
-	import { multiStepModal } from '$lib/stores/multi-step-modal';
-	import { TodoCategories } from '$lib/stores/todos';
+	import { TodoCategories, setTodoCategories } from '$lib/stores/todos';
 	import { TodoComments } from '$lib/stores/todo-comments';
-	import { setTodosStoreToContext } from '$components/todos/utils';
-	import { drawer } from '$lib/stores/drawer';
 	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
+	import { getMultiStepModal, getNavbar } from '$lib/stores';
 </script>
 
 <script lang="ts">
@@ -42,7 +40,11 @@
 
 	let componentState = $state<'loading' | 'none'>('loading');
 
-	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories(data.response ?? []), true);
+	const todoCategoriesStore = setTodoCategories(new TodoCategories(data.response ?? []));
+	const multiStepModalStore = getMultiStepModal();
+	const navbarStore = getNavbar();
+
+	navbarStore.add('end', settings);
 
 	$effect.pre(() => {
 		data;
@@ -54,7 +56,7 @@
 	});
 
 	function handleCreateTodoCategory(e: MouseEvent) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: CreateTodoCategory,
 			props: () => {
 				return {
@@ -66,7 +68,7 @@
 	}
 
 	function handleEditTodoCategory(category: TodoCategory) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: EditTodoCategory,
 			props: () => {
 				return {
@@ -79,7 +81,7 @@
 	}
 
 	function handleAttachToProject(category: TodoCategory) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: AttachToProject,
 			props: () => {
 				return {
@@ -92,7 +94,7 @@
 	}
 
 	function handleEditTodoItem(todo: TodoCategoryPartialTodoItem) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: EditTodoItem,
 			props: () => {
 				return {
@@ -105,7 +107,7 @@
 	}
 
 	function handleCreateTodoItem(category: TodoCategory) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: CreateTodoItem,
 			props: () => {
 				return {
@@ -118,7 +120,7 @@
 	}
 
 	function handleCreateComment(todoId: number, store: TodoComments) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: CreateTodoComment,
 			props: () => {
 				return {
@@ -132,7 +134,7 @@
 	}
 
 	function handleEditTodoComment(comment: TodoComment, store: TodoComments) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: EditTodoComment,
 			props: () => {
 				return {
@@ -146,7 +148,7 @@
 	}
 
 	function handleAddTag(todo: TodoCategoryPartialTodoItem) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: AddTag,
 			props: () => {
 				return {
@@ -159,12 +161,11 @@
 	}
 
 	function handleEditTag(tag: TodoItemPartialTag) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: EditTag,
 			props: () => {
 				return {
 					form: form,
-
 					tag: tag
 				};
 			},
@@ -173,7 +174,7 @@
 	}
 
 	function handleAddTodoItemDependency(todo: TodoCategoryPartialTodoItem) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: AddTodoItemDependency,
 			props: () => {
 				return {
@@ -188,10 +189,8 @@
 
 	onMount(() => {
 		componentState = 'none';
-		drawer.navbar$.end$.push(settings);
-
 		return () => {
-			drawer.navbar$.remove('end', settings);
+			navbarStore.remove('end', settings);
 		};
 	});
 </script>

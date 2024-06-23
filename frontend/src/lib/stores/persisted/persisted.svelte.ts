@@ -1,63 +1,92 @@
-import { browser } from '$app/environment';
+import { PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS } from '$env/static/public';
+import { StorageTypes } from '$lib';
 
-type PrimitiveStorageTypes = string | number | boolean | null;
-type ObjectStorageTypes = Record<string, unknown> | null;
+type PrimitiveStorageTypes = string | number | boolean;
+type ObjectStorageTypes = Record<string, unknown>;
 
-class _Persisted {
-	primitive$<T extends PrimitiveStorageTypes>(key: string, value: T) {
-		let reactiveValue = $state<PrimitiveStorageTypes>(
-			value?.toString() ?? this.localStorage.getItem(key)
+type Options<T extends PrimitiveStorageTypes | ObjectStorageTypes> = {
+	initializer?: T;
+	default?: T;
+};
+
+export class Persisted {
+	/**
+	 * stores to localStorage
+	 */
+	static primitive$<T extends PrimitiveStorageTypes>(key: string, options?: Options<T>) {
+		const storage = StorageTypes.localStorage.getItem(key);
+		let reactiveValue = $state<string>(
+			storage ? storage ?? options?.default?.toString() : options?.initializer?.toString() ?? ''
 		);
 
 		$effect.root(() => {
 			$effect(() => {
-				this.localStorage.setItem(key, reactiveValue?.toString() ?? '');
+				StorageTypes.localStorage.setItem(key, reactiveValue?.toString() ?? '');
 			});
 		});
 
 		return {
-			get current(): PrimitiveStorageTypes {
+			get value$(): string {
 				return reactiveValue;
 			},
-			set current(newValue: PrimitiveStorageTypes) {
+			set value$(newValue: T) {
 				reactiveValue = newValue?.toString() + '';
 			}
 		};
 	}
 
-	object$<T extends ObjectStorageTypes>(key: string, value: T) {
-		const storage = this.localStorage.getItem(key);
-		const parsed: T = storage ? JSON.parse(storage) : null;
-		let reactiveValue = $state<ObjectStorageTypes>(value ?? parsed);
+	/**
+	 * stores to localStorage
+	 */
+	static object$<T extends ObjectStorageTypes>(key: string, options?: Options<T>) {
+		const storage = StorageTypes.localStorage.getItem(key);
+		const parsed: T = storage ? JSON.parse(storage) : options?.default;
+		let reactiveValue = $state<T>(parsed ?? options?.initializer);
 
 		$effect.root(() => {
 			$effect(() => {
-				this.localStorage.setItem(key, JSON.stringify(reactiveValue));
+				StorageTypes.localStorage.setItem(key, JSON.stringify(reactiveValue));
 			});
 		});
 
 		return {
-			get current(): ObjectStorageTypes {
+			get value$(): T {
 				return reactiveValue;
 			},
-			set current(newValue: ObjectStorageTypes) {
+			set value$(newValue: T) {
 				reactiveValue = newValue;
 			}
 		};
 	}
 
-	get localStorage() {
-		return browser
-			? window.localStorage
-			: {
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					getItem(key: string) {
-						return null;
-					},
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					setItem(key: string, value: string | null) {}
-				};
+	/**
+	 * stores to cookie
+	 */
+	static cookie$<T extends ObjectStorageTypes>(key: string, options?: Options<T>) {
+		const storage = StorageTypes.cookies.get(key);
+		const parsed: T = storage ? JSON.parse(storage) : options?.default;
+		let reactiveValue = $state<T>(parsed ?? options?.initializer);
+
+		$effect.root(() => {
+			$effect(() => {
+				const expirationDate = new Date(Date.now());
+				expirationDate.setSeconds(
+					expirationDate.getSeconds() + parseInt(PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS)
+				);
+				StorageTypes.cookies.set(key, JSON.stringify(reactiveValue), {
+					expires: expirationDate,
+					path: '/'
+				});
+			});
+		});
+
+		return {
+			get value$(): T {
+				return reactiveValue;
+			},
+			set value$(newValue: T) {
+				reactiveValue = newValue;
+			}
+		};
 	}
 }
-
-export const persisted = new _Persisted();

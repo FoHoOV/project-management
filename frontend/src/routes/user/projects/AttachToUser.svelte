@@ -7,7 +7,7 @@
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
 	import { type Project } from '$lib/generated-client/models';
-	import { getProjectsStoreFromContext } from '$components/project/utils';
+	import { getProjects } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -18,7 +18,7 @@
 <script lang="ts">
 	const { form, project }: Props = $props();
 
-	const projectsStore = getProjectsStoreFromContext();
+	const projectsStore = getProjects();
 </script>
 
 <EnhancedForm

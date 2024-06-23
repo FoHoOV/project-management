@@ -1,31 +1,18 @@
-import { browser } from '$app/environment';
-import { CACHED_THEME_KEY_NAME } from './constants';
-import { persisted } from '$lib/stores/persisted';
+import { Persisted } from '../persisted';
+import { THEME_COOKIE_KEY } from './constants';
 
-const _storedTheme = persisted.primitive$(CACHED_THEME_KEY_NAME, null);
+export type Theme = 'dark' | 'light';
 
-export function getSelectedTheme$() {
-	const theme = $derived.by(() => {
-		if (!browser) {
-			return 'dark';
-		}
-		if (
-			_storedTheme.current === 'light' ||
-			!window.matchMedia('(prefers-color-scheme: dark)').matches
-		) {
-			return 'light';
-		}
-
-		return 'dark';
+export class ThemeManager {
+	#storedTheme = Persisted.cookie$<{ value: Theme }>(THEME_COOKIE_KEY, {
+		initializer: { value: 'dark' }
 	});
 
-	return {
-		get current() {
-			return theme;
-		}
-	};
-}
+	get value$() {
+		return this.#storedTheme.value$.value;
+	}
 
-export function setTheme(theme: 'dark' | 'light') {
-	_storedTheme.current = theme;
+	change(theme: Theme) {
+		this.#storedTheme.value$ = { value: theme };
+	}
 }

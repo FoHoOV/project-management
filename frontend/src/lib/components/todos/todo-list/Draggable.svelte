@@ -21,13 +21,10 @@
 		type TodoItem,
 		type CommonComponentStates
 	} from '$lib';
-	import {
-		generateNewOrderForTodoCategory,
-		getTodosStoreFromContext
-	} from '$components/todos/utils';
+	import { generateNewOrderForTodoCategory } from '$components/todos/utils';
 	import { TodoCategoryClient, TodoItemClient } from '$lib/client-wrapper/clients';
-	import { toasts } from '$lib/stores/toasts';
 	import type { Snippet } from 'svelte';
+	import { getToastManager, getTodoCategories } from '$lib/stores';
 
 	type ComponentState =
 		| CommonComponentStates
@@ -49,7 +46,8 @@
 <script lang="ts">
 	const { category, projectId, disabled, onError, children }: Props = $props();
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
+	const toastsMangerStore = getToastManager();
 	let componentState = $state<ComponentState>('none');
 
 	async function handleOnDrop(event: DropEvent<{}>) {
@@ -131,7 +129,7 @@
 			errorHandler: async (e) => {
 				componentState = 'none';
 				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
-					toasts.addToast({
+					toastsMangerStore.addToast({
 						type: 'error',
 						message: e.message,
 						time: 6000
