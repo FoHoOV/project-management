@@ -26,10 +26,10 @@ export class Persisted {
 		});
 
 		return {
-			get current(): string {
+			get value$(): string {
 				return reactiveValue;
 			},
-			set current(newValue: T) {
+			set value$(newValue: T) {
 				reactiveValue = newValue?.toString() + '';
 			}
 		};
@@ -50,10 +50,10 @@ export class Persisted {
 		});
 
 		return {
-			get current(): T {
+			get value$(): T {
 				return reactiveValue;
 			},
-			set current(newValue: T) {
+			set value$(newValue: T) {
 				reactiveValue = newValue;
 			}
 		};
@@ -81,10 +81,10 @@ export class Persisted {
 		});
 
 		return {
-			get current(): T {
+			get value$(): T {
 				return reactiveValue;
 			},
-			set current(newValue: T) {
+			set value$(newValue: T) {
 				reactiveValue = newValue;
 			}
 		};

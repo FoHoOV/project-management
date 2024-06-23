@@ -9,10 +9,10 @@ export class ThemeManager {
 	});
 
 	get value$() {
-		return this.#storedTheme.current.value;
+		return this.#storedTheme.value$.value;
 	}
 
 	change(theme: Theme) {
-		this.#storedTheme.current = { value: theme };
+		this.#storedTheme.value$ = { value: theme };
 	}
 }
