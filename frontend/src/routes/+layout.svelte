@@ -16,10 +16,18 @@
 	} from '@fortawesome/free-solid-svg-icons';
 
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { setProjectsStoreToContext } from '$components/project/utils';
-	import { Projects } from '$lib/stores/projects';
+	import { Projects, setProjects } from '$lib/stores/projects';
 	import { createRootContextManager } from '$lib/stores/context-manager';
 	import { onMount, untrack } from 'svelte';
+	import {
+		Navbar,
+		ToastManager,
+		setMultiStepModal,
+		setNavbar,
+		setToastManager,
+		setTheme,
+		MultiStepModal as MultiStepModalStore
+	} from '$lib/stores';
 </script>
 
 <script lang="ts">
@@ -28,8 +36,8 @@
 	createRootContextManager();
 
 	// we are creating a new array because we should not mutate the data passed from server -_-
-	// mutating data should be warning in general I guess?
-	const projectsStore = setProjectsStoreToContext(new Projects([...data.projects]), true);
+	// mutating data sent from server should be a warning in general I guess?
+	const { projectsStore } = initializeGlobalStores();
 
 	$effect.pre(() => {
 		data;
@@ -37,6 +45,16 @@
 			projectsStore.set([...data.projects]);
 		});
 	});
+
+	function initializeGlobalStores() {
+		setTheme('dark', true);
+		return {
+			projectsStore: setProjects(new Projects([...data.projects])),
+			navbarStore: setNavbar(new Navbar()),
+			toastManagerStore: setToastManager(new ToastManager()),
+			multiStepModalStore: setMultiStepModal(new MultiStepModalStore([], false))
+		};
+	}
 
 	onMount(() => {
 		// this is for tests

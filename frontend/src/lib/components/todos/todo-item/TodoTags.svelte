@@ -17,7 +17,7 @@
 	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
 	import Confirm from '$components/Confirm.svelte';
 	import { type CommonComponentStates } from '$lib';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getTodoCategories } from '$lib/stores';
 
 	export type Events = {
 		onEditTag?: (tag: TodoItemPartialTag) => void;
@@ -37,7 +37,7 @@
 	let deleteTagConfirms = $state<Confirm[]>([]);
 	let detachTagConfirms = $state<Confirm[]>([]);
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';

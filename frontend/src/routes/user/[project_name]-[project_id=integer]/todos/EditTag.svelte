@@ -8,7 +8,7 @@
 	import type { TodoItemPartialTag } from '$lib/generated-client/models';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getTodoCategories } from '$lib/stores';
 
 	export type Props = {
 		form: ActionData;
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 	const { form, tag }: Props = $props();
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm

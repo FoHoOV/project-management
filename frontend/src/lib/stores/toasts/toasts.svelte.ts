@@ -8,7 +8,7 @@ export type Toast = {
 	readonly id: symbol;
 };
 
-class ToastManager {
+export class ToastManager {
 	private _toasts = $state<Toast[]>([]);
 
 	addToast(toast: Omit<Toast, 'id'>): Toast {
@@ -31,7 +31,3 @@ class ToastManager {
 		return this._toasts;
 	}
 }
-
-export const toasts = new ToastManager();
-
-export default toasts;

@@ -3,8 +3,8 @@
 	import Fa from 'svelte-fa';
 
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
-	import { drawer } from '$lib/stores/drawer';
 	import type { Snippet } from 'svelte';
+	import { getNavbar } from '$lib/stores';
 
 	export type SnippetParams = [{ closeDrawer: () => void }];
 
@@ -32,6 +32,7 @@
 		content
 	}: Props = $props();
 
+	const navbarStore = getNavbar();
 	let showDrawer = $state<boolean>(false);
 
 	function closeDrawer() {
@@ -57,7 +58,7 @@
 			{/snippet}
 
 			{#snippet end()}
-				{#each drawer.navbar$.end$ as snippet}
+				{#each navbarStore.end$ as snippet}
 					{@render snippet({ closeDrawer })}
 				{/each}
 				{@render navbarEnd?.({ closeDrawer })}

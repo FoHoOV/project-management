@@ -8,7 +8,7 @@
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		DROP_EVENT_HANDLED_BY_TODO_ITEM
 	} from '$components/todos/constants';
-	import { generateNewOrderForTodoItem, getTodosStoreFromContext } from '$components/todos/utils';
+	import { generateNewOrderForTodoItem } from '$components/todos/utils';
 	import {
 		dropzone,
 		draggable,
@@ -25,8 +25,8 @@
 		type TodoCategory
 	} from '$lib';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
-	import { toasts } from '$lib/stores/toasts';
 	import type { Snippet } from 'svelte';
+	import { getToastManager, getTodoCategories } from '$lib/stores';
 
 	type ComponentStates =
 		| CommonComponentStates
@@ -50,7 +50,8 @@
 
 	let componentState = $state<ComponentStates>();
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
+	const toastManagerStore = getToastManager();
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoCategoryPartialTodoItem>) {
 		if (event.detail.data.id == todo.id) {
@@ -87,7 +88,7 @@
 				componentState = 'none';
 
 				if (e.type == ErrorType.API_ERROR) {
-					toasts.addToast({
+					toastManagerStore.addToast({
 						type: 'error',
 						message: e.message,
 						time: 6000

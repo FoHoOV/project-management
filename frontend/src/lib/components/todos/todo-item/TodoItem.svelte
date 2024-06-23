@@ -28,14 +28,12 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import { multiStepModal } from '$lib/stores/multi-step-modal';
 	import { page } from '$app/stores';
 	import { TodoItemClient } from '$lib/client-wrapper/clients';
-	import { toasts } from '$lib/stores/toasts';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getMultiStepModal, getToastManager, getTodoCategories } from '$lib/stores';
 
 	export type Events = {
 		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;
@@ -66,7 +64,9 @@
 	let componentState = $state<CommonComponentStates>('none');
 	let confirmDeleteTodo = $state<Confirm | null>(null);
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
+	const toastsManagerStore = getToastManager();
+	const multiStepModalStore = getMultiStepModal();
 
 	async function handleChangeDoneStatus(event: Event) {
 		componentState = 'calling-service';
@@ -79,7 +79,7 @@
 				});
 				todoCategoriesStore?.updateTodo(result, draggable);
 				if (result.is_done == savedTodoStatus) {
-					toasts.addToast({
+					toastsManagerStore.addToast({
 						type: 'warning',
 						time: 9000,
 						message: 'This category has a rule that prevents this item being marked as `UNDONE`'
@@ -90,7 +90,7 @@
 			},
 			errorHandler: async (e) => {
 				if (e.type == ErrorType.API_ERROR) {
-					toasts.addToast({
+					toastsManagerStore.addToast({
 						type: 'error',
 						message: e.message,
 						time: 6000
@@ -121,7 +121,7 @@
 	}
 
 	function handleShowDependencies() {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: TodoItemDependencies,
 			props: () => {
 				return {
@@ -134,7 +134,7 @@
 	}
 
 	function handleShowComments() {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: TodoComments,
 			props: () => {
 				return {
@@ -148,7 +148,7 @@
 	}
 
 	function handleShowTags() {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: TodoTags,
 			props: () => {
 				return {

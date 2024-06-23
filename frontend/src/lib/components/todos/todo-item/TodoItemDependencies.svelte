@@ -14,7 +14,7 @@
 		TodoItemPartialDependency
 	} from '$lib/generated-client';
 	import { type CommonComponentStates } from '$lib';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getTodoCategories } from '$lib/stores';
 
 	export type Events = {
 		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;
@@ -32,7 +32,7 @@
 	let apiErrorTitle = $state<string | null>(null);
 	let deleteDependencyConfirms = $state<Confirm[]>([]);
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
 
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {
 		componentState = 'calling-service';

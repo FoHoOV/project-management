@@ -4,11 +4,13 @@
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import { schema } from './validators';
-	import { toasts } from '$lib/stores/toasts';
+	import { getToastManager } from '$lib/stores';
 </script>
 
 <script lang="ts">
 	const { form } = $props();
+
+	const toastManagerStore = getToastManager();
 </script>
 
 <svelte:head>
@@ -18,7 +20,11 @@
 <EnhancedForm
 	enhancerConfig={{ validator: { schema }, form: form }}
 	onRedirected={() => {
-		toasts.addToast({ time: 5000, message: 'account successfully created', type: 'success' });
+		toastManagerStore.addToast({
+			time: 5000,
+			message: 'account successfully created',
+			type: 'success'
+		});
 	}}
 	showResetButton={false}
 	formWrapperClasses="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"

@@ -1,8 +1,4 @@
 import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
-import type { TodoCategories } from '$lib/stores/todos';
-import { TODO_CATEGORIES_CONTEXT_NAME } from './constants';
-import { getRootContextManager } from '$lib/stores/context-manager';
-import { getContext, setContext } from 'svelte';
 
 export function generateNewOrderForTodoItem(
 	target: TodoCategoryPartialTodoItem,
@@ -68,22 +64,4 @@ export function getRightTodoItemId(id: number, category: TodoCategory) {
 export function getLeftTodoItemId(id: number, category: TodoCategory) {
 	const currentIndex = category.items.findIndex((todo) => todo.id == id);
 	return currentIndex === 0 ? null : category.items[currentIndex - 1].id;
-}
-
-export function setTodosStoreToContext<TContext extends TodoCategories | undefined>(
-	store: TContext,
-	setToRootContext?: boolean
-) {
-	if (setToRootContext) {
-		return getRootContextManager().add(TODO_CATEGORIES_CONTEXT_NAME, store);
-	}
-
-	return setContext(TODO_CATEGORIES_CONTEXT_NAME, store);
-}
-
-export function getTodosStoreFromContext() {
-	return (
-		getContext<TodoCategories | undefined>(TODO_CATEGORIES_CONTEXT_NAME) ??
-		getRootContextManager().get<TodoCategories>(TODO_CATEGORIES_CONTEXT_NAME)
-	);
 }

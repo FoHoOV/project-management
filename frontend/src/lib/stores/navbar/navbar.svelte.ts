@@ -2,7 +2,7 @@ import type { Snippet } from 'svelte';
 import type { SnippetParams } from '$components/Drawer.svelte';
 
 type NavbarPosition = 'start' | 'end' | 'center';
-class Navbar {
+export class Navbar {
 	public end$: Snippet<SnippetParams>[] = $state([]);
 
 	remove(from: NavbarPosition, snippet: Snippet<SnippetParams>) {
@@ -22,13 +22,3 @@ class Navbar {
 		}
 	}
 }
-
-class Drawer {
-	public readonly navbar$: Navbar;
-
-	constructor() {
-		this.navbar$ = new Navbar();
-	}
-}
-
-export const drawer = new Drawer();

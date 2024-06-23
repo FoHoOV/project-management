@@ -9,7 +9,7 @@
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import { TodoCategories } from '$lib/stores/todos/todos.svelte.js';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-	import { setTodosStoreToContext } from '$components/todos/utils.js';
+	import { setTodoCategories } from '$lib/stores';
 </script>
 
 <script lang="ts">
@@ -17,7 +17,7 @@
 
 	let enhancedForm = $state<EnhancedForm<any, any, any> | null>(null);
 
-	const todoCategoriesStore = setTodosStoreToContext(new TodoCategories());
+	const todoCategoriesStore = setTodoCategories(new TodoCategories(), false);
 
 	function handleShowResults(result: TodoItemModel[]) {
 		if (result.length == 0) {

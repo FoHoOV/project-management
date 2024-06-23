@@ -10,7 +10,7 @@ type ModalStep<TComponent extends SvelteComponent> = {
 	closeModalButtonText?: string;
 };
 
-class MultiStepModal {
+export class MultiStepModal {
 	private _steps = $state<ModalStep<any>[]>()!;
 	private _show = $state<boolean>()!;
 
@@ -49,7 +49,3 @@ class MultiStepModal {
 		return this._show;
 	}
 }
-
-export const multiStepModal = new MultiStepModal([], false);
-
-export default multiStepModal;

@@ -48,15 +48,15 @@
 	wrapperClasses="mb-2"
 	inputClasses="toggle toggle-success"
 	labelClasses="border border-info"
-	onchange={(e)=>{
-        allowAllAccessRights = (e.target as HTMLInputElement).checked;
+	onchange={(e) => {
+		allowAllAccessRights = (e.target as HTMLInputElement).checked;
 		if (allowAllAccessRights) {
 			allowedPermissions = new Set([Permission.All]);
 		} else {
 			allowedPermissions.delete(Permission.All);
 		}
 		onChange?.(allowedPermissions);
-    }}
+	}}
 ></FormInput>
 <div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
 	{#key allowedPermissions}
@@ -69,9 +69,9 @@
 				disabled={allowAllAccessRights ? true : null}
 				inputClasses="checkbox-warning"
 				labelClasses="border border-info"
-				onchange={(e)=>{
+				onchange={(e) => {
 					if ((e.target as HTMLInputElement).checked) {
-						allowedPermissions.add(permission)
+						allowedPermissions.add(permission);
 					} else {
 						allowedPermissions.delete(permission);
 					}

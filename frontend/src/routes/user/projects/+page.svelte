@@ -7,21 +7,21 @@
 
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
 	import type { Project } from '$lib/generated-client/models';
-	import { multiStepModal } from '$lib/stores/multi-step-modal/index';
-	import { getProjectsStoreFromContext } from '$components/project/utils.js';
+	import { getMultiStepModal, getProjects } from '$lib/stores';
 </script>
 
 <script lang="ts">
 	const { data, form } = $props();
 
-	const projectsStore = getProjectsStoreFromContext();
+	const projectsStore = getProjects();
+	const multiStepModalStore = getMultiStepModal();
 
 	if (!projectsStore) {
 		throw new window.Error('projects store must have a value for this page to work!');
 	}
 
 	function handleCreateProject() {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: CreateProject,
 			props: () => {
 				return { form: form };
@@ -31,7 +31,7 @@
 	}
 
 	function handleAttachToUser(project: Project) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: AttachToUser,
 			props: () => {
 				return { form: form, project: project };
@@ -41,7 +41,7 @@
 	}
 
 	function handleEditProject(project: Project) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: EditProject,
 			props: () => {
 				return { form: form, project: project };

@@ -23,8 +23,7 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { flip } from 'svelte/animate';
-	import { multiStepModal } from '$lib/stores/multi-step-modal';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getMultiStepModal, getTodoCategories } from '$lib/stores';
 
 	export type Events = {
 		onEditTodoCategory?: (category: TodoCategory) => void;
@@ -47,7 +46,8 @@
 	let apiErrorTitle = $state<string | null>(null);
 	let confirmDeleteTodoCategory = $state<Confirm | null>();
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
+	const multiStepModalStore = getMultiStepModal();
 
 	async function handleDeleteCategory() {
 		componentState = 'calling-service';
@@ -71,7 +71,7 @@
 	function handleShowManageActions(
 		event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }
 	) {
-		multiStepModal.add({
+		multiStepModalStore.add({
 			component: TodoListActions,
 			props: () => {
 				return { category: category };

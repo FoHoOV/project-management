@@ -8,7 +8,7 @@
 	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
 	import { Action, type TodoCategory } from '$lib/generated-client';
 	import { type CommonComponentStates } from '$lib';
-	import { getTodosStoreFromContext } from '$components/todos/utils';
+	import { getTodoCategories } from '$lib/stores';
 
 	export type Props = {
 		category: TodoCategory;
@@ -21,7 +21,7 @@
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 
-	const todoCategoriesStore = getTodosStoreFromContext();
+	const todoCategoriesStore = getTodoCategories();
 
 	async function handleUpdateAction(event: Event) {
 		componentState = 'calling-service';

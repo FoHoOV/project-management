@@ -2,7 +2,7 @@
 	import Fa from 'svelte-fa';
 
 	import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
-	import { getSelectedTheme$, setTheme } from '$lib/stores/theme';
+	import { getSelectedTheme$, changeTheme } from '$lib/stores/theme';
 </script>
 
 <script lang="ts">
@@ -10,10 +10,10 @@
 
 	function handleModeChange(e: Event) {
 		if (theme.current == 'dark') {
-			setTheme('light');
+			changeTheme('light');
 			return;
 		}
-		setTheme('dark');
+		changeTheme('dark');
 	}
 
 	$effect(() => {

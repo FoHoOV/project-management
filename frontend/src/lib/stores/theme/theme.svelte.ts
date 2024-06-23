@@ -1,16 +1,15 @@
 import { browser } from '$app/environment';
-import { CACHED_THEME_KEY_NAME } from './constants';
-import { persisted } from '$lib/stores/persisted';
+import { getTheme as getThemeFromContext, setTheme as setThemToContext } from './context';
 
-const _storedTheme = persisted.primitive$(CACHED_THEME_KEY_NAME, null);
+export type Theme = 'dark' | 'light';
 
 export function getSelectedTheme$() {
-	const theme = $derived.by(() => {
+	const theme: Theme = $derived.by(() => {
 		if (!browser) {
 			return 'dark';
 		}
 		if (
-			_storedTheme.current === 'light' ||
+			getThemeFromContext()?.current.theme === 'light' ||
 			!window.matchMedia('(prefers-color-scheme: dark)').matches
 		) {
 			return 'light';
@@ -26,6 +25,6 @@ export function getSelectedTheme$() {
 	};
 }
 
-export function setTheme(theme: 'dark' | 'light') {
-	_storedTheme.current = theme;
+export function changeTheme(theme: Theme) {
+	setThemToContext(theme);
 }
