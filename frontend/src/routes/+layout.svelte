@@ -36,8 +36,6 @@
 
 	createRootContextManager();
 
-	// we are creating a new array because we should not mutate the data passed from server -_-
-	// mutating data sent from server should be a warning in general I guess?
 	const { projectsStore, themeManager } = initializeGlobalStores();
 
 	$effect.pre(() => {
@@ -49,6 +47,8 @@
 
 	function initializeGlobalStores() {
 		return {
+			// we are creating a new array for projects because we should not mutate the data passed from server -_-
+			// mutating data sent from server should be a warning in general I guess?
 			projectsStore: setProjects(new Projects([...data.projects])),
 			navbarStore: setNavbar(new Navbar()),
 			toastManagerStore: setToastManager(new ToastManager()),
