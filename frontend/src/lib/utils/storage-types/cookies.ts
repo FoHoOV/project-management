@@ -21,15 +21,17 @@ export class Cookies {
 			ClientCookies.set(name, value, opts);
 			return;
 		}
-		this.#serverSideCookies.set(name, { value, opts: { ...opts, modified: true } });
+		throw new Error('cookies.set is not implemented for server-side yet');
+		// in hooks.server.ts we should write all modified serverSideCookies, but how to get a reference to this instance there?
+		// god knows :D
+		// this.#serverSideCookies.set(name, { value, opts: { ...opts, modified: true } });
 	}
 
 	get(name: string): string | undefined {
 		if (browser) {
-			ClientCookies.get(name);
-			return;
+			return ClientCookies.get(name);
 		}
-		this.#serverSideCookies.get(name)?.value;
+		return this.#serverSideCookies.get(name)?.value;
 	}
 
 	getAll() {

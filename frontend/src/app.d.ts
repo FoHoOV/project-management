@@ -12,6 +12,7 @@ declare global {
 		}
 		interface Locals {
 			token?: Token;
+			sharedCookies: Record<(typeof SHARED_KEYS)[keyof typeof SHARED_KEYS], string | undefined>;
 		}
 
 		interface PageData {

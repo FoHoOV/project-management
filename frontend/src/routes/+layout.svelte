@@ -27,14 +27,20 @@
 		setToastManager,
 		setTheme,
 		MultiStepModal as MultiStepModalStore,
-		ThemeManager
+		ThemeManager,
+		Persisted,
+		setPersistedUtils
 	} from '$lib/stores';
+	import { setStorageTypes, StorageTypes } from '$lib';
 </script>
 
 <script lang="ts">
 	const { data, children } = $props();
 
 	createRootContextManager();
+
+	const storageTypes = new StorageTypes({ initialCookies: data.sharedCookies });
+	const persisted = new Persisted(storageTypes);
 
 	const { projectsStore, themeManager } = initializeGlobalStores();
 
@@ -53,7 +59,9 @@
 			navbarStore: setNavbar(new Navbar()),
 			toastManagerStore: setToastManager(new ToastManager()),
 			multiStepModalStore: setMultiStepModal(new MultiStepModalStore([], false)),
-			themeManager: setTheme(new ThemeManager(data.sharedCookies['theme']))
+			themeManager: setTheme(new ThemeManager(persisted)),
+			persistedUtils: setPersistedUtils(persisted),
+			storageTypes: setStorageTypes(storageTypes)
 		};
 	}
 

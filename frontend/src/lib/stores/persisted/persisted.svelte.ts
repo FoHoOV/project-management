@@ -1,5 +1,5 @@
 import { PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS } from '$env/static/public';
-import { LocalStorage, Cookies } from '$lib';
+import { StorageTypes } from '$lib';
 
 type PrimitiveStorageTypes = string | number | boolean;
 type ObjectStorageTypes = Record<string, unknown>;
@@ -10,19 +10,24 @@ type Options<T extends PrimitiveStorageTypes | ObjectStorageTypes> = {
 };
 
 export class Persisted {
+	#storageTypes: StorageTypes;
+
+	constructor(storageTypes: StorageTypes) {
+		this.#storageTypes = storageTypes;
+	}
+
 	/**
 	 * stores to localStorage
 	 */
-	static primitive$<T extends PrimitiveStorageTypes>(key: string, options?: Options<T>) {
-		const localStorage = new LocalStorage();
-		const storage = localStorage.getItem(key);
+	primitive$<T extends PrimitiveStorageTypes>(key: string, options?: Options<T>) {
+		const storage = this.#storageTypes.localStorage.getItem(key);
 		let reactiveValue = $state<string>(
 			storage ? storage ?? options?.default?.toString() : options?.initializer?.toString() ?? ''
 		);
 
 		$effect.root(() => {
 			$effect(() => {
-				localStorage.setItem(key, reactiveValue?.toString() ?? '');
+				this.#storageTypes.localStorage.setItem(key, reactiveValue?.toString() ?? '');
 			});
 		});
 
@@ -39,15 +44,14 @@ export class Persisted {
 	/**
 	 * stores to localStorage
 	 */
-	static object$<T extends ObjectStorageTypes>(key: string, options?: Options<T>) {
-		const localStorage = new LocalStorage();
-		const storage = localStorage.getItem(key);
+	object$<T extends ObjectStorageTypes>(key: string, options?: Options<T>) {
+		const storage = this.#storageTypes.localStorage.getItem(key);
 		const parsed: T = storage ? JSON.parse(storage) : options?.default;
 		let reactiveValue = $state<T>(parsed ?? options?.initializer);
 
 		$effect.root(() => {
 			$effect(() => {
-				localStorage.setItem(key, JSON.stringify(reactiveValue));
+				this.#storageTypes.localStorage.setItem(key, JSON.stringify(reactiveValue));
 			});
 		});
 
@@ -64,9 +68,8 @@ export class Persisted {
 	/**
 	 * stores to cookie
 	 */
-	static cookie$<T extends ObjectStorageTypes>(key: string, options?: Options<T>) {
-		const cookies = new Cookies();
-		const storage = cookies.get(key);
+	cookie$<T extends ObjectStorageTypes>(key: string, options?: Options<T>) {
+		const storage = this.#storageTypes.cookies.get(key);
 		const parsed: T = storage ? JSON.parse(storage) : options?.default;
 		let reactiveValue = $state<T>(parsed ?? options?.initializer);
 
@@ -76,7 +79,7 @@ export class Persisted {
 				expirationDate.setSeconds(
 					expirationDate.getSeconds() + parseInt(PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS)
 				);
-				cookies.set(key, JSON.stringify(reactiveValue), {
+				this.#storageTypes.cookies.set(key, JSON.stringify(reactiveValue), {
 					expires: expirationDate,
 					path: '/',
 					httpOnly: false
