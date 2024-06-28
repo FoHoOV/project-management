@@ -1,1 +1,2 @@
-export * from './storage-types';
+export * from './cookies';
+export * from './local-storage';

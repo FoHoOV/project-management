@@ -53,7 +53,7 @@
 			navbarStore: setNavbar(new Navbar()),
 			toastManagerStore: setToastManager(new ToastManager()),
 			multiStepModalStore: setMultiStepModal(new MultiStepModalStore([], false)),
-			themeManager: setTheme(new ThemeManager())
+			themeManager: setTheme(new ThemeManager(data.sharedCookies['theme']))
 		};
 	}
 

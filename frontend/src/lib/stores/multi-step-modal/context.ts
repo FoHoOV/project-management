@@ -2,6 +2,7 @@ import { getContext, setContext } from '$lib/stores';
 import { MultiStepModal } from './multi-step-modal.svelte';
 
 export const MULTI_STEP_MODAL_CONTEXT_KEY = Symbol();
+
 export function getMultiStepModal() {
 	return getContext<MultiStepModal>(MULTI_STEP_MODAL_CONTEXT_KEY);
 }
