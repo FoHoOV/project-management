@@ -1,6 +1,7 @@
 import { test as baseTest, type EnhancedPage } from './enhanced-page';
 import { expect } from '@playwright/test';
 import crypto from 'crypto'; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
+import { SERVER_ONLY_KEYS } from '../../src/lib/constants/cookie.server';
 
 export class Auth {
 	#enhancedPage: EnhancedPage;
@@ -56,7 +57,7 @@ export class Auth {
 
 		// Capture the access_token from cookies
 		const cookies = await this.#enhancedPage.context().cookies();
-		const accessTokenCookie = cookies.find((cookie) => cookie.name === 'token');
+		const accessTokenCookie = cookies.find((cookie) => cookie.name === SERVER_ONLY_KEYS.token);
 
 		expect(accessTokenCookie, 'token cookie should be present').not.toBeNull();
 

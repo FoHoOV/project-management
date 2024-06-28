@@ -1,5 +1,3 @@
-const KEYS = {
-	token: 'token'
+export const SHARED_KEYS = {
+	theme: 'THEME_NAME'
 } as const;
-
-export default KEYS;

@@ -4,6 +4,7 @@ import { ProjectClient } from '$lib/client-wrapper/clients';
 import type { Project } from '$lib/generated-client/models';
 import { error } from '@sveltejs/kit';
 import { convertNumberToHttpStatusCode } from '$lib';
+
 export const load = (async ({ locals }) => {
 	let result: Project[] = [];
 	if (locals.token) {
@@ -18,5 +19,9 @@ export const load = (async ({ locals }) => {
 		result = projects.response;
 	}
 
-	return { token: locals.token, projects: result };
+	return {
+		token: locals.token,
+		projects: result,
+		sharedCookies: locals.sharedCookies
+	};
 }) satisfies LayoutServerLoad;

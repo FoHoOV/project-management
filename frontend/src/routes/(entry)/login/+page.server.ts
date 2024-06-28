@@ -1,6 +1,6 @@
 import { type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import KEYS from '$lib/constants/cookie';
+import { SERVER_ONLY_KEYS } from '$lib/constants/cookie.server';
 import { superFail, validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
 import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
@@ -25,7 +25,11 @@ export const actions: Actions = {
 					isTokenRequired: false,
 					fetchApi: fetch
 				}).loginForAccessTokenOAuth(validation.data.username, validation.data.password);
-				cookies.set(KEYS.token, JSON.stringify(token), { secure: true, httpOnly: true, path: '/' });
+				cookies.set(SERVER_ONLY_KEYS.token, JSON.stringify(token), {
+					secure: true,
+					httpOnly: true,
+					path: '/'
+				});
 				redirect(303, '/user/projects');
 			},
 			errorHandler: async (e) => {

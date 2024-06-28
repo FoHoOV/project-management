@@ -1,8 +1,5 @@
 import { getContext, setContext } from '$lib/stores';
-import type { Theme, ThemeManager } from './theme.svelte';
-import { Persisted } from '$lib/stores/persisted';
-
-type StoreType = ReturnType<typeof Persisted.cookie$<{ theme: Theme }>>;
+import type { ThemeManager } from './theme.svelte';
 
 export const THEME_CONTEXT_KEY = Symbol();
 
