@@ -34,6 +34,7 @@ del .env
 @echo off
 echo PUBLIC_API_URL = http://127.0.0.1:8080 > .\.env
 echo PUBLIC_API_REQUEST_TIMEOUT_MS = 10000 >> .\.env
+echo PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS = 5184000 >> .\.env
 
 REM creating the .env.integration file
 del .env.integration
