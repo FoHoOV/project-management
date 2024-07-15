@@ -57,7 +57,9 @@ export class ProjectsPage implements IPage {
 		await expect(createdProject, 'created project should be present on the page').toHaveCount(1);
 
 		return {
-			projectId: parseInt((await createdProject.innerText()).split('#')[1])
+			projectId: parseInt((await createdProject.innerText()).split('#')[1]),
+			projectTitle: title,
+			projectDescription: description
 		};
 	}
 
