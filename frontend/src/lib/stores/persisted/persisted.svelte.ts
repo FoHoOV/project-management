@@ -22,7 +22,7 @@ export class Persisted {
 	primitive$<T extends PrimitiveStorageTypes>(key: string, options?: Options<T>) {
 		const storage = this.#storageTypes.localStorage.getItem(key);
 		let reactiveValue = $state<string>(
-			storage ? storage ?? options?.default?.toString() : options?.initializer?.toString() ?? ''
+			storage ? (storage ?? options?.default?.toString()) : (options?.initializer?.toString() ?? '')
 		);
 
 		$effect.root(() => {
