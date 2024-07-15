@@ -4,10 +4,10 @@
 	import { Permission } from '$lib';
 	import { onMount } from 'svelte';
 
-	import { Set } from 'svelte/reactivity';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	export type Events = {
-		onChange?: (permissions: Set<Permission>) => void;
+		onChange?: (permissions: SvelteSet<Permission>) => void;
 	};
 
 	export type Props = {
@@ -19,7 +19,7 @@
 	const { preCheckedPermissions, onChange }: Props = $props();
 
 	let allowAllAccessRights = $state<boolean>();
-	let allowedPermissions = $state<Set<Permission>>(new Set());
+	let allowedPermissions = $state<SvelteSet<Permission>>(new SvelteSet());
 
 	export const selectedPermissions = $derived(allowedPermissions);
 
@@ -30,8 +30,8 @@
 	function setInitValues() {
 		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false;
 		allowedPermissions = preCheckedPermissions
-			? new Set(preCheckedPermissions)
-			: null ?? new Set([Permission.All]);
+			? new SvelteSet(preCheckedPermissions)
+			: (null ?? new SvelteSet([Permission.All]));
 	}
 
 	onMount(() => {
@@ -51,7 +51,7 @@
 	onchange={(e) => {
 		allowAllAccessRights = (e.target as HTMLInputElement).checked;
 		if (allowAllAccessRights) {
-			allowedPermissions = new Set([Permission.All]);
+			allowedPermissions = new SvelteSet([Permission.All]);
 		} else {
 			allowedPermissions.delete(Permission.All);
 		}
