@@ -3,8 +3,8 @@ import { Permission } from '../../src/lib/generated-client';
 
 export async function getCheckBoxes(locator: Locator) {
 	const checkboxesQuery = locator.locator('input[type="checkbox"][name="permissions[]"]');
-	await checkboxesQuery.first().waitFor({ state: 'visible', timeout: 1000 });
 	const checkboxes = await checkboxesQuery.all();
+	await checkboxes[0].waitFor({ state: 'visible' });
 	expect(checkboxes.length).toBeGreaterThanOrEqual(1);
 	return checkboxes;
 }

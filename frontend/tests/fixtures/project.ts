@@ -47,7 +47,7 @@ export class ProjectsPage implements IPage {
 		await closeModal(modal);
 
 		// find the created category
-		const createdProject = await this.#enhancedPage
+		const createdProject = this.#enhancedPage
 			.locator('.card-title div.flex.items-baseline.gap-2', {
 				has: this.#enhancedPage.getByText(title)
 			})
@@ -81,7 +81,7 @@ export class ProjectsPage implements IPage {
 		username: string;
 		permissions: Permission[];
 	}) {
-		(await this.getShareAccessButtonLocator(projectId)).click();
+		await (await this.getShareAccessButtonLocator(projectId)).click();
 		const modal = await getModal(this.#enhancedPage);
 
 		await setPermissions(modal, permissions);

@@ -14,9 +14,8 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 
 	await projectUtils.page.goto();
 
-	const projectTitle = 'test';
 	const project = await projectUtils.page.create({
-		title: projectTitle,
+		title: 'test',
 		description: 'test'
 	});
 
@@ -26,7 +25,7 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 		permissions: [Permission.CreateTag]
 	});
 
-	await projectSettings.page.goto(projectTitle, project.projectId);
+	await projectSettings.page.goto(project.projectTitle, project.projectId);
 
 	expect(await projectSettings.page.isMySelf(lastUser.username)).not.toBeTruthy();
 
@@ -66,13 +65,12 @@ test('canceling the change should reset back to default permissions', async ({
 }) => {
 	await projectUtils.page.goto();
 
-	const projectTitle = 'test';
 	const project = await projectUtils.page.create({
-		title: projectTitle,
+		title: 'test',
 		description: 'test'
 	});
 
-	await projectSettings.page.goto(projectTitle, project.projectId);
+	await projectSettings.page.goto(project.projectTitle, project.projectId);
 
 	const row = await projectSettings.page.getUserPermissionsRowLocator(
 		authUtils.currentLoggedInUser?.username!
@@ -93,13 +91,12 @@ test('when no changes are applied "save-changes" and "cancel" button should be i
 }) => {
 	await projectUtils.page.goto();
 
-	const projectTitle = 'test';
 	const project = await projectUtils.page.create({
-		title: projectTitle,
+		title: 'test',
 		description: 'test'
 	});
 
-	await projectSettings.page.goto(projectTitle, project.projectId);
+	await projectSettings.page.goto(project.projectTitle, project.projectId);
 
 	const row = await projectSettings.page.getUserPermissionsRowLocator(
 		authUtils.currentLoggedInUser?.username!
