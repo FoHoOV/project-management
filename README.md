@@ -1,10 +1,8 @@
 # Project management app
 
-A simple Project management app. The goal of this project is to have most of ASANA's features (step by step tho)
-one day.
+A simple project management app. 
 
-features it has right now:
-
+# Features:
 1. creating projects (with add/edit/delete)
 2. each project can have many todo categores (with add/edit/delete)
 3. each category can have many todo item (with add/edit/delete)
@@ -21,17 +19,21 @@ features it has right now:
 14. setting custom permissions per user 
 15. changing project permissions in project settings page (only owners can change permissions)
 
-# demo
+# Demo
 
 You can find the demo at [this](https://project-management-fohoov.vercel.app) url (it might not work for the first few requests (because service will go down after inactivity), but after 1 or 2 minutes it will start working again).
 
-# how to run
+# How to run
 
 1. goto the backend project and follow the steps of its README.md
 2. goto the frontend project and follow the steps of its README.md
 
-# known bugs
+# Known bugs
   * nothing for now >_<
+  * 
+# Goals
+The goal of this project is to have most of ASANA's features (step by step tho)
+one day.
 
 # IDK what the title should be
 
