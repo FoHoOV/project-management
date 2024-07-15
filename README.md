@@ -30,7 +30,7 @@ You can find the demo at [this](https://project-management-fohoov.vercel.app) ur
 
 # Known bugs
   * nothing for now >_<
-  * 
+
 # Goals
 The goal of this project is to have most of ASANA's features (step by step tho)
 one day.
