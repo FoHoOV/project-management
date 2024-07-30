@@ -1,12 +1,13 @@
 from re import I
 import typing
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from api.routes.oauth import oath
+from .routes.oauth import oath
 from .routes.user import user
 from .routes.project import project
+from .routes.permission import permission
 from .routes.todo_category import todo_category
 from .routes.todo_item import todo_item
 from .routes.tag import tag
@@ -38,6 +39,7 @@ def create_app():
     app.include_router(oath.router)
     app.include_router(user.router)
     app.include_router(project.router)
+    app.include_router(permission.router)
     app.include_router(todo_category.router)
     app.include_router(todo_item.router)
     app.include_router(todo_item_comment.router)

@@ -9,8 +9,6 @@ from db.models.user_project_permission import Permission, UserProjectPermission
 from db.schemas.project import (
     ProjectAttachAssociation,
     ProjectCreate,
-    ProjectDetachAssociation,
-    ProjectRead,
     ProjectUpdate,
     ProjectUpdateUserPermissions,
 )
@@ -53,39 +51,38 @@ def create(db: Session, project: ProjectCreate, user_id: int):
     return db_item
 
 
-def update(db: Session, project: ProjectUpdate, user_id: int):
-    db_item = get_project(db, ProjectRead(project_id=project.project_id), user_id)
+def update(db: Session, project_id: int, patch: ProjectUpdate, user_id: int):
+    db_item = get_project(db, project_id, user_id)
 
-    db_item.title = project.title
-    db_item.description = project.description
+    db_item.title = patch.title
+    db_item.description = patch.description
 
     db.commit()
     return db_item
 
 
 def update_user_permissions(
-    db: Session, permissions: ProjectUpdateUserPermissions, user_id: int
+    db: Session,
+    project_id: int,
+    permissions: ProjectUpdateUserPermissions,
+    user_id: int,
 ):
     # check if current user is owner
-    validate_project_belongs_to_user(
-        db, permissions.project_id, user_id, [Permission.ALL]
-    )
+    validate_project_belongs_to_user(db, project_id, user_id, [Permission.ALL])
 
     # check if the user we are changing has access to this project
     try:
-        validate_project_belongs_to_user(
-            db, permissions.project_id, permissions.user_id, None
-        )
+        validate_project_belongs_to_user(db, project_id, permissions.user_id, None)
     except UserFriendlyError as ex:
         raise UserFriendlyError(
             ErrorCode.USER_DOESNT_HAVE_ACCESS_TO_PROJECT,
-            "The user that you are trying to update doesn't have access to this project or doesn't exist",
+            "The user that you are trying to update their permissions doesn't have access to this project or doesn't exist",
         )
 
     association = (
         db.query(ProjectUserAssociation)
         .filter(
-            ProjectUserAssociation.project_id == permissions.project_id,
+            ProjectUserAssociation.project_id == project_id,
             ProjectUserAssociation.user_id == permissions.user_id,
         )
         .first()
@@ -107,10 +104,12 @@ def update_user_permissions(
 
     db.commit()
 
-    return get_project(db, ProjectRead(project_id=permissions.project_id), user_id)
+    return get_project(db, project_id, user_id)
 
 
-def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: int):
+def attach_to_user(
+    db: Session, project_id: int, association: ProjectAttachAssociation, user_id: int
+):
     user = db.query(User).filter(User.username == association.username).first()
     if user is None:
         raise UserFriendlyError(
@@ -119,14 +118,12 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
 
     validate_project_belongs_to_user(
         db,
-        association.project_id,
+        project_id,
         user_id,
         [Permission.ALL],  # this only allows owners to be able to share the project
     )
 
-    association_db_item = ProjectUserAssociation(
-        user_id=user.id, project_id=association.project_id
-    )
+    association_db_item = ProjectUserAssociation(user_id=user.id, project_id=project_id)
 
     try:
         db.add(association_db_item)
@@ -150,33 +147,34 @@ def attach_to_user(db: Session, association: ProjectAttachAssociation, user_id: 
     return association_db_item
 
 
-def detach_from_user(db: Session, association: ProjectDetachAssociation, user_id: int):
+def detach_from_user(
+    db: Session, project_id: int, detaching_user_id: int, current_user_id: int
+):
     validate_project_belongs_to_user(
         db,
-        association.project_id,
-        user_id,
-        [Permission.ALL] if association.user_id is not None else None,
+        project_id,
+        detaching_user_id,
+        None,
     )
 
-    target_user_id = association.user_id if association.user_id is not None else user_id
-
-    if target_user_id != user_id:
+    if detaching_user_id != current_user_id:
+        # Only owner will be able to detach projects from other users
         validate_project_belongs_to_user(
-            db, association.project_id, target_user_id, None
+            db, project_id, current_user_id, [Permission.ALL]
         )
 
     db.query(ProjectUserAssociation).filter(
-        ProjectUserAssociation.project_id == association.project_id,
-        ProjectUserAssociation.user_id == target_user_id,
+        ProjectUserAssociation.project_id == project_id,
+        ProjectUserAssociation.user_id == detaching_user_id,
     ).delete()
 
     if (
         db.query(ProjectUserAssociation)
-        .filter(ProjectUserAssociation.project_id == association.project_id)
+        .filter(ProjectUserAssociation.project_id == project_id)
         .count()
         == 0
     ):
-        delete_project(db, association.project_id)
+        delete_project(db, project_id)
 
     db.commit()
 
@@ -212,8 +210,8 @@ def delete_project(db: Session, project_id: int):
     db.commit()
 
 
-def get_project(db: Session, project: ProjectRead, user_id: int):
-    result = get_projects(db, user_id, project.project_id)
+def get_project(db: Session, project_id: int, user_id: int):
+    result = get_projects(db, user_id, project_id)
 
     if len(result) == 0:
         raise UserFriendlyError(

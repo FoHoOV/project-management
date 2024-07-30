@@ -16,11 +16,6 @@ class ProjectBase(BaseModel):
     pass
 
 
-@dataclass
-class ProjectRead:
-    project_id: int
-
-
 class ProjectCreate(ProjectBase):
     title: str = Field(min_length=2, max_length=100)
     description: str = Field(min_length=1, max_length=100)
@@ -38,12 +33,7 @@ class ProjectCreate(ProjectBase):
 
 
 class ProjectUpdate(ProjectCreate):
-    project_id: int
-
-
-class ProjectDetachAssociation(ProjectBase):
-    project_id: int
-    user_id: int | None = Field(default=None)
+    pass
 
 
 class _Permissions(BaseModel):
@@ -78,7 +68,6 @@ class _Permissions(BaseModel):
 
 
 class ProjectAttachAssociation(ProjectBase, _Permissions):
-    project_id: int
     username: str = Field(min_length=3, max_length=100)
 
 
@@ -88,7 +77,6 @@ class ProjectAttachAssociationResponse(ProjectBase):
 
 
 class ProjectUpdateUserPermissions(ProjectBase, _Permissions):
-    project_id: int
     user_id: int
 
 
