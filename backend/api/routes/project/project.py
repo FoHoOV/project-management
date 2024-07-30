@@ -7,90 +7,71 @@ from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.project import (
-    PartialUserWithPermission,
     Project,
     ProjectAttachAssociationResponse,
     ProjectCreate,
-    ProjectDetachAssociation,
-    ProjectRead,
     ProjectAttachAssociation,
     ProjectUpdate,
-    ProjectUpdateUserPermissions,
 )
 from db.utils import project_crud
 
 
-router = APIRouter(prefix="/project", tags=["project"])
+router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-@router.post("/create", response_model=Project)
+@router.post("/", response_model=Project)
 def create_for_user(
-    current_user: Annotated[User, Depends(get_current_user)],
     project: ProjectCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
     return project_crud.create(db=db, project=project, user_id=current_user.id)
 
 
-@router.patch(path="/update", response_model=Project)
+@router.patch(path="/{project_id}", response_model=Project)
 def update(
+    project_id: int,
+    patch: ProjectUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-    project: ProjectUpdate,
     db: Session = Depends(get_db),
 ):
-    return project_crud.update(db, project, current_user.id)
+    return project_crud.update(db, project_id, patch, current_user.id)
 
 
-@router.post(path="/attach-to-user", response_model=ProjectAttachAssociationResponse)
+@router.post(
+    path="/{project_id}/users", response_model=ProjectAttachAssociationResponse
+)
 def attach_to_user(
-    current_user: Annotated[User, Depends(get_current_user)],
+    project_id: int,
     association: ProjectAttachAssociation,
-    db: Session = Depends(get_db),
-):
-    return project_crud.attach_to_user(db, association, current_user.id)
-
-
-@router.delete(path="/detach-from-user")
-def detach_from_user(
     current_user: Annotated[User, Depends(get_current_user)],
-    association: ProjectDetachAssociation,
     db: Session = Depends(get_db),
 ):
-    project_crud.detach_from_user(db, association, current_user.id)
+    return project_crud.attach_to_user(db, project_id, association, current_user.id)
+
+
+@router.delete(path="/{project_id}/users/{user_id}")
+def detach_from_user(
+    project_id: int,
+    user_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    project_crud.detach_from_user(db, project_id, user_id, current_user.id)
     return Response(status_code=HTTP_200_OK)
 
 
-@router.patch(path="/update-user-permissions", response_model=PartialUserWithPermission)
-def update_permissions(
+@router.get("/{project_id}", response_model=Project)
+def filter(
+    project_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    permissions: ProjectUpdateUserPermissions,
     db: Session = Depends(get_db),
 ):
-    updated_project = project_crud.update_user_permissions(
-        db, permissions, current_user.id
-    )
-
-    user = builtins.list(
-        filter(
-            lambda user: user.id == permissions.user_id,
-            Project.model_validate(updated_project).users,
-        )
-    )[0]
-
-    return user
-
-
-@router.get("/search", response_model=Project)
-def search(
-    current_user: Annotated[User, Depends(get_current_user)],
-    filter: ProjectRead = Depends(dependency=ProjectRead),
-    db: Session = Depends(get_db),
-):
-    project = project_crud.get_project(db, filter, current_user.id)
+    project = project_crud.get_project(db, project_id, current_user.id)
     return project
 
 
-@router.get("/list", response_model=list[Project])
+@router.get("/", response_model=list[Project])
 def list(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),

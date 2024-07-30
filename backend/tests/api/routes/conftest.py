@@ -5,7 +5,6 @@ import pytest
 from db.models.user_project_permission import Permission
 from db.schemas.project import (
     Project,
-    ProjectAttachAssociation,
     ProjectAttachAssociationResponse,
 )
 from db.schemas.todo_category import TodoCategory
@@ -30,7 +29,7 @@ def test_project_factory(auth_header_factory, test_client: TestClient):
 
     def _create_project(user: TestUserType):
         response = test_client.post(
-            "/project/create",
+            "/projects",
             headers=auth_header_factory(user),
             json={
                 "title": "Project for Testing",
@@ -102,10 +101,9 @@ def test_attach_project_to_user(
         permissions: list[Permission],
     ):
         attach_to_user_response = test_client.post(
-            "/project/attach-to-user",
+            f"/projects/{project_id}/users",
             headers=auth_header_factory(owner),
             json={
-                "project_id": project_id,
                 "username": new_user["username"],
                 "permissions": permissions,
             },
