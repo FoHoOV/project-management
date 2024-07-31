@@ -23,8 +23,8 @@
 				return false; // ref are not bound yet
 			}
 			return (
-				projectPermissionsRefs[i].selectedPermissions.size !== user.permissions.length ||
-				![...projectPermissionsRefs[i].selectedPermissions].every((iv) =>
+				projectPermissionsRefs[i].getSelectedPermissions().size !== user.permissions.length ||
+				![...projectPermissionsRefs[i].getSelectedPermissions()].every((iv) =>
 					user.permissions.includes(iv)
 				)
 			);
