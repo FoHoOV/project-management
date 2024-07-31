@@ -19,6 +19,8 @@ A simple project management app.
 14. setting custom permissions per user 
 15. changing project permissions in project settings page (only owners can change permissions)
 
+* You can use the backend project independently to create your own clients and interfaces
+
 # Demo
 
 You can find the demo at [this](https://project-management-fohoov.vercel.app) url (it might not work for the first few requests (because service will go down after inactivity), but after 1 or 2 minutes it will start working again).
