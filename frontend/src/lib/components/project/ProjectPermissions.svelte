@@ -21,7 +21,11 @@
 	let allowAllAccessRights = $state<boolean>();
 	let allowedPermissions = $state<SvelteSet<Permission>>(new SvelteSet());
 
-	export const selectedPermissions = $derived(allowedPermissions);
+	const selectedPermissions = $derived(allowedPermissions);
+
+	export function getSelectedPermissions() {
+		return selectedPermissions;
+	}
 
 	export function reset() {
 		setInitValues();
