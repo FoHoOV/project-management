@@ -76,7 +76,7 @@ def test_todo_item_factory(auth_header_factory, test_client: TestClient):
 
     def _create_todo_item(user: TestUserType, category_id: int):
         response = test_client.post(
-            "/todo-item/create",
+            "/todo-items",
             headers=auth_header_factory(user),
             json={
                 "title": "Test todo title",
