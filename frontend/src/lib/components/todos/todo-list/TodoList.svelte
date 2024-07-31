@@ -53,10 +53,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategory({
-					category_id: category.id,
-					project_id: projectId
-				});
+				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategories(
+					category.id,
+					projectId
+				);
 				todoCategoriesStore?.removeCategory(category);
 				componentState = 'none';
 				apiErrorTitle = null;

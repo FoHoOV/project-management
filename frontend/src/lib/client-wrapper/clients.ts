@@ -1,12 +1,13 @@
 import { PUBLIC_API_REQUEST_TIMEOUT_MS, PUBLIC_API_URL } from '$env/static/public';
 import {
 	OAuthApi,
-	TodoItemApi,
-	TodoCategoryApi,
-	UserApi,
-	ProjectApi,
-	TodoItemCommentApi,
-	TagApi
+	TodoItemsApi,
+	TodoCategoriesApi,
+	UsersApi,
+	ProjectsApi,
+	TodoItemCommentsApi,
+	TagsApi,
+	PermissionsApi
 } from '$lib/generated-client/apis';
 
 import {
@@ -74,27 +75,31 @@ export const OAuthClient = (config: ConfigurationOptions = { isTokenRequired: tr
 };
 
 export const TodoItemClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoItemApi, config);
+	return generateClient(TodoItemsApi, config);
 };
 
 export const TodoItemCommentClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoItemCommentApi, config);
+	return generateClient(TodoItemCommentsApi, config);
 };
 
 export const TagClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TagApi, config);
+	return generateClient(TagsApi, config);
 };
 
 export const TodoCategoryClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoCategoryApi, config);
+	return generateClient(TodoCategoriesApi, config);
 };
 
 export const ProjectClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(ProjectApi, config);
+	return generateClient(ProjectsApi, config);
+};
+
+export const PermissionClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
+	return generateClient(PermissionsApi, config);
 };
 
 export const UserClient = (config?: ConfigurationOptions) => {
-	return generateClient(UserApi, config);
+	return generateClient(UsersApi, config);
 };
 
 /**

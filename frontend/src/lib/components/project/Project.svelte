@@ -35,9 +35,7 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await ProjectClient({ token: $page.data.token }).detachFromUserProject({
-					project_id: project.id
-				});
+				await ProjectClient({ token: $page.data.token }).detachFromSelfProjects(project.id);
 				projectsStore?.remove(project);
 				componentState = 'none';
 				apiErrorTitle = null;

@@ -22,7 +22,7 @@ export const actions = {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).createForUserProject({
+				}).createForUserProjects({
 					...validation.data
 				});
 			},
@@ -43,7 +43,7 @@ export const actions = {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).attachToUserProject({
+				}).attachToUserProjects(validation.data.project_id, {
 					...validation.data
 				});
 			},
@@ -64,7 +64,7 @@ export const actions = {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updateProject({
+				}).updateProjects(validation.data.project_id, {
 					...validation.data
 				});
 			},

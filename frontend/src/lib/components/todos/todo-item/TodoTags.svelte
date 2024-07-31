@@ -43,10 +43,7 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TagClient({ token: $page.data.token }).detachFromTodoTag({
-					tag_id: tag.id,
-					todo_id: todo.id
-				});
+				await TagClient({ token: $page.data.token }).detachFromTodoTags(tag.name, todo.id);
 				todoCategoriesStore?.detachTag(todo.id, tag);
 				componentState = 'none';
 				apiErrorTitle = null;
@@ -62,7 +59,9 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TagClient({ token: $page.data.token }).deleteTag(tag);
+				await TagClient({ token: $page.data.token }).deleteTags(tag.name, {
+					project_id: tag.project_id
+				});
 				todoCategoriesStore?.deleteTag(tag);
 				componentState = 'none';
 				apiErrorTitle = null;

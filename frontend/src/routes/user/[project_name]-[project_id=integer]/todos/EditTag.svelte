@@ -36,7 +36,13 @@
 	successfulMessage="Todo tag edited"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={tag.id} errors={''} />
+		<FormInput
+			wrapperClasses="hidden"
+			type="hidden"
+			name="project_id"
+			value={tag.project_id}
+			errors={''}
+		/>
 		<FormInput
 			name="name"
 			type="text"

@@ -18,12 +18,12 @@ export const actions = {
 					return await TagClient({
 						token: locals.token,
 						fetchApi: fetch
-					}).searchTag(validation.data.name, validation.data.projectId);
+					}).searchTags(validation.data.name, validation.data.projectId);
 				} else {
 					return await TagClient({
 						token: locals.token,
 						fetchApi: fetch
-					}).searchTag(validation.data.name);
+					}).searchTags(validation.data.name);
 				}
 			},
 			errorSchema: searchTagSchema

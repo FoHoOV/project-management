@@ -38,9 +38,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TodoItemClient({ token: $page.data.token }).removeTodoItemDependencyTodoItem({
-					dependency_id: dependency.id
-				});
+				await TodoItemClient({ token: $page.data.token }).removeTodoItemDependencyTodoItems(
+					todo.id,
+					dependency.id
+				);
 				todoCategoriesStore?.removeDependency(todo.id, dependency);
 				componentState = 'none';
 				apiErrorTitle = null;

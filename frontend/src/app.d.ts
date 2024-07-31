@@ -1,7 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
-import type { Token } from '$lib/generated-client/models';
+import type { Token, User } from '$lib/generated-client/models';
 
 import 'vitest-dom/extend-expect';
 

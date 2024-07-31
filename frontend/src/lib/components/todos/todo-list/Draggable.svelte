@@ -77,16 +77,20 @@
 
 		await callServiceInClient({
 			call: async () => {
-				await TodoCategoryClient({ token: $page.data.token }).updateOrderTodoCategory({
-					id: event.detail.data.id,
-					project_id: projectId,
-					...generateNewOrderForTodoCategory(
-						category,
-						event.detail.data,
-						moveLeft,
-						todoCategoriesStore.value$
-					)
-				});
+				await TodoCategoryClient({ token: $page.data.token }).updateTodoCategories(
+					event.detail.data.id,
+					{
+						order: {
+							project_id: projectId,
+							...generateNewOrderForTodoCategory(
+								category,
+								event.detail.data,
+								moveLeft,
+								todoCategoriesStore.value$
+							)
+						}
+					}
+				);
 				todoCategoriesStore?.updateCategoriesSort(
 					event.detail.data,
 					generateNewOrderForTodoCategory(
@@ -117,11 +121,14 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItem({
-					id: event.detail.data.id,
-					category_id: event.detail.data.category_id,
-					new_category_id: category.id
-				});
+				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItems(
+					event.detail.data.id,
+					{
+						item: {
+							new_category_id: category.id
+						}
+					}
+				);
 				todoCategoriesStore?.removeTodo(event.detail.data, false);
 				todoCategoriesStore?.addTodo(result);
 				componentState = 'none';

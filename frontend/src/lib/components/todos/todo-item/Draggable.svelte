@@ -71,11 +71,15 @@
 
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateOrderTodoItem({
-					id: event.detail.data.id,
-					new_category_id: todo.category_id,
-					...generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
-				});
+				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItems(
+					event.detail.data.id,
+					{
+						order: {
+							new_category_id: todo.category_id,
+							...generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
+						}
+					}
+				);
 				todoCategoriesStore?.updateTodoSort(
 					event.detail.data,
 					todo.category_id,

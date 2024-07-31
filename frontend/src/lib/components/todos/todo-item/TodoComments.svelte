@@ -40,7 +40,7 @@
 			call: async () => {
 				const result = await TodoItemCommentClient({
 					token: $page.data.token
-				}).listTodoItemComment(todoId);
+				}).listTodoItemComments(todoId);
 
 				todoCommentsStore.set(result);
 				componentState = 'none';
@@ -57,7 +57,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComment(comment);
+				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComments(
+					comment.todo_id,
+					comment.id
+				);
 				todoCommentsStore.remove(comment);
 				componentState = 'none';
 				apiErrorTitle = null;
