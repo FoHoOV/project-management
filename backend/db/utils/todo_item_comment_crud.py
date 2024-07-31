@@ -56,7 +56,7 @@ def edit(
 
 def delete(db: Session, todo_id: int, comment_id: int, user_id: int):
     validate_todo_comment_belongs_to_user(
-        db, todo_id, user_id, [Permission.DELETE_COMMENT]
+        db, todo_id, comment_id, user_id, [Permission.DELETE_COMMENT]
     )
     db.query(TodoItemComment).filter(TodoItemComment.id == comment_id).delete()
     db.commit()
@@ -64,12 +64,13 @@ def delete(db: Session, todo_id: int, comment_id: int, user_id: int):
 
 def validate_todo_comment_belongs_to_user(
     db: Session,
-    todo_comment_id: int,
+    todo_id: int,
+    comment_id: int,
     user_id: int,
     permissions: PermissionsType,
 ):
     todo_comment = (
-        db.query(TodoItemComment).filter(TodoItemComment.id == todo_comment_id).first()
+        db.query(TodoItemComment).filter(TodoItemComment.id == comment_id).first()
     )
 
     error = UserFriendlyError(
@@ -77,7 +78,7 @@ def validate_todo_comment_belongs_to_user(
         "todo comment not found or doesn't belong to user or you don't have the permission to perform the requested action",
     )
 
-    if todo_comment is None:
+    if todo_comment is None or todo_comment.todo_id != todo_id:
         raise error
 
     try:
