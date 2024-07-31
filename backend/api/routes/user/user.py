@@ -8,7 +8,7 @@ from db.utils import user_crud
 from error.exceptions import ErrorCode, UserFriendlyError
 
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post("/signup", response_model=User)
@@ -22,7 +22,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return user_crud.create_user(db=db, user=user)
 
 
-@router.get("/info", response_model=User)
+@router.get("/me", response_model=User)
 def info(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),

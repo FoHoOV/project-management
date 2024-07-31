@@ -13,7 +13,6 @@ from db.schemas.tag import (
     TagAttachToTodo,
     TagCreate,
     TagDelete,
-    TagDetachFromTodo,
     TagSearch,
     TagUpdate,
 )
@@ -77,10 +76,16 @@ def search(db: Session, search: TagSearch, user_id: int):
     return query.all()
 
 
-def edit(db: Session, tag: TagUpdate, user_id: int):
-    validate_tag_belongs_to_user_by_id(db, tag.id, user_id, [Permission.UPDATE_TAG])
+def edit(db: Session, tag_name: str, tag: TagUpdate, user_id: int):
+    validate_tag_belongs_to_user_by_name(
+        db, tag_name, tag.project_id, user_id, [Permission.UPDATE_TAG]
+    )
 
-    db_item = db.query(Tag).filter(Tag.id == tag.id).first()
+    db_item = (
+        db.query(Tag)
+        .filter(Tag.name == tag_name, Tag.project_id == tag.project_id)
+        .first()
+    )
 
     if db_item is None:
         raise
@@ -103,13 +108,19 @@ def edit(db: Session, tag: TagUpdate, user_id: int):
     return db_item
 
 
-def delete(db: Session, tag: TagDelete, user_id: int):
-    validate_tag_belongs_to_user_by_id(db, tag.id, user_id, [Permission.DELETE_TAG])
-    db.query(Tag).filter(Tag.id == tag.id).delete()
+def delete(db: Session, tag_name: str, tag: TagDelete, user_id: int):
+    validate_tag_belongs_to_user_by_name(
+        db, tag_name, tag.project_id, user_id, [Permission.DELETE_TAG]
+    )
+    db.query(Tag).filter(
+        Tag.name == tag_name, Tag.project_id == tag.project_id
+    ).delete()
     db.commit()
 
 
-def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
+def attach_tag_to_todo(
+    db: Session, tag_name: str, association: TagAttachToTodo, user_id: int
+):
     validate_todo_item_belongs_to_user(
         db, association.todo_id, user_id, [Permission.CREATE_TAG]
     )
@@ -117,7 +128,7 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     try:
         validate_tag_belongs_to_user_by_name(
             db,
-            association.name,
+            tag_name,
             association.project_id,
             user_id,
             [Permission.CREATE_TAG],
@@ -131,13 +142,13 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
         create(
             db,
             TagCreate.model_validate(
-                {"name": association.name, "project_id": association.project_id}
+                {"name": tag_name, "project_id": association.project_id}
             ),
             user_id,
         )
 
     tag_base_query = db.query(Tag).filter(
-        Tag.name == association.name, Tag.project_id == association.project_id
+        Tag.name == tag_name, Tag.project_id == association.project_id
     )
 
     tag_already_exists_for_todo = (
@@ -165,19 +176,24 @@ def attach_tag_to_todo(db: Session, association: TagAttachToTodo, user_id: int):
     return tag
 
 
-def detach_tag_from_todo(db: Session, association: TagDetachFromTodo, user_id: int):
-    validate_todo_item_belongs_to_user(
-        db, association.todo_id, user_id, [Permission.DELETE_TAG]
+def detach_tag_from_todo(db: Session, tag_name: str, todo_id: int, user_id: int):
+    validate_todo_item_belongs_to_user(db, todo_id, user_id, [Permission.DELETE_TAG])
+    validate_tag_belongs_to_user_by_id(db, todo_id, user_id, [Permission.DELETE_TAG])
+
+    db_item = (
+        db.query(Tag)
+        .join(Tag.todos)
+        .filter(Tag.name == tag_name, TodoItem.id == todo_id)
+        .first()
     )
-    validate_tag_belongs_to_user_by_id(
-        db, association.tag_id, user_id, [Permission.DELETE_TAG]
-    )
+    if not db_item:
+        raise
 
     affected_columns = (
         db.query(TodoItemTagAssociation)
         .filter(
-            TodoItemTagAssociation.todo_id == association.todo_id,
-            TodoItemTagAssociation.tag_id == association.tag_id,
+            TodoItemTagAssociation.todo_id == todo_id,
+            TodoItemTagAssociation.tag_id == db_item.id,
         )
         .delete()
     )

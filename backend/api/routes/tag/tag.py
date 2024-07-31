@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Path, Response
 from starlette.status import HTTP_200_OK
 
 from sqlalchemy.orm import Session
@@ -7,8 +7,9 @@ from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.tag import (
+    TAG_MIN_LENGTH,
+    TAG_MAX_LENGTH,
     TagAttachToTodo,
-    TagDetachFromTodo,
     TagDelete,
     TagCreate,
     TagUpdate,
@@ -19,64 +20,65 @@ from db.schemas.todo_item import TodoItem
 from db.utils import tag_crud
 
 
-router = APIRouter(prefix="/tag", tags=["tag"])
+router = APIRouter(prefix="/tags", tags=["tags"])
+tag_name_validator = Path(min_length=TAG_MIN_LENGTH, max_length=TAG_MAX_LENGTH)
 
 
-@router.post("/create", response_model=Tag)
+@router.post("/", response_model=Tag)
 def create(
-    current_user: Annotated[User, Depends(get_current_user)],
     tag: TagCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    return tag_crud.create(db=db, tag=tag, user_id=current_user.id)
+    return tag_crud.create(db, tag, current_user.id)
 
 
-@router.patch(path="/update", response_model=Tag)
+@router.put(path="/{tag_name}", response_model=Tag)
 def update(
-    current_user: Annotated[User, Depends(get_current_user)],
+    tag_name: Annotated[str, tag_name_validator],
     tag: TagUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    return tag_crud.edit(db=db, tag=tag, user_id=current_user.id)
+    return tag_crud.edit(db, tag_name, tag, current_user.id)
 
 
-@router.post(path="/attach-to-todo", response_model=Tag)
+@router.post(path="/{tag_name}/todos/", response_model=Tag)
 def attach_to_todo(
-    current_user: Annotated[User, Depends(get_current_user)],
+    tag_name: Annotated[str, tag_name_validator],
     association: TagAttachToTodo,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    return tag_crud.attach_tag_to_todo(
-        db=db, association=association, user_id=current_user.id
-    )
+    return tag_crud.attach_tag_to_todo(db, tag_name, association, current_user.id)
 
 
-@router.delete(path="/detach-from-todo")
+@router.delete(path="/{tag_name}/todos/{todo_id}")
 def detach_from_todo(
+    tag_name: Annotated[str, tag_name_validator],
+    todo_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    association: TagDetachFromTodo,
     db: Session = Depends(get_db),
 ):
-    tag_crud.detach_tag_from_todo(
-        db=db, association=association, user_id=current_user.id
-    )
+    tag_crud.detach_tag_from_todo(db, tag_name, todo_id, current_user.id)
     return Response(status_code=HTTP_200_OK)
 
 
-@router.delete(path="/delete")
+@router.delete(path="/{tag_name}")
 def delete(
-    current_user: Annotated[User, Depends(get_current_user)],
+    tag_name: Annotated[str, tag_name_validator],
     tag: TagDelete,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    tag_crud.delete(db=db, tag=tag, user_id=current_user.id)
+    tag_crud.delete(db, tag_name, tag, current_user.id)
     return Response(status_code=HTTP_200_OK)
 
 
-@router.get(path="/search", response_model=list[TodoItem])
+@router.get(path="/", response_model=list[TodoItem])
 def search(
     current_user: Annotated[User, Depends(get_current_user)],
     search: TagSearch = Depends(TagSearch),
     db: Session = Depends(get_db),
 ):
-    return tag_crud.search(db=db, search=search, user_id=current_user.id)
+    return tag_crud.search(db, search, current_user.id)

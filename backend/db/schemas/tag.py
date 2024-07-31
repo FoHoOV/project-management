@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, ConfigDict, Field
 
+TAG_MIN_LENGTH = 1
+TAG_MAX_LENGTH = 100
+
 
 @dataclass
 class TagSearch:
@@ -12,7 +15,7 @@ class TagSearch:
 
 
 class TagCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
+    name: str = Field(min_length=TAG_MIN_LENGTH, max_length=TAG_MAX_LENGTH)
     project_id: int
 
     model_config = ConfigDict(
@@ -21,7 +24,6 @@ class TagCreate(BaseModel):
 
 
 class TagAttachToTodo(BaseModel):
-    name: str = Field(min_length=1, max_length=100)
     todo_id: int
     project_id: int
     create_if_doesnt_exist: bool
@@ -29,22 +31,12 @@ class TagAttachToTodo(BaseModel):
     model_config = ConfigDict(str_to_lower=True, str_strip_whitespace=True)
 
 
-class TagDetachFromTodo(BaseModel):
-    tag_id: int
-    todo_id: int
-
-
-class TagUpdate(BaseModel):
-    id: int
-    name: str
-
-    model_config = ConfigDict(
-        from_attributes=True, str_to_lower=True, str_strip_whitespace=True
-    )
+class TagUpdate(TagCreate):
+    pass
 
 
 class TagDelete(BaseModel):
-    id: int
+    project_id: int
 
 
 class PartialTodo(BaseModel):
