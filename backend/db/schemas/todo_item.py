@@ -1,8 +1,5 @@
-from dataclasses import dataclass
-from datetime import date
 import datetime
 from enum import Enum
-from fastapi import Query
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from db.schemas.base import NullableOrderedItem
@@ -53,13 +50,6 @@ class TodoItemUpdate(BaseModel):
                 "order and item cannot be empty at the same time",
             )
         return self
-
-
-@dataclass
-class SearchTodoItemParams:
-    project_id: int
-    category_id: int
-    status: SearchTodoStatus = Query(default=SearchTodoStatus.ALL)
 
 
 class TodoItemAddDependency(BaseModel):
