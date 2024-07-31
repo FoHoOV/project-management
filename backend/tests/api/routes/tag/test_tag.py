@@ -47,12 +47,11 @@ def test_todo_tag_permissions(
 
     # Try creating a tag attached to the todo item by user_c (who doesn't have access)
     response = test_client.post(
-        "/tag/attach-to-todo",
+        "/tags/test tag/todos",
         headers=auth_header_factory(user_c),
         json={
             "project_id": project_one.id,
             "todo_id": todo_item.id,
-            "name": "test tag",
             "create_if_doesnt_exist": True,
         },
     )
@@ -62,12 +61,11 @@ def test_todo_tag_permissions(
 
     # Try creating a tag attached to the todo item by user_b (who has access)
     response = test_client.post(
-        "/tag/attach-to-todo",
+        "/tags/test tag/todos",
         headers=auth_header_factory(user_b),
         json={
             "project_id": project_one.id,
             "todo_id": todo_item.id,
-            "name": "test tag",
             "create_if_doesnt_exist": True,
         },
     )
@@ -81,9 +79,8 @@ def test_todo_tag_permissions(
     # Try removing the tag by user_c (should fail)
     response = test_client.request(
         "delete",
-        "/tag/detach-from-todo",
+        f"/tags/{created_tag.name}/todos/{todo_item.id}",
         headers=auth_header_factory(user_c),
-        json={"tag_id": created_tag.id, "todo_id": todo_item.id},
     )
     assert (
         response.status_code == 400
@@ -92,9 +89,8 @@ def test_todo_tag_permissions(
     # Try removing the tag by user_b (should also fail due to insufficient permissions)
     response = test_client.request(
         "delete",
-        "/tag/detach-from-todo",
+        f"/tags/{created_tag.name}/todos/{todo_item.id}",
         headers=auth_header_factory(user_b),
-        json={"tag_id": created_tag.id, "todo_id": todo_item.id},
     )
     assert (
         response.status_code == 400
@@ -103,9 +99,8 @@ def test_todo_tag_permissions(
     # Remove the tag by user_a (owner), which should succeed
     response = test_client.request(
         "delete",
-        "/tag/detach-from-todo",
+        f"/tags/{created_tag.name}/todos/{todo_item.id}",
         headers=auth_header_factory(user_a),
-        json={"tag_id": created_tag.id, "todo_id": todo_item.id},
     )
     assert (
         response.status_code == 200
