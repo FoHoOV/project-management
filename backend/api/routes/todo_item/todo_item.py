@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Query, Response
 from starlette.status import HTTP_200_OK
 
 from sqlalchemy.orm import Session
@@ -7,7 +7,7 @@ from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.todo_item import (
-    SearchTodoItemParams,
+    SearchTodoStatus,
     TodoItem,
     TodoItemAddDependency,
     TodoItemCreate,
@@ -80,9 +80,13 @@ def remove_todo_item_dependency(
 
 @router.get("/", response_model=list[TodoItem])
 def search(
+    project_id: Annotated[int, Query()],
+    category_id: Annotated[int, Query()],
+    status: Annotated[SearchTodoStatus, Query(default=SearchTodoStatus.ALL)],
     current_user: Annotated[User, Depends(get_current_user)],
-    search_todo_params: SearchTodoItemParams = Depends(SearchTodoItemParams),
     db: Session = Depends(get_db),
 ):
-    items = todo_item_crud.get_todos_for_user(db, search_todo_params, current_user.id)
+    items = todo_item_crud.get_todos_for_user(
+        db, project_id, category_id, status, current_user.id
+    )
     return items
