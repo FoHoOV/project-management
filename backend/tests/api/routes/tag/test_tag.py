@@ -1,6 +1,7 @@
-from typing import Callable, Dict
-from fastapi.testclient import TestClient
+from typing import Callable
+from httpx import Response
 
+from db.models.todo_item import TodoItem
 from tests.api.conftest import (
     TestUserType,
 )
@@ -8,19 +9,17 @@ from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.tag import Tag
 from db.schemas.todo_category import TodoCategory
-from db.schemas.todo_item import TodoItem
 
 
-def test_todo_tag_permissions(
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+def test_create_todo_tag(
     test_project_factory: Callable[[TestUserType], Project],
     test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoCategory],
+    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
     test_attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
+    test_create_tag: Callable[[TestUserType, int, int, str], Response],
     test_users: list[TestUserType],
-    test_client: TestClient,
 ):
     user_a = test_users[0]
     user_b = test_users[1]
@@ -28,80 +27,74 @@ def test_todo_tag_permissions(
 
     # Create projects and a category under project_one
     project_one = test_project_factory(user_a)
-    project_two = test_project_factory(user_a)
     category = test_category_factory(user_a, project_one.id)
 
     # Share project_one with user_b with CREATE_TAG permission
     test_attach_project_to_user(user_a, user_b, project_one.id, [Permission.CREATE_TAG])
 
-    # Share project_two with user_b with all permissions to ensure isolation
-    test_attach_project_to_user(
-        user_a,
-        user_b,
-        project_two.id,
-        [Permission.ALL],
-    )
+    # Create a todo item under project_one
+    todo_item = test_todo_item_factory(user_a, category.id)
+
+    # Owner should be able to create a tag
+    response = test_create_tag(user_a, project_one.id, todo_item.id, "test tag")
+    assert (
+        response.status_code == 200
+    ), "User A should be able to create a tag as the owner"
+
+    # User B (with access) tries to create a tag
+    response = test_create_tag(user_b, project_one.id, todo_item.id, "test tag2")
+    assert (
+        response.status_code == 200
+    ), "User B should be able to create a tag with the correct permission"
+
+    # User C (no access) tries to create a tag
+    response = test_create_tag(user_c, project_one.id, todo_item.id, "test tag3")
+    assert (
+        response.status_code == 400
+    ), "User C should not be able to create a tag without access"
+
+
+def test_remove_todo_tag(
+    test_project_factory: Callable[[TestUserType], Project],
+    test_category_factory: Callable[[TestUserType, int], TodoCategory],
+    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
+    test_attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_create_tag: Callable[[TestUserType, int, int, str], Response],
+    test_remove_tag: Callable[[TestUserType, str, int], Response],
+    test_users: list[TestUserType],
+):
+    user_a = test_users[0]
+    user_b = test_users[1]
+    user_c = test_users[2]
+
+    # Create projects and a category under project_one
+    project_one = test_project_factory(user_a)
+    category = test_category_factory(user_a, project_one.id)
+
+    # Share project_one with user_b with CREATE_TAG permission
+    test_attach_project_to_user(user_a, user_b, project_one.id, [Permission.CREATE_TAG])
 
     # Create a todo item under project_one
     todo_item = test_todo_item_factory(user_a, category.id)
 
-    # Try creating a tag attached to the todo item by user_c (who doesn't have access)
-    response = test_client.post(
-        "/tags/test tag/todo-items",
-        headers=auth_header_factory(user_c),
-        json={
-            "project_id": project_one.id,
-            "todo_id": todo_item.id,
-            "create_if_doesnt_exist": True,
-        },
-    )
+    # User B creates a tag
+    create_response = test_create_tag(user_b, project_one.id, todo_item.id, "test tag")
+    created_tag = Tag.model_validate(create_response.json(), strict=True)
+
+    # User C (no access) tries to remove the tag
+    response = test_remove_tag(user_c, created_tag.name, todo_item.id)
     assert (
         response.status_code == 400
-    ), "User C (not shared) should not be able to create a new tag because they don't have access"
+    ), "User C should not be able to remove a tag without access"
 
-    # Try creating a tag attached to the todo item by user_b (who has access)
-    response = test_client.post(
-        "/tags/test tag/todo-items",
-        headers=auth_header_factory(user_b),
-        json={
-            "project_id": project_one.id,
-            "todo_id": todo_item.id,
-            "create_if_doesnt_exist": True,
-        },
-    )
-    assert (
-        response.status_code == 200
-    ), "User B (shared) should be able to create a tag because they have access"
-
-    # Validate tag creation and then try to remove it
-    created_tag = Tag.model_validate(response.json(), strict=True)
-
-    # Try removing the tag by user_c (should fail)
-    response = test_client.request(
-        "delete",
-        f"/tags/{created_tag.name}/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_c),
-    )
+    # User B (with access, but not remove permission) tries to remove the tag
+    response = test_remove_tag(user_b, created_tag.name, todo_item.id)
     assert (
         response.status_code == 400
-    ), "User C (not shared) shouldn't be able to remove a tag when they don't have the permission"
+    ), "User B should not be able to remove the tag without remove permission"
 
-    # Try removing the tag by user_b (should also fail due to insufficient permissions)
-    response = test_client.request(
-        "delete",
-        f"/tags/{created_tag.name}/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_b),
-    )
-    assert (
-        response.status_code == 400
-    ), "User B (shared) shouldn't be able to remove a todo tag when they don't have the specific permission"
-
-    # Remove the tag by user_a (owner), which should succeed
-    response = test_client.request(
-        "delete",
-        f"/tags/{created_tag.name}/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_a),
-    )
-    assert (
-        response.status_code == 200
-    ), "User A (owner) should be able to remove the tag"
+    # User A (owner) removes the tag
+    response = test_remove_tag(user_a, created_tag.name, todo_item.id)
+    assert response.status_code == 200, "User A should be able to remove the tag"

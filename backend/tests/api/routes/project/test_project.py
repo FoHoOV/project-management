@@ -1,4 +1,3 @@
-from tkinter import ALL
 from typing import Callable, Dict
 import pytest
 from fastapi.testclient import TestClient
@@ -9,12 +8,9 @@ from tests.api.conftest import (
 from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission
 from db.schemas.project import (
-    PartialUserWithPermission,
     Project,
-    ProjectAttachAssociation,
     ProjectAttachAssociationResponse,
 )
-from db.schemas.todo_category import TodoCategory
 from error.exceptions import ErrorCode
 
 
