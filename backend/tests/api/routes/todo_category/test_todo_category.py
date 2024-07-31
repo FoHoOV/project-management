@@ -64,9 +64,9 @@ def test_todo_category_permissions(
 
     # Try updating a category by user_c (should fail)
     response = test_client.patch(
-        "/todo-category/update-item",
+        f"/todo-categories/{category.id}",
         headers=auth_header_factory(user_c),
-        json={"id": category.id, "title": "new title"},
+        json={"item": {"title": "new title"}},
     )
     assert (
         response.status_code == 400
@@ -74,9 +74,9 @@ def test_todo_category_permissions(
 
     # Update the category by user_b (should succeed)
     response = test_client.patch(
-        "/todo-category/update-item",
+        f"/todo-categories/{category.id}",
         headers=auth_header_factory(user_b),
-        json={"id": category.id, "title": "new title"},
+        json={"item": {"title": "new title"}},
     )
     assert (
         response.status_code == 200
@@ -85,9 +85,8 @@ def test_todo_category_permissions(
     # Try removing the category by user_c (should fail)
     response = test_client.request(
         "delete",
-        "/todo-category/detach-from-project",
+        f"/todo-categories/{category.id}/projects/{project_one.id}",
         headers=auth_header_factory(user_c),
-        json={"category_id": category.id, "project_id": project_one.id},
     )
     assert (
         response.status_code == 400
@@ -96,9 +95,8 @@ def test_todo_category_permissions(
     # Remove the category by user_a (owner) (should succeed)
     response = test_client.request(
         "delete",
-        "/todo-category/detach-from-project",
+        f"/todo-categories/{category.id}/projects/{project_one.id}",
         headers=auth_header_factory(user_a),
-        json={"category_id": category.id, "project_id": project_one.id},
     )
     assert (
         response.status_code == 200

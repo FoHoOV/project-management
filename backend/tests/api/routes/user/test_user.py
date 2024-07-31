@@ -5,7 +5,7 @@ from tests.api.conftest import TestUserType
 
 def test_new_user_signup(test_client: TestClient):
     response = test_client.post(
-        "/user/signup",
+        "/users/signup",
         json={
             "username": "test1ASVascascasc",
             "password": "password1",
@@ -21,7 +21,7 @@ def test_existing_user_signup(
     test_client: TestClient,
 ):
     response = test_client.post(
-        "/user/signup",
+        "/users/signup",
         json={
             "username": test_users[0]["username"],
             "password": test_users[0]["password"],

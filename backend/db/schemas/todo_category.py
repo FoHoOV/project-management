@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from db.models.todo_category_action import Action
 from db.schemas.base import NullableOrderedItem
 from db.schemas.todo_item import TodoItem, TodoItemPartialDependency, TodoItemPartialTag
+from error.exceptions import ErrorCode, UserFriendlyError
 
 
 class TodoCategoryBase(BaseModel):
@@ -15,32 +16,33 @@ class TodoCategoryCreate(TodoCategoryBase):
     project_id: int = Field(exclude=True)
 
 
-class TodoCategoryUpdateItem(TodoCategoryBase):
-    id: int
+class TodoCategoryUpdateItem(BaseModel):
     title: str | None = Field(min_length=1, max_length=100, default=None)
     description: str | None = Field(min_length=1, max_length=100, default=None)
     actions: list[Action] | None = Field(exclude=True, default=None)
 
 
 class TodoCategoryUpdateOrder(BaseModel):
-    id: int
     left_id: int | None
     right_id: int | None
     project_id: int
 
 
+class TodoCategoryUpdate(BaseModel):
+    item: TodoCategoryUpdateItem | None = Field(default=None)
+    order: TodoCategoryUpdateOrder | None = Field(default=None)
+
+    @model_validator(mode="after")
+    def check_at_least_one_is_provided(self):
+        if self.order is None and self.item is None:
+            raise UserFriendlyError(
+                ErrorCode.INVALID_INPUT,
+                "order and item cannot be empty at the same time",
+            )
+        return self
+
+
 class TodoCategoryAttachAssociation(BaseModel):
-    project_id: int
-    category_id: int
-
-
-class TodoCategoryDetachAssociation(BaseModel):
-    category_id: int
-    project_id: int
-
-
-@dataclass
-class TodoCategoryRead:
     project_id: int
 
 
