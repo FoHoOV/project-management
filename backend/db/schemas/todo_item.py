@@ -27,23 +27,32 @@ class TodoItemCreate(TodoItemBase):
     pass
 
 
-class TodoItemUpdateItem(TodoItemBase):
-    id: int
+class TodoItemUpdateItem(BaseModel):
     new_category_id: int | None = None
     title: str | None = Field(min_length=1, max_length=100, default=None)
     description: str | None = Field(min_length=1, max_length=100, default=None)
+    due_date: datetime.datetime | None = Field(default=None)
     is_done: bool | None = None
 
 
 class TodoItemUpdateOrder(BaseModel):
-    id: int
     left_id: int | None
     right_id: int | None
     new_category_id: int
 
 
-class TodoItemDelete(BaseModel):
-    id: int
+class TodoItemUpdate(BaseModel):
+    order: TodoItemUpdateOrder | None = Field(default=None)
+    item: TodoItemUpdateItem | None = Field(default=None)
+
+    @model_validator(mode="after")
+    def check_at_least_one_is_provided(self):
+        if self.order is None and self.item is None:
+            raise UserFriendlyError(
+                ErrorCode.INVALID_INPUT,
+                "order and item cannot be empty at the same time",
+            )
+        return self
 
 
 @dataclass
@@ -54,21 +63,14 @@ class SearchTodoItemParams:
 
 
 class TodoItemAddDependency(BaseModel):
-    todo_id: int
     dependant_todo_id: int
 
-    @model_validator(mode="after")
-    def check_todo_ids(self):
-        if self.todo_id == self.dependant_todo_id:
+    def ensure_different_todo_ids(self, current_todo_id: int):
+        if current_todo_id == self.dependant_todo_id:
             raise UserFriendlyError(
                 ErrorCode.INVALID_INPUT,
                 "todo id and dependant todo id cannot be the same",
             )
-        return self
-
-
-class TodoItemRemoveDependency(BaseModel):
-    dependency_id: int
 
 
 class TodoItemPartialDependency(BaseModel):

@@ -1,13 +1,8 @@
-import typing
 import datetime
-from types import NoneType
-from typing import List
 
-from sqlalchemy import and_
-from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category_action import Action
 from db.models.todo_item_dependency import TodoItemDependency
-from db.models.user_project_permission import Permission, UserProjectPermission
+from db.models.user_project_permission import Permission
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
@@ -24,8 +19,6 @@ from db.schemas.todo_item import (
     SearchTodoStatus,
     TodoItemAddDependency,
     TodoItemCreate,
-    TodoItemDelete,
-    TodoItemRemoveDependency,
     TodoItemUpdateItem,
     SearchTodoItemParams,
     TodoItemUpdateOrder,
@@ -88,9 +81,9 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
 
     update_order(
         db,
+        db_item.id,
         TodoItemUpdateOrder.model_validate(
             {
-                "id": db_item.id,
                 "right_id": None,
                 "left_id": _get_last_todo_id_in_category_except_current(
                     db, db_item.id, todo.category_id
@@ -110,15 +103,15 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
     return db_item
 
 
-def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
+def update_item(db: Session, todo_id: int, todo: TodoItemUpdateItem, user_id: int):
     # in order to reset due_date pass a date with year=1
 
     validate_todo_item_belongs_to_user(
-        db, todo.id, user_id, [Permission.UPDATE_TODO_ITEM]
+        db, todo_id, user_id, [Permission.UPDATE_TODO_ITEM]
     )
 
     db_item = (
-        db.query(TodoItem).filter(TodoItem.id == todo.id).join(TodoCategory).first()
+        db.query(TodoItem).filter(TodoItem.id == todo_id).join(TodoCategory).first()
     )
 
     if not db_item:
@@ -130,12 +123,13 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     if todo.new_category_id is not None:
         update_order(
             db,
+            todo_id,
             TodoItemUpdateOrder.model_validate(
                 {
                     "id": db_item.id,
                     "right_id": None,
                     "left_id": _get_last_todo_id_in_category_except_current(
-                        db, todo.id, todo.new_category_id
+                        db, todo_id, todo.new_category_id
                     ),
                     "new_category_id": todo.new_category_id,
                 }
@@ -164,9 +158,11 @@ def update_item(db: Session, todo: TodoItemUpdateItem, user_id: int):
     return db_item
 
 
-def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
+def update_order(
+    db: Session, todo_id: int, moving_item: TodoItemUpdateOrder, user_id: int
+):
     validate_todo_item_belongs_to_user(
-        db, moving_item.id, user_id, [Permission.UPDATE_TODO_ITEM]
+        db, todo_id, user_id, [Permission.UPDATE_TODO_ITEM]
     )
 
     if moving_item.left_id is not None:
@@ -181,7 +177,7 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
 
     db_item = (
         db.query(TodoItem)
-        .filter(TodoItem.id == moving_item.id)
+        .filter(TodoItem.id == todo_id)
         .join(TodoItem.category)
         .first()
     )
@@ -215,7 +211,7 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
         db.query(TodoItemOrder),
         TodoItemOrder.todo_id,
         {
-            "item_id": moving_item.id,
+            "item_id": todo_id,
             "left_id": moving_item.left_id,
             "right_id": moving_item.right_id,
         },
@@ -226,11 +222,11 @@ def update_order(db: Session, moving_item: TodoItemUpdateOrder, user_id: int):
     return db_item
 
 
-def remove(db: Session, todo: TodoItemDelete, user_id: int):
+def remove(db: Session, todo_id: int, user_id: int):
     validate_todo_item_belongs_to_user(
-        db, todo.id, user_id, [Permission.DELETE_TODO_ITEM]
+        db, todo_id, user_id, [Permission.DELETE_TODO_ITEM]
     )
-    db_item = db.query(TodoItem).filter(TodoItem.id == todo.id).first()
+    db_item = db.query(TodoItem).filter(TodoItem.id == todo_id).first()
     if not db_item:
         return
 
@@ -239,16 +235,18 @@ def remove(db: Session, todo: TodoItemDelete, user_id: int):
         TodoItemOrder,
         db.query(TodoItemOrder),
         TodoItemOrder.todo_id,
-        todo.id,
+        todo_id,
     )
 
-    db.query(TodoItem).filter(TodoItem.id == todo.id).delete()
+    db.query(TodoItem).filter(TodoItem.id == todo_id).delete()
     db.commit()
 
 
-def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id: int):
+def add_todo_dependency(
+    db: Session, todo_id: int, dependency: TodoItemAddDependency, user_id: int
+):
     validate_todo_item_belongs_to_user(
-        db, dependency.todo_id, user_id, [Permission.CREATE_TODO_ITEM_DEPENDENCY]
+        db, todo_id, user_id, [Permission.CREATE_TODO_ITEM_DEPENDENCY]
     )
     validate_todo_item_belongs_to_user(
         db,
@@ -260,7 +258,7 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
     if (
         db.query(TodoItemDependency)
         .filter(
-            TodoItemDependency.todo_id == dependency.todo_id,
+            TodoItemDependency.todo_id == todo_id,
             TodoItemDependency.dependant_todo_id == dependency.dependant_todo_id,
         )
         .count()
@@ -271,7 +269,7 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
             "This todo item dependency already exists",
         )
 
-    todo = db.query(TodoItem).filter(TodoItem.id == dependency.todo_id).first()
+    todo = db.query(TodoItem).filter(TodoItem.id == todo_id).first()
 
     if todo is None:
         raise
@@ -292,22 +290,23 @@ def add_todo_dependency(db: Session, dependency: TodoItemAddDependency, user_id:
 
 
 def remove_todo_dependency(
-    db: Session, dependency: TodoItemRemoveDependency, user_id: int
+    db: Session, todo_id: int, dependent_todo_id: int, user_id: int
 ):
+    validate_todo_item_belongs_to_user(
+        db, todo_id, user_id, [Permission.DELETE_TODO_ITEM_DEPENDENCY]
+    )
+
     db_item = (
         db.query(TodoItemDependency)
-        .filter(TodoItemDependency.id == dependency.dependency_id)
+        .filter(TodoItemDependency.id == dependent_todo_id)
         .first()
     )
 
     if db_item is None:
         raise UserFriendlyError(
-            ErrorCode.TODO_ITEM_DEPENDENCY_NOT_FOUND, "Dependency not found!"
+            ErrorCode.TODO_ITEM_DEPENDENCY_NOT_FOUND,
+            "this todo, doesn't depend on the provided item",
         )
-
-    validate_todo_item_belongs_to_user(
-        db, db_item.todo_id, user_id, [Permission.DELETE_TODO_ITEM_DEPENDENCY]
-    )
 
     db.delete(db_item)
     db.commit()

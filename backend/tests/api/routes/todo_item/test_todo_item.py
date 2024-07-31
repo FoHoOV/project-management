@@ -7,7 +7,6 @@ from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
-from db.schemas.todo_item_comment import TodoComment
 from error.exceptions import ErrorCode
 
 
@@ -24,7 +23,7 @@ def test_create_todo_item_not_belonging_to_user(
 
     # Attempt to create a todo item with an invalid category ID
     response = test_client.post(
-        "/todo-item/create",
+        "/todo-items",
         headers=headers,
         json={
             "title": "test",
@@ -71,7 +70,7 @@ def test_list_all_todos(
 
     # Querying all TODOs for this category
     response = test_client.get(
-        "/todo-item/list",
+        "/todo-items",
         params={"project_id": project.id, "category_id": category.id},
         headers=auth_header,
     )
@@ -124,7 +123,7 @@ def test_reorder_todos(
 
     # Query all todos for this category to get their initial order
     response_before_reorder = test_client.get(
-        "/todo-item/list",
+        "/todo-items",
         params={"project_id": project.id, "category_id": category.id},
         headers=auth_header_factory(user),
     )
@@ -134,12 +133,13 @@ def test_reorder_todos(
 
     # Reorder todos: move the last item to be the first
     reorder_response = test_client.patch(
-        "/todo-item/update-order",
+        f"/todo-items/{parsed_todos_before_reorder[0].id}",
         json={
-            "id": parsed_todos_before_reorder[0].id,
-            "left_id": None,
-            "right_id": parsed_todos_before_reorder[-1].id,
-            "new_category_id": category.id,
+            "order": {
+                "left_id": None,
+                "right_id": parsed_todos_before_reorder[-1].id,
+                "new_category_id": category.id,
+            }
         },
         headers=auth_header_factory(user),
     )
@@ -147,7 +147,7 @@ def test_reorder_todos(
 
     # Query all todos again to check the new order
     response_after_reorder = test_client.get(
-        "/todo-item/list",
+        "/todo-items",
         params={"project_id": project.id, "category_id": category.id},
         headers=auth_header_factory(user),
     )
@@ -212,9 +212,8 @@ def test_todo_item_permissions(
     # Try deleting the todo item by user_b (should fail due to insufficient permission)
     response = test_client.request(
         "delete",
-        "/todo-item/delete",
+        f"/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_b),
-        json={"id": todo_item.id},
     )
     assert (
         response.status_code == 400
@@ -222,12 +221,13 @@ def test_todo_item_permissions(
 
     # Update the todo item by user_b (should succeed because of UPDATE_TODO_ITEM permission)
     response = test_client.patch(
-        "/todo-item/update-item",
+        f"/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_b),
         json={
-            "id": todo_item.id,
-            "category_id": todo_item.category_id,
-            "is_done": True,
+            "item": {
+                "category_id": todo_item.category_id,
+                "is_done": True,
+            }
         },
     )
     assert (
@@ -236,12 +236,13 @@ def test_todo_item_permissions(
 
     # Try updating the todo item by user_c (should fail because the project is not shared with them)
     response = test_client.patch(
-        "/todo-item/update-item",
+        f"/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_c),
         json={
-            "id": todo_item.id,
-            "category_id": todo_item.category_id,
-            "is_done": False,
+            "item": {
+                "category_id": todo_item.category_id,
+                "is_done": False,
+            }
         },
     )
     assert (
@@ -251,9 +252,8 @@ def test_todo_item_permissions(
     # Try deleting the todo item by user_c (should fail because the project is not shared with them)
     response = test_client.request(
         "delete",
-        "/todo-item/delete",
+        f"/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_c),
-        json={"id": todo_item.id},
     )
     assert (
         response.status_code == 400
@@ -262,9 +262,8 @@ def test_todo_item_permissions(
     # Delete the todo item by user_a (owner) (should succeed)
     response = test_client.request(
         "delete",
-        "/todo-item/delete",
+        f"/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_a),
-        json={"id": todo_item.id},
     )
     assert (
         response.status_code == 200
