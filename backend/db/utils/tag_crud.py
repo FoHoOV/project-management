@@ -13,7 +13,6 @@ from db.schemas.tag import (
     TagAttachToTodo,
     TagCreate,
     TagDelete,
-    TagSearch,
     TagUpdate,
 )
 from db.utils.shared.permission_query import (
@@ -55,10 +54,8 @@ def create(db: Session, tag: TagCreate, user_id: int):
     return db_item
 
 
-def search(db: Session, search: TagSearch, user_id: int):
-    validate_tag_belongs_to_user_by_name(
-        db, search.name, search.project_id, user_id, None
-    )
+def search(db: Session, project_id: int | None, name: str, user_id: int):
+    validate_tag_belongs_to_user_by_name(db, name, project_id, user_id, None)
 
     query = (
         db.query(TodoItem)
@@ -67,11 +64,11 @@ def search(db: Session, search: TagSearch, user_id: int):
         .join(TodoCategory.projects)
         .join(Project.users)
         .filter(User.id == user_id)
-        .filter(Tag.name == search.name)
+        .filter(Tag.name == name)
     )
 
-    if search.project_id is not None:
-        query = query.filter(Project.id == search.project_id)
+    if project_id is not None:
+        query = query.filter(Project.id == project_id)
 
     return query.all()
 

@@ -5,15 +5,6 @@ TAG_MIN_LENGTH = 1
 TAG_MAX_LENGTH = 100
 
 
-@dataclass
-class TagSearch:
-    name: str
-    project_id: int | None = None
-
-    def __post_init__(self):
-        self.name = self.name.strip().lower()
-
-
 class TagCreate(BaseModel):
     name: str = Field(min_length=TAG_MIN_LENGTH, max_length=TAG_MAX_LENGTH)
     project_id: int

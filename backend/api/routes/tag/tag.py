@@ -1,5 +1,6 @@
+from email.policy import default
 from typing import Annotated
-from fastapi import APIRouter, Depends, Path, Response
+from fastapi import APIRouter, Depends, Path, Query, Response
 from starlette.status import HTTP_200_OK
 
 from sqlalchemy.orm import Session
@@ -13,7 +14,6 @@ from db.schemas.tag import (
     TagDelete,
     TagCreate,
     TagUpdate,
-    TagSearch,
     Tag,
 )
 from db.schemas.todo_item import TodoItem
@@ -77,8 +77,9 @@ def delete(
 
 @router.get(path="/", response_model=list[TodoItem])
 def search(
+    name: Annotated[str, Query()],
+    project_id: Annotated[int | None, Query(default=None)],
     current_user: Annotated[User, Depends(get_current_user)],
-    search: TagSearch = Depends(TagSearch),
     db: Session = Depends(get_db),
 ):
-    return tag_crud.search(db, search, current_user.id)
+    return tag_crud.search(db, project_id, name.strip().lower(), current_user.id)
