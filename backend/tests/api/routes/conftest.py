@@ -51,7 +51,7 @@ def test_category_factory(
 
     def _create_category(user: TestUserType, project_id: int):
         response = test_client.post(
-            "/todo-category/create",
+            "/todo-categories",
             headers=auth_header_factory(user),
             json={
                 "title": "Category for Testing",

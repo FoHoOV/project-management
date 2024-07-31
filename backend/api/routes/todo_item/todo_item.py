@@ -80,10 +80,10 @@ def remove_todo_item_dependency(
 
 @router.get("/", response_model=list[TodoItem])
 def search(
+    current_user: Annotated[User, Depends(get_current_user)],
     project_id: Annotated[int, Query()],
     category_id: Annotated[int, Query()],
-    status: Annotated[SearchTodoStatus, Query(default=SearchTodoStatus.ALL)],
-    current_user: Annotated[User, Depends(get_current_user)],
+    status: Annotated[SearchTodoStatus, Query()] = SearchTodoStatus.ALL,
     db: Session = Depends(get_db),
 ):
     items = todo_item_crud.get_todos_for_user(

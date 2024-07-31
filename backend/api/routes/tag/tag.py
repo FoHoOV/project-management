@@ -77,9 +77,9 @@ def delete(
 
 @router.get(path="/", response_model=list[TodoItem])
 def search(
-    name: Annotated[str, Query()],
-    project_id: Annotated[int | None, Query(default=None)],
     current_user: Annotated[User, Depends(get_current_user)],
+    name: Annotated[str, Query()],
+    project_id: Annotated[int | None, Query()] = None,
     db: Session = Depends(get_db),
 ):
     return tag_crud.search(db, project_id, name.strip().lower(), current_user.id)

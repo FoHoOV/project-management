@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Query, Response
 from starlette.status import HTTP_200_OK
 from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
@@ -9,80 +9,74 @@ from db.schemas.todo_category import (
     TodoCategory,
     TodoCategoryAttachAssociation,
     TodoCategoryCreate,
-    TodoCategoryDetachAssociation,
-    TodoCategoryRead,
-    TodoCategoryUpdateItem,
-    TodoCategoryUpdateOrder,
+    TodoCategoryUpdate,
 )
 from db.utils import todo_category_crud
 
 
-router = APIRouter(prefix="/todo-category", tags=["todo-category"])
+router = APIRouter(prefix="/todo-categories", tags=["todo-categories"])
 
 
-@router.post("/create", response_model=TodoCategory)
+@router.post("/", response_model=TodoCategory)
 def create_for_user(
-    current_user: Annotated[User, Depends(get_current_user)],
     category: TodoCategoryCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    return todo_category_crud.create(db=db, category=category, user_id=current_user.id)
+    return todo_category_crud.create(db, category, current_user.id)
 
 
-@router.post("/attach-to-project", response_model=TodoCategoryAttachAssociation)
+@router.post("/{category_id}/projects", response_model=TodoCategoryAttachAssociation)
 def attach_to_project(
-    current_user: Annotated[User, Depends(get_current_user)],
+    category_id: int,
     association: TodoCategoryAttachAssociation,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
     return todo_category_crud.attach_to_project(
-        db=db, association=association, user_id=current_user.id
+        db, category_id, association, current_user.id
     )
 
 
-@router.delete(path="/detach-from-project")
+@router.delete(path="/{category_id}/projects/{project_id}")
 def detach_from_project(
+    category_id: int,
+    project_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    association: TodoCategoryDetachAssociation,
     db: Session = Depends(get_db),
 ):
-    todo_category_crud.detach_from_project(
-        db=db, association=association, user_id=current_user.id
-    )
+    todo_category_crud.detach_from_project(db, category_id, project_id, current_user.id)
 
     return Response(status_code=HTTP_200_OK)
 
 
-@router.patch(path="/update-item", response_model=TodoCategory)
-def update_item(
+@router.patch(path="/{category_id}", response_model=TodoCategory)
+def update(
+    category_id: int,
+    category: TodoCategoryUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategoryUpdateItem,
     db: Session = Depends(get_db),
 ):
-    db_item = todo_category_crud.update_item(
-        db=db, category=category, user_id=current_user.id
+
+    if category.item is not None:
+        db_items = todo_category_crud.update_item(
+            db, category_id, category.item, current_user.id
+        )
+
+    if category.order is not None:
+        db_items = todo_category_crud.update_order(
+            db, category_id, category.order, current_user.id
+        )
+    return db_items
+
+
+@router.get("/", response_model=list[TodoCategory])
+def search(
+    project_id: Annotated[int, Query()],
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    items = todo_category_crud.get_categories_for_project(
+        db, project_id, current_user.id
     )
-
-    return db_item
-
-
-@router.patch(path="/update-order")
-def update_order(
-    current_user: Annotated[User, Depends(get_current_user)],
-    category: TodoCategoryUpdateOrder,
-    db: Session = Depends(get_db),
-):
-    todo_category_crud.update_order(
-        db=db, moving_item=category, user_id=current_user.id
-    )
-    return Response(status_code=HTTP_200_OK)
-
-
-@router.get("/list", response_model=list[TodoCategory])
-def get_for_user(
-    current_user: Annotated[User, Depends(get_current_user)],
-    filter: TodoCategoryRead = Depends(TodoCategoryRead),
-    db: Session = Depends(get_db),
-):
-    items = todo_category_crud.get_categories_for_project(db, filter, current_user.id)
     return items

@@ -1,8 +1,5 @@
-import typing
-from sqlalchemy import and_
-from db.models.project_user_association import ProjectUserAssociation
 from db.models.todo_category_action import Action, TodoCategoryAction
-from db.models.user_project_permission import Permission, UserProjectPermission
+from db.models.user_project_permission import Permission
 from db.utils.shared.ordered_item import (
     delete_item_from_sorted_items,
     update_element_order,
@@ -17,8 +14,6 @@ from db.models.user import User
 
 from db.schemas.todo_category import (
     TodoCategoryAttachAssociation,
-    TodoCategoryDetachAssociation,
-    TodoCategoryRead,
     TodoCategoryCreate,
     TodoCategoryUpdateItem,
     TodoCategoryUpdateOrder,
@@ -32,26 +27,22 @@ from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.project_crud import validate_project_belongs_to_user
 
 
-def get_categories_for_project(db: Session, filter: TodoCategoryRead, user_id: int):
+def get_categories_for_project(db: Session, project_id: int, user_id: int):
     validate_project_belongs_to_user(
         db,
-        filter.project_id,
+        project_id,
         user_id,
         None,
     )
     return (
         db.query(TodoCategory)
-        .outerjoin(
-            TodoCategory.orders.and_(TodoCategoryOrder.project_id == filter.project_id)
-        )
+        .outerjoin(TodoCategory.orders.and_(TodoCategoryOrder.project_id == project_id))
         .join(TodoCategory.projects)
-        .filter(Project.id == filter.project_id)
+        .filter(Project.id == project_id)
         .order_by(TodoCategory.id.asc())
         .options(
             lazyload(
-                TodoCategory.orders.and_(
-                    TodoCategoryOrder.project_id == filter.project_id
-                )
+                TodoCategory.orders.and_(TodoCategoryOrder.project_id == project_id)
             )
         )  # TODO: see why the goblin do we need this to exist
         .all()
@@ -78,9 +69,9 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
 
     update_order(
         db,
+        db_item.id,
         TodoCategoryUpdateOrder.model_validate(
             {
-                "id": db_item.id,
                 "left_id": _get_last_category_id_in_project_except_current(
                     db, db_item.id, category.project_id, user_id
                 ),
@@ -94,12 +85,14 @@ def create(db: Session, category: TodoCategoryCreate, user_id: int):
     return db_item
 
 
-def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
+def update_item(
+    db: Session, category_id: int, category: TodoCategoryUpdateItem, user_id: int
+):
     validate_todo_category_belongs_to_user(
-        db, category.id, user_id, [Permission.UPDATE_TODO_CATEGORY]
+        db, category_id, user_id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
-    db_item = db.query(TodoCategory).filter(TodoCategory.id == category.id).first()
+    db_item = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
 
     if db_item is None:
         raise UserFriendlyError(
@@ -120,14 +113,16 @@ def update_item(db: Session, category: TodoCategoryUpdateItem, user_id: int):
     return db_item
 
 
-def update_order(db: Session, moving_item: TodoCategoryUpdateOrder, user_id: int):
+def update_order(
+    db: Session, category_id: int, moving_item: TodoCategoryUpdateOrder, user_id: int
+):
     required_permissions = [
         {Permission.UPDATE_TODO_CATEGORY, Permission.CREATE_TODO_CATEGORY}
     ]
 
     validate_todo_category_belongs_to_user(
         db,
-        moving_item.id,
+        category_id,
         user_id,
         required_permissions,
     )
@@ -164,7 +159,7 @@ def update_order(db: Session, moving_item: TodoCategoryUpdateOrder, user_id: int
         ),
         TodoCategoryOrder.category_id,
         {
-            "item_id": moving_item.id,
+            "item_id": category_id,
             "left_id": moving_item.left_id,
             "right_id": moving_item.right_id,
         },
@@ -173,13 +168,22 @@ def update_order(db: Session, moving_item: TodoCategoryUpdateOrder, user_id: int
 
     db.commit()
 
+    item = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
+    if item is None:
+        raise
+
+    return item
+
 
 def attach_to_project(
-    db: Session, association: TodoCategoryAttachAssociation, user_id: int
+    db: Session,
+    category_id: int,
+    association: TodoCategoryAttachAssociation,
+    user_id: int,
 ):
     validate_todo_category_belongs_to_user(
         db,
-        association.category_id,
+        category_id,
         user_id,
         [Permission.UPDATE_TODO_CATEGORY],
     )
@@ -191,7 +195,7 @@ def attach_to_project(
     )
 
     association_db_item = TodoCategoryProjectAssociation(
-        category_id=association.category_id, project_id=association.project_id
+        category_id=category_id, project_id=association.project_id
     )
 
     try:
@@ -205,12 +209,12 @@ def attach_to_project(
 
     update_order(
         db,
+        category_id,
         TodoCategoryUpdateOrder.model_validate(
             {
-                "id": association.category_id,
                 "left_id": None,
                 "right_id": _get_first_category_id_in_project_except_current(
-                    db, association.category_id, association.project_id, user_id
+                    db, category_id, association.project_id, user_id
                 ),
                 "project_id": association.project_id,
             }
@@ -222,15 +226,13 @@ def attach_to_project(
     return association_db_item
 
 
-def detach_from_project(
-    db: Session, association: TodoCategoryDetachAssociation, user_id: int
-):
+def detach_from_project(db: Session, category_id: int, project_id: int, user_id: int):
     validate_todo_category_belongs_to_user(
-        db, association.category_id, user_id, [Permission.DELETE_TODO_CATEGORY]
+        db, category_id, user_id, [Permission.DELETE_TODO_CATEGORY]
     )
     validate_project_belongs_to_user(
         db,
-        association.project_id,
+        project_id,
         user_id,
         [Permission.DELETE_TODO_CATEGORY],
     )
@@ -238,27 +240,23 @@ def detach_from_project(
     delete_item_from_sorted_items(
         db,
         TodoCategoryOrder,
-        db.query(TodoCategoryOrder).filter(
-            TodoCategoryOrder.project_id == association.project_id
-        ),
+        db.query(TodoCategoryOrder).filter(TodoCategoryOrder.project_id == project_id),
         TodoCategoryOrder.category_id,
-        association.category_id,
+        category_id,
     )
 
     db.query(TodoCategoryProjectAssociation).filter(
-        TodoCategoryProjectAssociation.project_id == association.project_id,
-        TodoCategoryProjectAssociation.category_id == association.category_id,
+        TodoCategoryProjectAssociation.project_id == project_id,
+        TodoCategoryProjectAssociation.category_id == category_id,
     ).delete()
 
     if (
         db.query(TodoCategoryProjectAssociation)
-        .filter(TodoCategoryProjectAssociation.category_id == association.category_id)
+        .filter(TodoCategoryProjectAssociation.category_id == category_id)
         .count()
         == 0
     ):
-        db.query(TodoCategory).filter(
-            TodoCategory.id == association.category_id
-        ).delete()
+        db.query(TodoCategory).filter(TodoCategory.id == category_id).delete()
 
     db.commit()
 
@@ -340,9 +338,7 @@ def _get_last_category_id_in_project_except_current(
     if last_item_in_the_list is not None:
         return last_item_in_the_list.category_id
 
-    categories = get_categories_for_project(
-        db, TodoCategoryRead(project_id=project_id), user_id
-    )
+    categories = get_categories_for_project(db, project_id, user_id)
     if len(categories) > 0:
         if categories[-1].id != current_category_id:
             return categories[-1].id
@@ -367,9 +363,7 @@ def _get_first_category_id_in_project_except_current(
     if first_item_in_the_list is not None:
         return first_item_in_the_list.category_id
 
-    categories = get_categories_for_project(
-        db, TodoCategoryRead(project_id=project_id), user_id
-    )
+    categories = get_categories_for_project(db, project_id, user_id)
     if len(categories) > 0:
         if categories[0].id != current_category_id:
             return categories[0].id
