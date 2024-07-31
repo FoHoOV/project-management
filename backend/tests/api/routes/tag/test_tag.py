@@ -47,7 +47,7 @@ def test_todo_tag_permissions(
 
     # Try creating a tag attached to the todo item by user_c (who doesn't have access)
     response = test_client.post(
-        "/tags/test tag/todos",
+        "/tags/test tag/todo-items",
         headers=auth_header_factory(user_c),
         json={
             "project_id": project_one.id,
@@ -61,7 +61,7 @@ def test_todo_tag_permissions(
 
     # Try creating a tag attached to the todo item by user_b (who has access)
     response = test_client.post(
-        "/tags/test tag/todos",
+        "/tags/test tag/todo-items",
         headers=auth_header_factory(user_b),
         json={
             "project_id": project_one.id,
@@ -79,7 +79,7 @@ def test_todo_tag_permissions(
     # Try removing the tag by user_c (should fail)
     response = test_client.request(
         "delete",
-        f"/tags/{created_tag.name}/todos/{todo_item.id}",
+        f"/tags/{created_tag.name}/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_c),
     )
     assert (
@@ -89,7 +89,7 @@ def test_todo_tag_permissions(
     # Try removing the tag by user_b (should also fail due to insufficient permissions)
     response = test_client.request(
         "delete",
-        f"/tags/{created_tag.name}/todos/{todo_item.id}",
+        f"/tags/{created_tag.name}/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_b),
     )
     assert (
@@ -99,7 +99,7 @@ def test_todo_tag_permissions(
     # Remove the tag by user_a (owner), which should succeed
     response = test_client.request(
         "delete",
-        f"/tags/{created_tag.name}/todos/{todo_item.id}",
+        f"/tags/{created_tag.name}/todo-items/{todo_item.id}",
         headers=auth_header_factory(user_a),
     )
     assert (

@@ -43,7 +43,7 @@ def update(
     return tag_crud.edit(db, tag_name, tag, current_user.id)
 
 
-@router.post(path="/{tag_name}/todos/", response_model=Tag)
+@router.post(path="/{tag_name}/todo-items/", response_model=Tag)
 def attach_to_todo(
     tag_name: Annotated[str, tag_name_validator],
     association: TagAttachToTodo,
@@ -53,7 +53,7 @@ def attach_to_todo(
     return tag_crud.attach_tag_to_todo(db, tag_name, association, current_user.id)
 
 
-@router.delete(path="/{tag_name}/todos/{todo_id}")
+@router.delete(path="/{tag_name}/todo-items/{todo_id}")
 def detach_from_todo(
     tag_name: Annotated[str, tag_name_validator],
     todo_id: int,
