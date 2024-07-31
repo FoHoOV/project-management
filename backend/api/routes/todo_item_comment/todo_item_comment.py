@@ -8,53 +8,54 @@ from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.todo_item_comment import (
     TodoComment,
-    TodoCommentBase,
     TodoCommentCreate,
-    TodoCommentDelete,
-    TodoCommentSearch,
     TodoCommentUpdate,
 )
 from db.utils import todo_item_comment_crud
 
 
-router = APIRouter(prefix="/todo-item/comment", tags=["todo-item-comment"])
+router = APIRouter(prefix="/todo-items", tags=["todo-item-comments"])
 
 
-@router.post("/create", response_model=TodoComment)
+@router.post("/{todo_id}/comments", response_model=TodoComment)
 def create(
-    current_user: Annotated[User, Depends(get_current_user)],
+    todo_id: int,
     comment: TodoCommentCreate,
+    current_user: Annotated[User, Depends(get_current_user)],
     db: Session = Depends(get_db),
 ):
-    result = todo_item_comment_crud.create(
-        db=db, comment=comment, user_id=current_user.id
-    )
+    result = todo_item_comment_crud.create(db, todo_id, comment, current_user.id)
     return result
 
 
-@router.patch(path="/update", response_model=TodoComment)
+@router.put(path="/{todo_id}/comments/{comment_id}", response_model=TodoComment)
 def update(
-    current_user: Annotated[User, Depends(get_current_user)],
+    todo_id: int,
+    comment_id: int,
     comment: TodoCommentUpdate,
-    db: Session = Depends(get_db),
-):
-    return todo_item_comment_crud.edit(db=db, comment=comment, user_id=current_user.id)
-
-
-@router.delete(path="/delete")
-def delete(
     current_user: Annotated[User, Depends(get_current_user)],
-    comment: TodoCommentDelete,
     db: Session = Depends(get_db),
 ):
-    todo_item_comment_crud.delete(db=db, comment=comment, user_id=current_user.id)
+    return todo_item_comment_crud.edit(
+        db, todo_id, comment_id, comment, current_user.id
+    )
+
+
+@router.delete(path="/{todo_id}/comments/{comment_id}")
+def delete(
+    todo_id: int,
+    comment_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    todo_item_comment_crud.delete(db, todo_id, comment_id, current_user.id)
     return Response(status_code=HTTP_200_OK)
 
 
-@router.get(path="/list", response_model=list[TodoComment])
+@router.get(path="/{todo_id}/comments/", response_model=list[TodoComment])
 def list(
+    todo_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    search: TodoCommentSearch = Depends(TodoCommentSearch),
     db: Session = Depends(get_db),
 ):
-    return todo_item_comment_crud.list(db=db, search=search, user_id=current_user.id)
+    return todo_item_comment_crud.list(db, todo_id, current_user.id)

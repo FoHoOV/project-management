@@ -49,7 +49,7 @@ def test_users(test_client: TestClient, test_app: FastAPI):
     """Create test users in the database, ensuring each user is created only once."""
     for user in _TEST_USERS:
         response = test_client.post(
-            "/user/signup",
+            "/users/signup",
             json={
                 "username": user["username"],
                 "password": user["password"],

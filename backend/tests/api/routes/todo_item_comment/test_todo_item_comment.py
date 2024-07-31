@@ -48,9 +48,9 @@ def test_todo_comment_permissions(
 
     # Try creating a comment from a user who doesn't have access
     create_comment_response = test_client.post(
-        "/todo-item/comment/create",
+        f"/todo-items/{todo_item.id}/comments",
         headers=auth_header_factory(test_users[2]),
-        json={"todo_id": todo_item.id, "message": "some message"},
+        json={"message": "some message"},
     )
     assert (
         create_comment_response.status_code == 400
@@ -59,9 +59,9 @@ def test_todo_comment_permissions(
     # Try creating a comment from a user who has access
     user_b_auth_header = auth_header_factory(test_users[1])
     create_comment_response = test_client.post(
-        "/todo-item/comment/create",
+        f"/todo-items/{todo_item.id}/comments",
         headers=user_b_auth_header,
-        json={"todo_id": todo_item.id, "message": "some message"},
+        json={"message": "some message"},
     )
     assert (
         create_comment_response.status_code == 200
@@ -74,9 +74,8 @@ def test_todo_comment_permissions(
     # Try removing a comment from a user who doesn't have access
     delete_by_unknown_user_response = test_client.request(
         "delete",
-        "/todo-item/comment/delete",
+        f"/todo-items/{todo_item.id}/comments/{todo_comment.id}",
         headers=auth_header_factory(test_users[2]),
-        json={"id": todo_comment.id},
     )
     assert (
         delete_by_unknown_user_response.status_code == 400
@@ -85,9 +84,8 @@ def test_todo_comment_permissions(
     # Removing a comment by the owner
     delete_by_owner_response = test_client.request(
         "delete",
-        "/todo-item/comment/delete",
+        f"/todo-items/{todo_item.id}/comments/{todo_comment.id}",
         headers=auth_header_factory(test_users[0]),
-        json={"id": todo_comment.id},
     )
     assert (
         delete_by_owner_response.status_code == 200
