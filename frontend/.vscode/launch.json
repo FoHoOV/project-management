@@ -5,50 +5,44 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"command": "npm run dev",
-			"name": "npm:dev",
-			"request": "launch",
-			"type": "node-terminal"
-		},
-		{
 			"command": "pnpm run dev",
 			"name": "pnpm:dev",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate:linux",
-			"name": "npm:open-api:generate:linux",
+			"command": "pnpm run open-api:generate:linux",
+			"name": "pnpm:open-api:generate:linux",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run open-api:generate:windows",
-			"name": "npm:open-api:generate:windows",
+			"command": "pnpm run open-api:generate:windows",
+			"name": "pnpm:open-api:generate:windows",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run check:watch",
-			"name": "npm:check:watch",
+			"command": "pnpm run check:watch",
+			"name": "pnpm:check:watch",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run test:integration",
-			"name": "npm:test:integration",
+			"command": "pnpm run test:integration",
+			"name": "pnpm:test:integration",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npm run test:unit",
-			"name": "npm:test:unit",
+			"command": "pnpm run test:unit",
+			"name": "pnpm:test:unit",
 			"request": "launch",
 			"type": "node-terminal"
 		},
 		{
-			"command": "npx playwright codegen",
-			"name": "npm:playwright:codegen",
+			"command": "pnpm exec playwright codegen",
+			"name": "pnpm:playwright:codegen",
 			"request": "launch",
 			"type": "node-terminal"
 		},
