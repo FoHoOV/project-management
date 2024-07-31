@@ -10,7 +10,7 @@ export const load = (async ({ locals }) => {
 	if (locals.token) {
 		const projects = await callService({
 			call: async () => {
-				return await ProjectClient({ fetchApi: fetch, token: locals.token }).listProject();
+				return await ProjectClient({ fetchApi: fetch, token: locals.token }).listProjects();
 			}
 		});
 		if (!projects.success) {

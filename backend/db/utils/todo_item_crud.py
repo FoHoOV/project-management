@@ -283,7 +283,7 @@ def add_todo_dependency(
 
     todo.is_done = False
 
-    db_item = TodoItemDependency(**dependency.model_dump())
+    db_item = TodoItemDependency(todo_id=todo.id, **dependency.model_dump())
     db.add(db_item)
 
     db.commit()

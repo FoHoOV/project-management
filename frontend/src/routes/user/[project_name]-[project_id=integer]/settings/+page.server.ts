@@ -1,10 +1,7 @@
 import { validateFormActionRequest, namedActionResult } from '$lib';
-import { ProjectClient } from '$lib/client-wrapper/clients';
+import { PermissionClient, ProjectClient } from '$lib/client-wrapper/clients';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import {
-	ProjectDetachAssociation,
-	ProjectUpdateUserPermissions
-} from '$lib/generated-client/zod/schemas';
+import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod/schemas';
 import type { Actions } from './$types';
 import { detachSchema, updateUserPermissionsSchema } from './validator';
 
@@ -21,11 +18,9 @@ export const actions: Actions = {
 				return await ProjectClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).detachFromUserProject({
-					...validation.data
-				});
+				}).detachFromUserProjects(validation.data.projectId, validation.data.userId);
 			},
-			errorSchema: ProjectDetachAssociation
+			errorSchema: detachSchema
 		});
 
 		return namedActionResult(result, 'detach');
@@ -39,10 +34,10 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
+				return await PermissionClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updatePermissionsProject({
+				}).updatePermissions(validation.data.project_id, {
 					...validation.data
 				});
 			},

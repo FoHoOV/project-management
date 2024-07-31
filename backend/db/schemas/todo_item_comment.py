@@ -17,5 +17,6 @@ class TodoCommentUpdate(TodoCommentMessage):
 class TodoComment(BaseModel):
     id: int
     todo_id: int
+    message: str
 
     model_config = ConfigDict(from_attributes=True)

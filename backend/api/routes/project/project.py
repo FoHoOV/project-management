@@ -50,6 +50,16 @@ def attach_to_user(
     return project_crud.attach_to_user(db, project_id, association, current_user.id)
 
 
+@router.delete(path="/{project_id}/users/me")
+def detach_from_self(
+    project_id: int,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    project_crud.detach_from_user(db, project_id, current_user.id, current_user.id)
+    return Response(status_code=HTTP_200_OK)
+
+
 @router.delete(path="/{project_id}/users/{user_id}")
 def detach_from_user(
     project_id: int,

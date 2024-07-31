@@ -10,7 +10,7 @@ export const load = (async ({ parent, fetch, params }) => {
 			return await TodoCategoryClient({
 				token: (await parent()).token,
 				fetchApi: fetch
-			}).getForUserTodoCategory(Number.parseInt(params.project_id));
+			}).searchTodoCategories(Number.parseInt(params.project_id));
 		},
 		errorHandler: async (e) => {
 			if (e.status == 401) {

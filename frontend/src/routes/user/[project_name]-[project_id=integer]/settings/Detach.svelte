@@ -50,13 +50,9 @@
 	showErrors={false}
 >
 	{#snippet inputs()}
-		<FormInput
-			type="hidden"
-			wrapperClasses="hidden"
-			name="project_id"
-			value={data.currentProject.id}
+		<FormInput type="hidden" wrapperClasses="hidden" name="projectId" value={data.currentProject.id}
 		></FormInput>
-		<FormInput type="hidden" wrapperClasses="hidden" name="user_id" value={user.id}></FormInput>
+		<FormInput type="hidden" wrapperClasses="hidden" name="userId" value={user.id}></FormInput>
 	{/snippet}
 	{#snippet actions({ loading })}
 		<Spinner visible={loading}></Spinner>

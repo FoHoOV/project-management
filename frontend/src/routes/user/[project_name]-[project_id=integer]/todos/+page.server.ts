@@ -47,7 +47,7 @@ export const actions: Actions = {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).createForUserTodoItem({
+				}).createForUserTodoItems({
 					...validation.data
 				});
 			},
@@ -68,7 +68,7 @@ export const actions: Actions = {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).createForUserTodoCategory({
+				}).createForUserTodoCategories({
 					...validation.data
 				});
 			},
@@ -89,7 +89,7 @@ export const actions: Actions = {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).attachToProjectTodoCategory({
+				}).attachToProjectTodoCategories(validation.data.category_id, {
 					...validation.data
 				});
 			},
@@ -110,8 +110,8 @@ export const actions: Actions = {
 				return await TodoCategoryClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updateItemTodoCategory({
-					...validation.data
+				}).updateTodoCategories(validation.data.id, {
+					item: validation.data
 				});
 			},
 			errorSchema: TodoCategoryUpdateItem
@@ -137,9 +137,7 @@ export const actions: Actions = {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updateItemTodoItem({
-					...validation.data
-				});
+				}).updateItemTodoItems(validation.data.id, { item: validation.data });
 			},
 			errorSchema: TodoItemUpdateItem
 		});
@@ -158,7 +156,7 @@ export const actions: Actions = {
 				return await TodoItemCommentClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).createTodoItemComment({
+				}).createTodoItemComments(validation.data.todo_id, {
 					...validation.data
 				});
 			},
@@ -179,7 +177,7 @@ export const actions: Actions = {
 				return await TodoItemCommentClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updateTodoItemComment({
+				}).updateTodoItemComments(validation.data.todo_id, validation.data.id, {
 					...validation.data
 				});
 			},
@@ -200,7 +198,10 @@ export const actions: Actions = {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).attachToTodoTag({ ...validation.data, create_if_doesnt_exist: true });
+				}).attachToTodoTags(validation.data.name, {
+					...validation.data,
+					create_if_doesnt_exist: true
+				});
 			},
 			errorSchema: TagAttachToTodo
 		});
@@ -219,7 +220,7 @@ export const actions: Actions = {
 				return await TagClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updateTag({
+				}).updateTags(validation.data.name, {
 					...validation.data
 				});
 			},
@@ -240,7 +241,7 @@ export const actions: Actions = {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).addTodoItemDependencyTodoItem({
+				}).addTodoItemDependencyTodoItems(validation.data.todo_id, {
 					...validation.data
 				});
 			},

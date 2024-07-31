@@ -109,7 +109,7 @@ export const addTagSchema = z.object({
 ({}) as z.infer<typeof addTagSchema> satisfies TagAttachToTodo;
 
 export const editTagSchema = z.object({
-	id: z.number({ coerce: true }),
+	project_id: z.number({ coerce: true }),
 	name: z.string().min(1).max(30)
 });
 

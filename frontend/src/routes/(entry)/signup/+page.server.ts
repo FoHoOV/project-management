@@ -23,7 +23,7 @@ export const actions: Actions = {
 				await UserClient({
 					isTokenRequired: false,
 					fetchApi: fetch
-				}).signupUser(validation.data);
+				}).signupUsers(validation.data);
 				redirect(303, '/login');
 			},
 			errorSchema: UserCreate
