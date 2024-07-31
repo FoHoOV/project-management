@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from error.exceptions import ErrorCode
 
 
-router = APIRouter(prefix="/error", tags=["error"])
+router = APIRouter(prefix="/types", tags=["types"])
+description = "just to include types in openapi.json"
 
 
 class UserFriendlyErrorSchema(BaseModel):
@@ -14,8 +15,7 @@ class UserFriendlyErrorSchema(BaseModel):
 
 # a hack just to include these types in the generated OpenApi json
 @router.get(
-    path="/error-types",
-    response_model=UserFriendlyErrorSchema,
+    path="/errors", response_model=UserFriendlyErrorSchema, description=description
 )
 def include_error_types():
     raise
