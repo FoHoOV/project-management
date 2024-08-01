@@ -137,7 +137,7 @@ export const actions: Actions = {
 				return await TodoItemClient({
 					token: locals.token,
 					fetchApi: fetch
-				}).updateItemTodoItems(validation.data.id, { item: validation.data });
+				}).updateTodoItems(validation.data.id, { item: validation.data });
 			},
 			errorSchema: TodoItemUpdateItem
 		});

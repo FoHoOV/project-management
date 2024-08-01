@@ -73,15 +73,12 @@
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItems(
-					todo.id,
-					{
-						item: {
-							...todo,
-							is_done: !savedTodoStatus
-						}
+				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(todo.id, {
+					item: {
+						...todo,
+						is_done: !savedTodoStatus
 					}
-				);
+				});
 				todoCategoriesStore?.updateTodo(result, draggable);
 				if (result.is_done == savedTodoStatus) {
 					toastsManagerStore.addToast({

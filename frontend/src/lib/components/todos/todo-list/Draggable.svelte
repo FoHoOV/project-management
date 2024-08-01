@@ -121,7 +121,7 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateItemTodoItems(
+				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(
 					event.detail.data.id,
 					{
 						item: {
