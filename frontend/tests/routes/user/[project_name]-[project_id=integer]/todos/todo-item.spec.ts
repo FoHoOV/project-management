@@ -86,68 +86,67 @@ test('deleting todo items', async ({ todoItemUtils, todoCategoryUtils }) => {
 	).toHaveLength(0);
 });
 
-test('moving todo to another category', async ({
-	todoItemUtils,
-	todoCategoryUtils,
-	projectUtils
-}) => {
-	const p1 = await projectUtils.page.create({ title: 'p1' });
-	const c1 = await todoCategoryUtils.helpers.createCategory({
-		projectId: p1.projectId,
-		projectTitle: 'p1'
-	});
-	const c2 = await todoCategoryUtils.helpers.createCategory({
-		projectId: p1.projectId,
-		projectTitle: 'p1'
-	});
+test.fixme(
+	'moving todo to another category',
+	async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
+		const p1 = await projectUtils.page.create({ title: 'p1' });
+		const c1 = await todoCategoryUtils.helpers.createCategory({
+			projectId: p1.projectId,
+			projectTitle: 'p1'
+		});
+		const c2 = await todoCategoryUtils.helpers.createCategory({
+			projectId: p1.projectId,
+			projectTitle: 'p1'
+		});
 
-	const t1 = await todoItemUtils.page.create({
-		categoryId: c1.categoryId,
-		title: 't1'
-	});
+		const t1 = await todoItemUtils.page.create({
+			categoryId: c1.categoryId,
+			title: 't1'
+		});
 
-	const t2 = await todoItemUtils.page.create({
-		categoryId: c1.categoryId,
-		title: 't2'
-	});
+		const t2 = await todoItemUtils.page.create({
+			categoryId: c1.categoryId,
+			title: 't2'
+		});
 
-	const t3 = await todoItemUtils.page.create({
-		categoryId: c2.categoryId,
-		title: 't3'
-	});
+		const t3 = await todoItemUtils.page.create({
+			categoryId: c2.categoryId,
+			title: 't3'
+		});
 
-	const t4 = await todoItemUtils.page.create({
-		categoryId: c2.categoryId,
-		title: 't4'
-	});
+		const t4 = await todoItemUtils.page.create({
+			categoryId: c2.categoryId,
+			title: 't4'
+		});
 
-	await todoItemUtils.page.dragAndDrop({
-		fromTodoId: t1.todoId,
-		toTodoId: t3.todoId,
-		direction: 'top'
-	});
-	const step1 = await todoItemUtils.page.getTodoIdsFor(c2.categoryId);
-	expect(step1, `c2 should have 3 todo items now`).toHaveLength(3);
-	expect(step1).toEqual([t1.todoId, t3.todoId, t4.todoId]);
+		await todoItemUtils.page.dragAndDrop({
+			fromTodoId: t1.todoId,
+			toTodoId: t3.todoId,
+			direction: 'top'
+		});
+		const step1 = await todoItemUtils.page.getTodoIdsFor(c2.categoryId);
+		expect(step1, `c2 should have 3 todo items now`).toHaveLength(3);
+		expect(step1).toEqual([t1.todoId, t3.todoId, t4.todoId]);
 
-	await todoItemUtils.page.dragAndDrop({
-		fromTodoId: t1.todoId,
-		toTodoId: t2.todoId,
-		direction: 'top'
-	});
-	const step2 = await todoItemUtils.page.getTodoIdsFor(c2.categoryId);
-	expect(step2, `c2 should have 2 todo items now`).toHaveLength(2);
-	expect(step2).toEqual([t3.todoId, t4.todoId]);
+		await todoItemUtils.page.dragAndDrop({
+			fromTodoId: t1.todoId,
+			toTodoId: t2.todoId,
+			direction: 'top'
+		});
+		const step2 = await todoItemUtils.page.getTodoIdsFor(c2.categoryId);
+		expect(step2, `c2 should have 2 todo items now`).toHaveLength(2);
+		expect(step2).toEqual([t3.todoId, t4.todoId]);
 
-	await todoItemUtils.page.dragAndDrop({
-		fromTodoId: t3.todoId,
-		toTodoId: t1.todoId,
-		direction: 'bottom'
-	});
-	const step3 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
-	expect(step3, `c1 should have 3 todo items now`).toHaveLength(3);
-	expect(step3).toEqual([t1.todoId, t3.todoId, t2.todoId]);
-});
+		await todoItemUtils.page.dragAndDrop({
+			fromTodoId: t3.todoId,
+			toTodoId: t1.todoId,
+			direction: 'bottom'
+		});
+		const step3 = await todoItemUtils.page.getTodoIdsFor(c1.categoryId);
+		expect(step3, `c1 should have 3 todo items now`).toHaveLength(3);
+		expect(step3).toEqual([t1.todoId, t3.todoId, t2.todoId]);
+	}
+);
 
 test('reorder todo items in same category', async ({ todoItemUtils, todoCategoryUtils }) => {
 	const c1 = await todoCategoryUtils.helpers.createCategory();

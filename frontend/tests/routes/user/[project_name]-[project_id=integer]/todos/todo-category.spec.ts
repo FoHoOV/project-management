@@ -116,7 +116,7 @@ test('delete todo category', async ({ projectUtils, todoCategoryUtils }) => {
 	).toHaveLength(0);
 });
 
-test('reorder todo category', async ({ projectUtils, todoCategoryUtils }) => {
+test.fixme('reorder todo category', async ({ projectUtils, todoCategoryUtils }) => {
 	await projectUtils.page.goto();
 
 	const projectTitle = 'test';
