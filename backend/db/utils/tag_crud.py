@@ -34,7 +34,7 @@ def create(db: Session, tag: TagCreate, user_id: int):
 
     tag_already_exists = False
     try:
-        validate_tag_belongs_to_user_by_name(
+        validate_tag_belongs_to_user_in_project_by_name(
             db, tag.name, tag.project_id, user_id, [Permission.CREATE_TAG]
         )
         tag_already_exists = True
@@ -55,7 +55,7 @@ def create(db: Session, tag: TagCreate, user_id: int):
 
 
 def search(db: Session, project_id: int | None, name: str, user_id: int):
-    validate_tag_belongs_to_user_by_name(db, name, project_id, user_id, None)
+    validate_tag_belongs_to_user_in_project_by_name(db, name, project_id, user_id, None)
 
     query = (
         db.query(TodoItem)
@@ -74,7 +74,7 @@ def search(db: Session, project_id: int | None, name: str, user_id: int):
 
 
 def edit(db: Session, tag_name: str, tag: TagUpdate, user_id: int):
-    validate_tag_belongs_to_user_by_name(
+    validate_tag_belongs_to_user_in_project_by_name(
         db, tag_name, tag.project_id, user_id, [Permission.UPDATE_TAG]
     )
 
@@ -88,7 +88,7 @@ def edit(db: Session, tag_name: str, tag: TagUpdate, user_id: int):
         raise
 
     try:
-        validate_tag_belongs_to_user_by_name(
+        validate_tag_belongs_to_user_in_project_by_name(
             db, tag.name, db_item.project_id, user_id, [Permission.UPDATE_TAG]
         )
         raise UserFriendlyError(
@@ -106,7 +106,7 @@ def edit(db: Session, tag_name: str, tag: TagUpdate, user_id: int):
 
 
 def delete(db: Session, tag_name: str, tag: TagDelete, user_id: int):
-    validate_tag_belongs_to_user_by_name(
+    validate_tag_belongs_to_user_in_project_by_name(
         db, tag_name, tag.project_id, user_id, [Permission.DELETE_TAG]
     )
     db.query(Tag).filter(
@@ -123,7 +123,7 @@ def attach_tag_to_todo(
     )
 
     try:
-        validate_tag_belongs_to_user_by_name(
+        validate_tag_belongs_to_user_in_project_by_name(
             db,
             tag_name,
             association.project_id,
@@ -175,7 +175,7 @@ def attach_tag_to_todo(
 
 def detach_tag_from_todo(db: Session, tag_name: str, todo_id: int, user_id: int):
     validate_todo_item_belongs_to_user(db, todo_id, user_id, [Permission.DELETE_TAG])
-    validate_tag_belongs_to_user_by_name(
+    validate_tag_belongs_to_user_in_todo_by_name(
         db, tag_name, todo_id, user_id, [Permission.DELETE_TAG]
     )
 
@@ -205,7 +205,7 @@ def detach_tag_from_todo(db: Session, tag_name: str, todo_id: int, user_id: int)
     db.commit()
 
 
-def validate_tag_belongs_to_user_by_name(
+def validate_tag_belongs_to_user_in_project_by_name(
     db: Session,
     tag_name: str,
     project_id: int | None,
@@ -222,6 +222,34 @@ def validate_tag_belongs_to_user_by_name(
 
     if project_id is not None:
         query = query.filter(Tag.project_id == project_id)
+
+    query = join_with_permission_query_if_required(query, permissions)
+
+    validate_item_exists_with_permissions(
+        query,
+        permissions,
+        ErrorCode.TAG_NOT_FOUND,
+        "tag not found or doesn't belong to user or you don't have the permission to perform the requested action",
+    )
+
+
+def validate_tag_belongs_to_user_in_todo_by_name(
+    db: Session,
+    tag_name: str,
+    todo_id: int,
+    user_id: int,
+    permissions: PermissionsType,
+):
+    query = (
+        db.query(TodoItem)
+        .join(TodoItem.category)
+        .join(TodoItem.tags)
+        .join(TodoCategory.projects)
+        .join(Project.users)
+        .filter(User.id == user_id)
+        .filter(TodoItem.id == todo_id)
+        .filter(Tag.name == tag_name)
+    )
 
     query = join_with_permission_query_if_required(query, permissions)
 
