@@ -18,7 +18,7 @@ def test_create_todo_tag(
     attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
-    create_tag_request: Callable[[TestUserType, int, int, str], Response],
+    attach_tag_to_todo: Callable[[TestUserType, int, int, str], Response],
     test_users: list[TestUserType],
 ):
     user_a = test_users[0]
@@ -36,19 +36,19 @@ def test_create_todo_tag(
     todo_item = create_todo_item(user_a, category.id)
 
     # Owner should be able to create a tag
-    response = create_tag_request(user_a, project_one.id, todo_item.id, "test tag")
+    response = attach_tag_to_todo(user_a, project_one.id, todo_item.id, "test tag")
     assert (
         response.status_code == 200
     ), "User A should be able to create a tag as the owner"
 
     # User B (with access) tries to create a tag
-    response = create_tag_request(user_b, project_one.id, todo_item.id, "test tag2")
+    response = attach_tag_to_todo(user_b, project_one.id, todo_item.id, "test tag2")
     assert (
         response.status_code == 200
     ), "User B should be able to create a tag with the correct permission"
 
     # User C (no access) tries to create a tag
-    response = create_tag_request(user_c, project_one.id, todo_item.id, "test tag3")
+    response = attach_tag_to_todo(user_c, project_one.id, todo_item.id, "test tag3")
     assert (
         response.status_code == 400
     ), "User C should not be able to create a tag without access"
@@ -62,8 +62,8 @@ def test_remove_todo_tag(
     attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
-    create_tag_request: Callable[[TestUserType, int, int, str], Response],
-    remove_tag_request: Callable[[TestUserType, str, int], Response],
+    attach_tag_to_todo: Callable[[TestUserType, int, int, str], Response],
+    detach_tag_from_todo: Callable[[TestUserType, int, str], Response],
     test_users: list[TestUserType],
 ):
     user_a = test_users[0]
@@ -86,39 +86,39 @@ def test_remove_todo_tag(
     todo_item = create_todo_item(user_a, category.id)
 
     # User B creates a tag
-    create_response = create_tag_request(
+    create_response = attach_tag_to_todo(
         user_b, project_one.id, todo_item.id, "test tag"
     )
     created_tag = Tag.model_validate(create_response.json(), strict=True)
 
     # User C (no access) tries to remove the tag
-    response = remove_tag_request(user_c, created_tag.name, todo_item.id)
+    response = detach_tag_from_todo(user_c, todo_item.id, created_tag.name)
     assert (
         response.status_code == 400
     ), "User C should not be able to remove a tag without access"
 
     # User B (with access, but not remove permission) tries to remove the tag
-    response = remove_tag_request(user_b, created_tag.name, todo_item.id)
+    response = detach_tag_from_todo(user_b, todo_item.id, created_tag.name)
     assert (
         response.status_code == 400
     ), "User B should not be able to remove the tag without remove permission"
 
     # User A (owner) removes the tag
-    response = remove_tag_request(user_a, created_tag.name, todo_item.id)
+    response = detach_tag_from_todo(user_a, todo_item.id, created_tag.name)
     assert response.status_code == 200, "User A should be able to remove the tag"
 
     attach_project_to_user(user_a, user_c, project_one.id, [Permission.DELETE_TAG])
 
-    other_tag_response = create_tag_request(
+    other_tag_response = attach_tag_to_todo(
         user_a, project_one.id, todo_item.id, "test tag"
     )
     assert (
         other_tag_response.status_code == 200
     ), "Owner should be able to create the same tag again"
 
-    response = remove_tag_request(
+    response = detach_tag_from_todo(
         user_c,
-        Tag.model_validate(other_tag_response.json(), strict=True).name,
         todo_item.id,
+        Tag.model_validate(other_tag_response.json(), strict=True).name,
     )
     assert response.status_code == 200, "User C now should be able to remove the tag"
