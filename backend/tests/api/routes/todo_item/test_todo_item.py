@@ -179,3 +179,43 @@ def test_todo_item_permissions(
     # Test: User A (owner) deletes the todo item (should succeed)
     response = delete_todo_item_request(user_a, todo_item.id)
     assert response.status_code == 200, "User A should be able to delete the todo item"
+
+
+def test_todo_item_done_status_changes(
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoItem],
+    attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    update_todo_item_done_status: Callable[[TestUserType, int, bool], TodoItem],
+    update_todo_item_done_status_request: Callable[[TestUserType, int, bool], Response],
+    test_users: list[TestUserType],
+):
+    user_a = test_users[0]
+    user_b = test_users[1]
+
+    # Setup: Create project, category, and todo item
+    project_one = create_project(user_a)
+    category = create_todo_category(user_a, project_one.id)
+    todo_item = create_todo_item(user_a, category.id)
+
+    # Attach project to user B with specific permission
+    attach_project_to_user(
+        user_a, user_b, project_one.id, [Permission.UPDATE_TODO_ITEM]
+    )
+
+    update_todo_item_done_status(user_b, todo_item.id, True)
+    # changing the permission to the same thing should be ok
+    update_todo_item_done_status(user_b, todo_item.id, True)
+
+    response = update_todo_item_done_status_request(user_a, todo_item.id, False)
+    assert (
+        response.status_code == 400
+    ), "user_a cannot change todo done status its already marked as done by user_b"
+
+    # user_b marking this as done so other can mark is as done afterwards
+    update_todo_item_done_status(user_b, todo_item.id, False)
+
+    # now user_a should be able to update it
+    update_todo_item_done_status(user_a, todo_item.id, True)

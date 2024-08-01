@@ -31,7 +31,7 @@ def create_for_user(
 
 
 @router.patch(path="/{todo_id}", response_model=TodoItem)
-def update_item(
+def update(
     todo_id: int,
     todo: TodoItemUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
