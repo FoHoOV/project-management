@@ -9,19 +9,21 @@
 	import { updateUserPermissionsSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 
 	import type { ActionData, PageData } from './$types';
-	import type { PartialUserWithPermission } from '$lib';
+	import type { PartialUserWithPermission, Permission } from '$lib';
 	import { getToastManager } from '$lib/stores';
+	import type { SvelteSet } from 'svelte/reactivity';
 
 	export type Props = {
 		form: ActionData;
 		data: PageData;
 		user: PartialUserWithPermission;
-		projectPermissionsRef: ProjectPermissions;
+		getSelectedPermissions: () => SvelteSet<Permission>;
+		resetSelectedPermissions: () => void;
 	};
 </script>
 
 <script lang="ts">
-	const { data, form, user, projectPermissionsRef }: Props = $props();
+	const { data, form, user, getSelectedPermissions, resetSelectedPermissions }: Props = $props();
 
 	let changePermissionsConfirmRef = $state<Confirm | null>();
 	const toastsMangerStore = getToastManager();
@@ -63,7 +65,7 @@
 			value={data.currentProject.id}
 		></FormInput>
 		<FormInput type="hidden" wrapperClasses="hidden" name="user_id" value={user.id}></FormInput>
-		{#each projectPermissionsRef.selectedPermissions as permission}
+		{#each getSelectedPermissions() as permission}
 			<FormInput name="permissions[]" value={permission} type="hidden" wrapperClasses="hidden"
 			></FormInput>
 		{/each}
@@ -73,7 +75,7 @@
 		<button
 			class="btn btn-warning flex-1"
 			onclick={(e) => {
-				projectPermissionsRef.reset();
+				resetSelectedPermissions();
 			}}
 			type="button"
 		>

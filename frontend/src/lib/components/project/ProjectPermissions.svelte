@@ -19,9 +19,7 @@
 	const { preCheckedPermissions, onChange }: Props = $props();
 
 	let allowAllAccessRights = $state<boolean>();
-	let allowedPermissions = $state<SvelteSet<Permission>>(new SvelteSet());
-
-	const selectedPermissions = $derived(allowedPermissions);
+	let selectedPermissions = $state() as SvelteSet<Permission>;
 
 	export function getSelectedPermissions() {
 		return selectedPermissions;
@@ -33,14 +31,12 @@
 
 	function setInitValues() {
 		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false;
-		allowedPermissions = preCheckedPermissions
+		selectedPermissions = preCheckedPermissions
 			? new SvelteSet(preCheckedPermissions)
 			: (null ?? new SvelteSet([Permission.All]));
 	}
 
-	onMount(() => {
-		setInitValues();
-	});
+	setInitValues();
 </script>
 
 <FormInput
@@ -55,15 +51,15 @@
 	onchange={(e) => {
 		allowAllAccessRights = (e.target as HTMLInputElement).checked;
 		if (allowAllAccessRights) {
-			allowedPermissions = new SvelteSet([Permission.All]);
+			selectedPermissions = new SvelteSet([Permission.All]);
 		} else {
-			allowedPermissions.delete(Permission.All);
+			selectedPermissions.delete(Permission.All);
 		}
-		onChange?.(allowedPermissions);
+		onChange?.(selectedPermissions);
 	}}
 ></FormInput>
 <div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
-	{#key allowedPermissions}
+	{#key selectedPermissions}
 		{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
 			<FormInput
 				name="permissions[]"
@@ -75,13 +71,13 @@
 				labelClasses="border border-info"
 				onchange={(e) => {
 					if ((e.target as HTMLInputElement).checked) {
-						allowedPermissions.add(permission);
+						selectedPermissions.add(permission);
 					} else {
-						allowedPermissions.delete(permission);
+						selectedPermissions.delete(permission);
 					}
-					onChange?.(allowedPermissions);
+					onChange?.(selectedPermissions);
 				}}
-				checked={allowedPermissions.has(permission) ? true : null}
+				checked={selectedPermissions.has(permission) ? true : null}
 			></FormInput>
 		{/each}
 	{/key}
