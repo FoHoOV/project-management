@@ -88,7 +88,7 @@ def test_permissions_dont_leak(
 
 def test_prevent_user_without_access_from_updating_permissions(
     create_project: Callable[[TestUserType], Project],
-    update_user_permissions: Callable[
+    update_user_permissions_request: Callable[
         [TestUserType, TestUserType, int, list[Permission]], Response
     ],
     attach_project_to_user: Callable[
@@ -110,7 +110,7 @@ def test_prevent_user_without_access_from_updating_permissions(
     )
 
     # User C (no access) tries to update permissions
-    user_no_access_response = update_user_permissions(
+    user_no_access_response = update_user_permissions_request(
         user_a, test_users[2], project_one.id, [Permission.ALL]
     )
     assert user_no_access_response.status_code == 400
@@ -132,7 +132,7 @@ def test_prevent_user_without_access_from_updating_permissions(
 
 def test_owner_can_update_user_permissions(
     create_project: Callable[[TestUserType], Project],
-    update_user_permissions: Callable[
+    update_user_permissions_request: Callable[
         [TestUserType, TestUserType, int, list[Permission]], Response
     ],
     attach_project_to_user: Callable[
@@ -154,7 +154,7 @@ def test_owner_can_update_user_permissions(
     )
 
     # Owner updates user_b permissions
-    change_user_b_permissions = update_user_permissions(
+    change_user_b_permissions = update_user_permissions_request(
         user_a, user_b, project_one.id, [Permission.ALL]
     )
     assert change_user_b_permissions.status_code == 200
@@ -175,7 +175,7 @@ def test_owner_can_update_user_permissions(
 
 def test_shared_user_cant_update_owner_permissions(
     create_project: Callable[[TestUserType], Project],
-    update_user_permissions: Callable[
+    update_user_permissions_request: Callable[
         [TestUserType, TestUserType, int, list[Permission]], Response
     ],
     attach_project_to_user: Callable[
@@ -197,7 +197,7 @@ def test_shared_user_cant_update_owner_permissions(
     )
 
     # Shared user (user_b) tries to update owner (user_a) permissions
-    change_user_a_permissions = update_user_permissions(
+    change_user_a_permissions = update_user_permissions_request(
         user_b,
         user_a,
         project_one.id,
@@ -252,7 +252,7 @@ def test_users_of_project_grows_after_share(
 
 def test_changing_project_owner(
     create_project: Callable[[TestUserType], Project],
-    update_user_permissions: Callable[
+    update_user_permissions_request: Callable[
         [TestUserType, TestUserType, int, list[Permission]], Response
     ],
     attach_project_to_user: Callable[
@@ -269,7 +269,9 @@ def test_changing_project_owner(
 
     attach_project_to_user(user_a, user_b, project_one.id, [Permission.ALL])
 
-    update_user_permissions(user_b, user_a, project_one.id, [Permission.CREATE_COMMENT])
+    update_user_permissions_request(
+        user_b, user_a, project_one.id, [Permission.CREATE_COMMENT]
+    )
 
     searched_project = search_project(user_b, project_one.id)
 

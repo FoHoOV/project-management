@@ -9,7 +9,7 @@ from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")
-def update_user_permissions(
+def update_user_permissions_request(
     test_client: TestClient,
     auth_header_factory: Callable[[TestUserType], dict[str, str]],
 ):
