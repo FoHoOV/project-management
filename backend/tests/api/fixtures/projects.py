@@ -57,3 +57,18 @@ def test_attach_project_to_user(
         )
 
     return _attach_to_user
+
+
+@pytest.fixture(scope="function")
+def search_project(
+    test_client: TestClient,
+    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+):
+    def _get_project(user: TestUserType, project_id: int):
+        response = test_client.get(
+            f"/projects/{project_id}",
+            headers=auth_header_factory(user),
+        )
+        return Project.model_validate(response.json())
+
+    return _get_project
