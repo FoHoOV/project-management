@@ -1,5 +1,6 @@
 from typing import Callable, Dict
 from fastapi.testclient import TestClient
+from httpx import Response
 import pytest
 from tests.api.conftest import TestUserType
 from api.routes.error import UserFriendlyErrorSchema
@@ -10,103 +11,76 @@ from db.schemas.todo_item import TodoItem
 from error.exceptions import ErrorCode
 
 
-def test_create_todo_item_not_belonging_to_user(
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+def test_create_todo_item_in_invalid_category(
+    create_todo_item_request: Callable[[TestUserType, int], Response],
     test_users: list[TestUserType],
-    test_client: TestClient,
 ):
-    # This test attempts to create a todo item in a non-existent category
-    # and expects to fail with a specific error code indicating the category was not found.
+    user_a = test_users[0]
 
-    # Generate authorization header for the first test user
-    headers = auth_header_factory(test_users[0])
-
-    # Attempt to create a todo item with an invalid category ID
-    response = test_client.post(
-        "/todo-items",
-        headers=headers,
-        json={
-            "title": "test",
-            "description": "test",
-            "is_done": False,
-            "category_id": -1,  # Assuming -1 is an invalid category ID
-        },
-    )
-
-    # Validate the response
+    # Attempt to create a todo item in a non-existent category
+    response = create_todo_item_request(user_a, -1)
     assert (
         response.status_code == 400
-    ), "Expected failure when creating todo item in a non-existent category"
+    ), "Expected failure when creating a todo item in a non-existent category"
 
-    parsed_create_todo_error = UserFriendlyErrorSchema.model_validate(response.json())
+    parsed_error = UserFriendlyErrorSchema.model_validate(response.json())
     assert (
-        parsed_create_todo_error.code == ErrorCode.TODO_CATEGORY_NOT_FOUND
-    ), "Expected TODO_CATEGORY_NOT_FOUND error when inserting into a category that does not exist"
+        parsed_error.code == ErrorCode.TODO_CATEGORY_NOT_FOUND
+    ), "Expected TODO_CATEGORY_NOT_FOUND error"
 
 
 @pytest.mark.parametrize("number_of_todos_to_create", [10])
 def test_list_all_todos(
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
     create_project: Callable[[TestUserType], Project],
     create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoItem],
+    list_todo_items_request: Callable[[TestUserType, int, int], Response],
     test_users: list[TestUserType],
-    test_client: TestClient,
     number_of_todos_to_create: int,
 ):
-    # Selecting a test user
-    user = test_users[0]
-    auth_header = auth_header_factory(user)
+    user_a = test_users[0]
 
-    # Creating a project
-    project = create_project(user)
+    # Setup: Create project, category, and todos
+    project = create_project(user_a)
+    category = create_todo_category(user_a, project.id)
 
-    # Adding a category to the newly created project
-    category = create_todo_category(user, project.id)
+    for _ in range(number_of_todos_to_create):
+        create_todo_item(user_a, category.id)
 
-    # Adding TODOs to the created category
-    for i in range(number_of_todos_to_create):
-        create_todo_item(user, category.id)
-
-    # Querying all TODOs for this category
-    response = test_client.get(
-        "/todo-items",
-        params={"project_id": project.id, "category_id": category.id},
-        headers=auth_header,
-    )
-
+    # List all todos
+    response = list_todo_items_request(user_a, project.id, category.id)
     assert response.status_code == 200, "Failed to list TODOs"
+
     todos = response.json()
     assert (
         len(todos) == number_of_todos_to_create
     ), f"Expected {number_of_todos_to_create} TODOs, but got {len(todos)}"
 
-    # convert them to TodoItem model
+    # Verify default sort order
     parsed_todos = [TodoItem.model_validate(x, strict=True) for x in todos]
-
-    # testing default sort
     for i, parsed_todo in enumerate(parsed_todos):
         if i == len(parsed_todos) - 1:
             assert parsed_todo.order.left_id is None
         else:
             assert (
                 parsed_todo.order.left_id == parsed_todos[i + 1].id
-            ), "todo items should by default be sorted from oldest to newest"
-
+            ), "todos should be sorted from oldest to newest"
         if i > 0:
             assert (
                 parsed_todo.order.right_id == parsed_todos[i - 1].id
-            ), "todo items should by default be sorted from oldest to newest"
+            ), "todos should be sorted from oldest to newest"
 
 
 @pytest.mark.parametrize("number_of_todos_to_create", [10])
 def test_reorder_todos(
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
     create_project: Callable[[TestUserType], Project],
     create_todo_category: Callable[[TestUserType, int], TodoCategory],
     create_todo_item: Callable[[TestUserType, int], TodoItem],
+    list_todo_items: Callable[[TestUserType, int, int], list[TodoItem]],
+    update_todo_item_order_request: Callable[
+        [TestUserType, int, int | None, int | None, int | None], Response
+    ],
     test_users: list[TestUserType],
-    test_client: TestClient,
     number_of_todos_to_create: int,
 ):
     user = test_users[0]  # Assuming the first user is used for this test
@@ -122,39 +96,21 @@ def test_reorder_todos(
         create_todo_item(user, category.id)
 
     # Query all todos for this category to get their initial order
-    response_before_reorder = test_client.get(
-        "/todo-items",
-        params={"project_id": project.id, "category_id": category.id},
-        headers=auth_header_factory(user),
-    )
-    parsed_todos_before_reorder = [
-        TodoItem.model_validate(x, strict=True) for x in response_before_reorder.json()
-    ]
+    response_before_reorder = list_todo_items(user, project.id, category.id)
 
     # Reorder todos: move the last item to be the first
-    reorder_response = test_client.patch(
-        f"/todo-items/{parsed_todos_before_reorder[0].id}",
-        json={
-            "order": {
-                "left_id": None,
-                "right_id": parsed_todos_before_reorder[-1].id,
-                "new_category_id": category.id,
-            }
-        },
-        headers=auth_header_factory(user),
+    reorder_response = update_todo_item_order_request(
+        user,
+        response_before_reorder[0].id,
+        None,
+        response_before_reorder[-1].id,
+        category.id,
     )
+
     assert reorder_response.status_code == 200, "Failed to reorder todos"
 
     # Query all todos again to check the new order
-    response_after_reorder = test_client.get(
-        "/todo-items",
-        params={"project_id": project.id, "category_id": category.id},
-        headers=auth_header_factory(user),
-    )
-
-    parsed_todos_after_reorder = [
-        TodoItem.model_validate(x, strict=True) for x in response_after_reorder.json()
-    ]
+    parsed_todos_after_reorder = list_todo_items(user, project.id, category.id)
 
     # Assertions to verify the new order
     assert (
@@ -174,97 +130,52 @@ def test_reorder_todos(
 
 
 def test_todo_item_permissions(
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
     create_project: Callable[[TestUserType], Project],
     create_todo_category: Callable[[TestUserType, int], TodoCategory],
     create_todo_item: Callable[[TestUserType, int], TodoItem],
     attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
+    update_todo_item_done_status_request: Callable[[TestUserType, int, bool], Response],
+    delete_todo_item_request: Callable[[TestUserType, int], Response],
     test_users: list[TestUserType],
-    test_client: TestClient,
 ):
-    user_a = test_users[0]  # Owner
-    user_b = test_users[1]  # Shared user with permission
-    user_c = test_users[2]  # User without access
+    user_a = test_users[0]
+    user_b = test_users[1]
+    user_c = test_users[2]
 
-    # Create two projects and add a category to the first one
+    # Setup: Create project, category, and todo item
     project_one = create_project(user_a)
-    project_two = create_project(user_a)
     category = create_todo_category(user_a, project_one.id)
+    todo_item = create_todo_item(user_a, category.id)
 
-    # Share project_one with user_b with UPDATE_TODO_ITEM permission
+    # Attach project to user B with specific permission
     attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_ITEM]
     )
 
-    # Share project_two with user_b with ALL permissions
-    attach_project_to_user(
-        user_a,
-        user_b,
-        project_two.id,
-        [Permission.ALL],
-    )
-
-    # Create a todo item in project_one's category
-    todo_item = create_todo_item(user_a, category.id)
-
-    # Try deleting the todo item by user_b (should fail due to insufficient permission)
-    response = test_client.request(
-        "delete",
-        f"/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_b),
-    )
+    # Test: User B tries to delete the todo item (should fail)
+    response = delete_todo_item_request(user_b, todo_item.id)
     assert (
         response.status_code == 400
-    ), "User B (shared with UPDATE_TODO_ITEM permission) shouldn't be able to delete the todo item"
+    ), "User B shouldn't be able to delete the todo item"
 
-    # Update the todo item by user_b (should succeed because of UPDATE_TODO_ITEM permission)
-    response = test_client.patch(
-        f"/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_b),
-        json={
-            "item": {
-                "category_id": todo_item.category_id,
-                "is_done": True,
-            }
-        },
-    )
-    assert (
-        response.status_code == 200
-    ), "User B (with permission) should be able to update the todo item"
+    # Test: User B updates the todo item (should succeed)
+    response = update_todo_item_done_status_request(user_b, todo_item.id, True)
+    assert response.status_code == 200, "User B should be able to update the todo item"
 
-    # Try updating the todo item by user_c (should fail because the project is not shared with them)
-    response = test_client.patch(
-        f"/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_c),
-        json={
-            "item": {
-                "category_id": todo_item.category_id,
-                "is_done": False,
-            }
-        },
-    )
+    # Test: User C (no access) tries to update the todo item (should fail)
+    response = update_todo_item_done_status_request(user_c, todo_item.id, False)
     assert (
         response.status_code == 400
-    ), "User C (not shared) should not be able to update the todo item"
+    ), "User C shouldn't be able to update the todo item"
 
-    # Try deleting the todo item by user_c (should fail because the project is not shared with them)
-    response = test_client.request(
-        "delete",
-        f"/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_c),
-    )
+    # Test: User C (no access) tries to delete the todo item (should fail)
+    response = delete_todo_item_request(user_c, todo_item.id)
     assert (
         response.status_code == 400
-    ), "User C (not shared) should not be able to delete the todo item"
+    ), "User C shouldn't be able to delete the todo item"
 
-    # Delete the todo item by user_a (owner) (should succeed)
-    response = test_client.request(
-        "delete",
-        f"/todo-items/{todo_item.id}",
-        headers=auth_header_factory(user_a),
-    )
-    assert (
-        response.status_code == 200
-    ), "User A (owner) should be able to delete the todo item"
+    # Test: User A (owner) deletes the todo item (should succeed)
+    response = delete_todo_item_request(user_a, todo_item.id)
+    assert response.status_code == 200, "User A should be able to delete the todo item"
