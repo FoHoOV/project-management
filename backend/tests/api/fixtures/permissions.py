@@ -50,3 +50,22 @@ def verify_user_permissions(search_project: Callable[[TestUserType, int], Projec
             ), f"Permissions for user_id {id} do not match"
 
     return _verify_permissions
+
+
+@pytest.fixture(scope="function")
+def get_all_permissions_except():
+    def _permissions(except_list: list[Permission], exclude_all_permission=True):
+
+        all_permissions = list(Permission)
+
+        if exclude_all_permission:
+            except_list = list(except_list)
+            except_list.append(Permission.ALL)
+
+        filtered_permissions = [
+            perm for perm in all_permissions if perm not in except_list
+        ]
+
+        return filtered_permissions
+
+    return _permissions
