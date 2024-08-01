@@ -5,7 +5,7 @@ from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")
-def test_create_tag(
+def create_tag(
     test_client: TestClient,
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
 ):
@@ -25,7 +25,7 @@ def test_create_tag(
 
 
 @pytest.fixture(scope="function")
-def test_remove_tag(
+def remove_tag(
     test_client: TestClient,
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
 ):

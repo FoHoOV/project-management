@@ -12,7 +12,7 @@ from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")
-def test_project_factory(auth_header_factory, test_client: TestClient):
+def create_project(auth_header_factory, test_client: TestClient):
     """Fixture to create a project for testing."""
 
     def _create_project(user: TestUserType):
@@ -31,7 +31,7 @@ def test_project_factory(auth_header_factory, test_client: TestClient):
 
 
 @pytest.fixture(scope="function")
-def test_attach_project_to_user(
+def attach_project_to_user(
     auth_header_factory: Callable[..., dict[str, str]], test_client: TestClient
 ):
     def _attach_to_user(

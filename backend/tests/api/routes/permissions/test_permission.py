@@ -16,8 +16,8 @@ from tests.api.routes.user import test_user
 
 
 def test_permissions_dont_leak(
-    test_project_factory: Callable[[TestUserType], Project],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     search_project: Callable[[TestUserType, int], Project],
@@ -28,24 +28,24 @@ def test_permissions_dont_leak(
     user_c = test_users[2]
 
     # Create the projects
-    project_one = test_project_factory(user_a)
-    project_two = test_project_factory(user_b)
+    project_one = create_project(user_a)
+    project_two = create_project(user_b)
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a,
         user_b,
         project_one.id,
         [Permission.CREATE_COMMENT, Permission.CREATE_TODO_CATEGORY],
     )
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_b,
         user_a,
         project_two.id,
         [Permission.CREATE_TODO_ITEM, Permission.CREATE_TODO_CATEGORY],
     )
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_b,
         user_c,
         project_two.id,
@@ -88,11 +88,11 @@ def test_permissions_dont_leak(
 
 
 def test_prevent_user_without_access_from_updating_permissions(
-    test_project_factory: Callable[[TestUserType], Project],
+    create_project: Callable[[TestUserType], Project],
     update_user_permissions: Callable[
         [TestUserType, int, int, list[Permission]], Response
     ],
-    test_attach_project_to_user: Callable[
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -101,9 +101,9 @@ def test_prevent_user_without_access_from_updating_permissions(
     user_b = test_users[1]  # Shared user with permission
 
     # Create projects
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
@@ -119,11 +119,11 @@ def test_prevent_user_without_access_from_updating_permissions(
 
 
 def test_owner_can_update_user_permissions(
-    test_project_factory: Callable[[TestUserType], Project],
+    create_project: Callable[[TestUserType], Project],
     update_user_permissions: Callable[
         [TestUserType, int, int, list[Permission]], Response
     ],
-    test_attach_project_to_user: Callable[
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -132,9 +132,9 @@ def test_owner_can_update_user_permissions(
     user_b = test_users[1]  # Shared user with permission
 
     # Create projects
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
@@ -149,11 +149,11 @@ def test_owner_can_update_user_permissions(
 
 
 def test_shared_user_cant_update_owner_permissions(
-    test_project_factory: Callable[[TestUserType], Project],
+    create_project: Callable[[TestUserType], Project],
     update_user_permissions: Callable[
         [TestUserType, int, int, list[Permission]], Response
     ],
-    test_attach_project_to_user: Callable[
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -162,15 +162,15 @@ def test_shared_user_cant_update_owner_permissions(
     user_b = test_users[1]  # Shared user with permission
 
     # Create projects
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
-    project_two = test_project_factory(user_b)
+    project_two = create_project(user_b)
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_b,
         user_a,
         project_two.id,
@@ -188,8 +188,8 @@ def test_shared_user_cant_update_owner_permissions(
 
 
 def test_users_of_project_grows_after_share(
-    test_project_factory: Callable[[TestUserType], Project],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     search_project: Callable[[TestUserType, int], Project],
@@ -199,10 +199,10 @@ def test_users_of_project_grows_after_share(
     user_b = test_users[1]  # Shared user with permission
 
     # Create the projects
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
     # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
@@ -222,11 +222,11 @@ def test_users_of_project_grows_after_share(
 
 
 def test_changing_project_owner(
-    test_project_factory: Callable[[TestUserType], Project],
+    create_project: Callable[[TestUserType], Project],
     update_user_permissions: Callable[
         [TestUserType, int, int, list[Permission]], Response
     ],
-    test_attach_project_to_user: Callable[
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     search_project: Callable[[TestUserType, int], Project],
@@ -236,9 +236,9 @@ def test_changing_project_owner(
     user_b = test_users[1]  # Other
 
     # Create the projects
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
-    test_attach_project_to_user(user_a, user_b, project_one.id, [Permission.ALL])
+    attach_project_to_user(user_a, user_b, project_one.id, [Permission.ALL])
 
     update_user_permissions(
         user_b, project_one.id, user_a["id"], [Permission.CREATE_COMMENT]

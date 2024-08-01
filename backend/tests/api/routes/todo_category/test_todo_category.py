@@ -9,9 +9,9 @@ from db.schemas.todo_category import TodoCategory
 
 
 def test_todo_category_create(
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -20,21 +20,21 @@ def test_todo_category_create(
     user_b = test_users[1]  # Shared user with permission
 
     # Create a project
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
     # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.CREATE_TODO_CATEGORY]
     )
 
-    test_category_factory(user_b, project_one.id)
+    create_todo_category(user_b, project_one.id)
 
 
 def test_todo_category_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -45,17 +45,17 @@ def test_todo_category_permissions(
     user_c = test_users[2]  # User without access
 
     # Create two projects and add a category to the first one
-    project_one = test_project_factory(user_a)
-    project_two = test_project_factory(user_a)
-    category = test_category_factory(user_a, project_one.id)
+    project_one = create_project(user_a)
+    project_two = create_project(user_a)
+    category = create_todo_category(user_a, project_one.id)
 
     # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
     # Share project_two with user_b with ALL permissions
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a,
         user_b,
         project_two.id,
