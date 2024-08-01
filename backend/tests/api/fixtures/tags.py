@@ -5,7 +5,7 @@ from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")
-def create_tag_request(
+def attach_tag_to_todo(
     test_client: TestClient,
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
 ):
@@ -25,11 +25,16 @@ def create_tag_request(
 
 
 @pytest.fixture(scope="function")
-def remove_tag_request(
+def detach_tag_from_todo(
     test_client: TestClient,
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
 ):
-    def _remove_tag(user: TestUserType, tag_name: str, todo_id: int):
+
+    def _remove_tag(
+        user: TestUserType,
+        todo_id: int,
+        tag_name: str,
+    ):
         response = test_client.delete(
             f"/tags/{tag_name}/todo-items/{todo_id}",
             headers=auth_header_factory(user),

@@ -175,7 +175,9 @@ def attach_tag_to_todo(
 
 def detach_tag_from_todo(db: Session, tag_name: str, todo_id: int, user_id: int):
     validate_todo_item_belongs_to_user(db, todo_id, user_id, [Permission.DELETE_TAG])
-    validate_tag_belongs_to_user_by_id(db, todo_id, user_id, [Permission.DELETE_TAG])
+    validate_tag_belongs_to_user_by_name(
+        db, tag_name, todo_id, user_id, [Permission.DELETE_TAG]
+    )
 
     db_item = (
         db.query(Tag)
