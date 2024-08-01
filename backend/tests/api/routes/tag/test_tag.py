@@ -12,13 +12,13 @@ from db.schemas.todo_category import TodoCategory
 
 
 def test_create_todo_tag(
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoItem],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
-    test_create_tag: Callable[[TestUserType, int, int, str], Response],
+    create_tag: Callable[[TestUserType, int, int, str], Response],
     test_users: list[TestUserType],
 ):
     user_a = test_users[0]
@@ -26,43 +26,43 @@ def test_create_todo_tag(
     user_c = test_users[2]
 
     # Create projects and a category under project_one
-    project_one = test_project_factory(user_a)
-    category = test_category_factory(user_a, project_one.id)
+    project_one = create_project(user_a)
+    category = create_todo_category(user_a, project_one.id)
 
     # Share project_one with user_b with CREATE_TAG permission
-    test_attach_project_to_user(user_a, user_b, project_one.id, [Permission.CREATE_TAG])
+    attach_project_to_user(user_a, user_b, project_one.id, [Permission.CREATE_TAG])
 
     # Create a todo item under project_one
-    todo_item = test_todo_item_factory(user_a, category.id)
+    todo_item = create_todo_item(user_a, category.id)
 
     # Owner should be able to create a tag
-    response = test_create_tag(user_a, project_one.id, todo_item.id, "test tag")
+    response = create_tag(user_a, project_one.id, todo_item.id, "test tag")
     assert (
         response.status_code == 200
     ), "User A should be able to create a tag as the owner"
 
     # User B (with access) tries to create a tag
-    response = test_create_tag(user_b, project_one.id, todo_item.id, "test tag2")
+    response = create_tag(user_b, project_one.id, todo_item.id, "test tag2")
     assert (
         response.status_code == 200
     ), "User B should be able to create a tag with the correct permission"
 
     # User C (no access) tries to create a tag
-    response = test_create_tag(user_c, project_one.id, todo_item.id, "test tag3")
+    response = create_tag(user_c, project_one.id, todo_item.id, "test tag3")
     assert (
         response.status_code == 400
     ), "User C should not be able to create a tag without access"
 
 
 def test_remove_todo_tag(
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoItem],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
-    test_create_tag: Callable[[TestUserType, int, int, str], Response],
-    test_remove_tag: Callable[[TestUserType, str, int], Response],
+    create_tag: Callable[[TestUserType, int, int, str], Response],
+    remove_tag: Callable[[TestUserType, str, int], Response],
     test_users: list[TestUserType],
 ):
     user_a = test_users[0]
@@ -70,31 +70,31 @@ def test_remove_todo_tag(
     user_c = test_users[2]
 
     # Create projects and a category under project_one
-    project_one = test_project_factory(user_a)
-    category = test_category_factory(user_a, project_one.id)
+    project_one = create_project(user_a)
+    category = create_todo_category(user_a, project_one.id)
 
     # Share project_one with user_b with CREATE_TAG permission
-    test_attach_project_to_user(user_a, user_b, project_one.id, [Permission.CREATE_TAG])
+    attach_project_to_user(user_a, user_b, project_one.id, [Permission.CREATE_TAG])
 
     # Create a todo item under project_one
-    todo_item = test_todo_item_factory(user_a, category.id)
+    todo_item = create_todo_item(user_a, category.id)
 
     # User B creates a tag
-    create_response = test_create_tag(user_b, project_one.id, todo_item.id, "test tag")
+    create_response = create_tag(user_b, project_one.id, todo_item.id, "test tag")
     created_tag = Tag.model_validate(create_response.json(), strict=True)
 
     # User C (no access) tries to remove the tag
-    response = test_remove_tag(user_c, created_tag.name, todo_item.id)
+    response = remove_tag(user_c, created_tag.name, todo_item.id)
     assert (
         response.status_code == 400
     ), "User C should not be able to remove a tag without access"
 
     # User B (with access, but not remove permission) tries to remove the tag
-    response = test_remove_tag(user_b, created_tag.name, todo_item.id)
+    response = remove_tag(user_b, created_tag.name, todo_item.id)
     assert (
         response.status_code == 400
     ), "User B should not be able to remove the tag without remove permission"
 
     # User A (owner) removes the tag
-    response = test_remove_tag(user_a, created_tag.name, todo_item.id)
+    response = remove_tag(user_a, created_tag.name, todo_item.id)
     assert response.status_code == 200, "User A should be able to remove the tag"

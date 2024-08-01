@@ -9,7 +9,7 @@ from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")
-def test_category_factory(
+def create_todo_category(
     auth_header_factory: Callable[..., dict[str, str]],
     test_client: TestClient,
 ):

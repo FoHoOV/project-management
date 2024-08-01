@@ -10,31 +10,31 @@ from db.schemas.todo_item_comment import TodoComment
 
 def test_todo_comment_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoCategory],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoCategory],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
     test_client: TestClient,
 ):
     # Create a project
-    project_one = test_project_factory(test_users[0])
-    project_two = test_project_factory(test_users[0])
+    project_one = create_project(test_users[0])
+    project_two = create_project(test_users[0])
 
     # Create a category
-    category = test_category_factory(test_users[0], project_one.id)
+    category = create_todo_category(test_users[0], project_one.id)
 
     # Share project with user b with only edit todo permission
-    test_attach_project_to_user(
+    attach_project_to_user(
         test_users[0],
         test_users[1],
         project_one.id,
         [Permission.CREATE_COMMENT],
     )
     # Share this project to user b to ensure permissions of this doesn't leak into project_one permissions
-    test_attach_project_to_user(
+    attach_project_to_user(
         test_users[0],
         test_users[1],
         project_two.id,
@@ -44,7 +44,7 @@ def test_todo_comment_permissions(
     )
 
     # Create a todo item
-    todo_item = test_todo_item_factory(test_users[0], category.id)
+    todo_item = create_todo_item(test_users[0], category.id)
 
     # Try creating a comment from a user who doesn't have access
     create_comment_response = test_client.post(

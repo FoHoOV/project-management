@@ -47,9 +47,9 @@ def test_create_todo_item_not_belonging_to_user(
 @pytest.mark.parametrize("number_of_todos_to_create", [10])
 def test_list_all_todos(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoCategory],
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoCategory],
     test_users: list[TestUserType],
     test_client: TestClient,
     number_of_todos_to_create: int,
@@ -59,14 +59,14 @@ def test_list_all_todos(
     auth_header = auth_header_factory(user)
 
     # Creating a project
-    project = test_project_factory(user)
+    project = create_project(user)
 
     # Adding a category to the newly created project
-    category = test_category_factory(user, project.id)
+    category = create_todo_category(user, project.id)
 
     # Adding TODOs to the created category
     for i in range(number_of_todos_to_create):
-        test_todo_item_factory(user, category.id)
+        create_todo_item(user, category.id)
 
     # Querying all TODOs for this category
     response = test_client.get(
@@ -102,9 +102,9 @@ def test_list_all_todos(
 @pytest.mark.parametrize("number_of_todos_to_create", [10])
 def test_reorder_todos(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoItem],
     test_users: list[TestUserType],
     test_client: TestClient,
     number_of_todos_to_create: int,
@@ -112,14 +112,14 @@ def test_reorder_todos(
     user = test_users[0]  # Assuming the first user is used for this test
 
     # Create a project
-    project = test_project_factory(user)
+    project = create_project(user)
 
     # Add a category to the newly created project
-    category = test_category_factory(user, project.id)
+    category = create_todo_category(user, project.id)
 
     # Add todos to the created category
     for _ in range(number_of_todos_to_create):
-        test_todo_item_factory(user, category.id)
+        create_todo_item(user, category.id)
 
     # Query all todos for this category to get their initial order
     response_before_reorder = test_client.get(
@@ -175,10 +175,10 @@ def test_reorder_todos(
 
 def test_todo_item_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_category_factory: Callable[[TestUserType, int], TodoCategory],
-    test_todo_item_factory: Callable[[TestUserType, int], TodoItem],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoItem],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -189,17 +189,17 @@ def test_todo_item_permissions(
     user_c = test_users[2]  # User without access
 
     # Create two projects and add a category to the first one
-    project_one = test_project_factory(user_a)
-    project_two = test_project_factory(user_a)
-    category = test_category_factory(user_a, project_one.id)
+    project_one = create_project(user_a)
+    project_two = create_project(user_a)
+    category = create_todo_category(user_a, project_one.id)
 
     # Share project_one with user_b with UPDATE_TODO_ITEM permission
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_ITEM]
     )
 
     # Share project_two with user_b with ALL permissions
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a,
         user_b,
         project_two.id,
@@ -207,7 +207,7 @@ def test_todo_item_permissions(
     )
 
     # Create a todo item in project_one's category
-    todo_item = test_todo_item_factory(user_a, category.id)
+    todo_item = create_todo_item(user_a, category.id)
 
     # Try deleting the todo item by user_b (should fail due to insufficient permission)
     response = test_client.request(

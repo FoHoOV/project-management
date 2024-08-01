@@ -7,7 +7,7 @@ from tests.api.conftest import TestUserType
 
 
 @pytest.fixture(scope="function")
-def test_todo_item_factory(auth_header_factory, test_client: TestClient):
+def create_todo_item(auth_header_factory, test_client: TestClient):
     """Helper function to create a todo item."""
 
     def _create_todo_item(user: TestUserType, category_id: int):

@@ -65,8 +65,8 @@ def test_create_project(
 
 def test_project_accessibility(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -74,7 +74,7 @@ def test_project_accessibility(
 ):
     # Project creation by user A
     user_a = test_users[0]
-    project = test_project_factory(user_a)
+    project = create_project(user_a)
 
     # Verify project owner (user A) can access their project
     search_response_a = test_client.get(
@@ -96,7 +96,7 @@ def test_project_accessibility(
     ), "user B should not see user A's projects before it is shared"
 
     # Share the project with user B and verify access
-    test_attach_project_to_user(user_a, user_b, project.id, [Permission.ALL])
+    attach_project_to_user(user_a, user_b, project.id, [Permission.ALL])
 
     search_response_b_after_share = test_client.get(
         f"/projects/{project.id}",
@@ -109,8 +109,8 @@ def test_project_accessibility(
 
 def test_owner_detaching_projects(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]],
         ProjectAttachAssociationResponse,
     ],
@@ -121,9 +121,9 @@ def test_owner_detaching_projects(
     # Project creation by user A
     user_a = test_users[0]
     user_b = test_users[1]
-    project = test_project_factory(user_a)
+    project = create_project(user_a)
 
-    attach_response = test_attach_project_to_user(
+    attach_response = attach_project_to_user(
         user_a, user_b, project.id, [Permission.CREATE_COMMENT]
     )
 
@@ -137,9 +137,9 @@ def test_owner_detaching_projects(
         detach_by_owner_response_json.status_code == 200
     ), "owner should be detach from other users"
 
-    test_attach_project_to_user(user_a, user_b, project.id, [Permission.CREATE_COMMENT])
+    attach_project_to_user(user_a, user_b, project.id, [Permission.CREATE_COMMENT])
 
-    attach_to_user_c_response = test_attach_project_to_user(
+    attach_to_user_c_response = attach_project_to_user(
         user_a, test_users[2], project.id, [Permission.CREATE_COMMENT]
     )
 
@@ -165,17 +165,15 @@ def test_owner_detaching_projects(
 
 def test_cannot_share_project_to_same_user_multiple_times(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
     test_client: TestClient,
 ):
-    project = test_project_factory(test_users[0])
-    test_attach_project_to_user(
-        test_users[0], test_users[1], project.id, [Permission.ALL]
-    )
+    project = create_project(test_users[0])
+    attach_project_to_user(test_users[0], test_users[1], project.id, [Permission.ALL])
 
     _reattach_project_to_user(
         auth_header_factory, test_users, test_client, project, [Permission.DELETE_TAG]
@@ -209,8 +207,8 @@ def test_cannot_share_project_to_same_user_multiple_times(
 
 def test_user_permissions_per_project(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
-    test_attach_project_to_user: Callable[
+    create_project: Callable[[TestUserType], Project],
+    attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
     test_users: list[TestUserType],
@@ -220,18 +218,18 @@ def test_user_permissions_per_project(
     user_b = test_users[1]  # Shared user with permission
 
     # Create the projects
-    project_one = test_project_factory(user_a)
-    project_two = test_project_factory(
+    project_one = create_project(user_a)
+    project_two = create_project(
         user_b
     )  # just created this project because this should leak into project one permissions list
 
     # Share project_two with user_a with CREATE_TODO_CATEGORY permission just make sure permissions don't leak to other projects
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_b, user_a, project_two.id, [Permission.CREATE_TODO_CATEGORY]
     )
 
     # Share project_one with user_b with UPDATE_TODO_CATEGORY permission
-    test_attach_project_to_user(
+    attach_project_to_user(
         user_a, user_b, project_one.id, [Permission.UPDATE_TODO_CATEGORY]
     )
 
@@ -269,12 +267,12 @@ def test_user_permissions_per_project(
 @pytest.mark.parametrize("values", [[], "", None])
 def test_cannot_pass_empty_permissions_to_attach_association(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
+    create_project: Callable[[TestUserType], Project],
     test_users: list[TestUserType],
     test_client: TestClient,
     values: str | list | None,
 ):
-    p1 = test_project_factory(test_users[0])
+    p1 = create_project(test_users[0])
     response = test_client.post(
         f"/projects/{p1.id}/users",
         headers=auth_header_factory(test_users[0]),
@@ -291,14 +289,14 @@ def test_cannot_pass_empty_permissions_to_attach_association(
 
 def test_attach_with_all_and_other_permissions(
     auth_header_factory: Callable[[TestUserType], Dict[str, str]],
-    test_project_factory: Callable[[TestUserType], Project],
+    create_project: Callable[[TestUserType], Project],
     test_users: list[TestUserType],
     test_client: TestClient,
 ):
     user_a = test_users[0]  # Owner
 
     # Create the projects
-    project_one = test_project_factory(user_a)
+    project_one = create_project(user_a)
 
     attach_to_user_response = test_client.post(
         f"/projects/{project_one.id}/users",
