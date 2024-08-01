@@ -66,7 +66,12 @@
 				<UserInfo {user} token={data.token!}></UserInfo>
 				<div class="z-10 flex gap-2">
 					{#if showConfirmChanges[i]}
-						<SaveChanges {data} {form} {user} projectPermissionsRef={projectPermissionsRefs[i]}
+						<SaveChanges
+							{data}
+							{form}
+							{user}
+							getSelectedPermissions={projectPermissionsRefs[i].getSelectedPermissions}
+							resetSelectedPermissions={projectPermissionsRefs[i].reset}
 						></SaveChanges>
 					{:else}
 						<Detach {data} {form} {user}></Detach>

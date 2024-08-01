@@ -21,7 +21,10 @@ export function validate<TSchema extends z.ZodTypeAny>(
 		if (Object.keys(errors).length === 0) {
 			return;
 		}
-		console.log(errors);
+		console.log({
+			input: convertFormDataToObject(new FormData(node)),
+			errors
+		});
 		event.preventDefault();
 		event.stopPropagation();
 		event.stopImmediatePropagation();

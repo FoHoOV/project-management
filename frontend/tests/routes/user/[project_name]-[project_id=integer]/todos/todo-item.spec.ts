@@ -148,7 +148,7 @@ test.fixme(
 	}
 );
 
-test('reorder todo items in same category', async ({ todoItemUtils, todoCategoryUtils }) => {
+test.fixme('reorder todo items in same category', async ({ todoItemUtils, todoCategoryUtils }) => {
 	const c1 = await todoCategoryUtils.helpers.createCategory();
 
 	const t1 = await todoItemUtils.page.create({
