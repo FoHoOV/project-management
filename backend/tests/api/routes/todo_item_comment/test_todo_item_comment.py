@@ -1,92 +1,154 @@
-from typing import Callable, Dict
-from fastapi.testclient import TestClient
-from tests.api.conftest import TestUserType
+from typing import Callable
+from httpx import Response
+
+from tests.api.conftest import (
+    TestUserType,
+)
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
-from db.schemas.todo_category import TodoCategory
-from db.schemas.todo_item import TodoItem
 from db.schemas.todo_item_comment import TodoComment
+from db.schemas.todo_category import TodoCategory
 
 
-def test_todo_comment_permissions(
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+def test_create_comment_no_access(
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoCategory],
+    create_comment_request: Callable[[TestUserType, int, str], Response],
+    get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
+    attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+):
+    # Setup: Create a project, category, and todo item
+    project_one = create_project(test_users[0])
+    category = create_todo_category(test_users[0], project_one.id)
+    todo_item = create_todo_item(test_users[0], category.id)
+
+    attach_project_to_user(
+        test_users[0],
+        test_users[1],
+        project_one.id,
+        get_all_permissions_except([Permission.CREATE_COMMENT]),
+    )
+
+    # User without access tries to create a comment
+    response = create_comment_request(test_users[1], todo_item.id, "some message")
+    assert (
+        response.status_code == 400
+    ), "User without access should not create a comment"
+
+    # User without access tries to create a comment
+    response = create_comment_request(test_users[2], todo_item.id, "some message")
+    assert (
+        response.status_code == 400
+    ), "User without access should not create a comment"
+
+
+def test_create_comment_with_access(
     create_project: Callable[[TestUserType], Project],
     create_todo_category: Callable[[TestUserType, int], TodoCategory],
     create_todo_item: Callable[[TestUserType, int], TodoCategory],
     attach_project_to_user: Callable[
         [TestUserType, TestUserType, int, list[Permission]], None
     ],
+    create_comment_request: Callable[[TestUserType, int, str], Response],
     test_users: list[TestUserType],
-    test_client: TestClient,
 ):
-    # Create a project
+    # Setup: Create a project, category, and todo item
     project_one = create_project(test_users[0])
-    project_two = create_project(test_users[0])
-
-    # Create a category
     category = create_todo_category(test_users[0], project_one.id)
+    todo_item = create_todo_item(test_users[0], category.id)
 
-    # Share project with user b with only edit todo permission
+    # Attach project to user with permission
+    attach_project_to_user(
+        test_users[0], test_users[1], project_one.id, [Permission.CREATE_COMMENT]
+    )
+
+    # User with access creates a comment
+    response = create_comment_request(test_users[1], todo_item.id, "some message")
+    assert response.status_code == 200, "User with permission should create a comment"
+
+
+def test_delete_comment_no_access(
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoCategory],
+    create_comment: Callable[[TestUserType, int, str], TodoComment],
+    delete_comment_request: Callable[[TestUserType, int, int], Response],
+    get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
+    attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+):
+    # Setup: Create a project, category, todo item, and a comment
+    project_one = create_project(test_users[0])
+    category = create_todo_category(test_users[0], project_one.id)
+    todo_item = create_todo_item(test_users[0], category.id)
+    todo_comment = create_comment(test_users[0], todo_item.id, "some message")
+
     attach_project_to_user(
         test_users[0],
         test_users[1],
         project_one.id,
-        [Permission.CREATE_COMMENT],
-    )
-    # Share this project to user b to ensure permissions of this doesn't leak into project_one permissions
-    attach_project_to_user(
-        test_users[0],
-        test_users[1],
-        project_two.id,
-        [
-            Permission.ALL,
-        ],
+        get_all_permissions_except([Permission.DELETE_COMMENT]),
     )
 
-    # Create a todo item
-    todo_item = create_todo_item(test_users[0], category.id)
-
-    # Try creating a comment from a user who doesn't have access
-    create_comment_response = test_client.post(
-        f"/todo-items/{todo_item.id}/comments",
-        headers=auth_header_factory(test_users[2]),
-        json={"message": "some message"},
-    )
+    # User without access tries to delete the comment
+    response = delete_comment_request(test_users[1], todo_item.id, todo_comment.id)
     assert (
-        create_comment_response.status_code == 400
-    ), "User without access should not create a comment"
-
-    # Try creating a comment from a user who has access
-    user_b_auth_header = auth_header_factory(test_users[1])
-    create_comment_response = test_client.post(
-        f"/todo-items/{todo_item.id}/comments",
-        headers=user_b_auth_header,
-        json={"message": "some message"},
-    )
-    assert (
-        create_comment_response.status_code == 200
-    ), "User with permission should create a comment"
-
-    todo_comment = TodoComment.model_validate(
-        create_comment_response.json(), strict=True
-    )
-
-    # Try removing a comment from a user who doesn't have access
-    delete_by_unknown_user_response = test_client.request(
-        "delete",
-        f"/todo-items/{todo_item.id}/comments/{todo_comment.id}",
-        headers=auth_header_factory(test_users[2]),
-    )
-    assert (
-        delete_by_unknown_user_response.status_code == 400
+        response.status_code == 400
     ), "User without access should not delete a comment"
 
-    # Removing a comment by the owner
-    delete_by_owner_response = test_client.request(
-        "delete",
-        f"/todo-items/{todo_item.id}/comments/{todo_comment.id}",
-        headers=auth_header_factory(test_users[0]),
-    )
+    response = delete_comment_request(test_users[2], todo_item.id, todo_comment.id)
     assert (
-        delete_by_owner_response.status_code == 200
-    ), "Owner should be able to delete the comment"
+        response.status_code == 400
+    ), "User without access should not delete a comment"
+
+
+def test_delete_comment_with_access(
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoCategory],
+    create_comment: Callable[[TestUserType, int, str], TodoComment],
+    delete_comment_request: Callable[[TestUserType, int, int], Response],
+    attach_project_to_user: Callable[
+        [TestUserType, TestUserType, int, list[Permission]], None
+    ],
+    test_users: list[TestUserType],
+):
+    # Setup: Create a project, category, todo item, and a comment
+    project_one = create_project(test_users[0])
+    category = create_todo_category(test_users[0], project_one.id)
+    todo_item = create_todo_item(test_users[0], category.id)
+    todo_comment = create_comment(test_users[0], todo_item.id, "some message")
+
+    # Attach project to user with permission
+    attach_project_to_user(
+        test_users[0], test_users[1], project_one.id, [Permission.DELETE_COMMENT]
+    )
+
+    # User with access deletes the comment
+    response = delete_comment_request(test_users[1], todo_item.id, todo_comment.id)
+    assert response.status_code == 200, "User with permission should delete the comment"
+
+
+def test_delete_comment_by_owner(
+    create_project: Callable[[TestUserType], Project],
+    create_todo_category: Callable[[TestUserType, int], TodoCategory],
+    create_todo_item: Callable[[TestUserType, int], TodoCategory],
+    create_comment: Callable[[TestUserType, int, str], TodoComment],
+    delete_comment_request: Callable[[TestUserType, int, int], Response],
+    test_users: list[TestUserType],
+):
+    # Setup: Create a project, category, todo item, and a comment
+    project_one = create_project(test_users[0])
+    category = create_todo_category(test_users[0], project_one.id)
+    todo_item = create_todo_item(test_users[0], category.id)
+    todo_comment = create_comment(test_users[0], todo_item.id, "some message")
+
+    # Owner deletes the comment
+    response = delete_comment_request(test_users[0], todo_item.id, todo_comment.id)
+    assert response.status_code == 200, "Owner should be able to delete the comment"
