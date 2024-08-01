@@ -10,18 +10,22 @@ import { waitForSpinnerStateToBeIdle } from '../../common-locators/spinner';
 import { TodoCommentPage } from './todo-comments';
 import { TodoTagPage } from './todo-tags';
 import { TodoDependencyPage } from './todo-dependencies';
+import type { Auth } from '../auth';
 
 export type TodoItemUtils = { page: TodoItemPage; helpers: TodoItemHelpers };
 
 export class TodoItemPage implements IPage {
 	#enhancedPage: EnhancedPage;
 	#todoCategoryPage: TodoCategoryPage;
+	#authUtils: Auth;
 	public readonly comments: TodoCommentPage;
 	public readonly tags: TodoTagPage;
 	public readonly dependencies: TodoDependencyPage;
-	constructor(enhancedPage: EnhancedPage, todoCategoryUtils: TodoCategoryUtils) {
+	constructor(enhancedPage: EnhancedPage, todoCategoryUtils: TodoCategoryUtils, authUtils: Auth) {
 		this.#enhancedPage = enhancedPage;
 		this.#todoCategoryPage = todoCategoryUtils.page;
+		this.#authUtils = authUtils;
+
 		this.comments = new TodoCommentPage(enhancedPage, {
 			page: this,
 			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
@@ -116,7 +120,7 @@ export class TodoItemPage implements IPage {
 		markAsDone
 	}: {
 		todoId: string | number;
-		title: string;
+		title?: string;
 		description?: string;
 		dueDate?: Date;
 		markAsDone?: boolean;
@@ -127,7 +131,7 @@ export class TodoItemPage implements IPage {
 
 		// fill in the data
 		await modal.getByPlaceholder('title').click();
-		await modal.getByPlaceholder('title').fill(title);
+		title && (await modal.getByPlaceholder('title').fill(title));
 		await modal.getByPlaceholder('title').press('Tab');
 		description && (await modal.getByPlaceholder('description (Optional)').fill(description));
 		await modal.getByPlaceholder('description (Optional)').press('Tab');
@@ -135,8 +139,6 @@ export class TodoItemPage implements IPage {
 			(await modal
 				.getByPlaceholder('Due date (Optional)')
 				.fill(this._convertDateToString(dueDate)));
-
-		markAsDone != null && (await (await this.getMarkAsDoneLocator(todoId)).setChecked(markAsDone));
 
 		await modal.getByRole('button', { name: 'edit' }).click();
 
@@ -148,34 +150,46 @@ export class TodoItemPage implements IPage {
 		// close the modal
 		await closeModal(modal);
 
+		markAsDone != null &&
+			(await (await this.getIsDoneCheckBoxLocator(todoId)).setChecked(markAsDone));
+
 		// find and validate the edited todo item
 		const todoItem = await this.getTodoItemLocatorById(todoId);
+
 		await expect(
 			todoItem.getByTestId('todo-info'),
 			'selected todo item should contain the provided id'
 		).toContainText(`#${todoId}`);
-		await expect(
-			todoItem.getByTestId('todo-info'),
-			'selected todo item should be updated to the new title'
-		).toContainText(title);
-		await expect(
-			todoItem,
-			'selected todo item should be updated to the new description'
-		).toContainText(description ?? '-');
 
-		if (dueDate) {
-			await expect(
+		title &&
+			(await expect(
+				todoItem.getByTestId('todo-info'),
+				'selected todo item should be updated to the new title'
+			).toContainText(title));
+
+		description &&
+			(await expect(
+				todoItem,
+				'selected todo item should be updated to the new description'
+			).toContainText(description));
+
+		dueDate &&
+			(await expect(
 				todoItem,
 				'selected todo item should be updated to the new due date'
-			).toContainText(dueDate ? dueDate.toLocaleDateString() : '-');
-		}
+			).toContainText(dueDate ? dueDate.toLocaleDateString() : '-'));
 
-		if (markAsDone != null) {
+		typeof markAsDone === 'boolean' &&
 			expect(
-				(await (await this.getMarkAsDoneLocator(todoId)).isChecked()) == markAsDone,
+				(await (await this.getIsDoneCheckBoxLocator(todoId)).isChecked()) == markAsDone,
 				'mark as done status should be same as input'
-			).toBeTruthy();
-		}
+			).toEqual(markAsDone);
+
+		markAsDone &&
+			(await expect(
+				await this.getMarkedAsDoneUsernameLocator(todoId),
+				'user who marked this as completed should be in the completed by field'
+			).toContainText(this.#authUtils.currentLoggedInUser!.username));
 	}
 
 	async delete(todoId: number | string) {
@@ -301,8 +315,12 @@ export class TodoItemPage implements IPage {
 		return ids;
 	}
 
-	async getMarkAsDoneLocator(id: string | number) {
+	async getIsDoneCheckBoxLocator(id: string | number) {
 		return (await this.getTodoItemLocatorById(id)).getByTestId('todo-item-is-done');
+	}
+
+	async getMarkedAsDoneUsernameLocator(id: string | number) {
+		return (await this.getTodoItemLocatorById(id)).getByTestId('todo-item-marked-as-done-username');
 	}
 
 	private _convertDateToString(date: Date) {
@@ -348,7 +366,7 @@ export const test = todoCategoriesTest.extend<{
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, authUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
-		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils);
+		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils, authUtils);
 		await use({
 			page: todoItemPage,
 			helpers: new TodoItemHelpers(enhancedPage, todoItemPage, todoCategoryUtils)

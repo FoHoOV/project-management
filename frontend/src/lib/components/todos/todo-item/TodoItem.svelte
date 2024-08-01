@@ -253,7 +253,11 @@
 							<Fa icon={faUser} />
 						</span>
 
-						<span class="text font-semibold text-success">{todo.marked_as_done_by?.username}</span>
+						<span
+							class="text font-semibold text-success"
+							data-testid="todo-item-marked-as-done-username"
+							>{todo.marked_as_done_by.username}</span
+						>
 					</div>
 				</div>
 			{/if}

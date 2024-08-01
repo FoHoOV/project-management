@@ -45,8 +45,14 @@ test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUti
 	await todoItemUtils.page.edit({
 		todoId: t1.todoId,
 		title: 'new title t1',
-		description: 'new description ',
+		description: 'new description',
 		dueDate: new Date(Date.now())
+	});
+
+	await todoItemUtils.page.edit({
+		todoId: t1.todoId,
+		title: 'new title t2',
+		markAsDone: true
 	});
 });
 
