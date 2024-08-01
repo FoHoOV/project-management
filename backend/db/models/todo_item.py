@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, func, null, select
 from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import mapped_column, column_property
 from sqlalchemy.orm import relationship
 from db.models.base import BasesWithCreatedDate
 from db.models.todo_item_comments import TodoItemComment
@@ -23,7 +23,6 @@ class TodoItem(BasesWithCreatedDate):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
-    is_done: Mapped[bool] = mapped_column(Boolean(), default=False)
     category_id: Mapped[int] = mapped_column(
         ForeignKey("todo_category.id", ondelete="CASCADE")
     )
@@ -36,6 +35,7 @@ class TodoItem(BasesWithCreatedDate):
     marked_as_done_by_user_id: Mapped[int | None] = mapped_column(
         ForeignKey("user.id"), nullable=True
     )
+    is_done = column_property(marked_as_done_by_user_id.isnot(None))
     comments: Mapped[List[TodoItemComment]] = relationship(
         foreign_keys=[TodoItemComment.todo_id],
         back_populates="todo",

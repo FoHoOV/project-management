@@ -393,11 +393,7 @@ def _update_done_status(
             "you cannot change the status of this todo item because it is already marked as done by another user. Only that user can change the status",
         )
 
-    todo_item.is_done = new_status
-    if todo_item.is_done and todo_item.marked_as_done_by_user_id is None:
-        todo_item.marked_as_done_by_user_id = user_id
-    elif todo_item.is_done == False:
-        todo_item.marked_as_done_by_user_id = None
+    todo_item.marked_as_done_by_user_id = user_id if new_status is True else None
 
 
 def _validate_dependencies_are_resolved(

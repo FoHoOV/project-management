@@ -1,6 +1,6 @@
 from typing import Callable
 from fastapi.testclient import TestClient
-from httpx import Response, ResponseNotRead
+from httpx import Response
 import pytest
 
 
@@ -86,6 +86,31 @@ def update_todo_item_done_status_request(
             },
         )
         return response
+
+    return _update_done_status
+
+
+@pytest.fixture(scope="function")
+def update_todo_item_done_status(
+    update_todo_item_done_status_request: Callable[[TestUserType, int, bool], Response]
+):  # -> Callable[..., None]:
+    def _update_done_status(user: TestUserType, todo_id: int, is_done: bool):
+        response = update_todo_item_done_status_request(user, todo_id, is_done)
+        assert response.status_code == 200, "updating todo item failed"
+        todo = TodoItem.model_validate(response.json(), strict=True)
+        if is_done:
+            assert todo.is_done == True, "Todo should be marked as done"
+            assert todo.marked_as_done_by is not None
+            assert (
+                todo.marked_as_done_by.id == user["id"]
+            ), "todo should be marked as done by this user"
+        else:
+            assert todo.is_done == False, "Todo should be marked as undone"
+            assert (
+                todo.marked_as_done_by is None
+            ), "Since its undone this property should be null"
+
+        return todo
 
     return _update_done_status
 
