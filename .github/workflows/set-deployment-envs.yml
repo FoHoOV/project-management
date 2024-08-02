@@ -14,15 +14,15 @@ jobs:
 
       - name: Set Vercel Env
         run: |
-          BACKEND_URL=$(curl -X GET "https://api.vercel.com/v6/now/deployments?projectId=${{secrets.VERCEL_BACKEND_PROJECT_ID}}&meta-githubCommitSha=${{ github.sha }}" \
-                         -H "Authorization: Bearer ${{secrets.VERCEL_TOKEN}}" \
+          BACKEND_URL=$(curl -X GET "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.sha }}" \
+                         -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
                          | jq -r '.deployments[0].url')
 
           echo "Backend URL: $BACKEND_URL"
 
           # Update the PUBLIC_API_URL environment variable
-          curl -X POST "https://api.vercel.com/v9/projects/${{secrets.VERCEL_FRONTEND_PROJECT_ID}}/env" \
-            -H "Authorization: Bearer ${{secrets.VERCEL_TOKEN}}" -H "Content-Type: application/json" \
+          curl -X POST "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" -H "Content-Type: application/json" \
             -d '{
                 "gitBranch": "${{ github.head_ref }}",
                 "key": "PUBLIC_API_URL",
