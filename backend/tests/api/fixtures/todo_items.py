@@ -1,8 +1,8 @@
 from typing import Callable
+
+import pytest
 from fastapi.testclient import TestClient
 from httpx import Response
-import pytest
-
 
 from db.schemas.todo_item import TodoItem
 from tests.api.conftest import TestUserType

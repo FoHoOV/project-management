@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from pydantic import BaseModel, ConfigDict, Field
 
 TAG_MIN_LENGTH = 1

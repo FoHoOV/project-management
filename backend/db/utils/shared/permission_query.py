@@ -1,11 +1,12 @@
 import typing
+
 from sqlalchemy import and_
+from sqlalchemy.orm import Query
+
 from db.models.base import Base
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.user_project_permission import Permission, UserProjectPermission
-from sqlalchemy.orm import Query
-
 from error.exceptions import ErrorCode, UserFriendlyError
 
 PermissionsType = typing.Sequence[Permission | set[Permission]] | None

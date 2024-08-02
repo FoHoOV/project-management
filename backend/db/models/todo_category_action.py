@@ -1,15 +1,10 @@
 import enum
 from typing import TYPE_CHECKING
-from sqlalchemy import (
-    Enum,
-    ForeignKey,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
-from db.models.base import BasesWithCreatedDate
 
+from sqlalchemy import Enum, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.models.base import BasesWithCreatedDate
 
 if TYPE_CHECKING:
     from db.models.todo_category import TodoCategory

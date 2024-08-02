@@ -1,24 +1,24 @@
 from email.policy import default
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, Path, Query, Response
+from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK
 
-from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
 from db.schemas.tag import (
-    TAG_MIN_LENGTH,
     TAG_MAX_LENGTH,
-    TagAttachToTodo,
-    TagDelete,
-    TagCreate,
-    TagUpdate,
+    TAG_MIN_LENGTH,
     Tag,
+    TagAttachToTodo,
+    TagCreate,
+    TagDelete,
+    TagUpdate,
 )
 from db.schemas.todo_item import TodoItem
 from db.utils import tag_crud
-
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 tag_name_validator = Path(min_length=TAG_MIN_LENGTH, max_length=TAG_MAX_LENGTH)

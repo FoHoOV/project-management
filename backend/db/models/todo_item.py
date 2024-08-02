@@ -1,20 +1,19 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Optional
+
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, func, null, select
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column, column_property
-from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped, column_property, mapped_column, relationship
+
 from db.models.base import BasesWithCreatedDate
 from db.models.todo_item_comments import TodoItemComment
 from db.models.todo_item_dependency import TodoItemDependency
 from db.models.todo_item_order import TodoItemOrder
-from sqlalchemy.ext.hybrid import hybrid_property
-from typing import TYPE_CHECKING, List, Optional
-
 
 if TYPE_CHECKING:
-    from db.models.user import User
     from db.models.tag import Tag
     from db.models.todo_category import TodoCategory
+    from db.models.user import User
 
 
 class TodoItem(BasesWithCreatedDate):

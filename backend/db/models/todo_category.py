@@ -1,15 +1,15 @@
 from typing import TYPE_CHECKING, List
+
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from db.models.base import BasesWithCreatedDate
 from db.models.todo_category_order import TodoCategoryOrder
 
 if TYPE_CHECKING:
-    from db.models.todo_item import TodoItem
     from db.models.project import Project
     from db.models.todo_category_action import TodoCategoryAction
+    from db.models.todo_item import TodoItem
 
 
 class TodoCategory(BasesWithCreatedDate):

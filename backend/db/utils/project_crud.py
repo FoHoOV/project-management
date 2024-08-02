@@ -1,8 +1,12 @@
 import typing
+
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
+from db.models.todo_category import TodoCategory
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
 from db.models.user import User
 from db.models.user_project_permission import Permission, UserProjectPermission
@@ -12,15 +16,13 @@ from db.schemas.project import (
     ProjectUpdate,
     ProjectUpdateUserPermissions,
 )
-from sqlalchemy.orm import Session
 from db.schemas.todo_category import TodoCategoryCreate
 from db.utils.shared.permission_query import (
-    join_with_permission_query_if_required,
     PermissionsType,
+    join_with_permission_query_if_required,
     validate_item_exists_with_permissions,
 )
 from error.exceptions import ErrorCode, UserFriendlyError
-from db.models.todo_category import TodoCategory
 
 
 def create(db: Session, project: ProjectCreate, user_id: int):

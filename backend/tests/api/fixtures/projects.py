@@ -1,14 +1,11 @@
 from typing import Callable
+
+import pytest
 from fastapi.testclient import TestClient
 from httpx import Response
-import pytest
 
 from db.models.user_project_permission import Permission
-from db.schemas.project import (
-    Project,
-    ProjectAttachAssociationResponse,
-)
-
+from db.schemas.project import Project, ProjectAttachAssociationResponse
 from tests.api.conftest import TestUserType
 
 

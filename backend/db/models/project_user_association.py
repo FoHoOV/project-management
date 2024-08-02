@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-
 from typing import TYPE_CHECKING, List
-from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, relationship
-from sqlalchemy.orm import mapped_column
-from db.models.base import BasesWithCreatedDate
 
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.models.base import BasesWithCreatedDate
 
 if TYPE_CHECKING:
     from db.models.project import Project

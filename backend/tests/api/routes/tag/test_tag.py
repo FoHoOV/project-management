@@ -1,14 +1,13 @@
 from typing import Callable
+
 from httpx import Response
 
 from db.models.todo_item import TodoItem
-from tests.api.conftest import (
-    TestUserType,
-)
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.tag import Tag
 from db.schemas.todo_category import TodoCategory
+from tests.api.conftest import TestUserType
 
 
 def test_create_todo_tag(

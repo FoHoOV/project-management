@@ -1,12 +1,7 @@
-from dataclasses import dataclass
 import json
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    field_validator,
-    computed_field,
-)
+from dataclasses import dataclass
+
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 from db.models.base import Base
 from db.models.user_project_permission import Permission

@@ -3,14 +3,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+
 from api.dependencies.db import get_db
 from config import settings
 from db.schemas.oath_token import Token
-
-from sqlalchemy.orm import Session
-
 from db.utils.oatuh import authenticate_user, create_access_token
-
 
 router = APIRouter(prefix="/oauth", tags=["OAuth"])
 

@@ -1,6 +1,8 @@
 import typing
+
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
+
 from db.models.project import Project
 from db.models.project_user_association import ProjectUserAssociation
 from db.models.tag import Tag
@@ -9,22 +11,15 @@ from db.models.todo_item import TodoItem
 from db.models.todo_item_tag_association import TodoItemTagAssociation
 from db.models.user import User
 from db.models.user_project_permission import Permission, UserProjectPermission
-from db.schemas.tag import (
-    TagAttachToTodo,
-    TagCreate,
-    TagDelete,
-    TagUpdate,
-)
+from db.schemas.tag import TagAttachToTodo, TagCreate, TagDelete, TagUpdate
+from db.utils.project_crud import validate_project_belongs_to_user
 from db.utils.shared.permission_query import (
-    join_with_permission_query_if_required,
     PermissionsType,
+    join_with_permission_query_if_required,
     validate_item_exists_with_permissions,
 )
-from error.exceptions import ErrorCode, UserFriendlyError
-from db.utils.project_crud import (
-    validate_project_belongs_to_user,
-)
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
+from error.exceptions import ErrorCode, UserFriendlyError
 
 
 def create(db: Session, tag: TagCreate, user_id: int):

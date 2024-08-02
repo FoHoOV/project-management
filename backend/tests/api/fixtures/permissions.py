@@ -1,9 +1,9 @@
 from typing import Callable
-from fastapi.testclient import TestClient
+
 import pytest
+from fastapi.testclient import TestClient
 
 from db.models.user_project_permission import Permission
-
 from db.schemas.project import Project
 from tests.api.conftest import TestUserType
 

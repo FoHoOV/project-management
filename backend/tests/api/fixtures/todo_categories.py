@@ -1,11 +1,10 @@
 from typing import Callable
+
+import pytest
 from fastapi.testclient import TestClient
 from httpx import Response
-import pytest
-
 
 from db.schemas.todo_category import TodoCategory
-
 from tests.api.conftest import TestUserType
 
 

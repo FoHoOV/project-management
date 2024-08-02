@@ -1,10 +1,11 @@
-from datetime import timedelta
 import datetime
+from datetime import timedelta
+
 from click import DateTime
 from joserfc import jwt
 from sqlalchemy.orm import Session
-from config import settings
 
+from config import settings
 from db.utils.user_crud import get_user_by_username, verify_password
 
 

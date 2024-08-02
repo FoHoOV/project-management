@@ -1,12 +1,9 @@
-from typing import Type
-from sqlalchemy.orm import Mapped, Query
+from typing import Callable, Type, TypedDict
+
+from sqlalchemy.orm import Mapped, Query, Session
+
 from db.models.base import BaseOrderedItem
 from error.exceptions import ErrorCode, UserFriendlyError
-
-from typing import Callable, Type, TypedDict
-from sqlalchemy.orm import Query, Session
-
-from error.exceptions import UserFriendlyError
 
 
 class NewOrder(TypedDict):

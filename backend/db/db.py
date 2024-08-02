@@ -1,7 +1,8 @@
 import logging
 from typing import Any, TypedDict
+
 from sqlalchemy import Engine, create_engine, event
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 
 DbPrams = TypedDict("DbPrams", {"session": sessionmaker[Session], "engine": Engine})
 

@@ -1,30 +1,30 @@
-from db.models.todo_category_action import Action, TodoCategoryAction
-from db.models.user_project_permission import Permission
-from db.utils.shared.ordered_item import (
-    delete_item_from_sorted_items,
-    update_element_order,
-)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, lazyload
+
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
+from db.models.todo_category_action import Action, TodoCategoryAction
 from db.models.todo_category_order import TodoCategoryOrder
 from db.models.todo_category_project_association import TodoCategoryProjectAssociation
 from db.models.user import User
-
+from db.models.user_project_permission import Permission
 from db.schemas.todo_category import (
     TodoCategoryAttachAssociation,
     TodoCategoryCreate,
     TodoCategoryUpdateItem,
     TodoCategoryUpdateOrder,
 )
+from db.utils.project_crud import validate_project_belongs_to_user
+from db.utils.shared.ordered_item import (
+    delete_item_from_sorted_items,
+    update_element_order,
+)
 from db.utils.shared.permission_query import (
-    join_with_permission_query_if_required,
     PermissionsType,
+    join_with_permission_query_if_required,
     validate_item_exists_with_permissions,
 )
 from error.exceptions import ErrorCode, UserFriendlyError
-from db.utils.project_crud import validate_project_belongs_to_user
 
 
 def get_categories_for_project(db: Session, project_id: int, user_id: int):

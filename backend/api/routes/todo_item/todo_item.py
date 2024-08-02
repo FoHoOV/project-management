@@ -1,8 +1,9 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, Query, Response
+from sqlalchemy.orm import Session
 from starlette.status import HTTP_200_OK
 
-from sqlalchemy.orm import Session
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
@@ -15,7 +16,6 @@ from db.schemas.todo_item import (
     TodoItemUpdate,
 )
 from db.utils import todo_item_crud
-
 
 router = APIRouter(prefix="/todo-items", tags=["todo-items"])
 

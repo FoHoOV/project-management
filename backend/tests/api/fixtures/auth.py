@@ -1,16 +1,10 @@
-from typing import List, TypedDict
+from typing import Callable, List, TypedDict
 
-
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-import pytest
 
 from db.schemas.user import User
-
-from typing import Callable
-from fastapi.testclient import TestClient
-import pytest
-
 
 TestUserType = TypedDict("TestUserType", {"id": int, "username": str, "password": str})
 

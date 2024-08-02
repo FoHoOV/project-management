@@ -1,18 +1,12 @@
 from __future__ import annotations
 
-
 import enum
 from typing import TYPE_CHECKING
-from db.models.base import Base
-from sqlalchemy import (
-    Enum,
-    ForeignKey,
-    UniqueConstraint,
-)
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
 
+from sqlalchemy import Enum, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.models.base import Base
 
 if TYPE_CHECKING:
     from db.models.project_user_association import ProjectUserAssociation

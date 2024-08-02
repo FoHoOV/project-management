@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, Text
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from db.models.base import BasesWithCreatedDate
 
 if TYPE_CHECKING:

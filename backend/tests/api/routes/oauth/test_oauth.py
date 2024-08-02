@@ -1,6 +1,7 @@
 from secrets import choice
-from fastapi.testclient import TestClient
+
 import pytest
+from fastapi.testclient import TestClient
 
 from tests.api.conftest import TestUserType
 

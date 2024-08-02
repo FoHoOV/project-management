@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy import CheckConstraint, Connection, ForeignKey, UniqueConstraint, event
-from sqlalchemy.orm import Mapped, Session, Mapper
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, Mapper, Session, mapped_column, relationship
+
 from db.models.base import BaseOrderedItem, BasesWithCreatedDate
 
 if TYPE_CHECKING:

@@ -1,7 +1,9 @@
 from typing import Callable
+
+import pytest
 from fastapi.testclient import TestClient
 from httpx import Response
-import pytest
+
 from db.schemas.todo_item_comment import TodoComment
 from tests.api.conftest import TestUserType
 

@@ -1,16 +1,14 @@
 from typing import TYPE_CHECKING, List
+
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.models.base import BasesWithCreatedDate
 
-
 if TYPE_CHECKING:
     from db.models.project import Project
-    from db.models.todo_item import TodoItem
     from db.models.project_user_association import ProjectUserAssociation
+    from db.models.todo_item import TodoItem
 
 
 class User(BasesWithCreatedDate):

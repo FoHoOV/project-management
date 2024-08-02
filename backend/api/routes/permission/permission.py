@@ -1,7 +1,9 @@
 import builtins
 from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.models.user import User
@@ -11,7 +13,6 @@ from db.schemas.project import (
     ProjectUpdateUserPermissions,
 )
 from db.utils import project_crud
-
 
 router = APIRouter(prefix="/permissions", tags=["permissions"])
 

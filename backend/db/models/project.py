@@ -1,17 +1,16 @@
 from typing import TYPE_CHECKING, List
-from sqlalchemy import String, func, select
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
-from db.models.base import BasesWithCreatedDate
-from sqlalchemy.ext.hybrid import hybrid_property
 
+from sqlalchemy import String, func, select
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db.models.base import BasesWithCreatedDate
 
 if TYPE_CHECKING:
+    from db.models.project_user_association import ProjectUserAssociation
     from db.models.tag import Tag
     from db.models.todo_category import TodoCategory
     from db.models.user import User
-    from db.models.project_user_association import ProjectUserAssociation
 
 
 class Project(BasesWithCreatedDate):

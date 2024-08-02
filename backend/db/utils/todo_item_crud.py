@@ -1,20 +1,15 @@
 import datetime
 
-from db.models.todo_category_action import Action
-from db.models.todo_item_dependency import TodoItemDependency
-from db.models.user_project_permission import Permission
-from db.utils.shared.ordered_item import (
-    delete_item_from_sorted_items,
-    update_element_order,
-)
 from sqlalchemy.orm import Session
+
 from db.models.project import Project
 from db.models.todo_category import TodoCategory
-
-
+from db.models.todo_category_action import Action
 from db.models.todo_item import TodoItem
+from db.models.todo_item_dependency import TodoItemDependency
 from db.models.todo_item_order import TodoItemOrder
 from db.models.user import User
+from db.models.user_project_permission import Permission
 from db.schemas.todo_item import (
     SearchTodoStatus,
     TodoItemAddDependency,
@@ -22,14 +17,18 @@ from db.schemas.todo_item import (
     TodoItemUpdateItem,
     TodoItemUpdateOrder,
 )
+from db.utils.project_crud import validate_project_belongs_to_user
+from db.utils.shared.ordered_item import (
+    delete_item_from_sorted_items,
+    update_element_order,
+)
 from db.utils.shared.permission_query import (
     PermissionsType,
     join_with_permission_query_if_required,
     validate_item_exists_with_permissions,
 )
-from error.exceptions import ErrorCode, UserFriendlyError
-from db.utils.project_crud import validate_project_belongs_to_user
 from db.utils.todo_category_crud import validate_todo_category_belongs_to_user
+from error.exceptions import ErrorCode, UserFriendlyError
 
 
 def get_todos_for_user(

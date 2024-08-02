@@ -1,16 +1,15 @@
-import typing
 import builtins
+import typing
+
 from sqlalchemy.orm import Session
+
 from db.models.todo_item import TodoItem
 from db.models.todo_item_comments import TodoItemComment
 from db.models.user_project_permission import Permission
-from db.schemas.todo_item_comment import (
-    TodoCommentCreate,
-    TodoCommentUpdate,
-)
+from db.schemas.todo_item_comment import TodoCommentCreate, TodoCommentUpdate
 from db.utils.shared.permission_query import PermissionsType
-from error.exceptions import ErrorCode, UserFriendlyError
 from db.utils.todo_item_crud import validate_todo_item_belongs_to_user
+from error.exceptions import ErrorCode, UserFriendlyError
 
 
 def create(db: Session, todo_id: int, comment: TodoCommentCreate, user_id: int):

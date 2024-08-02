@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 from error.exceptions import ErrorCode
 
-
 router = APIRouter(prefix="/types", tags=["types"])
 description = "just to include types in openapi.json"
 

@@ -1,12 +1,13 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 from api.dependencies.db import get_db
 from api.dependencies.oauth import get_current_user
 from db.schemas.user import User, UserCreate
 from db.utils import user_crud
 from error.exceptions import ErrorCode, UserFriendlyError
-
 
 router = APIRouter(prefix="/users", tags=["users"])
 

@@ -1,11 +1,13 @@
 from typing import Callable, cast
+
 import pytest
 from httpx import Response
-from tests.api.conftest import TestUserType
+
 from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectAttachAssociationResponse
 from error.exceptions import ErrorCode
+from tests.api.conftest import TestUserType
 
 
 @pytest.mark.parametrize("template_flag", [False, True])

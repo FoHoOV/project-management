@@ -1,13 +1,12 @@
 from typing import Callable
+
 from httpx import Response
 
-from tests.api.conftest import (
-    TestUserType,
-)
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
-from db.schemas.todo_item_comment import TodoComment
 from db.schemas.todo_category import TodoCategory
+from db.schemas.todo_item_comment import TodoComment
+from tests.api.conftest import TestUserType
 
 
 def test_create_comment_no_access(

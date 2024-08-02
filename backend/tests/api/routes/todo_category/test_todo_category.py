@@ -1,12 +1,13 @@
 from typing import Callable, Dict
-from httpx import Response
+
 import pytest
 from fastapi.testclient import TestClient
+from httpx import Response
 
-from tests.api.conftest import TestUserType
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
+from tests.api.conftest import TestUserType
 
 
 def test_todo_category_create_with_permission(

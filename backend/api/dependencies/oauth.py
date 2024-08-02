@@ -3,16 +3,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from api.dependencies.db import get_db
-from db.schemas.oath_token import TokenData
-
+from joserfc import errors, jwt
 from sqlalchemy.orm import Session
 
+from api.dependencies.db import get_db
 from config import settings
+from db.schemas.oath_token import TokenData
 from db.utils.user_crud import get_user_by_username
-
-from joserfc import jwt, errors
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/oauth/token")
 

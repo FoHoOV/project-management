@@ -1,5 +1,6 @@
 import datetime
 from enum import Enum
+
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from db.schemas.base import NullableOrderedItem

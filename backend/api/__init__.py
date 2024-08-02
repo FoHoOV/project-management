@@ -1,21 +1,24 @@
-from re import I
 import typing
+from re import I
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from .routes.oauth import oath
-from .routes.user import user
-from .routes.project import project
-from .routes.permission import permission
-from .routes.todo_category import todo_category
-from .routes.todo_item import todo_item
-from .routes.tag import tag
-from .routes.todo_item_comment import todo_item_comment
-from .routes import error
+
 from config import settings
 from db import init_db
 from error.exceptions import UserFriendlyError
+
+from .routes import error
+from .routes.oauth import oath
+from .routes.permission import permission
+from .routes.project import project
+from .routes.tag import tag
+from .routes.todo_category import todo_category
+from .routes.todo_item import todo_item
+from .routes.todo_item_comment import todo_item_comment
+from .routes.user import user
 
 
 def db_excepted_exception_handler(request: Request, ex: Exception):

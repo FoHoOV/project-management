@@ -1,9 +1,8 @@
+from bcrypt import checkpw, gensalt, hashpw
 from sqlalchemy.orm import Session
 
 from db.models.user import User
 from db.schemas.user import UserCreate
-
-from bcrypt import hashpw, checkpw, gensalt
 
 
 def get_user(db: Session, user_id: int):
