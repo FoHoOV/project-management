@@ -1,6 +1,8 @@
+[DISABLED RULES]
 disable = missing-module-docstring,
           missing-function-docstring,
           missing-class-docstring
+
 [MESSAGES CONTROL]
 # Enable some checkers that are not activated by default:
 enable = bad-inline-option, deprecated-pragma, file-ignored, use-symbolic-message-instead, useless-suppression
