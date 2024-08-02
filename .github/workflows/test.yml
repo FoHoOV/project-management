@@ -113,4 +113,6 @@ jobs:
           pnpm run build
 
       - name: Run frontend tests (with backend service running)
-        run: pnpm run test
+        run: |
+          pnpm run test:unit 
+          pnpm exec playwright test --project chromium
