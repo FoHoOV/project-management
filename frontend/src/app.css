@@ -22,4 +22,5 @@
 *::-webkit-scrollbar-thumb {
 	border-radius: 10px;
 	background-color: #8d92c6;
+	color: red;
 }

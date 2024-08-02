@@ -3,3 +3,5 @@ export type DraggableOptions<Data extends object> = Partial<DataTransfer> & {
 	targetDropZoneNames: string[];
 	disabled?: boolean;
 };
+
+// TEST
