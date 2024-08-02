@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # or whichever version you're using
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          python3 -m pytest
+
+      - name: Start backend service
+        run: |
+          cd backend
+          export $SQLALCHEMY_DATABASE_URL = "sqlite:///./test_todos.db" & python -m uvicorn main:app --host 0.0.0.0 --port 8080 &
+        # Ensure the service is running before moving to the next job
+
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    needs: test-backend # Ensure this job runs after the backend tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # or whichever version you're using
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Run frontend tests (with backend service running)
+        run: |
+          cd frontend
+          export PUBLIC_API_URL="http://127.0.0.1:8090" & npm run test
