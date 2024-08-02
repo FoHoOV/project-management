@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Vercel Env
+        run: |
+          BACKEND_URL=$(curl -X GET "https://api.vercel.com/v6/now/deployments?projectId=${{secrets.VERCEL_BACKEND_PROJECT_ID}}&meta-githubCommitSha=${{ github.sha }}" \
+                         -H "Authorization: Bearer ${{secrets.VERCEL_TOKEN}}" \
+                         | jq -r '.deployments[0].url')
+
+          echo "Backend URL: $BACKEND_URL"
+
+          # Update the PUBLIC_API_URL environment variable
+          curl -X POST "https://api.vercel.com/v9/projects/${{secrets.VERCEL_FRONTEND_PROJECT_ID}}/env" \
+            -H "Authorization: Bearer ${{secrets.VERCEL_TOKEN}}" -H "Content-Type: application/json" \
+            -d '{
+                "gitBranch": "${{ github.head_ref }}",
+                "key": "PUBLIC_API_URL",
+                "target": "[preview]",
+                "type": "plain",
+                "value": "'$BACKEND_URL'",
+                "comment": "backend url for ${{ github.head_ref }}"
+            }'
