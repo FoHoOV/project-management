@@ -20,6 +20,12 @@ export default [
 		}
 	},
 	{
+		languageOptions: {
+			parserOptions: {
+				project: './tsconfig.json'
+			}
+		},
+		files: ['**/*.ts'],
 		rules: {
 			'@typescript-eslint/no-unused-vars': ['warn'],
 			'@typescript-eslint/no-floating-promises': 'warn'
