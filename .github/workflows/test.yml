@@ -9,10 +9,18 @@ jobs:
   test-backend:
     name: Test Backend
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.12]
+
+    defaults:
+      run:
+        working-directory: ./backend
+
     env:
       ALLOWED_ORIGINS: '["http://localhost", "http://localhost:4173", "http://localhost:5173", "http://localhost:5174"]'
       IS_SQLALCHEMY_LOG_ENABLED: "True"
-      SQLALCHEMY_DATABASE_URL: "sqlite:///./todos.db"
+      SQLALCHEMY_DATABASE_URL: "sqlite:///./project_management.db"
       SECRET_KEY: "21cc261d634e34ca74ea7a18b2db1f36423e42a1b047553af12cd40dc13b06ee"
 
     steps:
@@ -22,47 +30,55 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run the backend tests
-        run: |
-          cd backend
-          python3 -m pytest
+        run: python3 -m pytest
 
       - name: Start backend service
-        run: |
-          cd backend
-          python -m uvicorn main:app --host 0.0.0.0 --port 8080 &
+        run: python -m uvicorn main:app --host 0.0.0.0 --port 8080 &
 
   test-frontend:
     name: Test Frontend
     runs-on: ubuntu-latest
     needs: test-backend
+    strategy:
+      matrix:
+        node-version: [20]
+
     env:
       PUBLIC_API_URL: "http://127.0.0.1:8080"
       PUBLIC_API_REQUEST_TIMEOUT_MS: "10000"
       PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS: "5184000"
 
+    defaults:
+      run:
+        working-directory: ./frontend
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm manually
+        run: |
+          npm install -g pnpm@9
 
       - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build the project
         run: |
-          cd frontend
-          npm install --legacy-peer-deps
+          pnpm run open-api:generate:shared
+          pnpm run open-api:zod:linux
+          pnpm run build
 
       - name: Run frontend tests (with backend service running)
-        run: |
-          cd frontend
-          npm run test
+        run: pnpm run test
