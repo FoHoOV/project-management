@@ -104,7 +104,7 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
-          pnpm exec playwright install-deps
+          pnpm exec playwright install --with-deps
 
       - name: Build the project
         run: |
