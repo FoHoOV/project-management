@@ -16,5 +16,10 @@
   "python.envFile": "",
   "editor.defaultFormatter": "ms-python.black-formatter",
   "editor.formatOnSave": true,
-  "black-formatter.importStrategy": "fromEnvironment"
+  "black-formatter.importStrategy": "fromEnvironment",
+  "isort.importStrategy": "fromEnvironment",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
+  "isort.check": true
 }
