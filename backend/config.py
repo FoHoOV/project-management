@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URL: str
     ALLOWED_ORIGINS: list[str]
     IS_SQLALCHEMY_LOG_ENABLED: bool
+    ALLOW_ORIGIN_REGEX: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env")
 
