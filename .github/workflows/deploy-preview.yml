@@ -1,0 +1,121 @@
+name: CI
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ID }}
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --preview --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --preview --token=${{ secrets.VERCEL_API_TOKEN }}
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    env:
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --preview --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --preview --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Set custom environment variables
+        run: |
+          BACKEND_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
+            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.sha }}" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}")
+
+          if [ "$BACKEND_RESPONSE" -ne 200 ]; then
+            echo "Failed to fetch backend URL. HTTP status: $BACKEND_RESPONSE"
+            cat response.txt
+            exit 1
+          fi
+
+          BACKEND_URL=$(cat response.txt | jq -r '.deployments[0].url')
+          echo "Backend URL: $BACKEND_URL"
+
+          CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
+            "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
+            -H "Content-Type: application/json")
+
+          if [ "$CURRENT_DEPLOYMENT_VARS_RESPONSE" -ne 200 ]; then
+            echo "Failed to fetch current deployment variables. HTTP status: $CURRENT_DEPLOYMENT_VARS_RESPONSE"
+            cat response.txt
+            exit 1
+          fi
+
+          PUBLIC_API_URL_ID=$(jq -r --arg branch "${{ github.head_ref }}" '.envs[] | select(.key == "PUBLIC_API_URL" and .gitBranch == $branch) | .id' response.txt)
+
+          if [ -z "$PUBLIC_API_URL_ID" ]; then
+            # Create a new PUBLIC_API_URL environment variable
+            CREATE_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X POST \
+              "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "{
+                    \"gitBranch\": \"${{ github.head_ref }}\",
+                    \"key\": \"PUBLIC_API_URL\",
+                    \"target\": [\"preview\"],
+                    \"type\": \"plain\",
+                    \"value\": \"$BACKEND_URL\",
+                    \"comment\": \"backend url for ${{ github.head_ref }}\"
+                  }")
+            if [ "$CREATE_RESPONSE" -ne 200 ]; then
+              echo "Failed to create Vercel environment variable. HTTP status: $CREATE_RESPONSE"
+              cat response.txt
+              exit 1
+            fi
+          else
+            # Update the existing PUBLIC_API_URL environment variable
+            UPDATE_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X PATCH \
+              "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env/$PUBLIC_API_URL_ID" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d "{
+                    \"gitBranch\": \"${{ github.head_ref }}\",
+                    \"key\": \"PUBLIC_API_URL\",
+                    \"target\": [\"preview\"],
+                    \"type\": \"plain\",
+                    \"value\": \"$BACKEND_URL\",
+                    \"comment\": \"backend url for ${{ github.head_ref }}\"
+                  }")
+            if [ "$UPDATE_RESPONSE" -ne 200 ]; then
+              echo "Failed to update Vercel environment variable. HTTP status: $UPDATE_RESPONSE"
+              cat response.txt
+              exit 1
+            fi
+          fi
+
+          echo "Environment variable PUBLIC_API_URL updated successfully."
