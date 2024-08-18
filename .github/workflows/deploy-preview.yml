@@ -70,16 +70,10 @@ jobs:
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_API_TOKEN }}
 
-      - name: Build Project Artifacts
-        run: export COREPACK_ENABLE_STRICT=0 && vercel build --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_API_TOKEN }}
-
       - name: Set custom environment variables
         run: |
           BACKEND_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
-            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.sha }}" \
+            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.event.pull_request.head.sha }}" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}")
 
           if [ "$BACKEND_RESPONSE" -ne 200 ]; then
@@ -90,7 +84,6 @@ jobs:
 
           BACKEND_URL=$(cat response.txt | jq -r '.deployments[0].url')
           echo "Backend URL: $BACKEND_URL"
-          cat response.txt
 
           CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
             "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
@@ -146,3 +139,9 @@ jobs:
           fi
 
           echo "Environment variable PUBLIC_API_URL updated successfully."
+
+      - name: Build Project Artifacts
+        run: export COREPACK_ENABLE_STRICT=0 && vercel build --token=${{ secrets.VERCEL_API_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_API_TOKEN }}
