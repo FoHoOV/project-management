@@ -84,6 +84,11 @@ jobs:
           BACKEND_URL=$(cat response.txt | jq -r '.deployments[0].url')
           echo "Backend URL: $BACKEND_URL"
 
+          if [ -z "$BACKEND_URL" ]; then
+            echo "No deployed backends for this commit SHA"
+            exit 1
+          fi
+
           CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
             "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
