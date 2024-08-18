@@ -90,6 +90,7 @@ jobs:
 
           BACKEND_URL=$(cat response.txt | jq -r '.deployments[0].url')
           echo "Backend URL: $BACKEND_URL"
+          cat response.txt
 
           CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
             "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
