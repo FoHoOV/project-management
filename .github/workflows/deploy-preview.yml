@@ -18,6 +18,10 @@ jobs:
     env:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
 
+    defaults:
+      run:
+        working-directory: ./backend
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,14 +29,8 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --git-branch ${{ github.head_ref }}  --environment=preview --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCEL_API_TOKEN }}
-
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_API_TOKEN }}
+        run: vercel deploy --yes --token=${{ secrets.VERCEL_API_TOKEN }}
 
   deploy-frontend:
     runs-on: ubuntu-latest
