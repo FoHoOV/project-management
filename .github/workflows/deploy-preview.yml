@@ -87,6 +87,8 @@ jobs:
             exit 1
           fi
 
+          BACKEND_URL="https://$BACKEND_URL"
+
           CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
             "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
@@ -100,8 +102,9 @@ jobs:
 
           PUBLIC_API_URL_ID=$(jq -r --arg branch "${{ github.head_ref }}" '.envs[] | select(.key == "PUBLIC_API_URL" and .gitBranch == $branch) | .id' response.txt)
 
-          if [ -z "$PUBLIC_API_URL_ID" ]; then
+          if [ "$PUBLIC_API_URL_ID" = "null" ]; then
             # Create a new PUBLIC_API_URL environment variable
+            echo "Creating env vars"
             CREATE_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X POST \
               "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
               -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
@@ -121,6 +124,8 @@ jobs:
             fi
           else
             # Update the existing PUBLIC_API_URL environment variable
+            echo "Updating existing env vars"
+
             UPDATE_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X PATCH \
               "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env/$PUBLIC_API_URL_ID" \
               -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
