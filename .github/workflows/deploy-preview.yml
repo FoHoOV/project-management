@@ -92,7 +92,7 @@ jobs:
           CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
             "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
             -d '{
                   "gitBranch": "${{ github.head_ref }}",
                   "target": ["preview"]
