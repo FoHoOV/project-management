@@ -70,7 +70,7 @@ jobs:
       - name: Set custom environment variables
         run: |
           BACKEND_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
-            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.sha }}" \
+            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&target=preview&limit=5" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}")
 
           if [ "$BACKEND_RESPONSE" -ne 200 ]; then
@@ -79,10 +79,10 @@ jobs:
             exit 1
           fi
 
-          BACKEND_URL=$(cat response.txt | jq -r '.deployments[0].url')
+          BACKEND_URL=$(cat response.txt | jq '.deployments [] | select(.meta.gitCommitSha == "${{ github.sha }}") .url')
           echo "Backend URL: $BACKEND_URL"
 
-          if [ -z "$BACKEND_URL" ]; then
+          if [ "$BACKEND_URL" = "null" ]; then
             echo "No deployed backends for this commit SHA"
             exit 1
           fi
