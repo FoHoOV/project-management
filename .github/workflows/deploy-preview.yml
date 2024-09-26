@@ -117,7 +117,7 @@ jobs:
                     "key": "PUBLIC_API_URL",
                     "target": ["preview"],
                     "type": "plain",
-                    "value": '"${BACKEND_URL}"',
+                    "value": "'"${BACKEND_URL}"'",
                     "comment": "backend url for ${{ github.head_ref }}"
                   }')
             if [ "$CREATE_RESPONSE" -ne 200 ]; then
@@ -138,7 +138,7 @@ jobs:
                     "key": "PUBLIC_API_URL",
                     "target": ["preview"],
                     "type": "plain",
-                    "value": '"${BACKEND_URL}"',
+                    "value": "'"${BACKEND_URL}"'",
                     "comment": "backend url for ${{ github.head_ref }}"
                   }')
             if [ "$UPDATE_RESPONSE" -ne 200 ]; then
