@@ -109,14 +109,14 @@ jobs:
               "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
               -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d "{
-                    \"gitBranch\": \"${{ github.head_ref }}\",
-                    \"key\": \"PUBLIC_API_URL\",
-                    \"target\": [\"preview\"],
-                    \"type\": \"plain\",
-                    \"value\": \"$BACKEND_URL\",
-                    \"comment\": \"backend url for ${{ github.head_ref }}\"
-                  }")
+              -d '{
+                    "gitBranch": "'"${{ github.head_ref }}"'",
+                    "key": "PUBLIC_API_URL",
+                    "target": ["preview"],
+                    "type": "plain",
+                    "value": '"${BACKEND_URL}"',
+                    "comment": "backend url for '"${{ github.head_ref }}"'"
+                  }')
             if [ "$CREATE_RESPONSE" -ne 200 ]; then
               echo "Failed to create Vercel environment variable. HTTP status: $CREATE_RESPONSE"
               cat response.txt
@@ -130,14 +130,14 @@ jobs:
               "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env/$PUBLIC_API_URL_ID" \
               -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
               -H "Content-Type: application/json" \
-              -d "{
-                    \"gitBranch\": \"${{ github.head_ref }}\",
-                    \"key\": \"PUBLIC_API_URL\",
-                    \"target\": [\"preview\"],
-                    \"type\": \"plain\",
-                    \"value\": \"$BACKEND_URL\",
-                    \"comment\": \"backend url for ${{ github.head_ref }}\"
-                  }")
+              -d '{
+                    "gitBranch": "'"${{ github.head_ref }}"'",
+                    "key": "PUBLIC_API_URL",
+                    "target": ["preview"],
+                    "type": "plain",
+                    "value": '"${BACKEND_URL}"',
+                    "comment": "backend url for '"${{ github.head_ref }}"'"
+                  }')
             if [ "$UPDATE_RESPONSE" -ne 200 ]; then
               echo "Failed to update Vercel environment variable. HTTP status: $UPDATE_RESPONSE"
               cat response.txt
