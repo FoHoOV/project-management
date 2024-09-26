@@ -101,7 +101,7 @@ jobs:
           fi
 
           PUBLIC_API_URL_ID=$(jq -r --arg branch "${{ github.head_ref }}" '.envs[] | select(.key == "PUBLIC_API_URL" and .gitBranch == $branch) | .id' response.txt)
-
+          echo "ENV ID: $PUBLIC_API_URL_ID"
           if [ "$PUBLIC_API_URL_ID" = "null" ]; then
             # Create a new PUBLIC_API_URL environment variable
             echo "Creating env vars"
