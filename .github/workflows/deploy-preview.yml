@@ -70,7 +70,7 @@ jobs:
       - name: Set custom environment variables
         run: |
           BACKEND_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
-            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.event.pull_request.head.sha }}" \
+            "https://api.vercel.com/v6/now/deployments?projectId=${{ secrets.VERCEL_BACKEND_PROJECT_ID }}&meta-githubCommitSha=${{ github.sha }}" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}")
 
           if [ "$BACKEND_RESPONSE" -ne 200 ]; then
