@@ -1,11 +1,12 @@
-name: CI
+name: DEPLOY PREVIEW CI
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ID }}
 
 on:
-  pull_request:
-    branches:
-      - master
+  workflow_run:
+    workflows: [TEST CI]
+    types:
+      - completed
 
 jobs:
   deploy-backend:
@@ -53,9 +54,9 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             Deployment URLS (fohoov)
-            [<kbd> <br>Backend<br> </kbd>][Link]
+            [<kbd> <br>Backend<br> </kbd>][BackendLink]
 
-            [Link]: ${{ steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL }}
+            [BackendLink]: ${{ steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL }}
           edit-mode: replace
 
   deploy-frontend:
@@ -182,7 +183,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            [<kbd> <br>Front<br> </kbd>][Link]
+            [<kbd> <br>Front<br> </kbd>][FrontLink]
 
-            [Link]: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
+            [FrontLink]: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
           edit-mode: append
