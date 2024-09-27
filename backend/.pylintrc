@@ -38,4 +38,4 @@ load-plugins = pylint.extensions.bad_builtin,
 check-quote-consistency = yes
 
 [VARIABLES]
-allow-global-unused-variables = no
+allow-global-unused-variables = yes
