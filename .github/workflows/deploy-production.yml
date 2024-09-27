@@ -10,7 +10,9 @@ on:
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
-    environment: Production – project-management-backend
+    environment:
+      name: Production – project-management-backend
+      url: ${{ steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL }}
 
     env:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
@@ -27,15 +29,24 @@ jobs:
         run: npm install --global vercel
 
       - name: Deploy Project To Vercel
-        run: vercel deploy --yes --prod --token=${{ secrets.VERCEL_API_TOKEN }}
+        id: vercel_deploy
+        run: |
+          BACKEND_DEPLOYED_URL=$(vercel deploy --yes --prod --token=${{ secrets.VERCEL_API_TOKEN }})
+          echo "BACKEND_DEPLOYED_URL=$BACKEND_DEPLOYED_URL" >> $GITHUB_OUTPUT
 
   deploy-frontend:
     runs-on: ubuntu-latest
     needs: deploy-backend
-    environment: Production – project-management-frontend
+    environment:
+      name: Production – project-management-frontend
+      url: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
 
     env:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
       - name: Checkout code
@@ -55,4 +66,7 @@ jobs:
         run: pnpm add --global vercel
 
       - name: Deploy Project To Vercel
-        run: vercel deploy --yes --prod --token=${{ secrets.VERCEL_API_TOKEN }}
+        id: vercel_deploy
+        run: |
+          FRONT_END_DEPLOYED_URL=$(vercel deploy --yes --prod --token=${{ secrets.VERCEL_API_TOKEN }})
+          echo "FRONT_END_DEPLOYED_URL=$FRONT_END_DEPLOYED_URL" >> $GITHUB_OUTPUT
