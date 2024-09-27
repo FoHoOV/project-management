@@ -25,14 +25,8 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_API_TOKEN }}
+      - name: Deploy Project To Vercel
+        run: vercel deploy --yes --prod --token=${{ secrets.VERCEL_API_TOKEN }}
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -55,20 +49,8 @@ jobs:
         with:
           version: 9.4.0
 
-      - name: Setup java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
-
       - name: Install Vercel CLI
         run: pnpm add --global vercel
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Build Project Artifacts
-        run: export COREPACK_ENABLE_STRICT=0 && vercel build --prod --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_API_TOKEN }}
+      - name: Deploy Project To Vercel
+        run: vercel deploy --yes --prod --token=${{ secrets.VERCEL_API_TOKEN }}

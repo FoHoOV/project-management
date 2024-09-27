@@ -6,9 +6,6 @@ on:
   pull_request:
     branches:
       - master
-  push:
-    branches:
-      - master
 
 jobs:
   deploy-backend:
@@ -29,7 +26,7 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel
 
-      - name: Deploy Project Artifacts to Vercel
+      - name: Deploy Project To Vercel
         run: vercel deploy --yes --token=${{ secrets.VERCEL_API_TOKEN }}
 
   deploy-frontend:
@@ -150,8 +147,5 @@ jobs:
 
           echo "Environment variable PUBLIC_API_URL updated successfully."
 
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --git-branch ${{ github.head_ref }} --environment=preview --token=${{ secrets.VERCEL_API_TOKEN }}
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --token=${{ secrets.VERCEL_API_TOKEN }}
+      - name: Deploy Project To Vercel
+        run: vercel deploy --yes --token=${{ secrets.VERCEL_API_TOKEN }}
