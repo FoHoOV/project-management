@@ -3,10 +3,9 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ID }}
 
 on:
-  workflow_run:
-    workflows: [TEST CI]
-    types:
-      - completed
+  push:
+    branches:
+      - master
 
 jobs:
   deploy-backend:
