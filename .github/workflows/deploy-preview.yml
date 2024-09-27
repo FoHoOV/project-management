@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: Preview – project-management-backend
 
+    outputs:
+      BACKEND_DEPLOYED_URL: ${{steps.vercel_deploy.outputs.url}}
+
     defaults:
       run:
         working-directory: ./backend
@@ -23,6 +26,18 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      - name: Deploy Project To Vercel
+        id: vercel_deploy
+        run: |
+          BACKEND_DEPLOYED_URL=$(vercel deploy --yes --token=${{ secrets.VERCEL_API_TOKEN }})
+          echo "BACKEND_DEPLOYED_URL=$BACKEND_DEPLOYED_URL" >> $GITHUB_OUTPUT
+
       - name: Find Deploy URLS Comment
         uses: peter-evans/find-comment@v3
         id: fc
@@ -38,9 +53,9 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             Deployment URLS (fohoov)
-            [<kbd> <br>Back<br> </kbd>][Link]
+            [<kbd> <br>Backend<br> </kbd>][Link]
 
-            [Link]: https://github.com/FoHoOV/project-management/pull/28#back
+            [Link]: ${{ steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL }}
           edit-mode: replace
 
   deploy-frontend:
@@ -59,6 +74,100 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.4.0
+
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Install Vercel CLI
+        run: pnpm add --global vercel
+
+      - name: Set custom environment variables
+        run: |
+          BACKEND_URL="${{ needs.deploy-backend.outputs.BACKEND_DEPLOYED_URL }}"
+          echo "Backend url: $BACKEND_URL"
+
+          CURRENT_DEPLOYMENT_VARS_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X GET \
+            "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+                  "gitBranch": "${{ github.head_ref }}",
+                  "target": ["preview"]
+              }')
+
+          if [ "$CURRENT_DEPLOYMENT_VARS_RESPONSE" -ne 200 ]; then
+            echo "Failed to fetch current deployment variables. HTTP status: $CURRENT_DEPLOYMENT_VARS_RESPONSE"
+            cat response.txt
+            exit 1
+          fi
+
+          PUBLIC_API_URL_ID=$(jq -r --arg branch "${{ github.head_ref }}" '.envs[] | select(.key == "PUBLIC_API_URL" and .gitBranch == $branch) | .id' response.txt)
+          if [ -z "$PUBLIC_API_URL_ID" ] || [ "$PUBLIC_API_URL_ID" = "null" ]; then
+            # Create a new PUBLIC_API_URL environment variable
+            echo "Creating env vars"
+            CREATE_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X POST \
+              "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                    "gitBranch": "${{ github.head_ref }}",
+                    "key": "PUBLIC_API_URL",
+                    "target": ["preview"],
+                    "type": "plain",
+                    "value": "'"${BACKEND_URL}"'",
+                    "comment": "backend url for ${{ github.head_ref }}"
+                  }')
+            if [ "$CREATE_RESPONSE" -ne 200 ]; then
+              echo "Failed to create Vercel environment variable. HTTP status: $CREATE_RESPONSE"
+              cat response.txt
+              exit 1
+            fi
+          else
+            # Update the existing PUBLIC_API_URL environment variable
+            echo "Updating existing env vars"
+
+            UPDATE_RESPONSE=$(curl -s -o response.txt -w "%{http_code}" -X PATCH \
+              "https://api.vercel.com/v9/projects/${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}/env/$PUBLIC_API_URL_ID" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                    "gitBranch": "${{ github.head_ref }}",
+                    "key": "PUBLIC_API_URL",
+                    "target": ["preview"],
+                    "type": "plain",
+                    "value": "'"${BACKEND_URL}"'",
+                    "comment": "backend url for ${{ github.head_ref }}"
+                  }')
+            if [ "$UPDATE_RESPONSE" -ne 200 ]; then
+              echo "Failed to update Vercel environment variable. HTTP status: $UPDATE_RESPONSE"
+              cat response.txt
+              exit 1
+            fi
+          fi
+
+          echo "Environment variable PUBLIC_API_URL updated successfully."
+
+      - name: Deploy Project To Vercel
+        id: vercel_deploy
+        run: |
+          FRONT_END_DEPLOYED_URL=$(vercel deploy --yes --token=${{ secrets.VERCEL_API_TOKEN }})
+          echo "FRONT_END_DEPLOYED_URL=$FRONT_END_DEPLOYED_URL" >> $GITHUB_OUTPUT
+
       - name: Find Deploy URLS Comment
         uses: peter-evans/find-comment@v3
         id: fc
@@ -76,5 +185,5 @@ jobs:
             Deployment URLS (fohoov)
             [<kbd> <br>Front<br> </kbd>][Link]
 
-            [Link]: https://github.com/FoHoOV/project-management/pull/28/#front
+            [Link]: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
           edit-mode: append
