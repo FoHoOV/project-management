@@ -13,7 +13,7 @@ jobs:
     environment: Preview – project-management-backend
 
     outputs:
-      BACKEND_DEPLOYED_URL: ${{steps.vercel_deploy.outputs.url}}
+      BACKEND_DEPLOYED_URL: ${{steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL}}
 
     defaults:
       run:
@@ -182,7 +182,6 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            Deployment URLS (fohoov)
             [<kbd> <br>Front<br> </kbd>][Link]
 
             [Link]: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
