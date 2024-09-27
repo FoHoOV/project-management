@@ -10,7 +10,9 @@ on:
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
-    environment: Preview – project-management-backend
+    environment:
+      name: Preview – project-management-backend
+      url: ${{ steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL }}
 
     outputs:
       BACKEND_DEPLOYED_URL: ${{steps.vercel_deploy.outputs.BACKEND_DEPLOYED_URL}}
@@ -61,7 +63,9 @@ jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
     needs: deploy-backend
-    environment: Preview – project-management-frontend
+    environment:
+      name: Preview – project-management-frontend
+      url: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
 
     defaults:
       run:
