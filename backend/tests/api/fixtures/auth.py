@@ -1,4 +1,5 @@
-from typing import Callable, List, TypedDict
+from collections.abc import Callable
+from typing import TypedDict
 
 import pytest
 from fastapi import FastAPI
@@ -8,7 +9,7 @@ from db.schemas.user import User
 
 TestUserType = TypedDict("TestUserType", {"id": int, "username": str, "password": str})
 
-_TEST_USERS: List[TestUserType] = [
+_TEST_USERS: list[TestUserType] = [
     {"id": -1, "username": "test_username1", "password": "test_password1"},
     {"id": -1, "username": "test_username2", "password": "test_password2"},
     {"id": -1, "username": "test_username3", "password": "test_password3"},

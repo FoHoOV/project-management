@@ -14,7 +14,9 @@
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "cSpell.words": [
+      "addoption",
       "autouse",
+      "httpx",
       "ondropped",
       "onsubmitclienterror",
       "onsubmitended",
@@ -25,6 +27,7 @@
       "starlette",
       "testid"
     ],
-    "svelte.enable-ts-plugin": true
+    "svelte.enable-ts-plugin": true,
+    "pylint.importStrategy": "fromEnvironment"
   }
 }

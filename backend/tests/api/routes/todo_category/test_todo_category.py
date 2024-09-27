@@ -1,7 +1,5 @@
-from typing import Callable, Dict
+from collections.abc import Callable
 
-import pytest
-from fastapi.testclient import TestClient
 from httpx import Response
 
 from db.models.user_project_permission import Permission

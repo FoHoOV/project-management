@@ -1,5 +1,4 @@
-from encodings import search_function
-from typing import Callable
+from collections.abc import Callable
 
 from httpx import Response
 
@@ -8,7 +7,6 @@ from db.models.user_project_permission import Permission
 from db.schemas.project import PartialUserWithPermission, Project
 from error.exceptions import ErrorCode
 from tests.api.conftest import TestUserType
-from tests.api.routes.user import test_user
 
 
 def test_permissions_dont_leak(

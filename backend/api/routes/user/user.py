@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from api.dependencies.db import get_db
@@ -26,6 +26,5 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 @router.get("/me", response_model=User)
 def info(
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
 ):
     return current_user

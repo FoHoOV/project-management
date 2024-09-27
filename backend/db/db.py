@@ -1,9 +1,10 @@
 import logging
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
+# pylint: disable=unsubscriptable-object
 DbPrams = TypedDict("DbPrams", {"session": sessionmaker[Session], "engine": Engine})
 
 

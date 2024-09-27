@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from joserfc import errors, jwt
 from sqlalchemy.orm import Session

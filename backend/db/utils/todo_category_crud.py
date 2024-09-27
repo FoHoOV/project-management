@@ -169,6 +169,7 @@ def update_order(
     db.commit()
 
     item = db.query(TodoCategory).filter(TodoCategory.id == category_id).first()
+
     if item is None:
         raise
 
@@ -288,19 +289,20 @@ def validate_todo_category_belongs_to_user(
 def _update_actions(
     db: Session, todo_category: TodoCategory, toggle_actions: list[Action]
 ):
+
     def has_action(actions: list[TodoCategoryAction], action: Action):
-        return len(list(filter(lambda x: x.action == action, actions))) >= 1
+        return len([_action for _action in actions if _action == action]) >= 1
 
     def validate_can_add_action(action: Action, todo_category: TodoCategory):
         match action:
             case Action.AUTO_MARK_AS_DONE:
-                if len(list(filter(lambda x: not x.is_done, todo_category.items))) >= 1:
+                if len([item for item in todo_category.items if not item.is_done]) >= 1:
                     raise UserFriendlyError(
                         ErrorCode.CANT_CHANGE_ACTION,
                         "Cannot add this rule at the moment, because this category contains items that are not done yet",
                     )
             case Action.AUTO_MARK_AS_UNDONE:
-                if len(list(filter(lambda x: x.is_done, todo_category.items))) >= 1:
+                if len([item for item in todo_category.items if item.is_done]) >= 1:
                     raise UserFriendlyError(
                         ErrorCode.CANT_CHANGE_ACTION,
                         "Cannot add this rule at the moment, because this category contains items that are already marked as done",

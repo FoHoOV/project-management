@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, Connection, ForeignKey, UniqueConstraint, event
-from sqlalchemy.orm import Mapped, Mapper, Session, mapped_column, relationship
+from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.models.base import BaseOrderedItem, BasesWithCreatedDate
 

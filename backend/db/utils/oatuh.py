@@ -1,7 +1,6 @@
 import datetime
 from datetime import timedelta
 
-from click import DateTime
 from joserfc import jwt
 from sqlalchemy.orm import Session
 
