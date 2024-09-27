@@ -73,7 +73,7 @@ def update_user_permissions(
     # check if the user we are changing has access to this project
     try:
         validate_project_belongs_to_user(db, project_id, permissions.user_id, None)
-    except UserFriendlyError as ex:
+    except UserFriendlyError:
         raise UserFriendlyError(
             ErrorCode.USER_DOESNT_HAVE_ACCESS_TO_PROJECT,
             "The user that you are trying to update their permissions doesn't have access to this project or doesn't exist",

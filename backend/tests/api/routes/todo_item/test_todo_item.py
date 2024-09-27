@@ -1,7 +1,6 @@
-from typing import Callable, Dict
+from collections.abc import Callable
 
 import pytest
-from fastapi.testclient import TestClient
 from httpx import Response
 
 from api.routes.error import UserFriendlyErrorSchema

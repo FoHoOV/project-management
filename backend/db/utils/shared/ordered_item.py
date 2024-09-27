@@ -1,4 +1,5 @@
-from typing import Callable, Type, TypedDict
+from collections.abc import Callable
+from typing import Type, TypedDict
 
 from sqlalchemy.orm import Mapped, Query, Session
 
@@ -100,7 +101,7 @@ def _remove_item_from_sorted_items_in_position[
     TOrderedItemClass: BaseOrderedItem
 ](
     db: Session,
-    order_class: Type[TOrderedItemClass],
+    order_class: type[TOrderedItemClass],
     order_query: Query[TOrderedItemClass],
     item_id_column: Mapped[int],
     removing_item_id: int,

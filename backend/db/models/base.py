@@ -1,13 +1,12 @@
 import datetime
 
-from sqlalchemy import BigInteger, DateTime
+from sqlalchemy import DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
     __abstract__ = True
     __table_args__ = {"sqlite_autoincrement": True}
-    pass
 
 
 class BasesWithCreatedDate(Base):

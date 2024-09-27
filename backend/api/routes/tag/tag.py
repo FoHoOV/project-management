@@ -1,4 +1,3 @@
-from email.policy import default
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path, Query, Response

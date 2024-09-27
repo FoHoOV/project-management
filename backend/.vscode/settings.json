@@ -21,5 +21,6 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always"
   },
-  "isort.check": true
+  "isort.check": true,
+  "pylint.importStrategy": "fromEnvironment"
 }

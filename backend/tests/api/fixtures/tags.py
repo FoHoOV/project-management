@@ -1,4 +1,4 @@
-from typing import Callable, Dict
+from collections.abc import Callable
 
 import pytest
 from fastapi.testclient import TestClient
@@ -9,7 +9,7 @@ from tests.api.conftest import TestUserType
 @pytest.fixture(scope="function")
 def attach_tag_to_todo(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    auth_header_factory: Callable[[TestUserType], dict[str, str]],
 ):
     def _create_tag(user: TestUserType, project_id: int, todo_id: int, tag_name: str):
         response = test_client.post(
@@ -29,7 +29,7 @@ def attach_tag_to_todo(
 @pytest.fixture(scope="function")
 def detach_tag_from_todo(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], Dict[str, str]],
+    auth_header_factory: Callable[[TestUserType], dict[str, str]],
 ):
 
     def _remove_tag(
