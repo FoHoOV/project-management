@@ -3,15 +3,13 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ID }}
 
 on:
-  workflow_run:
-    workflows: [TEST CI]
-    types:
-      - completed
+  pull_request:
+    branches:
+      - master
 
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     environment:
       name: Preview – project-management-backend
@@ -26,9 +24,6 @@ jobs:
 
     env:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_BACKEND_PROJECT_ID }}
-
-    permissions:
-      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -46,6 +41,7 @@ jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
     needs: deploy-backend
+
     environment:
       name: Preview – project-management-frontend
       url: ${{ steps.vercel_deploy.outputs.FRONT_END_DEPLOYED_URL }}
@@ -56,9 +52,6 @@ jobs:
 
     env:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
-
-    permissions:
-      pull-requests: write
 
     steps:
       - name: Checkout code
