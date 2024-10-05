@@ -43,7 +43,7 @@ jobs:
         run: pipenv install --dev
 
       - name: Run the backend tests
-        run: pipenv run pytest
+        run: pipenv run python -m pytest
 
   test-frontend:
     name: Test Frontend
