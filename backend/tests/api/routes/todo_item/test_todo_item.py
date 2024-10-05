@@ -9,12 +9,12 @@ from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item import TodoItem
 from error.exceptions import ErrorCode
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 def test_create_todo_item_in_invalid_category(
-    create_todo_item_request: Callable[[TestUserType, int], Response],
-    test_users: list[TestUserType],
+    create_todo_item_request: Callable[[UserType, int], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
 
@@ -32,11 +32,11 @@ def test_create_todo_item_in_invalid_category(
 
 @pytest.mark.parametrize("number_of_todos_to_create", [10])
 def test_list_all_todos(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoItem],
-    list_todo_items_request: Callable[[TestUserType, int, int], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoItem],
+    list_todo_items_request: Callable[[UserType, int, int], Response],
+    test_users: list[UserType],
     number_of_todos_to_create: int,
 ):
     user_a = test_users[0]
@@ -74,14 +74,14 @@ def test_list_all_todos(
 
 @pytest.mark.parametrize("number_of_todos_to_create", [10])
 def test_reorder_todos(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoItem],
-    list_todo_items: Callable[[TestUserType, int, int], list[TodoItem]],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoItem],
+    list_todo_items: Callable[[UserType, int, int], list[TodoItem]],
     update_todo_item_order_request: Callable[
-        [TestUserType, int, int | None, int | None, int | None], Response
+        [UserType, int, int | None, int | None, int | None], Response
     ],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
     number_of_todos_to_create: int,
 ):
     user = test_users[0]  # Assuming the first user is used for this test
@@ -131,15 +131,13 @@ def test_reorder_todos(
 
 
 def test_todo_item_permissions(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoItem],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    update_todo_item_done_status_request: Callable[[TestUserType, int, bool], Response],
-    delete_todo_item_request: Callable[[TestUserType, int], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoItem],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    update_todo_item_done_status_request: Callable[[UserType, int, bool], Response],
+    delete_todo_item_request: Callable[[UserType, int], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
     user_b = test_users[1]
@@ -183,15 +181,13 @@ def test_todo_item_permissions(
 
 
 def test_todo_item_done_status_changes(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoItem],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    update_todo_item_done_status: Callable[[TestUserType, int, bool], TodoItem],
-    update_todo_item_done_status_request: Callable[[TestUserType, int, bool], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoItem],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    update_todo_item_done_status: Callable[[UserType, int, bool], TodoItem],
+    update_todo_item_done_status_request: Callable[[UserType, int, bool], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
     user_b = test_users[1]

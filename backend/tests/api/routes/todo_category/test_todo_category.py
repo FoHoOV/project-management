@@ -5,16 +5,14 @@ from httpx import Response
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 def test_todo_category_create_with_permission(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -33,13 +31,11 @@ def test_todo_category_create_with_permission(
 
 
 def test_todo_category_create_no_permission(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category_request: Callable[[TestUserType, int], Response],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
+    create_project: Callable[[UserType], Project],
+    create_todo_category_request: Callable[[UserType, int], Response],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
     get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with other permissions
@@ -63,13 +59,11 @@ def test_todo_category_create_no_permission(
 
 
 def test_todo_category_update_with_permission(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    update_todo_category_request: Callable[[TestUserType, int, str], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    update_todo_category_request: Callable[[UserType, int, str], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -91,14 +85,12 @@ def test_todo_category_update_with_permission(
 
 
 def test_todo_category_update_no_permission(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
     get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
-    update_todo_category_request: Callable[[TestUserType, int, str], Response],
-    test_users: list[TestUserType],
+    update_todo_category_request: Callable[[UserType, int, str], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user without update permission
@@ -123,10 +115,10 @@ def test_todo_category_update_no_permission(
 
 
 def test_todo_category_delete_by_owner(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    delete_todo_category_request: Callable[[TestUserType, int, int], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    delete_todo_category_request: Callable[[UserType, int, int], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
 
@@ -140,14 +132,12 @@ def test_todo_category_delete_by_owner(
 
 
 def test_todo_category_delete_no_permission(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
     get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
-    delete_todo_category_request: Callable[[TestUserType, int, int], Response],
-    test_users: list[TestUserType],
+    delete_todo_category_request: Callable[[UserType, int, int], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user without delete permission

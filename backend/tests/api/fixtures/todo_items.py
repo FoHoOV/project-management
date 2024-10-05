@@ -5,14 +5,14 @@ from fastapi.testclient import TestClient
 from httpx import Response
 
 from db.schemas.todo_item import TodoItem
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 @pytest.fixture(scope="function")
 def create_todo_item_request(auth_header_factory, test_client: TestClient):
     """Helper function to create a todo item."""
 
-    def _create_todo_item(user: TestUserType, category_id: int):
+    def _create_todo_item(user: UserType, category_id: int):
         response = test_client.post(
             "/todo-items",
             headers=auth_header_factory(user),
@@ -29,10 +29,10 @@ def create_todo_item_request(auth_header_factory, test_client: TestClient):
 
 
 @pytest.fixture(scope="function")
-def create_todo_item(create_todo_item_request: Callable[[TestUserType, int], Response]):
+def create_todo_item(create_todo_item_request: Callable[[UserType, int], Response]):
     """Helper function to create a todo item."""
 
-    def _create_todo_item(user: TestUserType, category_id: int):
+    def _create_todo_item(user: UserType, category_id: int):
         response = create_todo_item_request(user, category_id)
         return TodoItem.model_validate(response.json(), strict=True)
 
@@ -42,9 +42,9 @@ def create_todo_item(create_todo_item_request: Callable[[TestUserType, int], Res
 @pytest.fixture(scope="function")
 def list_todo_items_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
-    def _list_todo_items(user: TestUserType, project_id: int, category_id: int):
+    def _list_todo_items(user: UserType, project_id: int, category_id: int):
         response = test_client.get(
             "/todo-items",
             params={"project_id": project_id, "category_id": category_id},
@@ -56,10 +56,8 @@ def list_todo_items_request(
 
 
 @pytest.fixture(scope="function")
-def list_todo_items(
-    list_todo_items_request: Callable[[TestUserType, int, int], Response]
-):
-    def _list_todo_items(user: TestUserType, project_id: int, category_id: int):
+def list_todo_items(list_todo_items_request: Callable[[UserType, int, int], Response]):
+    def _list_todo_items(user: UserType, project_id: int, category_id: int):
         response = list_todo_items_request(user, project_id, category_id)
         assert response.status_code == 200
         parsed_todos_before_reorder = [
@@ -73,9 +71,9 @@ def list_todo_items(
 @pytest.fixture(scope="function")
 def update_todo_item_done_status_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
-    def _update_done_status(user: TestUserType, todo_id: int, is_done: bool):
+    def _update_done_status(user: UserType, todo_id: int, is_done: bool):
         response = test_client.patch(
             f"/todo-items/{todo_id}",
             headers=auth_header_factory(user),
@@ -92,9 +90,9 @@ def update_todo_item_done_status_request(
 
 @pytest.fixture(scope="function")
 def update_todo_item_done_status(
-    update_todo_item_done_status_request: Callable[[TestUserType, int, bool], Response]
+    update_todo_item_done_status_request: Callable[[UserType, int, bool], Response]
 ):  # -> Callable[..., None]:
-    def _update_done_status(user: TestUserType, todo_id: int, is_done: bool):
+    def _update_done_status(user: UserType, todo_id: int, is_done: bool):
         response = update_todo_item_done_status_request(user, todo_id, is_done)
         assert response.status_code == 200, "updating todo item failed"
         todo = TodoItem.model_validate(response.json(), strict=True)
@@ -118,10 +116,10 @@ def update_todo_item_done_status(
 @pytest.fixture(scope="function")
 def update_todo_item_order_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
     def _update_todo_item_order(
-        user: TestUserType,
+        user: UserType,
         todo_id: int,
         left_id: int | None,
         right_id: int | None,
@@ -145,9 +143,9 @@ def update_todo_item_order_request(
 @pytest.fixture(scope="function")
 def delete_todo_item_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
-    def _delete_todo_item(user: TestUserType, todo_id: int):
+    def _delete_todo_item(user: UserType, todo_id: int):
         response = test_client.delete(
             f"/todo-items/{todo_id}",
             headers=auth_header_factory(user),

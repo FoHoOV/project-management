@@ -3,14 +3,14 @@ from secrets import choice
 import pytest
 from fastapi.testclient import TestClient
 
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 @pytest.mark.parametrize("username_case", ["lower", "upper"])
 @pytest.mark.parametrize("iteration", range(3))
 def test_login(
     test_client: TestClient,
-    test_users: list[TestUserType],
+    test_users: list[UserType],
     username_case: str,
     iteration: int,  # Added iteration, it's just for repeating the test.
 ):
