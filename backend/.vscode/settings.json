@@ -4,6 +4,8 @@
     "autouse",
     "DOESNT",
     "fastapi",
+    "pipenv",
+    "Pipfile",
     "pydantic",
     "sessionmaker",
     "sqlalchemy",

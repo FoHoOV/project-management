@@ -17,6 +17,7 @@
       "addoption",
       "autouse",
       "httpx",
+      "inorder",
       "ondropped",
       "onsubmitclienterror",
       "onsubmitended",

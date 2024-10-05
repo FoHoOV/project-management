@@ -1,8 +1,9 @@
 # Project management app
 
-A simple project management app. 
+A simple project management app.
 
 # Features:
+
 1. creating projects (with add/edit/delete)
 2. each project can have many todo categores (with add/edit/delete)
 3. each category can have many todo item (with add/edit/delete)
@@ -16,10 +17,10 @@ A simple project management app.
 11. creating projects from a default template
 12. adding rules to todo categories (currently we only support `MARK_AS_DONE` and `MARK_AS_UNDONE` action meaning when you move a todo item to a todo category, it will be automatically marked as `Done` or `Undone` depending on what you chose)
 13. setting due dates for each todoitem (with add/edit/remove)
-14. setting custom permissions per user 
+14. setting custom permissions per user
 15. changing project permissions in project settings page (only owners can change permissions)
 
-* You can use the backend project independently to create your own clients and interfaces
+- You can use the backend project independently to create your own clients and interfaces
 
 # Demo
 
@@ -27,16 +28,18 @@ You can find the demo at [this](https://project-management-fohoov.vercel.app) ur
 
 # How to run
 
-1. goto the backend project and follow the steps of its README.md
-2. goto the frontend project and follow the steps of its README.md
+1. goto the backend project and follow the steps of its [README.md](https://github.com/FoHoOV/project-management/blob/master/backend/README.md)
+2. goto the frontend project and follow the steps of its [README.md](https://github.com/FoHoOV/project-management/blob/master/frontend/README.md)
 
 # Known bugs
-  * nothing for now >_<
+
+- nothing for now >_<
 
 # Goals
+
 The goal of this project is to have most of ASANA's features (step by step tho)
 one day.
 
 # IDK what the title should be
 
-Please give this project a star if you liked it (●'◡'●). Oh, and also I would love any contributions or improvements to this hobby project ^\_^
+Please give this project a star if you liked it (●'◡'●). Oh, and also I would love any contributions or improvements to this hobby project ^_^
