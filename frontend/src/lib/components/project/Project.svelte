@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Alert from '$components/alerts/Alert.svelte';
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
@@ -12,6 +12,7 @@
 	import Confirm from '$components/Confirm.svelte';
 	import { type CommonComponentStates } from '$lib';
 	import { getProjects } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Events = {
 		onEditProject?: (project: Project) => void;
@@ -27,7 +28,7 @@
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
-	let confirmDetachProject = $state<Confirm | null>(null);
+	let confirmDetachProject = $state<ComponentExports<typeof Confirm> | null>(null);
 
 	const projectsStore = getProjects();
 

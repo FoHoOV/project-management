@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { Permission } from '$lib';

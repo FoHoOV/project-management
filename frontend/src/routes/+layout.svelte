@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
 	import MultiStepModal from '$components/popups/MultiStepModal.svelte';
 	import Drawer from '$components/Drawer.svelte';

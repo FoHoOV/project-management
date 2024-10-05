@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Confirm from '$components/Confirm.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
@@ -9,6 +9,7 @@
 	import type { ActionData, PageData } from './$types';
 	import type { PartialUserWithPermission } from '$lib';
 	import { getToastManager } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Props = {
 		form: ActionData;
@@ -20,7 +21,7 @@
 <script lang="ts">
 	const { data, form, user }: Props = $props();
 
-	let detachProjectConfirmRef = $state<Confirm | null>();
+	let detachProjectConfirmRef = $state<ComponentExports<typeof Confirm> | null>();
 	const toastManagerStore = getToastManager();
 </script>
 

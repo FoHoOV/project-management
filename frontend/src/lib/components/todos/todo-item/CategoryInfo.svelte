@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import type { StrictUnion } from '$lib';
 	import type { TodoItem, TodoCategoryPartialTodoItem } from '$lib/generated-client';
 

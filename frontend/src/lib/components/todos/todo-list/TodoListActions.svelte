@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';

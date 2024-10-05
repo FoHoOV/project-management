@@ -1,10 +1,10 @@
-import type { ComponentProps, SvelteComponent } from 'svelte';
+import type { Component, ComponentProps } from 'svelte';
 
-type SvelteComponentClass<TComponent extends SvelteComponent> = new (...args: any[]) => TComponent;
-type ComponentPropsGenerator<TComponent extends SvelteComponent> = () => ComponentProps<TComponent>;
+type ComponentPropsGenerator<TComponent extends Component<any, any>> =
+	() => ComponentProps<TComponent>;
 
-type ModalStep<TComponent extends SvelteComponent> = {
-	component: SvelteComponentClass<TComponent>;
+type ModalStep<TComponent extends Component<any, any>> = {
+	component: TComponent;
 	props: ComponentPropsGenerator<TComponent>;
 	title: string;
 	closeModalButtonText?: string;
@@ -19,7 +19,7 @@ export class MultiStepModal {
 		this._show = show;
 	}
 
-	add<TComponent extends SvelteComponent>(step: ModalStep<TComponent>) {
+	add<TComponent extends Component<any, any>>(step: ModalStep<TComponent>) {
 		this._steps.push(step);
 		this.show();
 	}

@@ -1,6 +1,7 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Modal from '$components/popups/Modal.svelte';
 	import { getMultiStepModal } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Props = {
 		class?: string;
@@ -12,7 +13,7 @@
 	const { class: className = '', closeButtonText = 'close' }: Props = $props();
 
 	const multiStepModal = getMultiStepModal();
-	let modal = $state<Modal | null>(null);
+	let modal = $state<ComponentExports<typeof Modal> | null>(null);
 	const currentStep = $derived(
 		multiStepModal.steps$.length > 0
 			? multiStepModal.steps$[multiStepModal.steps$.length - 1]

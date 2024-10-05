@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import CircleButton from '$components/buttons/CircleButton.svelte';
 	import ProjectList from '$components/project/ProjectList.svelte';
 	import CreateProject from '$routes/user/projects/CreateProject.svelte';
@@ -24,7 +24,7 @@
 		multiStepModalStore.add({
 			component: CreateProject,
 			props: () => {
-				return { form: form };
+				return { form };
 			},
 			title: 'Create a new project'
 		});
@@ -34,7 +34,7 @@
 		multiStepModalStore.add({
 			component: AttachToUser,
 			props: () => {
-				return { form: form, project: project };
+				return { form, project };
 			},
 			title: 'Share this project with another user'
 		});
@@ -44,7 +44,7 @@
 		multiStepModalStore.add({
 			component: EditProject,
 			props: () => {
-				return { form: form, project: project };
+				return { form, project };
 			},
 			title: 'Edit this project details'
 		});

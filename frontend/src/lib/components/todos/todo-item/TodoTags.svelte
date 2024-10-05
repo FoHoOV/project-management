@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 
@@ -18,6 +18,7 @@
 	import Confirm from '$components/Confirm.svelte';
 	import { type CommonComponentStates } from '$lib';
 	import { getTodoCategories } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Events = {
 		onEditTag?: (tag: TodoItemPartialTag) => void;
@@ -29,13 +30,13 @@
 	} & Events;
 </script>
 
-<script script lang="ts">
+<script lang="ts">
 	const { todo, onEditTag, onAddTag }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
-	let deleteTagConfirms = $state<Confirm[]>([]);
-	let detachTagConfirms = $state<Confirm[]>([]);
+	let deleteTagConfirms = $state<ComponentExports<typeof Confirm>[]>([]);
+	let detachTagConfirms = $state<ComponentExports<typeof Confirm>[]>([]);
 
 	const todoCategoriesStore = getTodoCategories();
 

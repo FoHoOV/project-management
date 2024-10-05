@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import TodoItem from '$components/todos/todo-item/TodoItem.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import LoadingButton from '$components/buttons/LoadingButton.svelte';
@@ -10,12 +10,13 @@
 	import { TodoCategories } from '$lib/stores/todos/todos.svelte.js';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import { setTodoCategories } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte.js';
 </script>
 
 <script lang="ts">
 	const { form } = $props();
 
-	let enhancedForm = $state<EnhancedForm<any, any, any> | null>(null);
+	let enhancedForm = $state<ComponentExports<typeof EnhancedForm> | null>(null);
 
 	const todoCategoriesStore = setTodoCategories(new TodoCategories(), false);
 

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
 	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
 	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
