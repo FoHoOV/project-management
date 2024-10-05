@@ -34,7 +34,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
 
       - name: Install pipenv
         run: pip install pipenv --user
