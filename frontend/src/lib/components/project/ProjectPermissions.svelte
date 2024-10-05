@@ -33,7 +33,7 @@
 		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false;
 		selectedPermissions = preCheckedPermissions
 			? new SvelteSet(preCheckedPermissions)
-			: (null ?? new SvelteSet([Permission.All]));
+			: new SvelteSet([Permission.All]);
 	}
 
 	setInitValues();

@@ -39,7 +39,8 @@
 
 <Modal title={currentStep?.title} class={className} onClosed={handleClose} bind:this={modal}>
 	{#snippet body({ show, close })}
-		<svelte:component this={currentStep?.component} {...componentProps}></svelte:component>
+		{@const Component = currentStep?.component}
+		<Component {...componentProps}></Component>
 	{/snippet}
 
 	{#snippet actions()}

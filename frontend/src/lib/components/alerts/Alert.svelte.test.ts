@@ -3,11 +3,11 @@ import Alert from './Alert.svelte';
 import { expect, test } from 'vitest';
 import { tick } from 'svelte';
 
-function getAlertText(locator: RenderResult<Alert>) {
+function getAlertText(locator: RenderResult<typeof Alert>) {
 	return locator.queryByTestId('alert-message');
 }
 
-function getDismissAlertButton(locator: RenderResult<Alert>) {
+function getDismissAlertButton(locator: RenderResult<typeof Alert>) {
 	return locator.queryByTestId('alert-close-dismiss-btn');
 }
 
