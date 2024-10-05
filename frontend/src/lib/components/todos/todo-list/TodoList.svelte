@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Confirm from '$components/Confirm.svelte';
 	import Draggable from './Draggable.svelte';
 	import Spinner from '$components/Spinner.svelte';
@@ -24,6 +24,7 @@
 	import Fa from 'svelte-fa';
 	import { flip } from 'svelte/animate';
 	import { getMultiStepModal, getTodoCategories } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Events = {
 		onEditTodoCategory?: (category: TodoCategory) => void;
@@ -44,7 +45,7 @@
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
-	let confirmDeleteTodoCategory = $state<Confirm | null>();
+	let confirmDeleteTodoCategory = $state<ComponentExports<typeof Confirm> | null>();
 
 	const todoCategoriesStore = getTodoCategories();
 	const multiStepModalStore = getMultiStepModal();

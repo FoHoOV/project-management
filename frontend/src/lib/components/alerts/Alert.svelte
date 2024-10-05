@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Fa from 'svelte-fa';
 	import { faClose, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 

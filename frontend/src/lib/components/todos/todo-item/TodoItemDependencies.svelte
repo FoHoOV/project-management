@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
@@ -15,6 +15,7 @@
 	} from '$lib/generated-client';
 	import { type CommonComponentStates } from '$lib';
 	import { getTodoCategories } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Events = {
 		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;
@@ -25,12 +26,12 @@
 	} & Events;
 </script>
 
-<script script lang="ts">
+<script lang="ts">
 	const { todo, onAddDependency }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
-	let deleteDependencyConfirms = $state<Confirm[]>([]);
+	let deleteDependencyConfirms = $state<ComponentExports<typeof Confirm>[]>([]);
 
 	const todoCategoriesStore = getTodoCategories();
 

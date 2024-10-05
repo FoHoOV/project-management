@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 	import Spinner from '$components/Spinner.svelte';
@@ -34,6 +34,7 @@
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
 	import { getMultiStepModal, getToastManager, getTodoCategories } from '$lib/stores';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Events = {
 		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;
@@ -62,7 +63,7 @@
 
 	let apiErrorTitle = $state<string | null>(null);
 	let componentState = $state<CommonComponentStates>('none');
-	let confirmDeleteTodo = $state<Confirm | null>(null);
+	let confirmDeleteTodo = $state<ComponentExports<typeof Confirm> | null>(null);
 
 	const todoCategoriesStore = getTodoCategories();
 	const toastsManagerStore = getToastManager();

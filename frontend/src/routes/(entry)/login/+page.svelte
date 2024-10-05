@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
 	import FormInput from '$lib/components/forms/FormInput.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';

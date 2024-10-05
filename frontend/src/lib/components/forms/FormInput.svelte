@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Alert from '$components/alerts/Alert.svelte';
 
 	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';

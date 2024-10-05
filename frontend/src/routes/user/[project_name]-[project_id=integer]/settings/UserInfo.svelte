@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { type PartialUserWithPermission, type Token, getUsername } from '$lib';
 	import { Permission } from '$lib/generated-client/models';
 

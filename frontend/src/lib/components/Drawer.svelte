@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Navbar from '$components/navbar/Navbar.svelte';
 	import Fa from 'svelte-fa';
 

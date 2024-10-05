@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Confirm from '$components/Confirm.svelte';
 	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
@@ -12,6 +12,7 @@
 	import type { PartialUserWithPermission, Permission } from '$lib';
 	import { getToastManager } from '$lib/stores';
 	import type { SvelteSet } from 'svelte/reactivity';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Props = {
 		form: ActionData;
@@ -25,7 +26,7 @@
 <script lang="ts">
 	const { data, form, user, getSelectedPermissions, resetSelectedPermissions }: Props = $props();
 
-	let changePermissionsConfirmRef = $state<Confirm | null>();
+	let changePermissionsConfirmRef = $state<ComponentExports<typeof Confirm> | null>();
 	const toastsMangerStore = getToastManager();
 </script>
 

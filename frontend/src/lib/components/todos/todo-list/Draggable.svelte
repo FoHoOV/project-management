@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
 	import Spinner from '$components/Spinner.svelte';
 

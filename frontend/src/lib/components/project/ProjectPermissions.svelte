@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { Permission } from '$lib';
@@ -33,7 +33,7 @@
 		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false;
 		selectedPermissions = preCheckedPermissions
 			? new SvelteSet(preCheckedPermissions)
-			: (null ?? new SvelteSet([Permission.All]));
+			: new SvelteSet([Permission.All]);
 	}
 
 	setInitValues();

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import NavbarItem from '$components/navbar/NavbarItem.svelte';
 	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 	import SaveChanges from '$routes/user/[project_name]-[project_id=integer]/settings/SaveChanges.svelte';
@@ -9,12 +9,13 @@
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 	import { getNavbar } from '$lib/stores/index.js';
+	import type { ComponentExports } from '$lib/utils/types/svelte.js';
 </script>
 
 <script lang="ts">
 	const { data, form } = $props();
 
-	let projectPermissionsRefs = $state<ProjectPermissions[]>([]);
+	let projectPermissionsRefs = $state<ComponentExports<typeof ProjectPermissions>[]>([]);
 	const navbarStore = getNavbar();
 
 	const showConfirmChanges = $derived.by(() => {

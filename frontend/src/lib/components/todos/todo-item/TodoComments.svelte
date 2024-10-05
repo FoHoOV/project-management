@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
@@ -13,6 +13,7 @@
 	import { TodoComments, getTodoComments, setTodoComments, getTodoCategories } from '$lib/stores';
 	import { flip } from 'svelte/animate';
 	import { type CommonComponentStates } from '$lib';
+	import type { ComponentExports } from '$lib/utils/types/svelte';
 
 	export type Events = {
 		onEditComment?: (comment: TodoComment, store: TodoComments) => void;
@@ -24,13 +25,13 @@
 	} & Events;
 </script>
 
-<script script lang="ts">
+<script lang="ts">
 	const { todoId, onEditComment, onCreateComment }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 
-	let deleteCommentConfirms = $state<Confirm[]>([]);
+	let deleteCommentConfirms = $state<ComponentExports<typeof Confirm>[]>([]);
 
 	const todoCommentsStore = setTodoComments(new TodoComments(getTodoCategories()), false);
 

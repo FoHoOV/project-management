@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import ProjectComponent, { type Events as ProjectEvents } from './Project.svelte';
 	import Empty from '$components/Empty.svelte';
 
