@@ -23,7 +23,7 @@ del .env.integration
 echo SQLALCHEMY_DATABASE_URL = "sqlite:///./todos_test.db" >> .\.env.integration
 
 REM starting the backend server on port 8080
-start cmd.exe @cmd /k ".venv\Scripts\python -m uvicorn main:app --reload --port 8080"
+start cmd.exe @cmd /k "python -m pipenv run uvicorn main:app --reload --port 8080"
 
 REM moving to frontend folder
 cd ..
