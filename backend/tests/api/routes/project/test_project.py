@@ -8,13 +8,13 @@ from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectAttachAssociationResponse
 from error.exceptions import ErrorCode
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 @pytest.mark.parametrize("template_flag", [False, True])
 def test_create_project(
-    test_users: list[TestUserType],
-    create_project_request: Callable[[TestUserType, bool], Response],
+    test_users: list[UserType],
+    create_project_request: Callable[[UserType, bool], Response],
     template_flag: bool,
 ):
     user = test_users[0]
@@ -48,10 +48,10 @@ def test_create_project(
 
 def test_project_accessibility(
     create_and_attach_project: Callable[
-        [TestUserType, TestUserType, list[Permission], bool], Project
+        [UserType, UserType, list[Permission], bool], Project
     ],
-    search_project: Callable[[TestUserType, int], Project],
-    test_users: list[TestUserType],
+    search_project: Callable[[UserType, int], Project],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
     user_b = test_users[1]
@@ -73,18 +73,16 @@ def test_project_accessibility(
 
 def test_owner_detaching_projects(
     create_and_attach_project: Callable[
-        [TestUserType, TestUserType, list[Permission]], Project
+        [UserType, UserType, list[Permission]], Project
     ],
     attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]],
+        [UserType, UserType, int, list[Permission]],
         ProjectAttachAssociationResponse,
     ],
-    detach_project_from_user: Callable[[TestUserType, TestUserType, int], None],
-    detach_project_from_user_request: Callable[
-        [TestUserType, TestUserType, int], Response
-    ],
-    search_project: Callable[[TestUserType, int], Project],
-    test_users: list[TestUserType],
+    detach_project_from_user: Callable[[UserType, UserType, int], None],
+    detach_project_from_user_request: Callable[[UserType, UserType, int], Response],
+    search_project: Callable[[UserType, int], Project],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
     user_b = test_users[1]
@@ -124,15 +122,13 @@ def test_owner_detaching_projects(
 
 
 def test_cannot_share_project_to_same_user_multiple_times(
-    create_project: Callable[[TestUserType], Project],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
+    create_project: Callable[[UserType], Project],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
     attach_project_to_user_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
-    search_project: Callable[[TestUserType, int], Project],
-    test_users: list[TestUserType],
+    search_project: Callable[[UserType, int], Project],
+    test_users: list[UserType],
 ):
     project = create_project(test_users[0])
     attach_project_to_user(test_users[0], test_users[1], project.id, [Permission.ALL])
@@ -169,11 +165,11 @@ def test_cannot_share_project_to_same_user_multiple_times(
 
 def test_user_permissions_per_project(
     create_and_attach_project: Callable[
-        [TestUserType, TestUserType, list[Permission]], Project
+        [UserType, UserType, list[Permission]], Project
     ],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
     verify_user_permissions: Callable[
-        [TestUserType, Project, dict[int, list[Permission]]], None
+        [UserType, Project, dict[int, list[Permission]]], None
     ],
 ):
     user_a = test_users[0]
@@ -212,10 +208,10 @@ def test_user_permissions_per_project(
 
 @pytest.mark.parametrize("values", [[], "", None])
 def test_cannot_pass_empty_permissions_to_attach_association(
-    create_project: Callable[[TestUserType], Project],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    test_users: list[UserType],
     attach_project_to_user_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
     values: str | list | None,
 ):
@@ -229,11 +225,11 @@ def test_cannot_pass_empty_permissions_to_attach_association(
 
 
 def test_attach_with_all_and_other_permissions(
-    create_project: Callable[[TestUserType], Project],
+    create_project: Callable[[UserType], Project],
     attach_project_to_user_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
 ):
     project = create_project(test_users[0])
 

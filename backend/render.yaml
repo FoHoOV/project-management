@@ -5,5 +5,5 @@ services:
     runtime: python
     plan: free
     autoDeploy: false
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port 8080
+    buildCommand: pip install pipenv --user && pipenv install
+    startCommand: pipenv run uvicorn main:app --host 0.0.0.0 --port 8080

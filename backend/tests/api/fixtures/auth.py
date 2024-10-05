@@ -7,9 +7,9 @@ from fastapi.testclient import TestClient
 
 from db.schemas.user import User
 
-TestUserType = TypedDict("TestUserType", {"id": int, "username": str, "password": str})
+UserType = TypedDict("UserType", {"id": int, "username": str, "password": str})
 
-_TEST_USERS: list[TestUserType] = [
+_TEST_USERS: list[UserType] = [
     {"id": -1, "username": "test_username1", "password": "test_password1"},
     {"id": -1, "username": "test_username2", "password": "test_password2"},
     {"id": -1, "username": "test_username3", "password": "test_password3"},
@@ -41,7 +41,7 @@ def test_users(test_client: TestClient, test_app: FastAPI):
 def access_token_factory(test_client: TestClient):
 
     def _get_access_token(
-        user: TestUserType,
+        user: UserType,
     ) -> str:
         response = test_client.post(
             "/oauth/token",
@@ -63,9 +63,9 @@ def access_token_factory(test_client: TestClient):
 
 @pytest.fixture(scope="function")
 def auth_header_factory(
-    access_token_factory: Callable[[TestUserType], str],
+    access_token_factory: Callable[[UserType], str],
 ):
-    def _get_auth_header(user: TestUserType):
+    def _get_auth_header(user: UserType):
         """Fixture to generate authorization header for a test user."""
         return {"Authorization": f"Bearer {access_token_factory(user)}"}
 

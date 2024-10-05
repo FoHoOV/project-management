@@ -6,8 +6,8 @@ REM moving to backend folder
 cd backend
 
 REM installing python dependencies
-if not exist venv python -m venv venv
-call venv\Scripts\pip.exe install -r requirements.txt
+python -m pip install pipenv --user
+python -m pipenv install 
 
 REM creating the .env file
 del .env
@@ -23,7 +23,7 @@ del .env.integration
 echo SQLALCHEMY_DATABASE_URL = "sqlite:///./todos_test.db" >> .\.env.integration
 
 REM starting the backend server on port 8080
-start cmd.exe @cmd /k "venv\Scripts\python -m uvicorn main:app --reload --port 8080"
+start cmd.exe @cmd /k "python -m pipenv run uvicorn main:app --reload --port 8080"
 
 REM moving to frontend folder
 cd ..

@@ -5,18 +5,18 @@ from fastapi.testclient import TestClient
 
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 @pytest.fixture(scope="function")
 def update_user_permissions_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
 
     def _update_permissions(
-        owner: TestUserType,
-        target: TestUserType,
+        owner: UserType,
+        target: UserType,
         project_id: int,
         permissions: list[Permission],
     ):
@@ -34,9 +34,9 @@ def update_user_permissions_request(
 
 
 @pytest.fixture(scope="function")
-def verify_user_permissions(search_project: Callable[[TestUserType, int], Project]):
+def verify_user_permissions(search_project: Callable[[UserType, int], Project]):
     def _verify_permissions(
-        user: TestUserType,
+        user: UserType,
         project: Project,
         expected_permissions: dict[int, list[Permission]],
     ):

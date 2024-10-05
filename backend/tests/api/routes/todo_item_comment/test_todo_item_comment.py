@@ -6,19 +6,17 @@ from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.todo_category import TodoCategory
 from db.schemas.todo_item_comment import TodoComment
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 def test_create_comment_no_access(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoCategory],
-    create_comment_request: Callable[[TestUserType, int, str], Response],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoCategory],
+    create_comment_request: Callable[[UserType, int, str], Response],
     get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    test_users: list[TestUserType],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    test_users: list[UserType],
 ):
     # Setup: Create a project, category, and todo item
     project_one = create_project(test_users[0])
@@ -46,14 +44,12 @@ def test_create_comment_no_access(
 
 
 def test_create_comment_with_access(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoCategory],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    create_comment_request: Callable[[TestUserType, int, str], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoCategory],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    create_comment_request: Callable[[UserType, int, str], Response],
+    test_users: list[UserType],
 ):
     # Setup: Create a project, category, and todo item
     project_one = create_project(test_users[0])
@@ -71,16 +67,14 @@ def test_create_comment_with_access(
 
 
 def test_delete_comment_no_access(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoCategory],
-    create_comment: Callable[[TestUserType, int, str], TodoComment],
-    delete_comment_request: Callable[[TestUserType, int, int], Response],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoCategory],
+    create_comment: Callable[[UserType, int, str], TodoComment],
+    delete_comment_request: Callable[[UserType, int, int], Response],
     get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    test_users: list[TestUserType],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    test_users: list[UserType],
 ):
     # Setup: Create a project, category, todo item, and a comment
     project_one = create_project(test_users[0])
@@ -108,15 +102,13 @@ def test_delete_comment_no_access(
 
 
 def test_delete_comment_with_access(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoCategory],
-    create_comment: Callable[[TestUserType, int, str], TodoComment],
-    delete_comment_request: Callable[[TestUserType, int, int], Response],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoCategory],
+    create_comment: Callable[[UserType, int, str], TodoComment],
+    delete_comment_request: Callable[[UserType, int, int], Response],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    test_users: list[UserType],
 ):
     # Setup: Create a project, category, todo item, and a comment
     project_one = create_project(test_users[0])
@@ -135,12 +127,12 @@ def test_delete_comment_with_access(
 
 
 def test_delete_comment_by_owner(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoCategory],
-    create_comment: Callable[[TestUserType, int, str], TodoComment],
-    delete_comment_request: Callable[[TestUserType, int, int], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoCategory],
+    create_comment: Callable[[UserType, int, str], TodoComment],
+    delete_comment_request: Callable[[UserType, int, int], Response],
+    test_users: list[UserType],
 ):
     # Setup: Create a project, category, todo item, and a comment
     project_one = create_project(test_users[0])

@@ -6,19 +6,17 @@ from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission
 from db.schemas.project import PartialUserWithPermission, Project
 from error.exceptions import ErrorCode
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 def test_permissions_dont_leak(
-    create_project: Callable[[TestUserType], Project],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    search_project: Callable[[TestUserType, int], Project],
+    create_project: Callable[[UserType], Project],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    search_project: Callable[[UserType, int], Project],
     verify_user_permissions: Callable[
-        [TestUserType, Project, dict[int, list[Permission]]], None
+        [UserType, Project, dict[int, list[Permission]]], None
     ],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -80,18 +78,16 @@ def test_permissions_dont_leak(
 
 
 def test_prevent_user_without_access_from_updating_permissions(
-    create_project: Callable[[TestUserType], Project],
+    create_project: Callable[[UserType], Project],
     update_user_permissions_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    search_project: Callable[[TestUserType, int], Project],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    search_project: Callable[[UserType, int], Project],
     verify_user_permissions: Callable[
-        [TestUserType, Project, dict[int, list[Permission]]], None
+        [UserType, Project, dict[int, list[Permission]]], None
     ],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -124,18 +120,16 @@ def test_prevent_user_without_access_from_updating_permissions(
 
 
 def test_owner_can_update_user_permissions(
-    create_project: Callable[[TestUserType], Project],
+    create_project: Callable[[UserType], Project],
     update_user_permissions_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
     verify_user_permissions: Callable[
-        [TestUserType, Project, dict[int, list[Permission]]], None
+        [UserType, Project, dict[int, list[Permission]]], None
     ],
-    search_project: Callable[[TestUserType, int], Project],
-    test_users: list[TestUserType],
+    search_project: Callable[[UserType, int], Project],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -167,18 +161,16 @@ def test_owner_can_update_user_permissions(
 
 
 def test_shared_user_cant_update_owner_permissions(
-    create_project: Callable[[TestUserType], Project],
+    create_project: Callable[[UserType], Project],
     update_user_permissions_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    search_project: Callable[[TestUserType, int], Project],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    search_project: Callable[[UserType, int], Project],
     verify_user_permissions: Callable[
-        [TestUserType, Project, dict[int, list[Permission]]], None
+        [UserType, Project, dict[int, list[Permission]]], None
     ],
-    test_users: list[TestUserType],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -210,12 +202,10 @@ def test_shared_user_cant_update_owner_permissions(
 
 
 def test_users_of_project_grows_after_share(
-    create_project: Callable[[TestUserType], Project],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    search_project: Callable[[TestUserType, int], Project],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    search_project: Callable[[UserType, int], Project],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Shared user with permission
@@ -244,15 +234,13 @@ def test_users_of_project_grows_after_share(
 
 
 def test_changing_project_owner(
-    create_project: Callable[[TestUserType], Project],
+    create_project: Callable[[UserType], Project],
     update_user_permissions_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    search_project: Callable[[TestUserType, int], Project],
-    test_users: list[TestUserType],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    search_project: Callable[[UserType, int], Project],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]  # Owner
     user_b = test_users[1]  # Other

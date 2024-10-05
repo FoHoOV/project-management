@@ -6,14 +6,14 @@ from httpx import Response
 
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectAttachAssociationResponse
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 @pytest.fixture(scope="function")
 def create_project_request(auth_header_factory, test_client: TestClient):
     """Fixture to create a project for testing."""
 
-    def _create_project(user: TestUserType, create_from_default_template: bool = False):
+    def _create_project(user: UserType, create_from_default_template: bool = False):
         response = test_client.post(
             "/projects",
             headers=auth_header_factory(user),
@@ -29,10 +29,10 @@ def create_project_request(auth_header_factory, test_client: TestClient):
 
 
 @pytest.fixture(scope="function")
-def create_project(create_project_request: Callable[[TestUserType, bool], Response]):
+def create_project(create_project_request: Callable[[UserType, bool], Response]):
     """Fixture to create a project for testing."""
 
-    def _create_project(user: TestUserType, create_from_default_template: bool = False):
+    def _create_project(user: UserType, create_from_default_template: bool = False):
         project = Project.model_validate(
             create_project_request(user, create_from_default_template).json(),
             strict=True,
@@ -44,13 +44,13 @@ def create_project(create_project_request: Callable[[TestUserType, bool], Respon
 
 @pytest.fixture(scope="function")
 def attach_project_to_user_request(
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
     test_client: TestClient,
 ):
 
     def _attach(
-        owner: TestUserType,
-        new_user: TestUserType,
+        owner: UserType,
+        new_user: UserType,
         project_id: int,
         permissions: list[Permission],
     ):
@@ -67,12 +67,12 @@ def attach_project_to_user_request(
 @pytest.fixture(scope="function")
 def attach_project_to_user(
     attach_project_to_user_request: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], Response
+        [UserType, UserType, int, list[Permission]], Response
     ]
 ):
     def _attach_to_user(
-        owner: TestUserType,
-        new_user: TestUserType,
+        owner: UserType,
+        new_user: UserType,
         project_id: int,
         permissions: list[Permission],
     ):
@@ -90,13 +90,13 @@ def attach_project_to_user(
 
 @pytest.fixture(scope="function")
 def detach_project_from_user_request(
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
     test_client: TestClient,
 ):
 
     def _detach(
-        owner: TestUserType,
-        other_user: TestUserType,
+        owner: UserType,
+        other_user: UserType,
         project_id: int,
     ):
         response = test_client.delete(
@@ -110,14 +110,12 @@ def detach_project_from_user_request(
 
 @pytest.fixture(scope="function")
 def detach_project_from_user(
-    detach_project_from_user_request: Callable[
-        [TestUserType, TestUserType, int], Response
-    ]
+    detach_project_from_user_request: Callable[[UserType, UserType, int], Response]
 ):
 
     def _detach(
-        owner: TestUserType,
-        other_user: TestUserType,
+        owner: UserType,
+        other_user: UserType,
         project_id: int,
     ):
         response = detach_project_from_user_request(owner, other_user, project_id)
@@ -129,9 +127,9 @@ def detach_project_from_user(
 @pytest.fixture(scope="function")
 def search_project_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
-    def _get_project(user: TestUserType, project_id: int):
+    def _get_project(user: UserType, project_id: int):
         response = test_client.get(
             f"/projects/{project_id}",
             headers=auth_header_factory(user),
@@ -143,9 +141,9 @@ def search_project_request(
 
 @pytest.fixture(scope="function")
 def search_project(
-    search_project_request: Callable[[TestUserType, int], Response],
+    search_project_request: Callable[[UserType, int], Response],
 ):
-    def _get_project(user: TestUserType, project_id: int):
+    def _get_project(user: UserType, project_id: int):
         return Project.model_validate(search_project_request(user, project_id).json())
 
     return _get_project
@@ -153,15 +151,13 @@ def search_project(
 
 @pytest.fixture(scope="function")
 def create_and_attach_project(
-    create_project: Callable[[TestUserType, bool], Project],
-    search_project: Callable[[TestUserType, int], Project],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
+    create_project: Callable[[UserType, bool], Project],
+    search_project: Callable[[UserType, int], Project],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
 ):
     def _create_and_attach(
-        owner: TestUserType,
-        shared_user: TestUserType,
+        owner: UserType,
+        shared_user: UserType,
         shared_user_permissions: list[Permission],
         create_from_default_template: bool = False,
     ):

@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 
 from db.schemas.todo_category import TodoCategory
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 @pytest.fixture(scope="function")
@@ -15,7 +15,7 @@ def create_todo_category_request(
 ):
     """Fixture to create a todo category within a project for testing."""
 
-    def _create_category(user: TestUserType, project_id: int):
+    def _create_category(user: UserType, project_id: int):
         response = test_client.post(
             "/todo-categories",
             headers=auth_header_factory(user),
@@ -32,11 +32,11 @@ def create_todo_category_request(
 
 @pytest.fixture(scope="function")
 def create_todo_category(
-    create_todo_category_request: Callable[[TestUserType, int], Response]
+    create_todo_category_request: Callable[[UserType, int], Response]
 ):
     """Fixture to create a todo category within a project for testing."""
 
-    def _create_category(user: TestUserType, project_id: int):
+    def _create_category(user: UserType, project_id: int):
         response = create_todo_category_request(user, project_id)
         assert (
             response.status_code == 200
@@ -51,9 +51,9 @@ def create_todo_category(
 @pytest.fixture(scope="function")
 def update_todo_category_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
-    def _update_category(user: TestUserType, category_id: int, new_title: str):
+    def _update_category(user: UserType, category_id: int, new_title: str):
         response = test_client.patch(
             f"/todo-categories/{category_id}",
             headers=auth_header_factory(user),
@@ -67,9 +67,9 @@ def update_todo_category_request(
 @pytest.fixture(scope="function")
 def delete_todo_category_request(
     test_client: TestClient,
-    auth_header_factory: Callable[[TestUserType], dict[str, str]],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
 ):
-    def _delete_category(user: TestUserType, category_id: int, project_id: int):
+    def _delete_category(user: UserType, category_id: int, project_id: int):
         response = test_client.delete(
             f"/todo-categories/{category_id}/projects/{project_id}",
             headers=auth_header_factory(user),

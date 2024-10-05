@@ -33,14 +33,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip"
+          python-version: 3.12
+          cache: "pipenv"
+
+      - name: Install pipenv
+        run: pip install pipenv --user
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pipenv install --dev
 
       - name: Run the backend tests
-        run: python3 -m pytest
+        run: pipenv run python -m pytest
 
   test-frontend:
     name: Test Frontend
@@ -76,16 +79,20 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
+          cache: "pipenv"
+
+      - name: Install pipenv
+        run: pip install pipenv --user
 
       - name: Install dependencies
         run: |
           cd ../backend
-          pip install -r requirements.txt
+          pipenv install
 
       - name: Start backend service
         run: |
           cd ../backend
-          setsid python -m uvicorn main:app --port 8080 &
+          setsid pipenv run uvicorn main:app --port 8080 &
           attempts=10
           for i in $(seq 1 $attempts); do
               if curl --silent --head --fail 127.0.0.1:8080/docs; then

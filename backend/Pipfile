@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+bcrypt = "~=4.1.3"
+fastapi = "~=0.109.2"
+pydantic-settings = "~=2.0.2"
+greenlet = "~=3.0.1"
+joserfc = "~=0.10.0"
+sqlalchemy = "~=2.0.19"
+psycopg = {extras = ["binary", "pool"], version = "*"}
+uvicorn = "~=0.23.2"
+httpx = "~=0.26.0"
+python-multipart = "~=0.0.6"
+
+[dev-packages]
+black = "~=24.8.0"
+isort = "~=5.13.2"
+pylint = "~=3.3.1"
+pytest = "~=8.3.3"
+
+[requires]
+python_version = "3.12"

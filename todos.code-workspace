@@ -17,6 +17,7 @@
       "addoption",
       "autouse",
       "httpx",
+      "inorder",
       "ondropped",
       "onsubmitclienterror",
       "onsubmitended",
@@ -28,6 +29,7 @@
       "testid"
     ],
     "svelte.enable-ts-plugin": true,
-    "pylint.importStrategy": "fromEnvironment"
+    "pylint.importStrategy": "fromEnvironment",
+    "python.testing.pytestEnabled": true
   }
 }

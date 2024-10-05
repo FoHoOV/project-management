@@ -7,18 +7,16 @@ from db.models.user_project_permission import Permission
 from db.schemas.project import Project
 from db.schemas.tag import Tag
 from db.schemas.todo_category import TodoCategory
-from tests.api.conftest import TestUserType
+from tests.api.conftest import UserType
 
 
 def test_create_todo_tag(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoItem],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    attach_tag_to_todo: Callable[[TestUserType, int, int, str], Response],
-    test_users: list[TestUserType],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoItem],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    attach_tag_to_todo: Callable[[UserType, int, int, str], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
     user_b = test_users[1]
@@ -54,16 +52,14 @@ def test_create_todo_tag(
 
 
 def test_remove_todo_tag(
-    create_project: Callable[[TestUserType], Project],
-    create_todo_category: Callable[[TestUserType, int], TodoCategory],
-    create_todo_item: Callable[[TestUserType, int], TodoItem],
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    create_todo_item: Callable[[UserType, int], TodoItem],
     get_all_permissions_except: Callable[[list[Permission]], list[Permission]],
-    attach_project_to_user: Callable[
-        [TestUserType, TestUserType, int, list[Permission]], None
-    ],
-    attach_tag_to_todo: Callable[[TestUserType, int, int, str], Response],
-    detach_tag_from_todo: Callable[[TestUserType, int, str], Response],
-    test_users: list[TestUserType],
+    attach_project_to_user: Callable[[UserType, UserType, int, list[Permission]], None],
+    attach_tag_to_todo: Callable[[UserType, int, int, str], Response],
+    detach_tag_from_todo: Callable[[UserType, int, str], Response],
+    test_users: list[UserType],
 ):
     user_a = test_users[0]
     user_b = test_users[1]
