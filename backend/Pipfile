@@ -13,6 +13,7 @@ sqlalchemy = "~=2.0.19"
 psycopg = {extras = ["binary", "pool"], version = "*"}
 uvicorn = "~=0.23.2"
 httpx = "~=0.26.0"
+python-multipart = "~=0.0.6"
 
 [dev-packages]
 black = "==24.8.0"
