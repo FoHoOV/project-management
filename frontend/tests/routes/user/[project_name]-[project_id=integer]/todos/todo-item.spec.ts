@@ -33,7 +33,7 @@ test('creating todo items', async ({ todoItemUtils, todoCategoryUtils }) => {
 	).toBeTruthy();
 });
 
-test('editing todo items', async ({ todoItemUtils, todoCategoryUtils, projectUtils }) => {
+test('editing todo items', async ({ todoItemUtils, todoCategoryUtils }) => {
 	const category = await todoCategoryUtils.helpers.createCategory();
 
 	const t1 = await todoItemUtils.page.create({

@@ -17,7 +17,7 @@ test('create-delete-create-goto project', async ({ projectUtils, todoCategoryUti
 	await todoCategoryUtils.page.goto(projectTitle, p2.projectId);
 });
 
-test('create-delete-goback project', async ({ enhancedPage, projectUtils, todoCategoryUtils }) => {
+test('create-delete-goback project', async ({ projectUtils, todoCategoryUtils }) => {
 	await projectUtils.page.goto();
 
 	const projectTitle = 'p1';

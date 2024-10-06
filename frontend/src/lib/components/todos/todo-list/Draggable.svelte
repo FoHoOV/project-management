@@ -50,7 +50,7 @@
 	const toastsMangerStore = getToastManager();
 	let componentState = $state<ComponentState>('none');
 
-	async function handleOnDrop(event: DropEvent<{}>) {
+	async function handleOnDrop(event: DropEvent<object>) {
 		if (event.detail.names.find((value) => value === TODO_CATEGORY_ORDER_DROP_ZONE)) {
 			await handleUpdateCategoryOrder(event as DropEvent<TodoCategory>);
 			return;

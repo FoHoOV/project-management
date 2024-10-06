@@ -3,6 +3,7 @@ import prettier from 'eslint-config-prettier';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+import svelteConfig from './svelte.config.js';
 
 export default tseslint.config(
 	eslint.configs.recommended,
@@ -19,27 +20,28 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ['**/*.svelte'],
+		files: ['**/*.svelte', '**/*.svelte.ts', '*.svelte.ts'],
 		languageOptions: {
 			parserOptions: {
-				parser: tseslint.parser
+				parser: tseslint.parser,
+				svelteConfig
 			}
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'dist/']
-	},
-	{
 		languageOptions: {
 			parserOptions: {
-				project: './tsconfig.json'
+				extraFileExtensions: ['.spec.ts', '.test.ts']
 			}
 		},
-		files: ['**/*.ts'],
 		rules: {
-			'@typescript-eslint/no-unused-vars': ['warn'],
-			'@typescript-eslint/no-floating-promises': 'warn',
-			'@typescript-eslint/no-explicit-any': 'warn'
+			'@typescript-eslint/no-unused-vars': 'warn',
+			'@typescript-eslint/no-explicit-any': 'warn',
+			'no-unused-expressions': 'off',
+			'@typescript-eslint/no-unused-expressions': 'off'
 		}
+	},
+	{
+		ignores: ['build/', '.svelte-kit/', 'dist/', '.vercel', 'generated-clients']
 	}
 );

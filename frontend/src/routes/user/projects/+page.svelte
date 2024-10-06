@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	const { data, form } = $props();
+	const { form } = $props();
 
 	const projectsStore = getProjects();
 	const multiStepModalStore = getMultiStepModal();

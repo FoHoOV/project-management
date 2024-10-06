@@ -3,7 +3,8 @@
 	import { faClose, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 	export type Props = {
-		message?: String | null;
+		// eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
+		message?: String | string | null;
 		type?: 'success' | 'error' | 'info';
 		class?: string;
 	};
@@ -37,14 +38,14 @@
 
 	$effect(() => {
 		message;
-		let intervalId: NodeJS.Timeout;
+		let intervalId: number;
 
 		closed = false;
 		autoClosePercentage = 0;
 
 		intervalId = setInterval(() => {
 			autoClosePercentage += 1;
-		}, 90);
+		}, 90) as unknown as number;
 
 		return () => {
 			clearInterval(intervalId);

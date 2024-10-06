@@ -29,10 +29,8 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 
 	expect(await projectSettings.page.isMySelf(lastUser.username)).not.toBeTruthy();
 
-	expect(
-		await projectSettings.page.isMySelf(authUtils.currentLoggedInUser?.username!)
-	).toBeTruthy();
-	expect(await projectSettings.page.isOwner(authUtils.currentLoggedInUser?.username!)).toBeTruthy();
+	expect(await projectSettings.page.isMySelf(authUtils.currentLoggedInUser!.username)).toBeTruthy();
+	expect(await projectSettings.page.isOwner(authUtils.currentLoggedInUser!.username)).toBeTruthy();
 
 	await projectSettings.page.changePermissions({
 		username: lastUser.username,
@@ -40,21 +38,19 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 	});
 
 	await projectSettings.page.changePermissions({
-		username: authUtils.currentLoggedInUser?.username!,
+		username: authUtils.currentLoggedInUser!.username,
 		permissions: [Permission.CreateComment]
 	});
 
 	await projectSettings.page.changePermissions({
-		username: authUtils.currentLoggedInUser?.username!,
+		username: authUtils.currentLoggedInUser!.username,
 		permissions: [Permission.All],
 		expectError: true
 	});
 
+	expect(await projectSettings.page.isMySelf(authUtils.currentLoggedInUser!.username)).toBeTruthy();
 	expect(
-		await projectSettings.page.isMySelf(authUtils.currentLoggedInUser?.username!)
-	).toBeTruthy();
-	expect(
-		await projectSettings.page.isOwner(authUtils.currentLoggedInUser?.username!)
+		await projectSettings.page.isOwner(authUtils.currentLoggedInUser!.username)
 	).not.toBeTruthy();
 });
 
@@ -73,7 +69,7 @@ test('canceling the change should reset back to default permissions', async ({
 	await projectSettings.page.goto(project.projectTitle, project.projectId);
 
 	const row = await projectSettings.page.getUserPermissionsRowLocator(
-		authUtils.currentLoggedInUser?.username!
+		authUtils.currentLoggedInUser!.username
 	);
 	await row.click();
 
@@ -99,7 +95,7 @@ test('when no changes are applied "save-changes" and "cancel" button should be i
 	await projectSettings.page.goto(project.projectTitle, project.projectId);
 
 	const row = await projectSettings.page.getUserPermissionsRowLocator(
-		authUtils.currentLoggedInUser?.username!
+		authUtils.currentLoggedInUser!.username
 	);
 
 	await expect(row.getByRole('button', { name: 'save changes' })).not.toBeVisible();

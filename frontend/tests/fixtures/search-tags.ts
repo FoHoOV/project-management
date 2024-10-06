@@ -53,7 +53,6 @@ export class SearchTagsPage implements IPage {
 export const test = todoItemTest.extend<{
 	searchTagsUtils: SearchTagsUtils;
 }>({
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	searchTagsUtils: async ({ enhancedPage, authUtils }, use) => {
 		if (!authUtils.isAuthenticated) {
 			await authUtils.login();

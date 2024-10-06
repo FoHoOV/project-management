@@ -69,9 +69,7 @@
 		});
 	}
 
-	function handleShowManageActions(
-		event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }
-	) {
+	function handleShowManageActions() {
 		multiStepModalStore.add({
 			component: TodoListActions,
 			props: () => {
