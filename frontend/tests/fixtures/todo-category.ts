@@ -213,16 +213,10 @@ export class TodoCategoryPage implements IPage {
 }
 
 export class TodoCategoryHelpers {
-	#enhancedPage: EnhancedPage;
 	#projectsPage: ProjectsPage;
 	#todoCategoryPage: TodoCategoryPage;
 
-	constructor(
-		enhancedPage: EnhancedPage,
-		projectsPage: ProjectsPage,
-		todoCategoryPage: TodoCategoryPage
-	) {
-		this.#enhancedPage = enhancedPage;
+	constructor(projectsPage: ProjectsPage, todoCategoryPage: TodoCategoryPage) {
 		this.#projectsPage = projectsPage;
 		this.#todoCategoryPage = todoCategoryPage;
 	}
@@ -261,14 +255,13 @@ export class TodoCategoryHelpers {
 export const test = projects.extend<{
 	todoCategoryUtils: TodoCategoryUtils;
 }>({
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoCategoryUtils: async ({ enhancedPage, projectUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
 
 		const todoCategoryPage = new TodoCategoryPage(enhancedPage);
 		await use({
 			page: todoCategoryPage,
-			helpers: new TodoCategoryHelpers(enhancedPage, projectUtils.page, todoCategoryPage)
+			helpers: new TodoCategoryHelpers(projectUtils.page, todoCategoryPage)
 		});
 	}
 });

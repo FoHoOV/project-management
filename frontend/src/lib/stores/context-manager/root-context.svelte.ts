@@ -15,10 +15,12 @@ export class ContextManager {
 	}
 
 	get$<TContext>(key: any) {
-		const self = this;
+		const getter = () => {
+			return this._contexts[key] as TContext;
+		};
 		return {
 			get value$() {
-				return self._contexts[key] as TContext;
+				return getter();
 			}
 		};
 	}

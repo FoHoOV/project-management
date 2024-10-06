@@ -127,7 +127,6 @@ export class ProjectsPage implements IPage {
 }
 
 export const test = auth.extend<{ projectUtils: { page: ProjectsPage } }>({
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	projectUtils: async ({ enhancedPage, authUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
 		await authUtils.login();

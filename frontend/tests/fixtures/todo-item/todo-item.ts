@@ -28,15 +28,15 @@ export class TodoItemPage implements IPage {
 
 		this.comments = new TodoCommentPage(enhancedPage, {
 			page: this,
-			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
+			helpers: new TodoItemHelpers(this, todoCategoryUtils)
 		});
 		this.tags = new TodoTagPage(enhancedPage, {
 			page: this,
-			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
+			helpers: new TodoItemHelpers(this, todoCategoryUtils)
 		});
 		this.dependencies = new TodoDependencyPage(enhancedPage, {
 			page: this,
-			helpers: new TodoItemHelpers(enhancedPage, this, todoCategoryUtils)
+			helpers: new TodoItemHelpers(this, todoCategoryUtils)
 		});
 	}
 
@@ -329,16 +329,10 @@ export class TodoItemPage implements IPage {
 }
 
 export class TodoItemHelpers {
-	#enhancedPage: EnhancedPage;
 	#todoItemPage: TodoItemPage;
 	#todoCategoryHelpers: TodoCategoryHelpers;
 
-	constructor(
-		enhancedPage: EnhancedPage,
-		todoItemPage: TodoItemPage,
-		todoCategoryUtils: TodoCategoryUtils
-	) {
-		this.#enhancedPage = enhancedPage;
+	constructor(todoItemPage: TodoItemPage, todoCategoryUtils: TodoCategoryUtils) {
 		this.#todoItemPage = todoItemPage;
 		this.#todoCategoryHelpers = todoCategoryUtils.helpers;
 	}
@@ -363,13 +357,12 @@ export class TodoItemHelpers {
 export const test = todoCategoriesTest.extend<{
 	todoItemUtils: TodoItemUtils;
 }>({
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	todoItemUtils: async ({ enhancedPage, todoCategoryUtils, authUtils }, use) => {
 		// I have to include auth because we need to be authenticated to use this page
 		const todoItemPage = new TodoItemPage(enhancedPage, todoCategoryUtils, authUtils);
 		await use({
 			page: todoItemPage,
-			helpers: new TodoItemHelpers(enhancedPage, todoItemPage, todoCategoryUtils)
+			helpers: new TodoItemHelpers(todoItemPage, todoCategoryUtils)
 		});
 	}
 });
