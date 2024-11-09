@@ -18,7 +18,7 @@ npm run open-api:generate:[linux | windows] # generates the open-api clients and
 
 ## Developing (IMPORTANT)
 
-I've upgraded this project to use Svelte 5, which requires extensive refactoring to conform to the Svelte 5 standards. Expect some bugs :D. Some dependencies, such as `svelte-fa`, haven't updated their peer dependency versions to accept Svelte 5. Therefore, you will need to install packages using the `--legacy-peer-deps` flag.
+Some dependencies, such as `svelte-fa`, haven't updated their peer dependency versions to accept Svelte 5. Therefore, you will need to install packages using the `--legacy-peer-deps` flag.
 
 Once you've build the project and installed dependencies with `npm install --legacy-peer-deps`, start a development server:
 
