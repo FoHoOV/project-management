@@ -3,16 +3,16 @@ import { LocalStorage } from './local-storage';
 import * as environment from '$app/environment';
 
 describe.each([
-	{ isBrowser: true, expectedLocalValue: 'value' },
-	{ isBrowser: false, expectedLocalValue: 'value' }
-])('LocalStorage in environment context', ({ isBrowser, expectedLocalValue }) => {
+	{ isBrowser: true },
+	{ isBrowser: false }
+])('LocalStorage in environment context', ({ isBrowser }) => {
 	beforeEach(() => {
 		vi.spyOn(environment, 'browser', 'get').mockReturnValue(isBrowser);
 	});
 
 	test(`${isBrowser ? 'browser' : 'server'}: correctly sets and retrieves items`, () => {
 		const storage = new LocalStorage();
-		storage.setItem('test', expectedLocalValue);
-		expect(storage.getItem('test')).toEqual(expectedLocalValue);
+		storage.setItem('test', "value");
+		expect(storage.getItem('test')).toEqual('value');
 	});
 });
