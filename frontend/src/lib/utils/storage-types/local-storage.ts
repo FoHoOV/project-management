@@ -1,13 +1,16 @@
 import { browser } from '$app/environment';
 
 export class LocalStorage {
+	#serverSideItems = new Map<string, string>();
+
 	getItem(key: string) {
-		return browser ? null : window.localStorage.getItem(key);
+		return browser ? window.localStorage.getItem(key) : (this.#serverSideItems.get(key) ?? null);
 	}
 	setItem(key: string, value: string) {
-		if (!browser) {
+		if (browser) {
+			window.localStorage.setItem(key, value);
 			return;
 		}
-		window.localStorage.setItem(key, value);
+		this.#serverSideItems.set(key, value);
 	}
 }
