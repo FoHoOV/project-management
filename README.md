@@ -24,7 +24,7 @@ A simple project management app.
 
 # Demo
 
-You can find the demo at [this](https://project-management-fohoov.vercel.app) url (it might not work for the first few requests (because service will go down after inactivity), but after 1 or 2 minutes it will start working again).
+You can find the demo at [this](https://project-management-fohoov.vercel.app) url.
 
 # How to run
 
