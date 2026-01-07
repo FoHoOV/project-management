@@ -1,12 +1,15 @@
 import daisyui from 'daisyui';
 import typography from '@tailwindcss/typography';
-import defaultTheme from 'tailwindcss/defaultTheme';
+import defaultTheme from 'tailwindcss/defaultTheme.js';
+
+const daisyuiPlugin = daisyui?.default ?? daisyui;
+const typographyPlugin = typography?.default ?? typography;
 
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	darkMode: ['class', '[data-theme="dark"]'],
-	plugins: [typography, daisyui],
+	plugins: [typographyPlugin, daisyuiPlugin],
 	daisyui: {
 		themes: ['light', 'dark']
 	},
