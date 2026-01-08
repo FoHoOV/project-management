@@ -22,7 +22,7 @@ def update(
     project_id: int,
     permissions: ProjectUpdateUserPermissions,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     updated_project = project_crud.update_user_permissions(
         db, project_id, permissions, current_user.id

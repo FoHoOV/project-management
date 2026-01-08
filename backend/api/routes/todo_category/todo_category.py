@@ -22,7 +22,7 @@ router = APIRouter(prefix="/todo-categories", tags=["todo-categories"])
 def create_for_user(
     category: TodoCategoryCreate,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return todo_category_crud.create(db, category, current_user.id)
 
@@ -32,7 +32,7 @@ def attach_to_project(
     category_id: int,
     association: TodoCategoryAttachAssociation,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return todo_category_crud.attach_to_project(
         db, category_id, association, current_user.id
@@ -44,7 +44,7 @@ def detach_from_project(
     category_id: int,
     project_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     todo_category_crud.detach_from_project(db, category_id, project_id, current_user.id)
 
@@ -56,7 +56,7 @@ def update(
     category_id: int,
     category: TodoCategoryUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
 
     if category.item is not None:
@@ -75,7 +75,7 @@ def update(
 def search(
     project_id: Annotated[int, Query()],
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     items = todo_category_crud.get_categories_for_project(
         db, project_id, current_user.id

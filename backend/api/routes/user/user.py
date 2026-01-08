@@ -13,7 +13,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post("/signup", response_model=User)
-def signup(user: UserCreate, db: Session = Depends(get_db)):
+def signup(user: UserCreate, db: Annotated[Session, Depends(get_db)]):
     db_user = user_crud.get_user_by_username(db, username=user.username)
     if db_user is not None:
         raise UserFriendlyError(
