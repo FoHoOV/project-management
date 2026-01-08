@@ -27,7 +27,7 @@ tag_name_validator = Path(min_length=TAG_MIN_LENGTH, max_length=TAG_MAX_LENGTH)
 def create(
     tag: TagCreate,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return tag_crud.create(db, tag, current_user.id)
 
@@ -37,7 +37,7 @@ def update(
     tag_name: Annotated[str, tag_name_validator],
     tag: TagUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return tag_crud.edit(db, tag_name, tag, current_user.id)
 
@@ -47,7 +47,7 @@ def attach_to_todo(
     tag_name: Annotated[str, tag_name_validator],
     association: TagAttachToTodo,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return tag_crud.attach_tag_to_todo(db, tag_name, association, current_user.id)
 
@@ -57,7 +57,7 @@ def detach_from_todo(
     tag_name: Annotated[str, tag_name_validator],
     todo_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     tag_crud.detach_tag_from_todo(db, tag_name, todo_id, current_user.id)
     return Response(status_code=HTTP_200_OK)
@@ -68,7 +68,7 @@ def delete(
     tag_name: Annotated[str, tag_name_validator],
     tag: TagDelete,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     tag_crud.delete(db, tag_name, tag, current_user.id)
     return Response(status_code=HTTP_200_OK)
@@ -77,8 +77,8 @@ def delete(
 @router.get(path="/", response_model=list[TodoItem])
 def search(
     current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
     name: Annotated[str, Query()],
     project_id: Annotated[int | None, Query()] = None,
-    db: Session = Depends(get_db),
 ):
     return tag_crud.search(db, project_id, name.strip().lower(), current_user.id)

@@ -22,7 +22,7 @@ def create(
     todo_id: int,
     comment: TodoCommentCreate,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     result = todo_item_comment_crud.create(db, todo_id, comment, current_user.id)
     return result
@@ -34,7 +34,7 @@ def update(
     comment_id: int,
     comment: TodoCommentUpdate,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return todo_item_comment_crud.edit(
         db, todo_id, comment_id, comment, current_user.id
@@ -46,7 +46,7 @@ def delete(
     todo_id: int,
     comment_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     todo_item_comment_crud.delete(db, todo_id, comment_id, current_user.id)
     return Response(status_code=HTTP_200_OK)
@@ -56,6 +56,6 @@ def delete(
 def list(
     todo_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     return todo_item_comment_crud.list(db, todo_id, current_user.id)
