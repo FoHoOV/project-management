@@ -34,6 +34,24 @@ After running the project goto
 http://127.0.0.1:8080/docs
 for a web based swagger docs.
 
+## Database migrations
+
+The schema is managed with [Alembic](https://alembic.sqlalchemy.org/). The app applies pending migrations on startup.
+
+```bash
+uv run alembic revision --autogenerate -m "describe the change"  # after changing a model
+uv run alembic upgrade head                                      # apply manually
+```
+
+### One-time step for a database created before migrations
+
+Databases created by the old `create_all` startup already have the tables but no migration history. Before the first deploy that includes migrations, mark them as being at the baseline revision `96a8ab072cce`, or startup will fail with "table already exists". Run this from `backend/` with a `.env` that has the other required settings (e.g. from `vercel env pull`):
+
+```bash
+SQLALCHEMY_DATABASE_URL="<prod database url>" uv run alembic stamp 96a8ab072cce
+SQLALCHEMY_DATABASE_URL="<prod database url>" uv run alembic check  # must report "No new upgrade operations detected"
+```
+
 ## Tests
 
 ```bash

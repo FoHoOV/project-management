@@ -1,11 +1,13 @@
 import pytest
+from sqlalchemy import MetaData
 
 from api import create_app
 from db import get_engine
-from db.models.base import Base
 
 
 @pytest.fixture(scope="session")
 def test_app():
-    Base.metadata.drop_all(bind=get_engine())
+    existing_schema = MetaData()
+    existing_schema.reflect(bind=get_engine())
+    existing_schema.drop_all(bind=get_engine())
     return create_app()

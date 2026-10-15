@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 
 from config import get_settings
-from db import init_db
+from db.migrations import run_migrations
 from error.exceptions import UserFriendlyError
 
 from .routes import error
@@ -63,6 +63,6 @@ def create_app():
         allow_headers=["*"],
     )
 
-    init_db()
+    run_migrations()
 
     return app
