@@ -10,13 +10,14 @@
 		"test": "pnpm run test:integration && pnpm run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write .",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
 		"generate-client": "node generate-client.js"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.14.0",
 		"@fohoov/zod-openapi-client": "^1.1.2",
 		"@openapitools/openapi-generator-cli": "^2.15.3",
 		"@playwright/test": "^1.48.2",

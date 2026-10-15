@@ -188,6 +188,9 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.14.0
+        version: 9.14.0
       '@fohoov/zod-openapi-client':
         specifier: ^1.1.2
         version: 1.1.2(@openapitools/openapi-generator-cli@2.15.3)(openapi-types@12.1.3)
