@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 from joserfc import jwt
 
-from config import settings
+from config import get_settings
 from db.utils.oatuh import create_access_token, get_signing_key
 
 from tests.api.conftest import UserType
@@ -84,6 +84,6 @@ def test_token_without_required_claim_is_rejected(
         "exp": int((datetime.now(UTC) + timedelta(minutes=5)).timestamp()),
     }
     del claims[missing_claim]
-    token = jwt.encode({"alg": settings.ALGORITHM}, claims, get_signing_key())
+    token = jwt.encode({"alg": get_settings().ALGORITHM}, claims, get_signing_key())
 
     assert _get_projects_with_token(test_client, token).status_code == 401
