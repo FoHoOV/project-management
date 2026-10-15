@@ -6,7 +6,7 @@ from joserfc import errors, jwt
 from sqlalchemy.orm import Session
 
 from api.dependencies.db import get_db
-from config import settings
+from config import get_settings
 from db.schemas.oath_token import TokenData
 from db.utils.oatuh import get_signing_key
 from db.utils.user_crud import get_user_by_username
@@ -27,7 +27,7 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, get_signing_key(), [settings.ALGORITHM])
+        payload = jwt.decode(token, get_signing_key(), [get_settings().ALGORITHM])
         claims_registry.validate(payload.claims)
 
         username: str = payload.claims["sub"]
