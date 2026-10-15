@@ -43,7 +43,7 @@ From `package.json`, the configs, and `.github/workflows/test.yml`:
   - Its `webServer` builds with `--mode integration` (reads `.env.integration`) and previews on 5174.
   - It needs a running backend pointing at a throwaway DB. `README.md` says port 8090; CI uses 8080 via env vars.
   - `pnpm run test` runs integration and then unit.
-- Deploy: Vercel via the deploy workflows. `svelte.config.js` uses `adapter-auto`; `adapter-node` and `adapter-vercel` are installed but not referenced in config.
+- Deploy: Vercel via the deploy workflows. The build runs on Vercel with the `buildCommand` from `vercel.json` (`pnpm run generate-client && pnpm run build`), which overrides the dashboard setting. It needs the backend reachable at `PUBLIC_API_URL` at build time. `svelte.config.js` uses `adapter-auto`; `adapter-node` and `adapter-vercel` are installed but not referenced in config.
 
 ## Conventions observed in the code
 
