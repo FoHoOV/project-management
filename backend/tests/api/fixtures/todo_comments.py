@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import Response
+from httpx2 import Response
 
 from db.schemas.todo_item_comment import TodoComment
 from tests.api.conftest import UserType

@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import Response
+from httpx2 import Response
 
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project, ProjectAttachAssociationResponse

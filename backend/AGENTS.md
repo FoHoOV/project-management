@@ -29,7 +29,7 @@ From `pyproject.toml`, `.python-version`, `.pylintrc` and `.github/workflows/tes
 
 - Python `3.14` (`.python-version`, `requires-python`). The code uses 3.12+ syntax, e.g. PEP 695 generics in `db/utils/shared/permission_query.py`.
 - Package manager: **uv**. `uv.lock` is committed. Not an installable package (`tool.uv.package = false`).
-  - Install: `uv sync` (includes the `dev` group: black, isort, pylint, pytest, httpx). `uv sync --no-dev` for runtime only, which is what Vercel installs.
+  - Install: `uv sync` (includes the `dev` group: black, isort, pylint, pytest, httpx2). `uv sync --no-dev` for runtime only, which is what Vercel installs.
   - Add a dependency: `uv add <pkg>` (or `uv add --dev <pkg>`). Don't edit `uv.lock` by hand.
 - Env: copy `.env.raw` to `.env`. Required: `SECRET_KEY`, `SQLALCHEMY_DATABASE_URL`, `ALLOWED_ORIGINS` (JSON list), `IS_SQLALCHEMY_LOG_ENABLED`. Optional: `ALLOW_ORIGIN_REGEX`. `README.md`'s example `.env` omits `SECRET_KEY`, which the app needs to start.
 - Dev server: `uv run uvicorn main:app --reload --port 8080`. Docs are at `/docs`. `.vscode/launch.json` also has an "integration" config on port 8090 that loads `.env.integration`.
