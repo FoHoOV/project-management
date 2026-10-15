@@ -98,8 +98,6 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
 
 
 def update_item(db: Session, todo_id: int, todo: TodoItemUpdateItem, user_id: int):
-    # in order to reset due_date pass a date with year=1
-
     validate_todo_item_belongs_to_user(
         db, todo_id, user_id, [Permission.UPDATE_TODO_ITEM]
     )
@@ -141,8 +139,8 @@ def update_item(db: Session, todo_id: int, todo: TodoItemUpdateItem, user_id: in
     if todo.title is not None:
         db_item.title = todo.title
 
-    if todo.due_date is not None:
-        db_item.due_date = todo.due_date if todo.due_date.year != 1 else None
+    if "due_date" in todo.model_fields_set:
+        db_item.due_date = todo.due_date
 
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 
