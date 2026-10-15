@@ -1,7 +1,7 @@
 from functools import lru_cache
 
 from config import get_settings
-from db.db import DbPrams, get_db_params, init_database
+from db.db import DbPrams, get_db_params
 
 
 @lru_cache
@@ -18,7 +18,3 @@ def get_engine():
 
 def get_session_factory():
     return _get_db_params()["session"]
-
-
-def init_db():
-    init_database(get_engine())

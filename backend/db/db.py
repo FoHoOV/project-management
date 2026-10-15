@@ -35,9 +35,3 @@ def get_db_params(connection_string: str, enable_logging: bool) -> DbPrams:
             cursor.close()
 
     return {"session": session, "engine": engine}
-
-
-def init_database(engine: Engine):
-    from db.models.base import Base
-
-    Base.metadata.create_all(bind=engine)
