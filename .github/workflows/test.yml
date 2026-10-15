@@ -58,9 +58,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          package_json_file: frontend/package.json
 
       - name: Setup java
         uses: actions/setup-java@v4
@@ -105,8 +105,7 @@ jobs:
 
       - name: Build the project
         run: |
-          pnpm run open-api:generate:shared
-          pnpm run open-api:zod:linux
+          pnpm run generate-client
           pnpm run build
 
       - name: Run frontend tests (with backend service running)

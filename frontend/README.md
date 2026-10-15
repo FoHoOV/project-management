@@ -10,11 +10,11 @@ You first need to run the backend project because we use the OpenApi schema of t
 execute this to generate the clients/schemas:
 
 ```bash
-# create the clients and zod schemas
-npm run open-api:generate:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
+# generates the api client and zod schemas from $PUBLIC_API_URL/openapi.json into src/lib/generated-client
+pnpm run generate-client
 ```
 
-- OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
+- Generation uses [@fohoov/zod-openapi-client](https://github.com/FoHoOV/zod-openapi-client), which runs OpenApiTools and therefore requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
 
 ## Developing (IMPORTANT)
 

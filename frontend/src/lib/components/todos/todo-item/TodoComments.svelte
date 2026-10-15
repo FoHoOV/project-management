@@ -6,7 +6,7 @@
 	import { page } from '$app/stores';
 	import { TodoItemCommentClient } from '$lib/client-wrapper/clients';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import type { TodoComment } from '$lib/generated-client/zod/schemas';
+	import type { TodoComment } from '$lib/generated-client/models';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';

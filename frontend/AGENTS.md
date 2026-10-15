@@ -11,14 +11,14 @@ Single SvelteKit app; all commands run from `frontend/`.
 | `src/routes/` | Pages. `(entry)/` holds login and signup. `user/` holds the authenticated area: `projects`, `search-tags`, `logout`, and `[project_name]-[project_id=integer]/{todos,settings}`. Route-local components (`CreateProject.svelte`, `EditTag.svelte`, ...) and Zod schemas (`validator.ts`) sit next to the `+page` files. |
 | `src/params/` | Route param matchers (`integer`, `name`). |
 | `src/hooks.server.ts` | Reads cookies into `event.locals` (`sharedCookies`, `token`). Drops expired tokens. |
-| `src/lib/generated-client/` | **Generated, gitignored.** `typescript-fetch` client (`apis`, `models`, `runtime`) plus `zod/schemas.ts`. Produced from the backend's `openapi.json`. |
+| `src/lib/generated-client/` | **Generated, gitignored.** `typescript-fetch` client (`apis`, `models`, `runtime`) plus `zod/schemas.ts`, produced from the backend's `openapi.json` by [`@fohoov/zod-openapi-client`](https://github.com/FoHoOV/zod-openapi-client). `zod/schemas.ts` exports Zod schemas only, no `z.infer` types: import TypeScript types from `$lib/generated-client/models`, or use `z.infer<typeof X>` / `z.input<typeof X>`. |
 | `src/lib/client-wrapper/` | `clients.ts`: one factory per API (`ProjectClient({ token, fetchApi })`, ...), adding auth and timeout middleware. `wrapper.universal.ts`: `callService` maps every failure to a typed `ServiceError` (`ErrorType`). `wrapper.server.ts`: `callServiceInFormActions` for form actions. `wrapper.client.ts`: `callServiceInClient`. |
 | `src/lib/actions/` | Svelte actions: `form` (enhanced submit + Zod validator, `superFail`, `namedActionResult`, `validateFormActionRequest`), `drag-and-drop`, `class-manipulator`. |
 | `src/lib/stores/` | State as classes in `*.svelte.ts` files using runes, each with a `context.ts` (`getX`/`setX`). `context-manager/` adds a root context so stores can be set "to root". |
 | `src/lib/components/` | Shared components, grouped by folder (`forms`, `popups`, `buttons`, `project`, `todos`, ...). |
 | `src/lib/utils/`, `src/lib/animations/`, `src/lib/constants/` | Helpers (token, zod key extraction, storage types, type utilities), transitions, cookie keys. |
 | `tests/` | Playwright E2E. `tests/routes/**` mirrors `src/routes/**`. `tests/fixtures/` holds page-object classes exposed as Playwright fixtures. `tests/common-locators/` holds shared locators. |
-| Root scripts | `generate-openapitools-json.js` writes `openapitools.json` (gitignored). `extract-zod.js` strips the `ApiClient` class out of the `typed-openapi` output. |
+| `generate-client.js` | Loads `.env` (without overriding existing env vars) and runs `client-generator generate` against `$PUBLIC_API_URL/openapi.json`. The generator version is pinned in the committed `openapitools.json` (`generator-cli.version`). |
 
 Data flow: page or component → `<form>` posts to a `+page.server.ts` named action → `validateFormActionRequest(request, schema)` → `callServiceInFormActions({ call: () => XClient({ token: locals.token, fetchApi: fetch }).method(...), errorSchema })` → `namedActionResult(result, 'name')` → `EnhancedForm` callbacks (`onSubmitSucceeded`) update the store.
 
@@ -26,11 +26,12 @@ Data flow: page or component → `<form>` posts to a `+page.server.ts` named act
 
 From `package.json`, the configs, and `.github/workflows/test.yml`:
 
-- Package manager: **pnpm 9** (`packageManager: pnpm@9.4.0`, `pnpm-lock.yaml`, CI, `.vscode/launch.json`). `.npmrc` has `engine-strict=true`. `README.md`, `run-windows.cmd` and Playwright's `webServer` command still use `npm` (`npm i --legacy-peer-deps`, `npm run build-integration && npm run preview`). Use pnpm.
+- Package manager: **pnpm 12** (`packageManager: pnpm@12.11.2`, `pnpm-lock.yaml`, CI via `pnpm/action-setup` reading `packageManager`, Vercel, `.vscode/launch.json`). Dependency build scripts only run when allowed in `pnpm-workspace.yaml` (`allowBuilds`); pnpm fails the install on a new unapproved one. Approve or deny it with `pnpm approve-builds <pkg>` / `'!<pkg>'`. `.npmrc` has `engine-strict=true`. `README.md`, `run-windows.cmd` and Playwright's `webServer` command still use `npm` (`npm i --legacy-peer-deps`, `npm run build-integration && npm run preview`). Use pnpm.
 - Node: CI uses 20. There is no `engines` field or `.nvmrc`.
 - `.env` (from `.env.raw`): `PUBLIC_API_URL`, `PUBLIC_API_REQUEST_TIMEOUT_MS`, `PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS`. These are read via `$env/static/public`, so they must exist at build time.
-- **Generate the API client first** (needs the backend running at `PUBLIC_API_URL`, and Java for `openapi-generator-cli` 7.0.0):
-  `pnpm run open-api:generate:linux` (or `:windows`). Re-run it after any backend schema or route change. Nothing type-checks until it exists.
+- **Generate the API client first** (needs the backend running at `PUBLIC_API_URL`, and Java for openapi-generator 7.0.0):
+  `pnpm run generate-client`. Re-run it after any backend schema or route change. Nothing type-checks until it exists.
+  - The generator is pinned to zod 3 output; the app must stay on zod 3.
 - Dev: `pnpm run dev`. Build: `pnpm run build`. Preview: `pnpm run preview` (port 5174).
 - Typecheck: `pnpm run check` (`svelte-kit sync && svelte-check`).
 - Lint: `pnpm run lint` (prettier check + eslint). Format: `pnpm run format`.
@@ -42,7 +43,7 @@ From `package.json`, the configs, and `.github/workflows/test.yml`:
   - Its `webServer` builds with `--mode integration` (reads `.env.integration`) and previews on 5174.
   - It needs a running backend pointing at a throwaway DB. `README.md` says port 8090; CI uses 8080 via env vars.
   - `pnpm run test` runs integration and then unit.
-- Deploy: Vercel via the deploy workflows. `svelte.config.js` uses `adapter-auto`; `adapter-node` and `adapter-vercel` are installed but not referenced in config.
+- Deploy: Vercel via the deploy workflows. The build runs on Vercel with `installCommand` (`pnpm install --frozen-lockfile`) and `buildCommand` (`pnpm run generate-client && pnpm run build`) from `vercel.json`; the dashboard has no overrides. It needs the backend reachable at `PUBLIC_API_URL` at build time. `svelte.config.js` uses `adapter-auto`; `adapter-node` and `adapter-vercel` are installed but not referenced in config.
 
 ## Conventions observed in the code
 

@@ -27,7 +27,7 @@
 		TodoItemPartialTag
 	} from '$lib/generated-client/models';
 
-	import type { TodoComment } from '$lib/generated-client/zod/schemas';
+	import type { TodoComment } from '$lib/generated-client/models';
 
 	import { TodoCategories, setTodoCategories } from '$lib/stores/todos';
 	import { TodoComments } from '$lib/stores/todo-comments';
