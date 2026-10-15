@@ -9,13 +9,24 @@ if (!apiUrl) {
 
 export default defineConfig({
 	input: `${apiUrl}/openapi.json`,
-	output: 'src/lib/generated-client',
+	output: {
+		path: 'src/lib/generated-client',
+		// The client plugin always emits a module-level client and has no option to skip it. On the
+		// server it would be shared by every user's requests, so delete it (nothing imports it).
+		postProcess: [
+			{
+				name: 'remove client.gen.ts',
+				command: process.execPath,
+				args: ['-e', "require('node:fs').rmSync(process.argv[1])", '{{path}}/client.gen.ts']
+			}
+		]
+	},
 	plugins: [
 		// Makes `throwOnError: true` the SDK's type default; createApiClient sets it at runtime.
 		{ name: '@hey-api/client-fetch', baseUrl: false, throwOnError: true },
 		{ name: '@hey-api/typescript', enums: 'javascript' },
 		{ name: '@hey-api/transformers', dates: true },
-		// `client: false` makes every call pass a client instead of falling back to a module-level one.
+		// `client: false`: every call passes its own client; the SDK doesn't import the deleted one.
 		{ name: '@hey-api/sdk', transformer: true, client: false, responseStyle: 'data' },
 		{
 			name: 'zod',
