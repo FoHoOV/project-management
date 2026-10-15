@@ -1,4 +1,4 @@
-import { createApiClient } from '#lib/client-wrapper/clients.js';
+import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
 import {
 	attachToUserProjects,
 	createForUserProjects,
@@ -15,7 +15,7 @@ import {
 } from '#lib/generated-client/zod.gen.js';
 
 export const actions = {
-	create: async ({ request, fetch }) => {
+	create: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, createProjectSchema);
 
 		if (!validation.success) {
@@ -25,7 +25,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserProjects({
-					client: createApiClient(fetch),
+					client: createServerApiClient(),
 					body: validation.data
 				});
 			},
@@ -34,7 +34,7 @@ export const actions = {
 
 		return namedActionResult(result, 'create');
 	},
-	attach: async ({ request, fetch }) => {
+	attach: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, attachProjectSchema);
 
 		if (!validation.success) {
@@ -44,7 +44,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToUserProjects({
-					client: createApiClient(fetch),
+					client: createServerApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});
@@ -54,7 +54,7 @@ export const actions = {
 
 		return namedActionResult(result, 'attach');
 	},
-	edit: async ({ request, fetch }) => {
+	edit: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, editProjectSchema);
 
 		if (!validation.success) {
@@ -64,7 +64,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateProjects({
-					client: createApiClient(fetch),
+					client: createServerApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});
