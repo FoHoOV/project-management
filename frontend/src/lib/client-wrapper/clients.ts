@@ -3,9 +3,11 @@ import { type Client, createClient, createConfig } from '$lib/generated-client/c
 import type { Token } from '$lib/generated-client';
 import { TokenError, isTokenExpirationDateValidAsync } from '$lib/utils/token';
 
+const REQUEST_TIMEOUT_MS = parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS);
+
 /**
  * Every failed request made through {@link createApiClient} rejects with this error.
- * `response` is only set when the server answered (HTTP error); otherwise `body` holds
+ * `response` is only set when the server answered with an HTTP error; otherwise `body` holds
  * the thrown cause (e.g. a {@link TokenError}, a network `TypeError` or a timeout).
  */
 export class ApiError extends Error {
@@ -26,7 +28,7 @@ export function createApiClient({ token, fetch: fetchApi = fetch }: ApiClientOpt
 	const client = createClient(
 		createConfig({
 			baseUrl: PUBLIC_API_URL,
-			fetch: addTimeoutToFetchIfNotExists(fetchApi, parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS)),
+			fetch: fetchApi,
 			throwOnError: true,
 			auth: async () => {
 				if (!token?.access_token) {
@@ -40,25 +42,16 @@ export function createApiClient({ token, fetch: fetchApi = fetch }: ApiClientOpt
 		})
 	);
 
-	client.interceptors.error.use((error, response) => new ApiError(error, response));
+	// The timeout goes on the request itself: SvelteKit's server-side `fetch` ignores the `init`
+	// argument when it is given a `Request`.
+	client.interceptors.request.use((request, options) =>
+		options.signal
+			? request
+			: new Request(request, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
+	);
+	client.interceptors.error.use(
+		(error, response) => new ApiError(error, response?.ok === false ? response : undefined)
+	);
 
 	return client;
 }
-
-/**
- *  @param timeout timeout in milliseconds
- */
-export const addTimeoutToFetchIfNotExists = (fetchApi: typeof fetch, timeout: number) => {
-	return (input: RequestInfo | URL, init?: RequestInit) => {
-		if (!init?.signal) {
-			const controller = new AbortController();
-			setTimeout(() => {
-				controller.abort();
-			}, timeout);
-
-			init = { ...init, signal: controller.signal };
-		}
-
-		return fetchApi(input, init);
-	};
-};

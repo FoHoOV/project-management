@@ -227,7 +227,7 @@ export async function callService<
 		}
 
 		if (!e.response) {
-			return await _handleRequestNotAnswered(e, errorHandler);
+			return await _handleNonHttpError(e, errorHandler);
 		}
 
 		const response = e.body;
@@ -325,7 +325,7 @@ export async function callService<
 	}
 }
 
-async function _handleRequestNotAnswered<
+async function _handleNonHttpError<
 	TErrorSchema extends z.ZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 >(
