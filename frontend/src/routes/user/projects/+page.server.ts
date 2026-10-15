@@ -1,4 +1,4 @@
-import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
+import { createApiClient } from '#api-client';
 import {
 	attachToUserProjects,
 	createForUserProjects,
@@ -25,7 +25,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserProjects({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					body: validation.data
 				});
 			},
@@ -44,7 +44,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToUserProjects({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});
@@ -64,7 +64,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateProjects({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

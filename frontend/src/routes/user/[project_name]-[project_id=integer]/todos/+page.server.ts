@@ -28,7 +28,7 @@ import {
 import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import { callService } from '#lib/client-wrapper/wrapper.universal.js';
 import { convertNumberToHttpStatusCode } from '#lib/utils/index.js';
-import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
+import { createApiClient } from '#api-client';
 import {
 	addTodoItemDependencyTodoItems,
 	attachToProjectTodoCategories,
@@ -47,7 +47,7 @@ export const load = (async ({ params }) => {
 	return await callService({
 		call: async () => {
 			return await searchTodoCategories({
-				client: createServerApiClient(),
+				client: createApiClient(),
 				query: { project_id: Number.parseInt(params.project_id) }
 			});
 		},
@@ -76,7 +76,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserTodoItems({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					body: validation.data
 				});
 			},
@@ -95,7 +95,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserTodoCategories({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					body: validation.data
 				});
 			},
@@ -114,7 +114,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToProjectTodoCategories({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { category_id: validation.data.category_id },
 					body: validation.data
 				});
@@ -134,7 +134,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTodoCategories({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { category_id: validation.data.id },
 					body: { item: validation.data }
 				});
@@ -154,7 +154,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTodoItems({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { todo_id: validation.data.id },
 					body: { item: validation.data }
 				});
@@ -174,7 +174,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createTodoItemComments({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { todo_id: validation.data.todo_id },
 					body: validation.data
 				});
@@ -194,7 +194,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTodoItemComments({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { todo_id: validation.data.todo_id, comment_id: validation.data.id },
 					body: validation.data
 				});
@@ -214,7 +214,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToTodoTags({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { tag_name: validation.data.name },
 					body: { ...validation.data, create_if_doesnt_exist: true }
 				});
@@ -234,7 +234,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTags({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { tag_name: validation.data.name },
 					body: validation.data
 				});
@@ -254,7 +254,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await addTodoItemDependencyTodoItems({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { todo_id: validation.data.todo_id },
 					body: validation.data
 				});

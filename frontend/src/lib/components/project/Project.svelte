@@ -4,7 +4,7 @@
 	import Spinner from '$components/Spinner.svelte';
 
 	import { callService } from '#lib/client-wrapper/index.js';
-	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { createApiClient } from '#api-client';
 	import { detachFromSelfProjects } from '#lib/generated-client/index.js';
 	import type { Project } from '#lib/generated-client/index.js';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';

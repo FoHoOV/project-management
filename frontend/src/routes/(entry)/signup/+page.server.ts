@@ -4,7 +4,7 @@ import { validateFormActionRequest } from '#lib/actions/form/index.js';
 import { schema } from './validators';
 import { UserCreate } from '#lib/generated-client/zod.gen.js';
 import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
-import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
+import { createApiClient } from '#api-client';
 import { signupUsers } from '#lib/generated-client/index.js';
 
 export const load = (async () => {
@@ -22,7 +22,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				await signupUsers({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					body: validation.data
 				});
 				redirect(303, '/login');

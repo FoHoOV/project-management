@@ -6,7 +6,7 @@ import { schema } from './validators';
 import { Body_login_for_access_token_OAuth } from '#lib/generated-client/zod.gen.js';
 import { superApplyAction, callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import { ErrorType } from '#lib/client-wrapper/wrapper.universal.js';
-import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
+import { createApiClient } from '#api-client';
 import { loginForAccessTokenOAuth } from '#lib/generated-client/index.js';
 
 export const load = (async () => {
@@ -23,7 +23,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				const token = await loginForAccessTokenOAuth({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					body: validation.data
 				});
 				cookies.set(SERVER_ONLY_KEYS.token, JSON.stringify(token), {

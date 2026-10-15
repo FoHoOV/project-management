@@ -2,7 +2,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 
-	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { createApiClient } from '#api-client';
 	import { deleteTags, detachFromTodoTags } from '#lib/generated-client/index.js';
 	import { callService } from '#lib/client-wrapper/index.js';
 	import Fa from 'svelte-fa';

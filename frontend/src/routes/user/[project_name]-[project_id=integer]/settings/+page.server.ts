@@ -1,5 +1,5 @@
 import { validateFormActionRequest, namedActionResult } from '#lib';
-import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
+import { createApiClient } from '#api-client';
 import { detachFromUserProjects, updatePermissions } from '#lib/generated-client/index.js';
 import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import { ProjectUpdateUserPermissions } from '#lib/generated-client/zod.gen.js';
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await detachFromUserProjects({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: validation.data
 				});
 			},
@@ -36,7 +36,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updatePermissions({
-					client: createServerApiClient(),
+					client: createApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

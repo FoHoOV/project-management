@@ -21,7 +21,7 @@
 		type CommonComponentStates
 	} from '#lib';
 	import { generateNewOrderForTodoCategory } from '$components/todos/utils';
-	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { createApiClient } from '#api-client';
 	import { updateTodoCategories, updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Snippet } from 'svelte';
 	import { getToastManager, getTodoCategories } from '#lib/stores/index.js';

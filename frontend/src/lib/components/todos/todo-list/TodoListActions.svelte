@@ -4,7 +4,7 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { callService } from '#lib/client-wrapper/index.js';
-	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { createApiClient } from '#api-client';
 	import { updateTodoCategories } from '#lib/generated-client/index.js';
 	import { Action, type TodoCategory } from '#lib/generated-client/index.js';
 	import { type CommonComponentStates } from '#lib';

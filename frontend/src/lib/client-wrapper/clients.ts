@@ -21,8 +21,7 @@ export class ApiError extends Error {
 
 /**
  * Builds a client that calls the backend through the `/api` proxy route, which adds the user's
- * token from the cookie. Use {@link createApiClient} in browser code and `createServerApiClient`
- * (`clients.server.ts`) in server code.
+ * token from the cookie. Import `createApiClient` from `#api-client` instead of calling this.
  *
  * The generated SDK's types assume `throwOnError: true` (see `openapi-ts.config.ts`): a call
  * resolves to the response body or rejects with an {@link ApiError}.
@@ -41,8 +40,4 @@ export function buildApiClient(config: { baseUrl: string; fetch?: typeof fetch }
 	);
 
 	return client;
-}
-
-export function createApiClient(): Client {
-	return buildApiClient({ baseUrl: API_PROXY_PATH });
 }

@@ -8,7 +8,7 @@
 	import TodoListActions from './TodoListActions.svelte';
 
 	import { callService, receive, send, type CommonComponentStates } from '#lib';
-	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { createApiClient } from '#api-client';
 	import { detachFromProjectTodoCategories } from '#lib/generated-client/index.js';
 	import type { TodoCategory } from '#lib/generated-client/index.js';
 	import type { Events as TodoItemEvents } from '$components/todos/todo-item/TodoItem.svelte';

@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types';
 import { callService } from '#lib/client-wrapper/index.js';
-import { createServerApiClient } from '#lib/client-wrapper/clients.server.js';
+import { createApiClient } from '#api-client';
 import { listProjects } from '#lib/generated-client/index.js';
 import type { Project } from '#lib/generated-client/index.js';
 import { error } from '@sveltejs/kit';
@@ -12,7 +12,7 @@ export const load = (async ({ locals }) => {
 		const projects = await callService({
 			call: async () => {
 				return await listProjects({
-					client: createServerApiClient()
+					client: createApiClient()
 				});
 			}
 		});
