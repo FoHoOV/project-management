@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 
-from config import settings
+from config import get_settings
 from db import init_db
 from error.exceptions import UserFriendlyError
 
@@ -53,6 +53,7 @@ def create_app():
         "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it
     )
 
+    settings = get_settings()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.ALLOWED_ORIGINS,

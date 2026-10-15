@@ -36,6 +36,10 @@ for a web based swagger docs.
 
 ## Tests
 
-For tests to work you need to create a `.env.integration` file. In this file override the database connection string to a test database.
-UI tests connect should connect to an instance running in port `8090` for instance which
-connects to the test database instead.
+```bash
+uv run pytest
+```
+
+Tests run against a temporary SQLite database. To run them against another database, set `TEST_DATABASE_URL` (that database is wiped at the start of the run).
+
+The frontend's UI tests need a running backend connected to a throwaway database. Create a `.env.integration` file that overrides `SQLALCHEMY_DATABASE_URL`, and start the backend with it on port `8090` (the "integration" config in `.vscode/launch.json` does this).

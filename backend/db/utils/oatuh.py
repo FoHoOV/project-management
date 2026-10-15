@@ -5,12 +5,12 @@ from joserfc import jwt
 from joserfc.jwk import OctKey
 from sqlalchemy.orm import Session
 
-from config import settings
+from config import get_settings
 from db.utils.user_crud import get_user_by_username, verify_password
 
 
 def get_signing_key() -> OctKey:
-    return OctKey.import_key(settings.SECRET_KEY)
+    return OctKey.import_key(get_settings().SECRET_KEY)
 
 
 def authenticate_user(db: Session, username: str, password: str):
@@ -30,6 +30,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.datetime.now(datetime.UTC) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        {"alg": settings.ALGORITHM}, to_encode, get_signing_key()
+        {"alg": get_settings().ALGORITHM}, to_encode, get_signing_key()
     )
     return encoded_jwt

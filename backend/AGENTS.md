@@ -4,22 +4,22 @@ Shared rules (git workflow, commenting) are in the root [`AGENTS.md`](../AGENTS.
 
 ## Layout
 
-Single FastAPI app; all commands run from `backend/`. Imports are absolute from `backend/` (`from db.models.user import User`, `from config import settings`).
+Single FastAPI app; all commands run from `backend/`. Imports are absolute from `backend/` (`from db.models.user import User`, `from config import get_settings`).
 
 | Path | Role |
 | --- | --- |
 | `main.py` | Entry point: `app = create_app()`. Used by uvicorn and Vercel (`vercel.json`). |
-| `config.py` | `Settings` (pydantic-settings) loaded from `.env`. Module-level `settings` singleton. |
+| `config.py` | `Settings` (pydantic-settings) loaded from `.env`, accessed through the cached `get_settings()`. Never read settings at import time; call `get_settings()` where the value is used. |
 | `api/__init__.py` | `create_app()`: registers routers, CORS, the `UserFriendlyError` → HTTP 400 handler, and calls `init_db()`. Sets OpenAPI version to 3.0.0 for the frontend's code generator. |
 | `api/routes/<resource>/<resource>.py` | One `APIRouter` per resource (`oauth`, `user`, `project`, `permission`, `todo_category`, `todo_item`, `todo_item_comment`, `tag`). Thin handlers that delegate to `db/utils/*_crud.py`. |
 | `api/routes/error.py` | Dummy `/types/errors` endpoint that exists only to put `UserFriendlyErrorSchema` into `openapi.json`. |
 | `api/dependencies/` | `get_db` (session per request) and `get_current_user` (JWT via `joserfc`, `OAuth2PasswordBearer` at `/oauth/token`). |
-| `db/db.py`, `db/__init__.py` | Engine and session factory. SQLite gets `check_same_thread=False` and `PRAGMA foreign_keys=ON`. Tables are created with `Base.metadata.create_all` at startup. **There are no migrations (no Alembic).** |
+| `db/db.py`, `db/__init__.py` | Engine and session factory, created lazily on first use (`get_engine()`, `get_session_factory()`). SQLite gets `check_same_thread=False` and `PRAGMA foreign_keys=ON`. Tables are created with `Base.metadata.create_all` at startup. **There are no migrations (no Alembic).** |
 | `db/models/` | SQLAlchemy 2.0 ORM models (`Mapped[...]`, `mapped_column`), one table per file. Bases are in `models/base.py`. |
 | `db/schemas/` | Pydantic v2 request/response models (`XCreate`, `XUpdate`, `X`, ...). |
 | `db/utils/*_crud.py` | Business logic and queries, as module-level functions taking `db: Session` first. `db/utils/shared/` holds the permission query helpers and the linked-list ordering (`ordered_item.py`). |
 | `error/exceptions.py` | `ErrorCode` (StrEnum) and `UserFriendlyError(code, description)`. Raise this for expected failures. |
-| `tests/` | pytest. `tests/api/routes/<resource>/test_<resource>.py` mirrors the routes. Fixtures are in `tests/api/fixtures/`. The test DB setup is in `tests/db/test.py`. |
+| `tests/` | pytest. `tests/api/routes/<resource>/test_<resource>.py` mirrors the routes. Fixtures are in `tests/api/fixtures/`. The test DB setup is in `tests/conftest.py` and `tests/api/fixtures/app.py`. |
 
 Dependency direction: `api/routes` → `db/utils` → `db/models` + `db/schemas` + `error`. Routes don't query the DB directly.
 
@@ -34,8 +34,9 @@ From `pyproject.toml`, `.python-version`, `.pylintrc` and `.github/workflows/tes
 - Env: copy `.env.raw` to `.env`. Required: `SECRET_KEY`, `SQLALCHEMY_DATABASE_URL`, `ALLOWED_ORIGINS` (JSON list), `IS_SQLALCHEMY_LOG_ENABLED`. Optional: `ALLOW_ORIGIN_REGEX`. `README.md`'s example `.env` omits `SECRET_KEY`, which the app needs to start.
 - Dev server: `uv run uvicorn main:app --reload --port 8080`. Docs are at `/docs`. `.vscode/launch.json` also has an "integration" config on port 8090 that loads `.env.integration`.
 - Tests: `uv run pytest` (this is what CI runs). `pyproject.toml` sets `pythonpath = ["."]` so tests import `config`, `db`, ... from `backend/`.
-  - `tests/conftest.py` rebuilds `config.settings` from `(".env", ".env.integration")` before the tests import anything. Put the test DB URL in `.env.integration`.
-  - `tests/db/test.py` runs `Base.metadata.drop_all` on that DB at session start. Environment variables take priority over both files in pydantic-settings, so an exported `SQLALCHEMY_DATABASE_URL` is the DB that gets wiped.
+  - Tests use a fresh temporary SQLite DB by default. Set `TEST_DATABASE_URL` to run them against another DB (e.g. Postgres). That DB is wiped (`drop_all`) at session start. `tests/conftest.py` forces `SQLALCHEMY_DATABASE_URL` to the test URL, so the dev DB from `.env` or an exported `SQLALCHEMY_DATABASE_URL` is never touched.
+  - Other settings (`SECRET_KEY`, ...) still come from `.env` or the environment.
+  - The tests go through the real `get_db` dependency (no override).
   - Fixtures are session-scoped (`test_app`, `test_client`, autouse `test_users`) and are re-exported through `tests/api/conftest.py`.
 - Lint/format: `black`, `isort`, `pylint`. Config: `.pylintrc` (docstring checks disabled), `[tool.black]` and `[tool.isort]` (`profile = "black"`) in `pyproject.toml`. Run with `uv run black .`, `uv run isort .`, `uv run pylint api db error tests`. VS Code runs black and isort on save (`.vscode/settings.json`). There is no lint command in CI and no Makefile or task runner.
 - Deploy: Vercel (`vercel.json`, `@vercel/python`) from the deploy workflows. The Vercel builder installs from `uv.lock` without the dev group and picks the Python version from `.python-version`.
@@ -52,7 +53,5 @@ From `pyproject.toml`, `.python-version`, `.pylintrc` and `.github/workflows/tes
 - Naming: snake_case modules. Tables are snake_case singular (`todo_item`). Crud modules are `<resource>_crud.py`.
 - Inconsistencies (don't copy them):
   - `api/routes/oauth/oath.py` and `db/utils/oatuh.py` are misspellings of "oauth".
-  - `tests/api/fixtures/__index__.py` is not a package marker. The real fixture re-exports are in `tests/api/conftest.py`.
-  - There is a stray `backend/__init__.py`.
   - `BasesWithCreatedDate.created_date` uses `default=datetime.now(UTC)`, which is evaluated once at import, not per row.
 - Tests are API-level through `TestClient`. Responses are validated with `Schema.model_validate(..., strict=True)`. Request helpers are fixtures returning callables (e.g. `create_project_request(user, flag)`). Assertions carry a message string.
