@@ -6,7 +6,7 @@ import { searchTagSchema } from './validator';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 
 export const actions = {
-	search: async ({ request, fetch, url }) => {
+	search: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, searchTagSchema);
 
 		if (!validation.success) {
@@ -16,7 +16,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await searchTags({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					query: validation.data
 				});
 			},

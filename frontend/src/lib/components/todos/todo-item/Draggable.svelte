@@ -17,13 +17,12 @@
 		type CommonComponentStates,
 		ErrorCode,
 		ErrorType,
-		callServiceInClient,
+		callService,
 		cursorOnElementPositionY,
 		type CustomDragEvent,
 		type DropEvent,
 		type TodoCategory
 	} from '$lib';
-	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { updateTodoItems } from '$lib/generated-client';
 	import type { Snippet } from 'svelte';
@@ -70,10 +69,10 @@
 		componentState = 'calling-service';
 		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				const result = await updateTodoItems({
-					client: createApiClient({ fetch, url: $page.url }),
+					client: createApiClient(),
 					path: { todo_id: event.detail.data.id },
 					body: {
 						order: {

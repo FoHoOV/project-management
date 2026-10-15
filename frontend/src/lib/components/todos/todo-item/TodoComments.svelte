@@ -3,10 +3,9 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
-	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { deleteTodoItemComments, listTodoItemComments } from '$lib/generated-client';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { callService } from '$lib/client-wrapper';
 	import type { TodoComment } from '$lib/generated-client';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
@@ -38,10 +37,10 @@
 
 	export async function refreshComments() {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				const result = await listTodoItemComments({
-					client: createApiClient({ fetch, url: $page.url }),
+					client: createApiClient(),
 					path: { todo_id: todoId }
 				});
 
@@ -58,10 +57,10 @@
 
 	async function handleDeleteComment(comment: TodoComment) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				await deleteTodoItemComments({
-					client: createApiClient({ fetch, url: $page.url }),
+					client: createApiClient(),
 					path: { todo_id: comment.todo_id, comment_id: comment.id }
 				});
 				todoCommentsStore.remove(comment);

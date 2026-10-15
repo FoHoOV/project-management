@@ -13,7 +13,7 @@
 		type TodoCategory,
 		ErrorCode,
 		ErrorType,
-		callServiceInClient,
+		callService,
 		cursorOnElementPositionX,
 		type CustomDragEvent,
 		type DropEvent,
@@ -21,7 +21,6 @@
 		type CommonComponentStates
 	} from '$lib';
 	import { generateNewOrderForTodoCategory } from '$components/todos/utils';
-	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { updateTodoCategories, updateTodoItems } from '$lib/generated-client';
 	import type { Snippet } from 'svelte';
@@ -76,10 +75,10 @@
 		const moveLeft = componentState == 'drop-zone-left-activated';
 		componentState = 'calling-service';
 
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				await updateTodoCategories({
-					client: createApiClient({ fetch, url: $page.url }),
+					client: createApiClient(),
 					path: { category_id: event.detail.data.id },
 					body: {
 						order: {
@@ -121,10 +120,10 @@
 		}
 
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				const result = await updateTodoItems({
-					client: createApiClient({ fetch, url: $page.url }),
+					client: createApiClient(),
 					path: { todo_id: event.detail.data.id },
 					body: {
 						item: {

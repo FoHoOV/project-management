@@ -13,7 +13,7 @@ export const load = (async () => {
 	return {};
 }) satisfies PageServerLoad;
 export const actions: Actions = {
-	default: async ({ request, cookies, fetch, url }) => {
+	default: async ({ request, cookies, fetch }) => {
 		const validation = await validateFormActionRequest(request, schema);
 
 		if (!validation.success) {
@@ -23,7 +23,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				const token = await loginForAccessTokenOAuth({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					body: validation.data
 				});
 				cookies.set(SERVER_ONLY_KEYS.token, JSON.stringify(token), {

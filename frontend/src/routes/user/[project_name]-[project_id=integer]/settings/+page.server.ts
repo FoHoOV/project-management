@@ -7,7 +7,7 @@ import type { Actions } from './$types';
 import { detachSchema, updateUserPermissionsSchema } from './validator';
 
 export const actions: Actions = {
-	detach: async ({ request, fetch, url }) => {
+	detach: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, detachSchema);
 
 		if (!validation.success) {
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await detachFromUserProjects({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					path: validation.data
 				});
 			},
@@ -26,7 +26,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'detach');
 	},
-	updatePermissions: async ({ request, fetch, url }) => {
+	updatePermissions: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, updateUserPermissionsSchema);
 
 		if (!validation.success) {
@@ -36,7 +36,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updatePermissions({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

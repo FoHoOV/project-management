@@ -6,13 +6,13 @@ import type { Project } from '$lib/generated-client';
 import { error } from '@sveltejs/kit';
 import { convertNumberToHttpStatusCode, getUsername } from '$lib';
 
-export const load = (async ({ locals, fetch, url }) => {
+export const load = (async ({ locals, fetch }) => {
 	let result: Project[] = [];
 	if (locals.token) {
 		const projects = await callService({
 			call: async () => {
 				return await listProjects({
-					client: createApiClient({ fetch, url })
+					client: createApiClient(fetch)
 				});
 			}
 		});

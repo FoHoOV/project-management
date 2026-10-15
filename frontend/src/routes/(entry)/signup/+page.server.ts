@@ -12,7 +12,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	default: async ({ request, fetch, url }) => {
+	default: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, schema);
 
 		if (!validation.success) {
@@ -22,7 +22,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				await signupUsers({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					body: validation.data
 				});
 				redirect(303, '/login');

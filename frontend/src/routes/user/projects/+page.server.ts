@@ -11,7 +11,7 @@ import {
 } from '$lib/generated-client/zod.gen';
 
 export const actions = {
-	create: async ({ request, fetch, url }) => {
+	create: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, createProjectSchema);
 
 		if (!validation.success) {
@@ -21,7 +21,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserProjects({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					body: validation.data
 				});
 			},
@@ -30,7 +30,7 @@ export const actions = {
 
 		return namedActionResult(result, 'create');
 	},
-	attach: async ({ request, fetch, url }) => {
+	attach: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, attachProjectSchema);
 
 		if (!validation.success) {
@@ -40,7 +40,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToUserProjects({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});
@@ -50,7 +50,7 @@ export const actions = {
 
 		return namedActionResult(result, 'attach');
 	},
-	edit: async ({ request, fetch, url }) => {
+	edit: async ({ request, fetch }) => {
 		const validation = await validateFormActionRequest(request, editProjectSchema);
 
 		if (!validation.success) {
@@ -60,7 +60,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateProjects({
-					client: createApiClient({ fetch, url }),
+					client: createApiClient(fetch),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

@@ -3,8 +3,7 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
 
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import { page } from '$app/stores';
+	import { callService } from '$lib/client-wrapper';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { updateTodoCategories } from '$lib/generated-client';
 	import { Action, type TodoCategory } from '$lib/generated-client';
@@ -26,10 +25,10 @@
 
 	async function handleUpdateAction(event: Event) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				const result = await updateTodoCategories({
-					client: createApiClient({ fetch, url: $page.url }),
+					client: createApiClient(),
 					path: { category_id: category.id },
 					body: {
 						item: {
