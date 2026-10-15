@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [24]
 
     defaults:
       run:
@@ -61,12 +61,6 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           package_json_file: frontend/package.json
-
-      - name: Setup java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v7

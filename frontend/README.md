@@ -14,7 +14,7 @@ After changing the backend's routes or schemas, run the backend and regenerate t
 pnpm run generate-client
 ```
 
-- Generation uses [@fohoov/zod-openapi-client](https://github.com/FoHoOV/zod-openapi-client), which runs OpenApiTools and therefore requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
+- Generation uses [@hey-api/openapi-ts](https://heyapi.dev) (config in `openapi-ts.config.ts`) and needs Node 22.18 or newer.
 
 ## Developing (IMPORTANT)
 
