@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from httpx import Response
+from httpx2 import Response
 
 from db.models.todo_item import TodoItem
 from db.models.user_project_permission import Permission
