@@ -2,7 +2,7 @@ from bcrypt import checkpw, gensalt, hashpw
 from sqlalchemy.orm import Session
 
 from db.models.user import User
-from db.schemas.user import UserCreate
+from db.schemas.user import PASSWORD_MAX_BYTES, UserCreate
 
 
 def get_user(db: Session, user_id: int):
@@ -18,7 +18,10 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def verify_password(plain_password: str, hashed_password: str):
-    return checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    encoded_password = plain_password.encode("utf-8")
+    if len(encoded_password) > PASSWORD_MAX_BYTES:
+        return False
+    return checkpw(encoded_password, hashed_password.encode("utf-8"))
 
 
 def get_password_hash(password: str):

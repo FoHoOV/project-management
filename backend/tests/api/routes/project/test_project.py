@@ -2,7 +2,7 @@ from collections.abc import Callable
 from typing import cast
 
 import pytest
-from httpx import Response
+from httpx2 import Response
 
 from api.routes.error import UserFriendlyErrorSchema
 from db.models.user_project_permission import Permission

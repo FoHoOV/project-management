@@ -36,3 +36,15 @@ def test_login(
     assert (
         "access_token" in response.json()
     ), "after a successful login (case-insensitive) we should get an access_token"
+
+
+def test_login_with_password_longer_than_72_bytes_is_unauthorized(
+    test_client: TestClient, test_users: list[UserType]
+):
+    response = test_client.post(
+        "/oauth/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={"username": test_users[0]["username"], "password": "a" * 73},
+    )
+
+    assert response.status_code == 401

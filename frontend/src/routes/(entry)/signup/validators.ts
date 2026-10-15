@@ -4,8 +4,8 @@ import type { UserCreate } from '$lib/generated-client';
 export const schema = z
 	.object({
 		username: z.string().min(3).max(30),
-		password: z.string().min(5).max(100),
-		confirm_password: z.string().min(5).max(100)
+		password: z.string().min(5).max(72),
+		confirm_password: z.string().min(5).max(72)
 	})
 	.refine((data) => data.confirm_password === data.password, {
 		message: "passwords don't match",

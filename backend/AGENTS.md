@@ -8,7 +8,7 @@ Single FastAPI app; all commands run from `backend/`. Imports are absolute from 
 
 | Path | Role |
 | --- | --- |
-| `main.py` | Entry point: `app = create_app()`. Used by uvicorn, Vercel (`vercel.json`) and Render (`render.yaml`). |
+| `main.py` | Entry point: `app = create_app()`. Used by uvicorn and Vercel (`vercel.json`). |
 | `config.py` | `Settings` (pydantic-settings) loaded from `.env`. Module-level `settings` singleton. |
 | `api/__init__.py` | `create_app()`: registers routers, CORS, the `UserFriendlyError` → HTTP 400 handler, and calls `init_db()`. Sets OpenAPI version to 3.0.0 for the frontend's code generator. |
 | `api/routes/<resource>/<resource>.py` | One `APIRouter` per resource (`oauth`, `user`, `project`, `permission`, `todo_category`, `todo_item`, `todo_item_comment`, `tag`). Thin handlers that delegate to `db/utils/*_crud.py`. |
@@ -25,23 +25,24 @@ Dependency direction: `api/routes` → `db/utils` → `db/models` + `db/schemas`
 
 ## Tooling
 
-From `Pipfile`, `.pylintrc` and `.github/workflows/test.yml`:
+From `pyproject.toml`, `.python-version`, `.pylintrc` and `.github/workflows/test.yml`:
 
-- Python `3.12` (`[requires]`). The code uses 3.12-only syntax, e.g. PEP 695 generics in `db/utils/shared/permission_query.py`.
-- Package manager: **pipenv**. `Pipfile.lock` is committed.
-  - Install: `pipenv install` (add `--dev` for black, isort, pylint, pytest).
+- Python `3.14` (`.python-version`, `requires-python`). The code uses 3.12+ syntax, e.g. PEP 695 generics in `db/utils/shared/permission_query.py`.
+- Package manager: **uv**. `uv.lock` is committed. Not an installable package (`tool.uv.package = false`).
+  - Install: `uv sync` (includes the `dev` group: black, isort, pylint, pytest, httpx2). `uv sync --no-dev` for runtime only, which is what Vercel installs.
+  - Add a dependency: `uv add <pkg>` (or `uv add --dev <pkg>`). Don't edit `uv.lock` by hand.
 - Env: copy `.env.raw` to `.env`. Required: `SECRET_KEY`, `SQLALCHEMY_DATABASE_URL`, `ALLOWED_ORIGINS` (JSON list), `IS_SQLALCHEMY_LOG_ENABLED`. Optional: `ALLOW_ORIGIN_REGEX`. `README.md`'s example `.env` omits `SECRET_KEY`, which the app needs to start.
-- Dev server: `pipenv run uvicorn main:app --reload --port 8080`. Docs are at `/docs`. `.vscode/launch.json` also has an "integration" config on port 8090 that loads `.env.integration`.
-- Tests: `pipenv run python -m pytest` (this is what CI runs).
+- Dev server: `uv run uvicorn main:app --reload --port 8080`. Docs are at `/docs`. `.vscode/launch.json` also has an "integration" config on port 8090 that loads `.env.integration`.
+- Tests: `uv run pytest` (this is what CI runs). `pyproject.toml` sets `pythonpath = ["."]` so tests import `config`, `db`, ... from `backend/`.
   - `tests/conftest.py` rebuilds `config.settings` from `(".env", ".env.integration")` before the tests import anything. Put the test DB URL in `.env.integration`.
   - `tests/db/test.py` runs `Base.metadata.drop_all` on that DB at session start. Environment variables take priority over both files in pydantic-settings, so an exported `SQLALCHEMY_DATABASE_URL` is the DB that gets wiped.
   - Fixtures are session-scoped (`test_app`, `test_client`, autouse `test_users`) and are re-exported through `tests/api/conftest.py`.
-- Lint/format: `black`, `isort`, `pylint`. Only pylint has repo config (`.pylintrc`: docstring checks disabled). black and isort run with defaults, triggered on save via `.vscode/settings.json`. There is no lint command in CI and no Makefile or task runner.
-- Deploy: Vercel (`vercel.json`, `@vercel/python`) from the deploy workflows. `render.yaml` also exists for Render.
+- Lint/format: `black`, `isort`, `pylint`. Config: `.pylintrc` (docstring checks disabled), `[tool.black]` and `[tool.isort]` (`profile = "black"`) in `pyproject.toml`. Run with `uv run black .`, `uv run isort .`, `uv run pylint api db error tests`. VS Code runs black and isort on save (`.vscode/settings.json`). There is no lint command in CI and no Makefile or task runner.
+- Deploy: Vercel (`vercel.json`, `@vercel/python`) from the deploy workflows. The Vercel builder installs from `uv.lock` without the dev group and picks the Python version from `.python-version`.
 
 ## Conventions observed in the code
 
-- **FastAPI ~0.109, SQLAlchemy ~2.0, pydantic v2 / pydantic-settings ~2.0.**
+- **FastAPI 0.143, SQLAlchemy 2.1, pydantic 2 / pydantic-settings 2.16, joserfc 1.x, bcrypt 5.**
 - Dependencies use the `Annotated[..., Depends(...)]` style (the latest commit migrated to it). No `= Depends(...)` defaults remain.
 - Route handlers are plain `def` (sync). `get_current_user` is `async`.
 - Route handler names become OpenAPI operation IDs as `<function>_<tag>` (`custom_generate_unique_id`), and the frontend client method names come from those IDs. **Renaming a handler or tag changes the generated frontend API.** Some handlers shadow builtins (`filter`, `list` in `project.py`) for this reason.

@@ -18,10 +18,6 @@ jobs:
     name: Test Backend
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: [3.12]
-
     defaults:
       run:
         working-directory: ./backend
@@ -30,20 +26,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: 3.12
-          cache: "pipenv"
-
-      - name: Install pipenv
-        run: pip install pipenv --user
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
 
       - name: Install dependencies
-        run: pipenv install --dev
+        run: uv sync --locked
 
       - name: Run the backend tests
-        run: pipenv run python -m pytest
+        run: uv run pytest
 
   test-frontend:
     name: Test Frontend
@@ -75,24 +68,21 @@ jobs:
           distribution: "temurin"
           java-version: "21"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: 3.12
-          cache: "pipenv"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
 
-      - name: Install pipenv
-        run: pip install pipenv --user
-
-      - name: Install dependencies
+      - name: Install backend dependencies
         run: |
           cd ../backend
-          pipenv install
+          uv sync --locked --no-dev
 
       - name: Start backend service
         run: |
           cd ../backend
-          setsid pipenv run uvicorn main:app --port 8080 &
+          setsid uv run --no-dev uvicorn main:app --port 8080 &
           attempts=10
           for i in $(seq 1 $attempts); do
               if curl --silent --head --fail 127.0.0.1:8080/docs; then
