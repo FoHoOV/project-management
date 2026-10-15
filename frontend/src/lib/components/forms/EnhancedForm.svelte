@@ -20,7 +20,7 @@
 
 	export type Events<
 		TFormAction extends StandardFormActionError,
-		TSchema extends z.ZodTypeAny,
+		TSchema extends z.ZodType,
 		TKey extends StandardFormActionNames<TFormAction>
 	> = {
 		onSubmitSucceeded?: (
@@ -37,7 +37,7 @@
 
 	export type Props<
 		TFormAction extends StandardFormActionError,
-		TSchema extends z.ZodTypeAny,
+		TSchema extends z.ZodType,
 		TKey extends StandardFormActionNames<TFormAction>
 	> = {
 		action?: string;
@@ -60,7 +60,7 @@
 
 <script
 	lang="ts"
-	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodTypeAny, TKey extends StandardFormActionNames<TFormAction> = never"
+	generics="TFormAction extends StandardFormActionError, TSchema extends z.ZodType, TKey extends StandardFormActionNames<TFormAction> = never"
 >
 	const {
 		action,

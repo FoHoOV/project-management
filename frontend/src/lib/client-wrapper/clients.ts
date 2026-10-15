@@ -1,121 +1,62 @@
 import { PUBLIC_API_REQUEST_TIMEOUT_MS, PUBLIC_API_URL } from '$env/static/public';
-import {
-	OAuthApi,
-	TodoItemsApi,
-	TodoCategoriesApi,
-	UsersApi,
-	ProjectsApi,
-	TodoItemCommentsApi,
-	TagsApi,
-	PermissionsApi
-} from '$lib/generated-client/apis';
-
-import {
-	BaseAPI,
-	Configuration,
-	type ConfigurationParameters,
-	type RequestContext,
-	type FetchAPI
-} from '$lib/generated-client/runtime';
-import type { Token } from '$lib/generated-client/models';
+import { type Client, createClient, createConfig } from '$lib/generated-client/client';
+import type { Token } from '$lib/generated-client';
 import { TokenError, isTokenExpirationDateValidAsync } from '$lib/utils/token';
 
-const checkAccessToken = async (context: RequestContext, config?: ConfigurationOptions) => {
-	if (config?.isTokenRequired === false) {
-		return;
+const REQUEST_TIMEOUT_MS = parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS);
+
+/**
+ * Every failed request made through {@link createApiClient} rejects with this error.
+ * `response` is only set when the server answered with an HTTP error; otherwise `body` holds
+ * the thrown cause (e.g. a {@link TokenError}, a network `TypeError` or a timeout).
+ */
+export class ApiError extends Error {
+	constructor(
+		readonly body: unknown,
+		readonly response: Response | undefined
+	) {
+		super(response ? `request failed with status ${response.status}` : 'request failed');
 	}
+}
 
-	const headers = context.init.headers ? new Headers(context.init.headers) : new Headers();
-
-	if (!config?.token?.access_token) {
-		throw new TokenError('token required');
-	}
-
-	if (!(await isTokenExpirationDateValidAsync(config.token.access_token))) {
-		throw new TokenError('token has expired');
-	}
-
-	headers.set(
-		'Authorization',
-		`${config.token?.token_type ?? 'bearer'} ${config.token.access_token}`
-	);
-
-	context.init.headers = headers;
-};
-
-type ConfigurationOptions = Partial<Omit<ConfigurationParameters, 'accessToken'>> & {
+type ApiClientOptions = {
 	token?: Token;
-	isTokenRequired?: boolean;
-};
-
-export const generateClient = <T extends typeof BaseAPI>(
-	ApiClass: T,
-	config?: ConfigurationOptions
-): InstanceType<T> => {
-	config = {
-		...config,
-		fetchApi: addTimeoutToFetchIfNotExists(
-			config?.fetchApi ?? fetch,
-			parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS)
-		)
-	};
-
-	return new ApiClass(
-		new Configuration({
-			basePath: PUBLIC_API_URL,
-			...(config ?? {})
-		})
-	).withPreMiddleware(async (context) => {
-		return await checkAccessToken(context, config);
-	}) as InstanceType<T>;
-};
-
-export const OAuthClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(OAuthApi, config);
-};
-
-export const TodoItemClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoItemsApi, config);
-};
-
-export const TodoItemCommentClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoItemCommentsApi, config);
-};
-
-export const TagClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TagsApi, config);
-};
-
-export const TodoCategoryClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoCategoriesApi, config);
-};
-
-export const ProjectClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(ProjectsApi, config);
-};
-
-export const PermissionClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(PermissionsApi, config);
-};
-
-export const UserClient = (config?: ConfigurationOptions) => {
-	return generateClient(UsersApi, config);
+	fetch?: typeof fetch;
 };
 
 /**
- *  @param timeout timeout in milliseconds
+ * The generated SDK's types assume `throwOnError: true` (see `openapi-ts.config.ts`): a call
+ * resolves to the response body or rejects with an {@link ApiError}. Build one per request, never
+ * at module level: on the server, module state is shared by every user's requests.
  */
-export const addTimeoutToFetchIfNotExists = (fetch: FetchAPI, timeout: number) => {
-	return (input: RequestInfo | URL, init?: RequestInit | undefined) => {
-		if (!init?.signal) {
-			const controller = new AbortController();
-			setTimeout(() => {
-				controller.abort();
-			}, timeout);
+export function createApiClient({ token, fetch: fetchApi = fetch }: ApiClientOptions = {}): Client {
+	const client = createClient(
+		createConfig({
+			baseUrl: PUBLIC_API_URL,
+			fetch: fetchApi,
+			throwOnError: true,
+			auth: async () => {
+				if (!token?.access_token) {
+					throw new TokenError('token required');
+				}
+				if (!(await isTokenExpirationDateValidAsync(token.access_token))) {
+					throw new TokenError('token has expired');
+				}
+				return token.access_token;
+			}
+		})
+	);
 
-			init = { ...init, signal: controller.signal };
-		}
+	// The timeout goes on the request itself: SvelteKit's server-side `fetch` ignores the `init`
+	// argument when it is given a `Request`.
+	client.interceptors.request.use((request, options) =>
+		options.signal
+			? request
+			: new Request(request, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
+	);
+	client.interceptors.error.use(
+		(error, response) => new ApiError(error, response?.ok === false ? response : undefined)
+	);
 
-		return fetch(input, init);
-	};
-};
+	return client;
+}

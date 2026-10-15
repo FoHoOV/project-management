@@ -42,6 +42,14 @@ export default tseslint.config(
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'dist/', '.vercel', 'generated-clients']
+		files: ['**/*.ts', '**/*.svelte'],
+		rules: {
+			// TypeScript already reports undefined names, and no-undef can't see Svelte `generics` type params:
+			// https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
+			'no-undef': 'off'
+		}
+	},
+	{
+		ignores: ['build/', '.svelte-kit/', 'dist/', '.vercel', 'src/lib/generated-client/']
 	}
 );

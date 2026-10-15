@@ -7,7 +7,7 @@ Project management app (projects, todo categories, todo items, tags, comments, d
 | `backend/` | FastAPI + SQLAlchemy REST API (Python 3.14, uv) | [`backend/AGENTS.md`](backend/AGENTS.md) |
 | `frontend/` | SvelteKit 2 + Svelte 5 app (pnpm) | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
 
-The only link between them is the HTTP API. The frontend generates its TypeScript client and Zod schemas from the backend's `/openapi.json` at build time (see `frontend/AGENTS.md`), so **the backend must be running to build the frontend**, and backend schema changes need the frontend client to be regenerated.
+The only link between them is the HTTP API. The frontend's TypeScript client and Zod schemas are generated from the backend's `/openapi.json` and committed in `frontend/src/lib/generated-client/` (see `frontend/AGENTS.md`). **Any backend change to routes or schemas must include the regenerated client in the same PR**; CI fails when the committed client doesn't match the backend.
 
 Other root files:
 - `.github/workflows/test.yml`: backend pytest and frontend unit + Playwright (Chromium only). It runs only on PRs targeting `master`.

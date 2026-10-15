@@ -22,7 +22,8 @@
 		type CommonComponentStates
 	} from '$lib';
 	import { generateNewOrderForTodoCategory } from '$components/todos/utils';
-	import { TodoCategoryClient, TodoItemClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { updateTodoCategories, updateTodoItems } from '$lib/generated-client';
 	import type { Snippet } from 'svelte';
 	import { getToastManager, getTodoCategories } from '$lib/stores';
 
@@ -77,9 +78,10 @@
 
 		await callServiceInClient({
 			call: async () => {
-				await TodoCategoryClient({ token: $page.data.token }).updateTodoCategories(
-					event.detail.data.id,
-					{
+				await updateTodoCategories({
+					client: createApiClient({ token: $page.data.token }),
+					path: { category_id: event.detail.data.id },
+					body: {
 						order: {
 							project_id: projectId,
 							...generateNewOrderForTodoCategory(
@@ -90,7 +92,7 @@
 							)
 						}
 					}
-				);
+				});
 				todoCategoriesStore?.updateCategoriesSort(
 					event.detail.data,
 					generateNewOrderForTodoCategory(
@@ -121,21 +123,22 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(
-					event.detail.data.id,
-					{
+				const result = await updateTodoItems({
+					client: createApiClient({ token: $page.data.token }),
+					path: { todo_id: event.detail.data.id },
+					body: {
 						item: {
 							new_category_id: category.id
 						}
 					}
-				);
+				});
 				todoCategoriesStore?.removeTodo(event.detail.data, false);
 				todoCategoriesStore?.addTodo(result);
 				componentState = 'none';
 			},
 			errorHandler: async (e) => {
 				componentState = 'none';
-				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DependenciesNotResolved) {
+				if (e.type == ErrorType.API_ERROR && e.code == ErrorCode.DEPENDENCIES_NOT_RESOLVED) {
 					toastsMangerStore.addToast({
 						type: 'error',
 						message: e.message,

@@ -29,7 +29,8 @@
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
-	import { TodoItemClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { removeTodoItems, updateTodoItems } from '$lib/generated-client';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
@@ -74,10 +75,14 @@
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(todo.id, {
-					item: {
-						...todo,
-						is_done: !savedTodoStatus
+				const result = await updateTodoItems({
+					client: createApiClient({ token: $page.data.token }),
+					path: { todo_id: todo.id },
+					body: {
+						item: {
+							...todo,
+							is_done: !savedTodoStatus
+						}
 					}
 				});
 				todoCategoriesStore?.updateTodo(result, draggable);
@@ -111,7 +116,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TodoItemClient({ token: $page.data.token }).removeTodoItems(todo.id);
+				await removeTodoItems({
+					client: createApiClient({ token: $page.data.token }),
+					path: { todo_id: todo.id }
+				});
 				todoCategoriesStore?.removeTodo(todo);
 				apiErrorTitle = null;
 				componentState = 'none';

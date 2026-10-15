@@ -5,7 +5,8 @@
 
 	import { page } from '$app/stores';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { updateTodoCategories } from '$lib/generated-client';
 	import { Action, type TodoCategory } from '$lib/generated-client';
 	import { type CommonComponentStates } from '$lib';
 	import { getTodoCategories } from '$lib/stores';
@@ -27,14 +28,15 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoCategoryClient({ token: $page.data.token }).updateTodoCategories(
-					category.id,
-					{
+				const result = await updateTodoCategories({
+					client: createApiClient({ token: $page.data.token }),
+					path: { category_id: category.id },
+					body: {
 						item: {
 							actions: [(event.target as HTMLInputElement).name as Action]
 						}
 					}
-				);
+				});
 
 				todoCategoriesStore?.updateCategory(result);
 				componentState = 'none';

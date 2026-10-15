@@ -1,4 +1,4 @@
-import type { TodoComment } from '$lib/generated-client/models';
+import type { TodoComment } from '$lib/generated-client';
 import { TodoCategories } from '../todos';
 
 export class TodoComments {

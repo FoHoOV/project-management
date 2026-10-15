@@ -24,7 +24,8 @@
 		type DropEvent,
 		type TodoCategory
 	} from '$lib';
-	import { TodoItemClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { updateTodoItems } from '$lib/generated-client';
 	import type { Snippet } from 'svelte';
 	import { getToastManager, getTodoCategories } from '$lib/stores';
 
@@ -71,15 +72,16 @@
 
 		await callServiceInClient({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(
-					event.detail.data.id,
-					{
+				const result = await updateTodoItems({
+					client: createApiClient({ token: $page.data.token }),
+					path: { todo_id: event.detail.data.id },
+					body: {
 						order: {
 							new_category_id: todo.category_id,
 							...generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 						}
 					}
-				);
+				});
 				todoCategoriesStore?.updateTodoSort(
 					event.detail.data,
 					todo.category_id,
@@ -97,7 +99,7 @@
 						message: e.message,
 						time: 6000
 					});
-					if (e.code == ErrorCode.DependenciesNotResolved) {
+					if (e.code == ErrorCode.DEPENDENCIES_NOT_RESOLVED) {
 						todo.is_done = false;
 					}
 					return;

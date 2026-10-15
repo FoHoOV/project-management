@@ -3,7 +3,8 @@
 	import Alert from '$components/alerts/Alert.svelte';
 
 	import { page } from '$app/stores';
-	import { TagClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { deleteTags, detachFromTodoTags } from '$lib/generated-client';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import Fa from 'svelte-fa';
 	import {
@@ -44,7 +45,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TagClient({ token: $page.data.token }).detachFromTodoTags(tag.name, todo.id);
+				await detachFromTodoTags({
+					client: createApiClient({ token: $page.data.token }),
+					path: { tag_name: tag.name, todo_id: todo.id }
+				});
 				todoCategoriesStore?.detachTag(todo.id, tag);
 				componentState = 'none';
 				apiErrorTitle = null;
@@ -60,8 +64,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TagClient({ token: $page.data.token }).deleteTags(tag.name, {
-					project_id: tag.project_id
+				await deleteTags({
+					client: createApiClient({ token: $page.data.token }),
+					path: { tag_name: tag.name },
+					body: { project_id: tag.project_id }
 				});
 				todoCategoriesStore?.deleteTag(tag);
 				componentState = 'none';

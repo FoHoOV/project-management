@@ -1,4 +1,4 @@
-import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
+import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client';
 
 export function getTodoItemLeftId(todo: TodoCategoryPartialTodoItem) {
 	return todo.order?.left_id ?? null;

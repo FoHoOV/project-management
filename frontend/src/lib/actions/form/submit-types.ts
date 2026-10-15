@@ -9,7 +9,7 @@ import type {
 } from './utils';
 
 export type EnhanceOptions<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
@@ -37,7 +37,7 @@ export type FormActionResultType<
 		: never;
 
 export type SubmitEvents<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
@@ -54,13 +54,13 @@ export type SubmitStartEventType = CustomEvent<void>;
 
 export type SubmitEndedEventType = CustomEvent<void>;
 
-export type SubmitRedirectedEventType<TSchema extends z.ZodTypeAny> = CustomEvent<{
+export type SubmitRedirectedEventType<TSchema extends z.ZodType> = CustomEvent<{
 	redirectUrl: URL;
 	formData: ParsedFormData;
 }>;
 
 export type SubmitSucceededEventType<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = CustomEvent<{

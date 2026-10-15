@@ -9,7 +9,7 @@ import {
 import { superFail } from '$lib/actions';
 import type { RequiredProperty } from '../utils';
 
-export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
+export async function superApplyAction<TErrorSchema extends z.ZodObject>(
 	e: ServiceError<TErrorSchema>
 ) {
 	switch (e.type) {
@@ -22,7 +22,6 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 			return superFail(400, { message: e.message, error: e.validationError });
 		case ErrorType.NOT_AUTHENTICATED:
 			return (await handleUnauthenticatedUser()) as never;
-		case ErrorType.PRE_REQUEST_FAILURE:
 		case ErrorType.SERVICE_DOWN_ERROR:
 			return superFail(e.status, { message: e.message });
 		default:
@@ -35,7 +34,7 @@ export async function superApplyAction<TErrorSchema extends z.AnyZodObject>(
 
 export async function callServiceInFormActions<
 	TServiceCallResult extends Promise<unknown>,
-	TErrorSchema extends z.AnyZodObject
+	TErrorSchema extends z.ZodObject
 >({
 	call,
 	errorSchema
@@ -49,7 +48,7 @@ export async function callServiceInFormActions<
 >;
 export async function callServiceInFormActions<
 	TServiceCallResult extends Promise<unknown>,
-	TErrorSchema extends z.AnyZodObject,
+	TErrorSchema extends z.ZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 >({
 	call,
@@ -63,7 +62,7 @@ export async function callServiceInFormActions<
 >;
 export async function callServiceInFormActions<
 	TServiceCallResult extends Promise<unknown>,
-	TErrorSchema extends z.AnyZodObject,
+	TErrorSchema extends z.ZodObject,
 	TErrorCallbackResult extends Promise<unknown>
 >({
 	call,

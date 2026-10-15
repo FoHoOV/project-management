@@ -9,7 +9,8 @@
 
 	import { page } from '$app/stores';
 	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
-	import { TodoCategoryClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { detachFromProjectTodoCategories } from '$lib/generated-client';
 	import type { TodoCategory } from '$lib/generated-client';
 	import type { Events as TodoItemEvents } from '$components/todos/todo-item/TodoItem.svelte';
 	import {
@@ -54,10 +55,10 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TodoCategoryClient({ token: $page.data.token }).detachFromProjectTodoCategories(
-					category.id,
-					projectId
-				);
+				await detachFromProjectTodoCategories({
+					client: createApiClient({ token: $page.data.token }),
+					path: { category_id: category.id, project_id: projectId }
+				});
 				todoCategoriesStore?.removeCategory(category);
 				componentState = 'none';
 				apiErrorTitle = null;

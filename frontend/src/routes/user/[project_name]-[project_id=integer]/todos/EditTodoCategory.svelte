@@ -7,7 +7,7 @@
 	import { editTodoCategorySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import type { TodoCategory } from '$lib/generated-client/models';
+	import type { TodoCategory } from '$lib/generated-client';
 	import { getTodoCategories } from '$lib/stores';
 
 	export type Props = {

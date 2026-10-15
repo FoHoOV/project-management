@@ -6,7 +6,7 @@
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
-	import { type Project } from '$lib/generated-client/models';
+	import { type Project } from '$lib/generated-client';
 	import { getProjects } from '$lib/stores';
 
 	export type Props = {

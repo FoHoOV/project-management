@@ -4,7 +4,7 @@ import type {
 	TodoCategory,
 	TodoCategoryPartialTodoItem,
 	TodoItemPartialDependency
-} from '$lib/generated-client/models';
+} from '$lib/generated-client';
 import {
 	getLastTodoCategoryInSortedListExceptCurrent,
 	getLastTodoItemInSortedListExceptCurrent,

@@ -1,5 +1,6 @@
 import { namedActionResult, validateFormActionRequest } from '$lib';
-import { TagClient } from '$lib/client-wrapper/clients';
+import { createApiClient } from '$lib/client-wrapper/clients';
+import { searchTags } from '$lib/generated-client';
 import type { Actions } from './$types';
 import { searchTagSchema } from './validator';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
@@ -14,17 +15,10 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				if (validation.data.projectId) {
-					return await TagClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).searchTags(validation.data.name, validation.data.projectId);
-				} else {
-					return await TagClient({
-						token: locals.token,
-						fetchApi: fetch
-					}).searchTags(validation.data.name);
-				}
+				return await searchTags({
+					client: createApiClient({ token: locals.token, fetch }),
+					query: validation.data
+				});
 			},
 			errorSchema: searchTagSchema
 		});

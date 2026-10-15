@@ -11,14 +11,8 @@
 			"type": "node-terminal"
 		},
 		{
-			"command": "pnpm run open-api:generate:linux",
-			"name": "pnpm:open-api:generate:linux",
-			"request": "launch",
-			"type": "node-terminal"
-		},
-		{
-			"command": "pnpm run open-api:generate:windows",
-			"name": "pnpm:open-api:generate:windows",
+			"command": "pnpm run generate-client",
+			"name": "pnpm:generate-client",
 			"request": "launch",
 			"type": "node-terminal"
 		},

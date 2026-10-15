@@ -1,12 +1,13 @@
 import { validateFormActionRequest, namedActionResult } from '$lib';
-import { PermissionClient, ProjectClient } from '$lib/client-wrapper/clients';
+import { createApiClient } from '$lib/client-wrapper/clients';
+import { detachFromUserProjects, updatePermissions } from '$lib/generated-client';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod/schemas';
+import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod.gen';
 import type { Actions } from './$types';
 import { detachSchema, updateUserPermissionsSchema } from './validator';
 
 export const actions: Actions = {
-	detach: async ({ request, locals }) => {
+	detach: async ({ request, locals, fetch }) => {
 		const validation = await validateFormActionRequest(request, detachSchema);
 
 		if (!validation.success) {
@@ -15,17 +16,17 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).detachFromUserProjects(validation.data.projectId, validation.data.userId);
+				return await detachFromUserProjects({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: validation.data
+				});
 			},
 			errorSchema: detachSchema
 		});
 
 		return namedActionResult(result, 'detach');
 	},
-	updatePermissions: async ({ request, locals }) => {
+	updatePermissions: async ({ request, locals, fetch }) => {
 		const validation = await validateFormActionRequest(request, updateUserPermissionsSchema);
 
 		if (!validation.success) {
@@ -34,11 +35,10 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await PermissionClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updatePermissions(validation.data.project_id, {
-					...validation.data
+				return await updatePermissions({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { project_id: validation.data.project_id },
+					body: validation.data
 				});
 			},
 			errorSchema: ProjectUpdateUserPermissions
