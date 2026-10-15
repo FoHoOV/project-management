@@ -25,9 +25,8 @@ export default defineConfig({
 		// Makes `throwOnError: true` the SDK's type default; createApiClient sets it at runtime.
 		{ name: '@hey-api/client-fetch', baseUrl: false, throwOnError: true },
 		{ name: '@hey-api/typescript', enums: 'javascript' },
-		{ name: '@hey-api/transformers', dates: true },
 		// `client: false`: every call passes its own client; the SDK doesn't import the deleted one.
-		{ name: '@hey-api/sdk', transformer: true, client: false, responseStyle: 'data' },
+		{ name: '@hey-api/sdk', client: false, responseStyle: 'data' },
 		{
 			name: 'zod',
 			definitions: { name: '{{name}}', case: 'preserve' },

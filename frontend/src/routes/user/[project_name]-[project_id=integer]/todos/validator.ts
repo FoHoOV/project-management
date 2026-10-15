@@ -22,6 +22,7 @@ import {
 	TodoItemUpdateItem as TodoItemUpdateItemSchema
 } from '$lib/generated-client/zod.gen';
 import { requiredField } from '$lib/utils/zod';
+import { toIsoDate } from '$lib/utils/date';
 
 const optionalDescription = (schema: z.ZodString) =>
 	z
@@ -29,25 +30,20 @@ const optionalDescription = (schema: z.ZodString) =>
 		.transform((t) => (t.length > 0 ? t : '-'))
 		.pipe(schema);
 
-const dateSchema = z.string().transform((value, ctx) => {
-	if (value.length == 0) {
-		return undefined;
-	}
-	const parsedDate = z.coerce
-		.date()
-		.min(
-			new Date(new Date().setDate(new Date(Date.now()).getDate() - 1)),
-			'Due date must be something in the future'
-		)
-		.safeParse(value);
-	if (!parsedDate.success) {
-		parsedDate.error.issues.forEach((issue) => {
-			ctx.addIssue({ code: 'custom', message: issue.message, path: issue.path });
-		});
-		return undefined;
-	}
-	return parsedDate.data;
-});
+// The backend resets the due date when it receives one in year 1.
+export const RESET_DUE_DATE = '0001-01-01';
+
+const dueDateSchema = z
+	.string()
+	.transform((value) => (value.length > 0 ? value : undefined))
+	.pipe(
+		requiredField(TodoItemCreateSchema.shape.due_date)
+			.refine(
+				(date) => date >= toIsoDate(new Date(Date.now() - 24 * 60 * 60 * 1000)),
+				'Due date must be something in the future'
+			)
+			.optional()
+	);
 
 export const createTodoItemSchema = TodoItemCreateSchema.extend({
 	category_id: z.coerce.number().min(0),
@@ -55,7 +51,7 @@ export const createTodoItemSchema = TodoItemCreateSchema.extend({
 	is_done: z
 		.union([z.boolean(), z.literal('true'), z.literal('false')])
 		.transform((value) => value === true || value === 'true'),
-	due_date: dateSchema.optional()
+	due_date: dueDateSchema
 });
 
 ({}) as z.infer<typeof createTodoItemSchema> satisfies TodoItemCreate;
@@ -87,7 +83,7 @@ export const editTodoItemSchema = z.object({
 	category_id: z.coerce.number(),
 	title: requiredField(TodoItemUpdateItemSchema.shape.title),
 	description: optionalDescription(requiredField(TodoItemUpdateItemSchema.shape.description)),
-	due_date: dateSchema.optional()
+	due_date: dueDateSchema
 });
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;

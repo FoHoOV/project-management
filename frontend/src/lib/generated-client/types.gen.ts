@@ -544,7 +544,7 @@ export type TodoCategoryPartialTodoItem = {
     /**
      * Due Date
      */
-    due_date?: Date | null;
+    due_date?: string | null;
     /**
      * Tags
      */
@@ -680,7 +680,7 @@ export type TodoItem = {
     /**
      * Due Date
      */
-    due_date?: Date | null;
+    due_date?: string | null;
     /**
      * Id
      */
@@ -735,7 +735,7 @@ export type TodoItemCreate = {
     /**
      * Due Date
      */
-    due_date?: Date | null;
+    due_date?: string | null;
 };
 
 /**
@@ -851,7 +851,7 @@ export type TodoItemUpdateItem = {
     /**
      * Due Date
      */
-    due_date?: Date | null;
+    due_date?: string | null;
     /**
      * Is Done
      */

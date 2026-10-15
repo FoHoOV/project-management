@@ -17,7 +17,8 @@
 		type CommonComponentStates,
 		type TodoCategory,
 		callServiceInClient,
-		ErrorType
+		ErrorType,
+		fromIsoDate
 	} from '$lib';
 	import {
 		faEdit,
@@ -177,7 +178,8 @@
 			return '';
 		}
 
-		const dueDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+		const dueDate = fromIsoDate(date);
+		dueDate.setHours(23, 59, 59);
 
 		if (Date.now() > dueDate.getTime()) {
 			return 'text-error';
@@ -237,7 +239,9 @@
 			<div class="flex items-center gap-2 py-2">
 				<Fa icon={faCalendarCheck} class={_getDueDateClass(todo.due_date)}></Fa>
 				{#if todo.due_date}
-					<span class={_getDueDateClass(todo.due_date)}>{todo.due_date.toLocaleDateString()}</span>
+					<span class={_getDueDateClass(todo.due_date)}
+						>{fromIsoDate(todo.due_date).toLocaleDateString()}</span
+					>
 				{:else}
 					<span>-</span>
 				{/if}
