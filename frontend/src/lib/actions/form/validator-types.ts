@@ -1,4 +1,4 @@
-import type { ParsedFormData } from '$lib/actions/form/utils';
+import type { ParsedFormData } from '#lib/actions/form/utils.js';
 import type { z } from 'zod';
 
 export type ValidatorErrorsType<T extends z.ZodType> = z.ZodFlattenedError<

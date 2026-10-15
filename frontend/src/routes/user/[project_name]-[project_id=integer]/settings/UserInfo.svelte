@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import { type PartialUserWithPermission } from '$lib';
-	import { Permission } from '$lib/generated-client';
+	import { type PartialUserWithPermission } from '#lib';
+	import { Permission } from '#lib/generated-client/index.js';
 
 	export type Props = {
 		user: PartialUserWithPermission;

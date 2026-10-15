@@ -1,14 +1,18 @@
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { attachToUserProjects, createForUserProjects, updateProjects } from '$lib/generated-client';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
+import { createApiClient } from '#lib/client-wrapper/clients.js';
+import {
+	attachToUserProjects,
+	createForUserProjects,
+	updateProjects
+} from '#lib/generated-client/index.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import type { Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
-import { namedActionResult, validateFormActionRequest } from '$lib';
+import { namedActionResult, validateFormActionRequest } from '#lib';
 import {
 	ProjectAttachAssociation,
 	ProjectCreate,
 	ProjectUpdate
-} from '$lib/generated-client/zod.gen';
+} from '#lib/generated-client/zod.gen.js';
 
 export const actions = {
 	create: async ({ request, fetch }) => {

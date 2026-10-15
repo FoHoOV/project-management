@@ -6,7 +6,7 @@ import {
 	type ServiceCallOptions,
 	type ServiceError
 } from './wrapper.universal';
-import { superFail } from '$lib/actions';
+import { superFail } from '#lib/actions/index.js';
 import type { RequiredProperty } from '../utils';
 
 export async function superApplyAction<TErrorSchema extends z.ZodObject>(

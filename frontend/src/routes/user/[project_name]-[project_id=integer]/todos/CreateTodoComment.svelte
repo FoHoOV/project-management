@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { createTodoCommentSchema } from './validator';
-	import { page } from '$app/stores';
-	import { TodoComments } from '$lib/stores/todo-comments';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
+	import { page } from '$app/state';
+	import { TodoComments } from '#lib/stores/todo-comments/index.js';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
 
 	export type Props = {
 		form: ActionData;
@@ -22,8 +22,8 @@
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
+		page.params.project_name!,
+		page.params.project_id!
 	)}?/createTodoComment"
 	enhancerConfig={{
 		validator: { schema: createTodoCommentSchema },
@@ -37,7 +37,7 @@
 	successfulMessage="Todo comment created"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="todo_id" value={todoId} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="todo_id" value={todoId} errors="" />
 		<FormInput
 			name="message"
 			type="text-area"

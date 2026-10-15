@@ -4,12 +4,12 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
+	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
 	import { detachSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
 	import type { ActionData, PageData } from './$types';
-	import type { PartialUserWithPermission } from '$lib';
-	import { getToastManager } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import type { PartialUserWithPermission } from '#lib';
+	import { getToastManager } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Props = {
 		form: ActionData;

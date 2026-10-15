@@ -1,14 +1,14 @@
 <script lang="ts" module>
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 
 	import type { ActionData } from './$types';
 	import { editTodoCommentSchema } from './validator';
-	import { page } from '$app/stores';
-	import type { TodoComment } from '$lib/generated-client';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { TodoComments } from '$lib/stores/todo-comments';
+	import { page } from '$app/state';
+	import type { TodoComment } from '#lib/generated-client/index.js';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { TodoComments } from '#lib/stores/todo-comments/index.js';
 
 	export type Props = {
 		form: ActionData;
@@ -23,8 +23,8 @@
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
+		page.params.project_name!,
+		page.params.project_id!
 	)}?/editTodoComment"
 	enhancerConfig={{
 		validator: { schema: editTodoCommentSchema },
@@ -39,13 +39,13 @@
 	successfulMessage="Todo comment edited"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={comment?.id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={comment?.id} errors="" />
 		<FormInput
 			wrapperClasses="hidden"
 			type="hidden"
 			name="todo_id"
 			value={comment?.todo_id}
-			errors={''}
+			errors=""
 		/>
 		<FormInput
 			name="message"

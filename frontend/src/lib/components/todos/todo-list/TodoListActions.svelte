@@ -3,12 +3,12 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import FormInput from '$components/forms/FormInput.svelte';
 
-	import { callService } from '$lib/client-wrapper';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { updateTodoCategories } from '$lib/generated-client';
-	import { Action, type TodoCategory } from '$lib/generated-client';
-	import { type CommonComponentStates } from '$lib';
-	import { getTodoCategories } from '$lib/stores';
+	import { callService } from '#lib/client-wrapper/index.js';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { updateTodoCategories } from '#lib/generated-client/index.js';
+	import { Action, type TodoCategory } from '#lib/generated-client/index.js';
+	import { type CommonComponentStates } from '#lib';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
 		category: TodoCategory;
@@ -53,7 +53,7 @@
 <div class="relative my-2">
 	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
-	{#each Object.values(Action) as action}
+	{#each Object.values(Action) as action (action)}
 		<FormInput
 			label={action.replaceAll('_', ' ')}
 			name={action}

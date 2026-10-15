@@ -1,8 +1,8 @@
-import { validateFormActionRequest, namedActionResult } from '$lib';
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { detachFromUserProjects, updatePermissions } from '$lib/generated-client';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod.gen';
+import { validateFormActionRequest, namedActionResult } from '#lib';
+import { createApiClient } from '#lib/client-wrapper/clients.js';
+import { detachFromUserProjects, updatePermissions } from '#lib/generated-client/index.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
+import { ProjectUpdateUserPermissions } from '#lib/generated-client/zod.gen.js';
 import type { Actions } from './$types';
 import { detachSchema, updateUserPermissionsSchema } from './validator';
 

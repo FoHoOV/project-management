@@ -22,16 +22,14 @@
 		type CustomDragEvent,
 		type DropEvent,
 		type TodoCategory
-	} from '$lib';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { updateTodoItems } from '$lib/generated-client';
+	} from '#lib';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Snippet } from 'svelte';
-	import { getToastManager, getTodoCategories } from '$lib/stores';
+	import { getToastManager, getTodoCategories } from '#lib/stores/index.js';
 
 	type ComponentStates =
-		| CommonComponentStates
-		| 'drop-zone-top-activated'
-		| 'drop-zone-bottom-activated';
+		CommonComponentStates | 'drop-zone-top-activated' | 'drop-zone-bottom-activated';
 
 	export type Events = {
 		onError?: (message: string) => void;

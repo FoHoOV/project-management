@@ -19,17 +19,15 @@
 		type DropEvent,
 		type TodoItem,
 		type CommonComponentStates
-	} from '$lib';
+	} from '#lib';
 	import { generateNewOrderForTodoCategory } from '$components/todos/utils';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { updateTodoCategories, updateTodoItems } from '$lib/generated-client';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { updateTodoCategories, updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Snippet } from 'svelte';
-	import { getToastManager, getTodoCategories } from '$lib/stores';
+	import { getToastManager, getTodoCategories } from '#lib/stores/index.js';
 
 	type ComponentState =
-		| CommonComponentStates
-		| 'drop-zone-left-activated'
-		| 'drop-zone-right-activated';
+		CommonComponentStates | 'drop-zone-left-activated' | 'drop-zone-right-activated';
 
 	export type Events = {
 		onError?: (message: string) => void;

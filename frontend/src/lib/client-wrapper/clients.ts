@@ -1,5 +1,5 @@
-import { PUBLIC_API_REQUEST_TIMEOUT_MS } from '$env/static/public';
-import { type Client, createClient, createConfig } from '$lib/generated-client/client';
+import { PUBLIC_API_REQUEST_TIMEOUT_MS } from '$app/env/public';
+import { type Client, createClient, createConfig } from '#lib/generated-client/client/index.js';
 
 export const API_PROXY_PATH = '/api';
 
@@ -54,6 +54,7 @@ export function createApiClient(eventFetch?: typeof fetch): Client {
 			? request
 			: new Request(request, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
 	);
+
 	client.interceptors.error.use(
 		(error, response) => new ApiError(error, response?.ok === false ? response : undefined)
 	);

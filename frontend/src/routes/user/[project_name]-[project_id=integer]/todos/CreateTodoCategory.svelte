@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { createTodoCategorySchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { getTodoCategories } from '$lib/stores';
+	import { page } from '$app/state';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
 		form: ActionData;
@@ -21,8 +21,8 @@
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
+		page.params.project_name!,
+		page.params.project_id!
 	)}?/createCategory"
 	enhancerConfig={{
 		validator: { schema: createTodoCategorySchema },
@@ -40,8 +40,8 @@
 			wrapperClasses="hidden"
 			type="hidden"
 			name="project_id"
-			value={$page.params.project_id}
-			errors={''}
+			value={page.params.project_id!}
+			errors=""
 		/>
 		<FormInput
 			name="title"

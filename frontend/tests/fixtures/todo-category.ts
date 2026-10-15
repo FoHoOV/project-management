@@ -7,7 +7,6 @@ import { getFloatingBtn } from '../common-locators/floating-btn';
 import { dragAndDropTo, waitForAnimationEnd, type EnhancedPage } from './enhanced-page';
 import { acceptConfirmDialog } from '../common-locators/confirm';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
-import crypto from 'crypto';
 
 export type TodoCategoryUtils = { page: TodoCategoryPage; helpers: TodoCategoryHelpers };
 

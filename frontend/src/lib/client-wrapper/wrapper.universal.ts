@@ -1,17 +1,18 @@
-import { browser } from '$app/environment';
-import { goto, invalidateAll } from '$app/navigation';
+import { browser } from '$app/env';
+import { goto, refreshAll } from '$app/navigation';
+import { resolve } from '$app/paths';
 import { redirect } from '@sveltejs/kit';
 import type { z } from 'zod';
-import type { ErrorMessage, NumberRange } from '$lib/utils/types';
-import { HTTPValidationError, UserFriendlyErrorSchema } from '$lib/generated-client/zod.gen';
-import { ErrorCode } from '$lib/generated-client';
+import type { ErrorMessage, NumberRange } from '#lib/utils/types/index.js';
+import { HTTPValidationError, UserFriendlyErrorSchema } from '#lib/generated-client/zod.gen.js';
+import { ErrorCode } from '#lib/generated-client/index.js';
 import { ApiError } from './clients';
-import { extractKeys as extractKeysFromZod } from '$lib/utils/zod';
+import { extractKeys as extractKeysFromZod } from '#lib/utils/zod/index.js';
 
 export const handleUnauthenticatedUser = async () => {
 	if (browser) {
-		await invalidateAll();
-		await goto('/user/logout?session-expired=true');
+		await refreshAll();
+		await goto(resolve('/user/logout?session-expired=true'));
 		return;
 	} else {
 		redirect(303, '/user/logout?session-expired=true');
@@ -118,14 +119,8 @@ export async function callService<
 		ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>
 	>['errorHandler']
 }: ServiceCallOptions<TServiceCallResult, TErrorSchema, TErrorCallbackResult>): Promise<
-	| {
-			success: false;
-			error: Awaited<TErrorCallbackResult>;
-	  }
-	| {
-			success: true;
-			response: Awaited<TServiceCallResult>;
-	  }
+	| { success: false; error: Awaited<TErrorCallbackResult> }
+	| { success: true; response: Awaited<TServiceCallResult> }
 > {
 	try {
 		return {
@@ -157,7 +152,7 @@ export async function callService<
 				success: false,
 				error: await errorHandler({
 					type: ErrorType.API_ERROR,
-					status: status,
+					status,
 					code: ErrorCode.UNKNOWN_ERROR,
 					message:
 						e.response.status < 400
@@ -172,7 +167,7 @@ export async function callService<
 		if (e.response.status === 401) {
 			return await _defaultUnAuthenticatedUserHandler(errorHandler, {
 				type: ErrorType.NOT_AUTHENTICATED,
-				status: status,
+				status,
 				message: 'Invalid credentials!',
 				data: response,
 				preventDefaultHandler: false,
@@ -191,10 +186,10 @@ export async function callService<
 					success: false,
 					error: await errorHandler({
 						type: ErrorType.API_ERROR,
-						status: status,
+						status,
 						code: ErrorCode.UNKNOWN_ERROR,
 						message: 'Some validation errors has ocurred, please review you inputs',
-						response: response,
+						response,
 						originalError: e
 					})
 				};
@@ -203,10 +198,10 @@ export async function callService<
 					success: false,
 					error: await errorHandler({
 						type: ErrorType.VALIDATION_ERROR,
-						status: status,
+						status,
 						code: ErrorCode.INVALID_INPUT,
 						message: 'Some validation errors has ocurred, please review you inputs',
-						response: response,
+						response,
 						validationError: validationErrors as any, // TODO: why do we need to cast here?
 						originalError: e
 					})
@@ -220,10 +215,10 @@ export async function callService<
 				success: false,
 				error: await errorHandler({
 					type: ErrorType.API_ERROR,
-					status: status,
+					status,
 					code: userFriendlyError.data.code,
 					message: userFriendlyError.data.message,
-					response: response,
+					response,
 					originalError: e
 				})
 			};
@@ -234,7 +229,7 @@ export async function callService<
 			success: false,
 			error: await errorHandler({
 				type: ErrorType.API_ERROR,
-				status: status,
+				status,
 				code: ErrorCode.UNKNOWN_ERROR,
 				message: responseRecord.message ?? responseRecord.detail ?? e.message,
 				response: responseRecord,

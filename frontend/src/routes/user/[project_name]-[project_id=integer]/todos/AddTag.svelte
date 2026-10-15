@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { addTagSchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { getTodoCategories } from '$lib/stores';
+	import { page } from '$app/state';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
 		form: ActionData;
@@ -21,7 +21,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}?/addTag"
+	action="{generateTodoListItemsUrl(page.params.project_name!, page.params.project_id!)}?/addTag"
 	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,
@@ -39,16 +39,16 @@
 			wrapperClasses="w-full"
 			hideLabel={true}
 			value={todoId}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput
 			name="project_id"
 			label="project id"
 			hideLabel={true}
-			value={$page.params.project_id}
+			value={page.params.project_id!}
 			type="hidden"
-			errors={''}
+			errors=""
 		/>
 		<FormInput
 			name="name"

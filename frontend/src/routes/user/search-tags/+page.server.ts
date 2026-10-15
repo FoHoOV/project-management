@@ -1,9 +1,9 @@
-import { namedActionResult, validateFormActionRequest } from '$lib';
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { searchTags } from '$lib/generated-client';
+import { namedActionResult, validateFormActionRequest } from '#lib';
+import { createApiClient } from '#lib/client-wrapper/clients.js';
+import { searchTags } from '#lib/generated-client/index.js';
 import type { Actions } from './$types';
 import { searchTagSchema } from './validator';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 
 export const actions = {
 	search: async ({ request, fetch }) => {

@@ -5,11 +5,11 @@
 	import Detach from '$routes/user/[project_name]-[project_id=integer]/settings/Detach.svelte';
 	import UserInfo from '$routes/user/[project_name]-[project_id=integer]/settings/UserInfo.svelte';
 
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { getNavbar } from '$lib/stores/index.js';
-	import type { ComponentExports } from '$lib/utils/types/svelte.js';
+	import { getNavbar } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 </script>
 
 <script lang="ts">

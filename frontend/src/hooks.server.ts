@@ -1,9 +1,8 @@
-import type { Handle, HandleServerError } from '@sveltejs/kit';
-import type { Token } from '$lib/generated-client';
-import { SERVER_ONLY_KEYS } from '$lib/constants/cookie.server';
-import { sequence } from '@sveltejs/kit/hooks';
-import { isTokenExpired } from '$lib/utils/token';
-import { SHARED_KEYS } from '$lib/constants/cookie';
+import type { Token } from '#lib/generated-client/index.js';
+import { SERVER_ONLY_KEYS } from '#lib/constants/cookie.server.js';
+import { sequence, type Handle, type HandleServerError } from '@sveltejs/kit/hooks';
+import { isTokenExpired } from '#lib/utils/token/index.js';
+import { SHARED_KEYS } from '#lib/constants/cookie.js';
 
 export const setSharedCookies: Handle = async ({ event, resolve }) => {
 	const result = {} as Record<(typeof SHARED_KEYS)[keyof typeof SHARED_KEYS], string | undefined>;
@@ -36,11 +35,10 @@ export const setAuthorizationToken: Handle = async ({ event, resolve }) => {
 	return await resolve(event);
 };
 
-export const handleUnexpectedError: HandleServerError = async ({ status }) => {
-	return {
-		message: 'Whoops! an unknown error has occurred, please try again later',
-		status: status
-	};
+export const handleError: HandleServerError = ({ kind }) => {
+	if (kind === 'unknown') {
+		return { message: 'Whoops! an unknown error has occurred, please try again later' };
+	}
 };
 
 export const handle: Handle = sequence(setSharedCookies, setAuthorizationToken);

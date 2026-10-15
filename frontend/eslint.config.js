@@ -3,7 +3,9 @@ import prettier from 'eslint-config-prettier';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import { loadConfig } from '@sveltejs/load-config';
+
+const svelteConfig = (await loadConfig('./', { traverse: false }))?.config;
 
 export default tseslint.config(
 	eslint.configs.recommended,
@@ -38,7 +40,10 @@ export default tseslint.config(
 			'@typescript-eslint/no-unused-vars': 'warn',
 			'@typescript-eslint/no-explicit-any': 'warn',
 			'no-unused-expressions': 'off',
-			'@typescript-eslint/no-unused-expressions': 'off'
+			'@typescript-eslint/no-unused-expressions': 'off',
+			// No base path is configured, so resolve() adds nothing to links, and most hrefs here are
+			// computed or come from props, which the rule can't check. goto() calls still use it.
+			'svelte/no-navigation-without-resolve': ['error', { ignoreLinks: true }]
 		}
 	},
 	{

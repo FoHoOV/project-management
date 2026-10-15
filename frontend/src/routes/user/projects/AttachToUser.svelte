@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
-	import { type Project } from '$lib/generated-client';
-	import { getProjects } from '$lib/stores';
+	import { type Project } from '#lib/generated-client/index.js';
+	import { getProjects } from '#lib/stores/index.js';
 
 	export type Props = {
 		form: ActionData;
@@ -48,7 +48,7 @@
 			wrapperClasses="w-full"
 			hideLabel={true}
 			value={project.id}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput

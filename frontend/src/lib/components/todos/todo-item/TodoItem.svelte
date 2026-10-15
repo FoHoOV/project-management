@@ -19,7 +19,7 @@
 		callService,
 		ErrorType,
 		fromIsoDate
-	} from '$lib';
+	} from '#lib';
 	import {
 		faEdit,
 		faTrashCan,
@@ -29,13 +29,13 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { removeTodoItems, updateTodoItems } from '$lib/generated-client';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { removeTodoItems, updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
-	import { getMultiStepModal, getToastManager, getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { getMultiStepModal, getToastManager, getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;

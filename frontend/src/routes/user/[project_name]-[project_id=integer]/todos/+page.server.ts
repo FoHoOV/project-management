@@ -1,6 +1,6 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateFormActionRequest, namedActionResult } from '$lib/actions/form';
+import { validateFormActionRequest, namedActionResult } from '#lib/actions/form/index.js';
 import {
 	addTagSchema,
 	addTodoItemDependencySchema,
@@ -24,11 +24,11 @@ import {
 	TagAttachToTodo,
 	TagUpdate,
 	TodoItemAddDependency
-} from '$lib/generated-client/zod.gen';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { callService } from '$lib/client-wrapper/wrapper.universal';
-import { convertNumberToHttpStatusCode } from '$lib/utils';
-import { createApiClient } from '$lib/client-wrapper/clients';
+} from '#lib/generated-client/zod.gen.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
+import { callService } from '#lib/client-wrapper/wrapper.universal.js';
+import { convertNumberToHttpStatusCode } from '#lib/utils/index.js';
+import { createApiClient } from '#lib/client-wrapper/clients.js';
 import {
 	addTodoItemDependencyTodoItems,
 	attachToProjectTodoCategories,
@@ -41,7 +41,7 @@ import {
 	updateTodoCategories,
 	updateTodoItemComments,
 	updateTodoItems
-} from '$lib/generated-client';
+} from '#lib/generated-client/index.js';
 
 export const load = (async ({ fetch, params }) => {
 	return await callService({
@@ -55,9 +55,10 @@ export const load = (async ({ fetch, params }) => {
 			if (e.status == 401) {
 				return; // allow default unauthenticated user handling
 			}
-			error(convertNumberToHttpStatusCode(e.status), {
-				message: 'An error occurred while fetching your todos!'
-			});
+			error(
+				convertNumberToHttpStatusCode(e.status),
+				'An error occurred while fetching your todos!'
+			);
 		}
 	});
 }) satisfies PageServerLoad;

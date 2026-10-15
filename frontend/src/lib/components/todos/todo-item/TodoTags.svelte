@@ -2,9 +2,9 @@
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { deleteTags, detachFromTodoTags } from '$lib/generated-client';
-	import { callService } from '$lib/client-wrapper';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { deleteTags, detachFromTodoTags } from '#lib/generated-client/index.js';
+	import { callService } from '#lib/client-wrapper/index.js';
 	import Fa from 'svelte-fa';
 	import {
 		faEdit,
@@ -14,11 +14,14 @@
 		faUnlink
 	} from '@fortawesome/free-solid-svg-icons';
 	import { flip } from 'svelte/animate';
-	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
+	import type {
+		TodoCategoryPartialTodoItem,
+		TodoItemPartialTag
+	} from '#lib/generated-client/index.js';
 	import Confirm from '$components/Confirm.svelte';
-	import { type CommonComponentStates } from '$lib';
-	import { getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { type CommonComponentStates } from '#lib';
+	import { getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditTag?: (tag: TodoItemPartialTag) => void;

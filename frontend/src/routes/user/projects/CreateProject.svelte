@@ -1,11 +1,11 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { createProjectSchema } from './validator';
-	import { getProjects } from '$lib/stores';
+	import { getProjects } from '#lib/stores/index.js';
 
 	export type Props = {
 		form: ActionData;

@@ -5,7 +5,7 @@ Project management app (projects, todo categories, todo items, tags, comments, d
 | Path | What it is | Details |
 | --- | --- | --- |
 | `backend/` | FastAPI + SQLAlchemy REST API (Python 3.14, uv) | [`backend/AGENTS.md`](backend/AGENTS.md) |
-| `frontend/` | SvelteKit 2 + Svelte 5 app (pnpm) | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| `frontend/` | SvelteKit 3 + Svelte 5 app (pnpm) | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
 
 The only link between them is the HTTP API. The frontend's TypeScript client and Zod schemas are generated from the backend's `/openapi.json` and committed in `frontend/src/lib/generated-client/` (see `frontend/AGENTS.md`). **Any backend change to routes or schemas must include the regenerated client in the same PR**; CI fails when the committed client doesn't match the backend.
 

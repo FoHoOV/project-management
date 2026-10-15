@@ -4,7 +4,7 @@
 
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
 	import type { Snippet } from 'svelte';
-	import { getNavbar } from '$lib/stores';
+	import { getNavbar } from '#lib/stores/index.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	export type SnippetParams = [{ closeDrawer: () => void }];
@@ -61,7 +61,7 @@
 			{/snippet}
 
 			{#snippet end()}
-				{#each navbarStore.end$ as snippet}
+				{#each navbarStore.end$ as snippet (snippet)}
 					{@render snippet({ closeDrawer })}
 				{/each}
 				{@render navbarEnd?.({ closeDrawer })}

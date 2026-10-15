@@ -18,21 +18,21 @@
 
 	import { flip } from 'svelte/animate';
 	import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount, untrack } from 'svelte';
 
 	import type {
 		TodoCategory,
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialTag
-	} from '$lib/generated-client';
+	} from '#lib/generated-client/index.js';
 
-	import type { TodoComment } from '$lib/generated-client';
+	import type { TodoComment } from '#lib/generated-client/index.js';
 
-	import { TodoCategories, setTodoCategories } from '$lib/stores/todos';
-	import { TodoComments } from '$lib/stores/todo-comments';
-	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
-	import { getMultiStepModal, getNavbar } from '$lib/stores';
+	import { TodoCategories, setTodoCategories } from '#lib/stores/todos/index.js';
+	import { TodoComments } from '#lib/stores/todo-comments/index.js';
+	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
+	import { getMultiStepModal, getNavbar } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">
@@ -40,7 +40,9 @@
 
 	let componentState = $state<'loading' | 'none'>('loading');
 
-	const todoCategoriesStore = setTodoCategories(new TodoCategories(data.response ?? []));
+	const todoCategoriesStore = setTodoCategories(
+		new TodoCategories(untrack(() => data.response) ?? [])
+	);
 	const multiStepModalStore = getMultiStepModal();
 	const navbarStore = getNavbar();
 
@@ -218,7 +220,7 @@
 			>
 				<TodoList
 					{category}
-					projectId={Number.parseInt($page.params.project_id)}
+					projectId={Number.parseInt(page.params.project_id!)}
 					onCreateTodoItem={handleCreateTodoItem}
 					onEditTodoItem={handleEditTodoItem}
 					onEditTodoCategory={handleEditTodoCategory}

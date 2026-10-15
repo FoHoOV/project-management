@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { attachToProjectSchema } from './validator';
 	import { invalidate } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
+	import { page } from '$app/state';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
 
 	export type Props = {
 		form: ActionData;
@@ -21,8 +21,8 @@
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
+		page.params.project_name!,
+		page.params.project_id!
 	)}?/attachToProject"
 	enhancerConfig={{
 		validator: { schema: attachToProjectSchema },
@@ -32,7 +32,7 @@
 	}}
 	onSubmitSucceeded={async (event) => {
 		await invalidate(
-			`${generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}`
+			`${generateTodoListItemsUrl(page.params.project_name!, page.params.project_id!)}`
 		);
 	}}
 	successfulMessage="Todo category is now shared with the specified project"
@@ -42,7 +42,7 @@
 			name="category_id"
 			wrapperClasses="hidden"
 			value={categoryId}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput

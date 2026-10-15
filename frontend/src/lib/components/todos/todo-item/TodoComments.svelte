@@ -3,17 +3,22 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { deleteTodoItemComments, listTodoItemComments } from '$lib/generated-client';
-	import { callService } from '$lib/client-wrapper';
-	import type { TodoComment } from '$lib/generated-client';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { deleteTodoItemComments, listTodoItemComments } from '#lib/generated-client/index.js';
+	import { callService } from '#lib/client-wrapper/index.js';
+	import type { TodoComment } from '#lib/generated-client/index.js';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { TodoComments, getTodoComments, setTodoComments, getTodoCategories } from '$lib/stores';
+	import {
+		TodoComments,
+		getTodoComments,
+		setTodoComments,
+		getTodoCategories
+	} from '#lib/stores/index.js';
 	import { flip } from 'svelte/animate';
-	import { type CommonComponentStates } from '$lib';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { type CommonComponentStates } from '#lib';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditComment?: (comment: TodoComment, store: TodoComments) => void;

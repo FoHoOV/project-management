@@ -3,19 +3,19 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { removeTodoItemDependencyTodoItems } from '$lib/generated-client';
-	import { callService } from '$lib/client-wrapper';
+	import { createApiClient } from '#lib/client-wrapper/clients.js';
+	import { removeTodoItemDependencyTodoItems } from '#lib/generated-client/index.js';
+	import { callService } from '#lib/client-wrapper/index.js';
 	import Fa from 'svelte-fa';
 	import { faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { flip } from 'svelte/animate';
 	import type {
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialDependency
-	} from '$lib/generated-client';
-	import { type CommonComponentStates } from '$lib';
-	import { getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	} from '#lib/generated-client/index.js';
+	import { type CommonComponentStates } from '#lib';
+	import { getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;

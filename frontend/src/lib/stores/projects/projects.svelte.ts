@@ -1,4 +1,4 @@
-import type { PartialUserWithPermission, Project } from '$lib/generated-client';
+import type { PartialUserWithPermission, Project } from '#lib/generated-client/index.js';
 import { sortByIdInPlace } from '../todos/sort';
 
 export class Projects {

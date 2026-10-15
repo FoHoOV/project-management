@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import type { ThemeManager } from './theme.svelte';
 
 export const THEME_CONTEXT_KEY = Symbol();

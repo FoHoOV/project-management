@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import Modal from '$components/popups/Modal.svelte';
-	import { getMultiStepModal } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { getMultiStepModal } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Props = {
 		class?: string;

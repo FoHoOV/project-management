@@ -1,14 +1,14 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { editTodoCategorySchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import type { TodoCategory } from '$lib/generated-client';
-	import { getTodoCategories } from '$lib/stores';
+	import { page } from '$app/state';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import type { TodoCategory } from '#lib/generated-client/index.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
 		form: ActionData;
@@ -23,8 +23,8 @@
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
+		page.params.project_name!,
+		page.params.project_id!
 	)}?/editTodoCategory"
 	enhancerConfig={{
 		validator: { schema: editTodoCategorySchema },
@@ -39,7 +39,7 @@
 	successfulMessage="Todo category edited"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={category.id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={category.id} errors="" />
 		<FormInput
 			name="title"
 			autofocus={true}

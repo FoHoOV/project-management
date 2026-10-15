@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import type { StrictUnion } from '$lib';
-	import type { TodoItem, TodoCategoryPartialTodoItem } from '$lib/generated-client';
+	import type { StrictUnion } from '#lib';
+	import type { TodoItem, TodoCategoryPartialTodoItem } from '#lib/generated-client/index.js';
 
 	export type Props = {
 		todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
@@ -13,7 +13,7 @@
 
 <div>
 	<span>in projects: </span>
-	{#each todo.category?.projects || [] as project}
+	{#each todo.category?.projects || [] as project (project.id)}
 		<div class="inline-flex flex-row items-center gap-1 overflow-y-auto px-1">
 			(
 			<span class="text-lg font-bold text-info">#{project.id}</span>

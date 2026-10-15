@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import { schema } from './validators';
