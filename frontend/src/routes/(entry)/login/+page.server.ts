@@ -3,10 +3,11 @@ import type { PageServerLoad } from './$types';
 import { SERVER_ONLY_KEYS } from '$lib/constants/cookie.server';
 import { superFail, validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
-import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
+import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod.gen';
 import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
-import { OAuthClient } from '$lib/client-wrapper/clients';
+import { createApiClient } from '$lib/client-wrapper/clients';
+import { loginForAccessTokenOAuth } from '$lib/generated-client';
 
 export const load = (async () => {
 	return {};
@@ -21,10 +22,11 @@ export const actions: Actions = {
 
 		return await callServiceInFormActions({
 			call: async () => {
-				const token = await OAuthClient({
-					isTokenRequired: false,
-					fetchApi: fetch
-				}).loginForAccessTokenOAuth(validation.data.username, validation.data.password);
+				const { data: token } = await loginForAccessTokenOAuth({
+					client: createApiClient({ fetch }),
+					body: validation.data,
+					throwOnError: true
+				});
 				cookies.set(SERVER_ONLY_KEYS.token, JSON.stringify(token), {
 					secure: true,
 					httpOnly: true,
@@ -39,7 +41,7 @@ export const actions: Actions = {
 						message: (e.data as any).detail as string
 					});
 				}
-				return await superApplyAction(e);
+				return await superApplyAction<typeof Body_login_for_access_token_OAuth>(e);
 			},
 			errorSchema: Body_login_for_access_token_OAuth
 		});

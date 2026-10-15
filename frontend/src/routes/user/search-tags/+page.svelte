@@ -5,7 +5,7 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 	import Fa from 'svelte-fa';
 
-	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client/models';
+	import type { TodoCategory, TodoItem as TodoItemModel } from '$lib/generated-client';
 	import { searchTagSchema } from '$routes/user/search-tags/validator';
 	import { TodoCategories } from '$lib/stores/todos/todos.svelte.js';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
@@ -76,8 +76,8 @@
 		<FormInput
 			type="text"
 			label="project id (Optional)"
-			name="projectId"
-			errors={formErrors?.errors?.projectId?.toString()}
+			name="project_id"
+			errors={formErrors?.errors?.project_id?.toString()}
 			data-testid="project-id-input"
 		></FormInput>
 	{/snippet}

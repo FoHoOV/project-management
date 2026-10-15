@@ -1,4 +1,5 @@
-import { ProjectClient } from '$lib/client-wrapper/clients';
+import { createApiClient } from '$lib/client-wrapper/clients';
+import { attachToUserProjects, createForUserProjects, updateProjects } from '$lib/generated-client';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import type { Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
@@ -7,7 +8,7 @@ import {
 	ProjectAttachAssociation,
 	ProjectCreate,
 	ProjectUpdate
-} from '$lib/generated-client/zod/schemas';
+} from '$lib/generated-client/zod.gen';
 
 export const actions = {
 	create: async ({ request, locals, fetch }) => {
@@ -19,12 +20,12 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).createForUserProjects({
-					...validation.data
+				const { data } = await createForUserProjects({
+					client: createApiClient({ token: locals.token, fetch }),
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: ProjectCreate
 		});
@@ -40,12 +41,13 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).attachToUserProjects(validation.data.project_id, {
-					...validation.data
+				const { data } = await attachToUserProjects({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { project_id: validation.data.project_id },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: ProjectAttachAssociation
 		});
@@ -61,12 +63,13 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updateProjects(validation.data.project_id, {
-					...validation.data
+				const { data } = await updateProjects({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { project_id: validation.data.project_id },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: ProjectUpdate
 		});

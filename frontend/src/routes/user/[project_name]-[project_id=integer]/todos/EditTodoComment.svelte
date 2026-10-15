@@ -6,7 +6,7 @@
 	import type { ActionData } from './$types';
 	import { editTodoCommentSchema } from './validator';
 	import { page } from '$app/stores';
-	import type { TodoComment } from '$lib/generated-client/models';
+	import type { TodoComment } from '$lib/generated-client';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { TodoComments } from '$lib/stores/todo-comments';
 

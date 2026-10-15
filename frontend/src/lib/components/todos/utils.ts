@@ -1,4 +1,4 @@
-import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
+import type { TodoCategory, TodoCategoryPartialTodoItem } from '$lib/generated-client';
 
 export function generateNewOrderForTodoItem(
 	target: TodoCategoryPartialTodoItem,

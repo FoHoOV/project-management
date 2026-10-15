@@ -5,7 +5,7 @@
 
 	import type { ActionData } from './$types';
 	import { page } from '$app/stores';
-	import type { TodoItemPartialTag } from '$lib/generated-client/models';
+	import type { TodoItemPartialTag } from '$lib/generated-client';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
 	import { getTodoCategories } from '$lib/stores';

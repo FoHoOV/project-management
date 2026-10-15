@@ -5,8 +5,9 @@
 
 	import { page } from '$app/stores';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import { ProjectClient } from '$lib/client-wrapper/clients';
-	import type { Project } from '$lib/generated-client/models';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { detachFromSelfProjects } from '$lib/generated-client';
+	import type { Project } from '$lib/generated-client';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
 	import Confirm from '$components/Confirm.svelte';
@@ -36,7 +37,11 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await ProjectClient({ token: $page.data.token }).detachFromSelfProjects(project.id);
+				await detachFromSelfProjects({
+					client: createApiClient({ token: $page.data.token }),
+					path: { project_id: project.id },
+					throwOnError: true
+				});
 				projectsStore?.remove(project);
 				componentState = 'none';
 				apiErrorTitle = null;

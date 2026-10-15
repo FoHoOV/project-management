@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { type PartialUserWithPermission, type Token, getUsername } from '$lib';
-	import { Permission } from '$lib/generated-client/models';
+	import { Permission } from '$lib/generated-client';
 
 	export type Props = {
 		user: PartialUserWithPermission;
@@ -17,7 +17,7 @@
 	<span class="font-bold">
 		{user.username}
 	</span>
-	{#if user.permissions.indexOf(Permission.All) != -1}
+	{#if user.permissions.indexOf(Permission.ALL) != -1}
 		<span class="text-sm text-success">(owner)</span>
 	{/if}
 	{#if getUsername(token.access_token) == user.username}

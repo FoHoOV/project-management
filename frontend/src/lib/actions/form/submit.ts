@@ -30,7 +30,7 @@ export function superEnhance(
 	Pick<SubmitEvents<never, never, never>, 'onsubmitstarted' | 'onsubmitended'>
 >;
 export function superEnhance<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
@@ -41,7 +41,7 @@ export function superEnhance<
 	ValidatorErrorEvents<TSchema> & SubmitEvents<TSchema, TFormAction, TKey>
 >;
 export function superEnhance<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError = never,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(node: HTMLFormElement, options?: Partial<EnhanceOptions<TSchema, TFormAction, TKey>>) {
@@ -73,7 +73,7 @@ export function superEnhance<
 }
 
 function _defaultSubmitHandler<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
@@ -107,7 +107,7 @@ function _defaultSubmitHandler<
 						detail: {
 							response: _getResultFromFormAction(result.data, options),
 							formData: convertFormDataToObject(formData),
-							parsedFormData: parsedFormData?.data
+							parsedFormData: parsedFormData?.data as z.infer<TSchema>
 						}
 					}) satisfies SubmitSucceededEventType<TSchema, TFormAction, TKey>
 				);
@@ -166,7 +166,7 @@ function _defaultSubmitHandler<
 }
 
 function _getResultFromFormAction<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 >(
@@ -185,7 +185,7 @@ function _getResultFromFormAction<
 }
 
 function _fireSubmitFailureForClientSideError<
-	TSchema extends z.ZodTypeAny,
+	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError
 >(node: HTMLFormElement, event: SubmitClientErrorEventType<TSchema>) {
 	node.dispatchEvent(

@@ -30,10 +30,10 @@
 	}
 
 	function setInitValues() {
-		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.All) != -1 ? true : false;
+		allowAllAccessRights = preCheckedPermissions?.indexOf(Permission.ALL) != -1 ? true : false;
 		selectedPermissions = preCheckedPermissions
 			? new SvelteSet(preCheckedPermissions)
-			: new SvelteSet([Permission.All]);
+			: new SvelteSet([Permission.ALL]);
 	}
 
 	setInitValues();
@@ -41,7 +41,7 @@
 
 <FormInput
 	name="permissions[]"
-	value={Permission.All}
+	value={Permission.ALL}
 	checked={allowAllAccessRights}
 	label="Allow all permissions"
 	type="toggle"
@@ -51,16 +51,16 @@
 	onchange={(e) => {
 		allowAllAccessRights = (e.target as HTMLInputElement).checked;
 		if (allowAllAccessRights) {
-			selectedPermissions = new SvelteSet([Permission.All]);
+			selectedPermissions = new SvelteSet([Permission.ALL]);
 		} else {
-			selectedPermissions.delete(Permission.All);
+			selectedPermissions.delete(Permission.ALL);
 		}
 		onChange?.(selectedPermissions);
 	}}
 ></FormInput>
 <div class="grid grid-cols-1 gap-2 lg:grid-cols-2" class:hidden={allowAllAccessRights}>
 	{#key selectedPermissions}
-		{#each Object.values(Permission).filter((value) => value !== Permission.All) as permission}
+		{#each Object.values(Permission).filter((value) => value !== Permission.ALL) as permission}
 			<FormInput
 				name="permissions[]"
 				value={permission}

@@ -22,7 +22,7 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 	await projectUtils.page.attachToUser({
 		projectId: project.projectId,
 		username: lastUser.username,
-		permissions: [Permission.CreateTag]
+		permissions: [Permission.CREATE_TAG]
 	});
 
 	await projectSettings.page.goto(project.projectTitle, project.projectId);
@@ -34,17 +34,17 @@ test('change user permissions', async ({ projectUtils, projectSettings, authUtil
 
 	await projectSettings.page.changePermissions({
 		username: lastUser.username,
-		permissions: [Permission.All]
+		permissions: [Permission.ALL]
 	});
 
 	await projectSettings.page.changePermissions({
 		username: authUtils.currentLoggedInUser!.username,
-		permissions: [Permission.CreateComment]
+		permissions: [Permission.CREATE_COMMENT]
 	});
 
 	await projectSettings.page.changePermissions({
 		username: authUtils.currentLoggedInUser!.username,
-		permissions: [Permission.All],
+		permissions: [Permission.ALL],
 		expectError: true
 	});
 
@@ -73,10 +73,10 @@ test('canceling the change should reset back to default permissions', async ({
 	);
 	await row.click();
 
-	await setPermissions(row, [Permission.CreateTodoCategory]);
+	await setPermissions(row, [Permission.CREATE_TODO_CATEGORY]);
 	await row.getByRole('button', { name: 'cancel' }).click();
 
-	await expectPermissionsToBeEqual(row, [Permission.All]);
+	await expectPermissionsToBeEqual(row, [Permission.ALL]);
 	await expect(row.getByRole('button', { name: 'detach' })).toBeVisible();
 });
 

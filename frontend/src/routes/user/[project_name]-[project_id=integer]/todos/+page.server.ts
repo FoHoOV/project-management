@@ -23,14 +23,21 @@ import {
 	TagAttachToTodo,
 	TagUpdate,
 	TodoItemAddDependency
-} from '$lib/generated-client/zod/schemas';
+} from '$lib/generated-client/zod.gen';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
+import { createApiClient } from '$lib/client-wrapper/clients';
 import {
-	TodoItemClient,
-	TodoCategoryClient,
-	TodoItemCommentClient,
-	TagClient
-} from '$lib/client-wrapper/clients';
+	addTodoItemDependencyTodoItems,
+	attachToProjectTodoCategories,
+	attachToTodoTags,
+	createForUserTodoCategories,
+	createForUserTodoItems,
+	createTodoItemComments,
+	updateTags,
+	updateTodoCategories,
+	updateTodoItemComments,
+	updateTodoItems
+} from '$lib/generated-client';
 
 // TODO: probably should separate these to their own routes (todo/[edit|create] or category/[edit]/create, ...)
 // with the new shallow routing I can separate the associated components as well (but i'll w8 for the svelte5 for the big refactor)
@@ -44,12 +51,12 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoItemClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).createForUserTodoItems({
-					...validation.data
+				const { data } = await createForUserTodoItems({
+					client: createApiClient({ token: locals.token, fetch }),
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoItemCreate
 		});
@@ -65,12 +72,12 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoCategoryClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).createForUserTodoCategories({
-					...validation.data
+				const { data } = await createForUserTodoCategories({
+					client: createApiClient({ token: locals.token, fetch }),
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoCategoryCreate
 		});
@@ -86,12 +93,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoCategoryClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).attachToProjectTodoCategories(validation.data.category_id, {
-					...validation.data
+				const { data } = await attachToProjectTodoCategories({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { category_id: validation.data.category_id },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoCategoryAttachAssociation
 		});
@@ -107,12 +115,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoCategoryClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updateTodoCategories(validation.data.id, {
-					item: validation.data
+				const { data } = await updateTodoCategories({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { category_id: validation.data.id },
+					body: { item: validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoCategoryUpdateItem
 		});
@@ -134,10 +143,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoItemClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updateTodoItems(validation.data.id, { item: validation.data });
+				const { data } = await updateTodoItems({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { todo_id: validation.data.id },
+					body: { item: validation.data },
+					throwOnError: true
+				});
+				return data;
 			},
 			errorSchema: TodoItemUpdateItem
 		});
@@ -153,12 +165,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoItemCommentClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).createTodoItemComments(validation.data.todo_id, {
-					...validation.data
+				const { data } = await createTodoItemComments({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { todo_id: validation.data.todo_id },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoCommentCreate
 		});
@@ -174,12 +187,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoItemCommentClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updateTodoItemComments(validation.data.todo_id, validation.data.id, {
-					...validation.data
+				const { data } = await updateTodoItemComments({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { todo_id: validation.data.todo_id, comment_id: validation.data.id },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoCommentUpdate
 		});
@@ -195,13 +209,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TagClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).attachToTodoTags(validation.data.name, {
-					...validation.data,
-					create_if_doesnt_exist: true
+				const { data } = await attachToTodoTags({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { tag_name: validation.data.name },
+					body: { ...validation.data, create_if_doesnt_exist: true },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TagAttachToTodo
 		});
@@ -217,12 +231,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TagClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updateTags(validation.data.name, {
-					...validation.data
+				const { data } = await updateTags({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { tag_name: validation.data.name },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TagUpdate
 		});
@@ -238,12 +253,13 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await TodoItemClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).addTodoItemDependencyTodoItems(validation.data.todo_id, {
-					...validation.data
+				const { data } = await addTodoItemDependencyTodoItems({
+					client: createApiClient({ token: locals.token, fetch }),
+					path: { todo_id: validation.data.todo_id },
+					body: { ...validation.data },
+					throwOnError: true
 				});
+				return data;
 			},
 			errorSchema: TodoItemAddDependency
 		});

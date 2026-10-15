@@ -1,18 +1,20 @@
 import { z } from 'zod';
-import type { DetachFromUserProjectsRequest } from '$lib/generated-client/apis/ProjectsApi';
-import type { ProjectUpdateUserPermissions as ProjectUpdateUserPermissionsModel } from '$lib/generated-client/models';
-import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod/schemas';
+import type {
+	DetachFromUserProjectsData,
+	ProjectUpdateUserPermissions as ProjectUpdateUserPermissionsModel
+} from '$lib/generated-client';
+import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod.gen';
 
 export const detachSchema = z.object({
-	userId: z.number({ coerce: true }),
-	projectId: z.number({ coerce: true })
+	user_id: z.coerce.number(),
+	project_id: z.coerce.number()
 });
 
-({}) as z.infer<typeof detachSchema> satisfies DetachFromUserProjectsRequest;
+({}) as z.infer<typeof detachSchema> satisfies DetachFromUserProjectsData['path'];
 
 export const updateUserPermissionsSchema = ProjectUpdateUserPermissions.extend({
-	user_id: z.number({ coerce: true }),
-	project_id: z.number({ coerce: true })
+	user_id: z.coerce.number(),
+	project_id: z.coerce.number()
 });
 
 ({}) as z.infer<typeof updateUserPermissionsSchema> satisfies ProjectUpdateUserPermissionsModel;

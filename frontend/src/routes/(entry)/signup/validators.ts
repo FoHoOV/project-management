@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 import type { UserCreate as UserCreateModel } from '$lib/generated-client';
-import { UserCreate } from '$lib/generated-client/zod/schemas';
+import { UserCreate } from '$lib/generated-client/zod.gen';
 
 export const schema = UserCreate.refine((data) => data.confirm_password === data.password, {
 	message: "passwords don't match",

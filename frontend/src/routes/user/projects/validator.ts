@@ -4,7 +4,7 @@ import type {
 	ProjectCreate as ProjectCreateModel,
 	ProjectUpdate as ProjectUpdateModel
 } from '$lib/generated-client';
-import { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client/zod/schemas';
+import { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client/zod.gen';
 
 const optionalDescriptionSchema = z
 	.string()
@@ -17,19 +17,19 @@ export const createProjectSchema = ProjectCreate.extend({
 		"'-' is not allowed in the project title"
 	),
 	description: optionalDescriptionSchema,
-	create_from_default_template: z.boolean({ coerce: true }).default(false)
+	create_from_default_template: z.coerce.boolean().default(false)
 });
 
 ({}) as z.infer<typeof createProjectSchema> satisfies ProjectCreateModel;
 
 export const attachProjectSchema = ProjectAttachAssociation.extend({
-	project_id: z.number({ coerce: true })
+	project_id: z.coerce.number()
 });
 
 ({}) as z.infer<typeof attachProjectSchema> satisfies ProjectAttachAssociationModel;
 
 export const editProjectSchema = createProjectSchema.extend({
-	project_id: z.number({ coerce: true })
+	project_id: z.coerce.number()
 });
 
 ({}) as z.infer<typeof editProjectSchema> satisfies ProjectUpdateModel;

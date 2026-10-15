@@ -4,7 +4,7 @@
 	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
-	import type { Project } from '$lib/generated-client/models';
+	import type { Project } from '$lib/generated-client';
 	import { editProjectSchema } from './validator';
 	import { getProjects } from '$lib/stores';
 

@@ -7,7 +7,7 @@
 	import { addTodoItemDependencySchema } from './validator';
 	import { page } from '$app/stores';
 	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
+	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client';
 	import { getTodoCategories } from '$lib/stores';
 
 	export type Props = {

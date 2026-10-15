@@ -4,7 +4,8 @@
 	import Confirm from '$components/Confirm.svelte';
 
 	import { page } from '$app/stores';
-	import { TodoItemClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '$lib/client-wrapper/clients';
+	import { removeTodoItemDependencyTodoItems } from '$lib/generated-client';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
 	import Fa from 'svelte-fa';
 	import { faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
@@ -39,10 +40,11 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				await TodoItemClient({ token: $page.data.token }).removeTodoItemDependencyTodoItems(
-					todo.id,
-					dependency.id
-				);
+				await removeTodoItemDependencyTodoItems({
+					client: createApiClient({ token: $page.data.token }),
+					path: { todo_id: todo.id, dependent_todo_id: dependency.id },
+					throwOnError: true
+				});
 				todoCategoriesStore?.removeDependency(todo.id, dependency);
 				componentState = 'none';
 				apiErrorTitle = null;

@@ -2,7 +2,7 @@
 	import ProjectComponent, { type Events as ProjectEvents } from './Project.svelte';
 	import Empty from '$components/Empty.svelte';
 
-	import type { Project as ProjectModel } from '$lib/generated-client/models';
+	import type { Project as ProjectModel } from '$lib/generated-client';
 	import { flip } from 'svelte/animate';
 
 	export type Events = ProjectEvents;

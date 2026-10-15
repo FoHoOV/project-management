@@ -6,7 +6,7 @@
 	import EditProject from '$routes/user/projects/EditProject.svelte';
 
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import type { Project } from '$lib/generated-client/models';
+	import type { Project } from '$lib/generated-client';
 	import { getMultiStepModal, getProjects } from '$lib/stores';
 </script>
 

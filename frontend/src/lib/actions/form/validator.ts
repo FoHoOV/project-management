@@ -1,5 +1,5 @@
 import type { ActionReturn } from 'svelte/action';
-import type { z } from 'zod';
+import { z } from 'zod';
 import { convertFormDataToObject } from './utils';
 import type {
 	ValidatorOptions,
@@ -8,7 +8,7 @@ import type {
 	SubmitClientErrorEventType
 } from './validator-types';
 
-export function validate<TSchema extends z.ZodTypeAny>(
+export function validate<TSchema extends z.ZodType>(
 	node: HTMLFormElement,
 	options: ValidatorOptions<TSchema>
 ): ActionReturn<ValidatorOptions<TSchema>, ValidatorErrorEvents<TSchema>> {
@@ -44,14 +44,14 @@ export function validate<TSchema extends z.ZodTypeAny>(
 	};
 }
 
-export async function getClientSideFormErrors<TSchema extends z.ZodTypeAny>(
+export async function getClientSideFormErrors<TSchema extends z.ZodType>(
 	formData: FormData,
-	zodObject: z.ZodTypeAny
+	zodObject: z.ZodType
 ): Promise<ValidatorErrorsType<TSchema>> {
 	const validationsResult = await zodObject.safeParseAsync(convertFormDataToObject(formData));
 	if (validationsResult.success) {
 		return {};
 	} else {
-		return validationsResult.error.flatten().fieldErrors;
+		return z.flattenError(validationsResult.error).fieldErrors;
 	}
 }
