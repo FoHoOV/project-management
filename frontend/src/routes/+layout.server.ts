@@ -1,18 +1,18 @@
 import type { LayoutServerLoad } from './$types';
-import { callService } from '$lib/client-wrapper';
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { listProjects } from '$lib/generated-client';
-import type { Project } from '$lib/generated-client';
+import { callService } from '#lib/client-wrapper/index.js';
+import { createApiClient } from '#api-client';
+import { listProjects } from '#lib/generated-client/index.js';
+import type { Project } from '#lib/generated-client/index.js';
 import { error } from '@sveltejs/kit';
-import { convertNumberToHttpStatusCode, getUsername } from '$lib';
+import { convertNumberToHttpStatusCode, getUsername } from '#lib';
 
-export const load = (async ({ locals, fetch }) => {
+export const load = (async ({ locals }) => {
 	let result: Project[] = [];
 	if (locals.token) {
 		const projects = await callService({
 			call: async () => {
 				return await listProjects({
-					client: createApiClient(fetch)
+					client: createApiClient()
 				});
 			}
 		});

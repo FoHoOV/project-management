@@ -1,6 +1,6 @@
 import { LocalStorage } from './local-storage';
 import { Cookies } from './cookies';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 
 type ConstructorParams = {
 	initialCookies: Record<string, string | undefined>;
@@ -19,7 +19,7 @@ export class StorageTypes {
 				Object.entries(initialCookies)
 					.filter(([_, value]) => value !== undefined)
 					.map(([key, value]) => {
-						return { name: key, value: value };
+						return { name: key, value };
 					}) as { value: string; name: string }[]
 			);
 		}

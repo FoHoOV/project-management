@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import ClientCookies from 'js-cookie';
 
 type Options = {
@@ -58,20 +58,11 @@ export class Cookies {
 	from(values: { value: string; name: string }[], expires?: Date) {
 		values.forEach((v) => {
 			if (browser) {
-				this.set(v.name, v.value, {
-					path: '/',
-					httpOnly: false,
-					expires: expires
-				});
+				this.set(v.name, v.value, { path: '/', httpOnly: false, expires });
 			} else {
 				this.#serverSideCookies.set(v.name, {
 					value: v.value,
-					opts: {
-						path: '/',
-						httpOnly: false,
-						modified: false,
-						expires: expires
-					}
+					opts: { path: '/', httpOnly: false, modified: false, expires }
 				});
 			}
 		});

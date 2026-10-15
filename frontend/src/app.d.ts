@@ -1,9 +1,9 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 
-import type { Token, User } from '$lib/generated-client';
+import type { Token, User } from '#lib/generated-client/index.js';
 
-import 'vitest-dom/extend-expect';
+import '@testing-library/jest-dom/vitest';
 
 declare global {
 	namespace App {

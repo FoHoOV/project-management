@@ -1,19 +1,19 @@
 import { type Actions, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { SERVER_ONLY_KEYS } from '$lib/constants/cookie.server';
-import { superFail, validateFormActionRequest } from '$lib/actions/form';
+import { SERVER_ONLY_KEYS } from '#lib/constants/cookie.server.js';
+import { superFail, validateFormActionRequest } from '#lib/actions/form/index.js';
 import { schema } from './validators';
-import { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod.gen';
-import { superApplyAction, callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { ErrorType } from '$lib/client-wrapper/wrapper.universal';
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { loginForAccessTokenOAuth } from '$lib/generated-client';
+import { Body_login_for_access_token_OAuth } from '#lib/generated-client/zod.gen.js';
+import { superApplyAction, callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
+import { ErrorType } from '#lib/client-wrapper/wrapper.universal.js';
+import { createApiClient } from '#api-client';
+import { loginForAccessTokenOAuth } from '#lib/generated-client/index.js';
 
 export const load = (async () => {
 	return {};
 }) satisfies PageServerLoad;
 export const actions: Actions = {
-	default: async ({ request, cookies, fetch }) => {
+	default: async ({ request, cookies }) => {
 		const validation = await validateFormActionRequest(request, schema);
 
 		if (!validation.success) {
@@ -23,7 +23,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				const token = await loginForAccessTokenOAuth({
-					client: createApiClient(fetch),
+					client: createApiClient(),
 					body: validation.data
 				});
 				cookies.set(SERVER_ONLY_KEYS.token, JSON.stringify(token), {

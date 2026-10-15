@@ -1,4 +1,4 @@
-import type { SubmitFunction } from '@sveltejs/kit';
+import type { SubmitFunction } from '$app/forms';
 import type { z } from 'zod';
 import type { ValidatorOptions } from './validator-types';
 import type {
@@ -53,7 +53,6 @@ export type SubmitEvents<
 export type SubmitStartEventType = CustomEvent<void>;
 
 export type SubmitEndedEventType = CustomEvent<void>;
-
 export type SubmitRedirectedEventType<TSchema extends z.ZodType> = CustomEvent<{
 	redirectUrl: URL;
 	formData: ParsedFormData;

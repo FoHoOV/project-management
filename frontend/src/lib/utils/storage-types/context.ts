@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import type { StorageTypes } from './storage-types';
 
 const STORAGE_TYPES_CONTEXT_KEY = Symbol();

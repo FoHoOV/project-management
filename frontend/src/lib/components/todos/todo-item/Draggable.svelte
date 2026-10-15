@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import DropZoneHelper from '#lib/components/todos/DropZoneHelper.svelte';
 
 	import {
 		TODO_ITEM_ORDER_DROP_ZONE,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		DROP_EVENT_HANDLED_BY_TODO_ITEM
-	} from '$components/todos/constants';
-	import { generateNewOrderForTodoItem } from '$components/todos/utils';
+	} from '#lib/components/todos/constants.js';
+	import { generateNewOrderForTodoItem } from '#lib/components/todos/utils.js';
 	import {
 		dropzone,
 		draggable,
@@ -22,16 +22,14 @@
 		type CustomDragEvent,
 		type DropEvent,
 		type TodoCategory
-	} from '$lib';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { updateTodoItems } from '$lib/generated-client';
+	} from '#lib';
+	import { createApiClient } from '#api-client';
+	import { updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Snippet } from 'svelte';
-	import { getToastManager, getTodoCategories } from '$lib/stores';
+	import { getToastManager, getTodoCategories } from '#lib/stores/index.js';
 
 	type ComponentStates =
-		| CommonComponentStates
-		| 'drop-zone-top-activated'
-		| 'drop-zone-bottom-activated';
+		CommonComponentStates | 'drop-zone-top-activated' | 'drop-zone-bottom-activated';
 
 	export type Events = {
 		onError?: (message: string) => void;

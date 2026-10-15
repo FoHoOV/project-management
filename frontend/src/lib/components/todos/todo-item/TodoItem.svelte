@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	import Alert from '$components/alerts/Alert.svelte';
-	import Confirm from '$components/Confirm.svelte';
-	import Spinner from '$components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import TodoComments from './TodoComments.svelte';
 	import TodoTags from './TodoTags.svelte';
-	import CategoryInfo from '$components/todos/todo-item/CategoryInfo.svelte';
-	import ProjectsInfo from '$components/todos/todo-item/ProjectsInfo.svelte';
+	import CategoryInfo from '#lib/components/todos/todo-item/CategoryInfo.svelte';
+	import ProjectsInfo from '#lib/components/todos/todo-item/ProjectsInfo.svelte';
 	import Fa from 'svelte-fa';
 	import Draggable from './Draggable.svelte';
 
@@ -19,7 +19,7 @@
 		callService,
 		ErrorType,
 		fromIsoDate
-	} from '$lib';
+	} from '#lib';
 	import {
 		faEdit,
 		faTrashCan,
@@ -29,13 +29,13 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { removeTodoItems, updateTodoItems } from '$lib/generated-client';
+	import { createApiClient } from '#api-client';
+	import { removeTodoItems, updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
-	import { getMultiStepModal, getToastManager, getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { getMultiStepModal, getToastManager, getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;

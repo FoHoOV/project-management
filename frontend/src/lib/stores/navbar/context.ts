@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import { Navbar } from './navbar.svelte';
 
 export const NAVBAR_CONTEXT_KEY = Symbol();

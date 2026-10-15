@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { resolve } from '$app/paths';
+</script>
+
 <svelte:head>
 	<title>home</title>
 </svelte:head>
@@ -18,7 +22,9 @@
 				<p class="max-w-md py-6 text-lg font-semibold">
 					A project management app that tries to have every thing ASANA has, but step by step :D
 				</p>
-				<a href="/user/projects" class="btn btn-outline link link-secondary">get started</a>
+				<a href={resolve('/user/projects')} class="btn btn-outline link link-secondary"
+					>get started</a
+				>
 			</div>
 		</div>
 	</div>

@@ -2,8 +2,8 @@ import { z } from 'zod';
 import type {
 	DetachFromUserProjectsData,
 	ProjectUpdateUserPermissions as ProjectUpdateUserPermissionsModel
-} from '$lib/generated-client';
-import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod.gen';
+} from '#lib/generated-client/index.js';
+import { ProjectUpdateUserPermissions } from '#lib/generated-client/zod.gen.js';
 
 export const detachSchema = z.object({
 	user_id: z.coerce.number(),

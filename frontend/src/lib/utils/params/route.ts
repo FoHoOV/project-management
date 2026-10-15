@@ -1,14 +1,16 @@
-export function generateBaseTodoListUrl(projectName: string, projectId: number | string): string {
-	return `/user/${projectName.replaceAll(' ', '')}-${projectId}`;
+import { resolve } from '$app/paths';
+import type { ResolvedPathname, RouteParams } from '$app/types';
+
+export type ProjectRouteParams = RouteParams<'/user/[project_name]-[project_id=integer]/todos'>;
+
+export function projectRouteParams(projectName: string, projectId: number): ProjectRouteParams {
+	return { project_name: projectName.replaceAll(' ', ''), project_id: projectId.toString() };
 }
 
-export function generateTodoListItemsUrl(projectName: string, projectId: number | string): string {
-	return `${generateBaseTodoListUrl(projectName, projectId)}/todos`;
+export function generateTodoListItemsUrl(params: ProjectRouteParams): ResolvedPathname {
+	return resolve('/user/[project_name]-[project_id=integer]/todos', params);
 }
 
-export function generateTodoListSettingsUrl(
-	projectName: string,
-	projectId: number | string
-): string {
-	return `${generateBaseTodoListUrl(projectName, projectId)}/settings`;
+export function generateTodoListSettingsUrl(params: ProjectRouteParams): ResolvedPathname {
+	return resolve('/user/[project_name]-[project_id=integer]/settings', params);
 }

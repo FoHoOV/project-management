@@ -1,7 +1,5 @@
 import type { ActionReturn } from 'svelte/action';
-import type { SubmitFunction } from '@sveltejs/kit';
-import { applyAction, enhance } from '$app/forms';
-
+import { applyAction, enhance, type SubmitFunction } from '$app/forms';
 import type { z } from 'zod';
 import type {
 	SubmitEvents,
@@ -21,7 +19,7 @@ import {
 	type StandardFormActionError,
 	type StandardFormActionNames
 } from './utils';
-import { invalidateAll } from '$app/navigation';
+import { refreshAll } from '$app/navigation';
 
 export function superEnhance(
 	node: HTMLFormElement
@@ -148,7 +146,7 @@ function _defaultSubmitHandler<
 						HTMLFormElement.prototype.reset.call(node);
 					}
 					if (options.invalidateAllAfterSubmit ?? true) {
-						await invalidateAll();
+						await refreshAll();
 					}
 				}
 

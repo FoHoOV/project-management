@@ -1,6 +1,6 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import { error, json } from '@sveltejs/kit';
-import { API_PROXY_PATH, REQUEST_TIMEOUT_MS } from '$lib/client-wrapper/clients';
+import { PUBLIC_API_URL } from '$app/env/public';
+import { error } from '@sveltejs/kit';
+import { API_PROXY_PATH, REQUEST_TIMEOUT_MS } from '#lib/client-wrapper/clients.js';
 import type { RequestHandler } from './$types';
 
 // The backend's paths end in `/` (e.g. `/projects/`); keep them as they are.
@@ -51,8 +51,11 @@ export const fallback: RequestHandler = async ({ request, url, locals, fetch }) 
 		);
 	} catch (e) {
 		return e instanceof DOMException && e.name === 'TimeoutError'
-			? json({ message: 'Request timed out, please try again' }, { status: 504 })
-			: json({ message: 'Service is temporarily down, please try again later' }, { status: 502 });
+			? Response.json({ message: 'Request timed out, please try again' }, { status: 504 })
+			: Response.json(
+					{ message: 'Service is temporarily down, please try again later' },
+					{ status: 502 }
+				);
 	}
 
 	return new Response(response.body, {

@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import Alert from '$components/alerts/Alert.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
 	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';
 
@@ -86,8 +86,7 @@
 				placeholder={label}
 				class="{defaultInputClasses} {inputClasses}"
 				value={value?.toString()}
-				{...restProps as HTMLTextareaAttributes}
-			></textarea>
+				{...restProps as HTMLTextareaAttributes}></textarea>
 		{:else}
 			<input
 				bind:this={input}

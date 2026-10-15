@@ -4,7 +4,7 @@ import type {
 	TodoCategory,
 	TodoCategoryPartialTodoItem,
 	TodoItemPartialDependency
-} from '$lib/generated-client';
+} from '#lib/generated-client/index.js';
 import {
 	getLastTodoCategoryInSortedListExceptCurrent,
 	getLastTodoItemInSortedListExceptCurrent,

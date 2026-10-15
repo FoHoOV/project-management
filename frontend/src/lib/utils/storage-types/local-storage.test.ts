@@ -1,6 +1,6 @@
 import { expect, test, vi, describe, beforeEach } from 'vitest';
 import { LocalStorage } from './local-storage';
-import * as environment from '$app/environment';
+import * as environment from '$app/env';
 
 describe.each([{ isBrowser: true }, { isBrowser: false }])(
 	'LocalStorage in environment context',

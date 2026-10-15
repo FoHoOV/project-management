@@ -4,7 +4,7 @@ import { type IPage } from './IPage';
 import { type EnhancedPage } from './enhanced-page';
 import type { Permission } from '../../src/lib/generated-client';
 import { setPermissions } from '../common-locators/project-permissions';
-import { generateTodoListSettingsUrl } from '../../src/lib/utils/params/route';
+import { projectSettingsUrl } from '../utils/routes';
 import { waitForSpinnerStateToBeIdle } from '../common-locators/spinner';
 import { waitForToastMessage, waitForToastType } from '../common-locators/toast';
 import { acceptConfirmDialog } from '../common-locators/confirm';
@@ -17,7 +17,7 @@ export class ProjectSettingsPage implements IPage {
 	}
 
 	async goto(projectTitle: string, projectId: number | string) {
-		await this.#enhancedPage.goto(generateTodoListSettingsUrl(projectTitle, projectId));
+		await this.#enhancedPage.goto(projectSettingsUrl(projectTitle, projectId));
 	}
 
 	async changePermissions({

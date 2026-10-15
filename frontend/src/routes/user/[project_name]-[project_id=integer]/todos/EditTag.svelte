@@ -1,28 +1,28 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
-	import { page } from '$app/stores';
-	import type { TodoItemPartialTag } from '$lib/generated-client';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { editTagSchema } from '$routes/user/[project_name]-[project_id=integer]/todos/validator';
-	import { getTodoCategories } from '$lib/stores';
+	import type { TodoItemPartialTag } from '#lib/generated-client/index.js';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
+	import { editTagSchema } from './validator';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
+		params: ProjectRouteParams;
 		form: ActionData;
 		tag: TodoItemPartialTag;
 	};
 </script>
 
 <script lang="ts">
-	const { form, tag }: Props = $props();
+	const { params, form, tag }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}?/editTag"
+	action="{generateTodoListItemsUrl(params)}?/editTag"
 	enhancerConfig={{
 		validator: { schema: editTagSchema },
 		form: form,
@@ -41,7 +41,7 @@
 			type="hidden"
 			name="project_id"
 			value={tag.project_id}
-			errors={''}
+			errors=""
 		/>
 		<FormInput
 			name="name"

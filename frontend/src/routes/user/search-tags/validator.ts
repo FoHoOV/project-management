@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import type { SearchTagsData } from '$lib/generated-client';
-import { zSearchTagsQuery } from '$lib/generated-client/zod.gen';
+import type { SearchTagsData } from '#lib/generated-client/index.js';
+import { zSearchTagsQuery } from '#lib/generated-client/zod.gen.js';
 
 const emptyToNull = (value: unknown) => (value === '' ? null : value);
 

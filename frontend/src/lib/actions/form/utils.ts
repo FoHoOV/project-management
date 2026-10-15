@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import type { NumberRange, ErrorMessage, StrictUnion } from '$lib/utils/types';
+import type { NumberRange, ErrorMessage, StrictUnion } from '#lib/utils/types/index.js';
 import { z } from 'zod';
 import type { ValidatorErrorsType } from '.';
 

@@ -1,6 +1,5 @@
 import { test as baseTest, type EnhancedPage } from './enhanced-page';
 import { expect } from '@playwright/test';
-import crypto from 'crypto'; // TODO: idk why I need to import this, on windows it works without importing it but on linux it doesnt
 import { SERVER_ONLY_KEYS } from '../../src/lib/constants/cookie.server';
 
 export class Auth {

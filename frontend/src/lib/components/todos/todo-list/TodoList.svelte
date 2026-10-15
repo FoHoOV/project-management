@@ -1,17 +1,17 @@
 <script lang="ts" module>
-	import Confirm from '$components/Confirm.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
 	import Draggable from './Draggable.svelte';
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 	import TodoItem from '../todo-item/TodoItem.svelte';
-	import Empty from '$components/Empty.svelte';
+	import Empty from '#lib/components/Empty.svelte';
 	import TodoListActions from './TodoListActions.svelte';
 
-	import { callService, receive, send, type CommonComponentStates } from '$lib';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { detachFromProjectTodoCategories } from '$lib/generated-client';
-	import type { TodoCategory } from '$lib/generated-client';
-	import type { Events as TodoItemEvents } from '$components/todos/todo-item/TodoItem.svelte';
+	import { callService, receive, send, type CommonComponentStates } from '#lib';
+	import { createApiClient } from '#api-client';
+	import { detachFromProjectTodoCategories } from '#lib/generated-client/index.js';
+	import type { TodoCategory } from '#lib/generated-client/index.js';
+	import type { Events as TodoItemEvents } from '#lib/components/todos/todo-item/TodoItem.svelte';
 	import {
 		faInfoCircle,
 		faEdit,
@@ -23,8 +23,8 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { flip } from 'svelte/animate';
-	import { getMultiStepModal, getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { getMultiStepModal, getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditTodoCategory?: (category: TodoCategory) => void;

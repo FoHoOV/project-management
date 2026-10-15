@@ -1,9 +1,9 @@
 <script lang="ts" module>
 	import Fa from 'svelte-fa';
-	import type { Toast } from '$lib/stores/toasts/toasts.svelte';
+	import type { Toast } from '#lib/stores/toasts/toasts.svelte.js';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
-	import { fade, slide } from '$lib/animations';
-	import { getToastManager } from '$lib/stores';
+	import { fade, slide } from '#lib/animations/index.js';
+	import { getToastManager } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">
