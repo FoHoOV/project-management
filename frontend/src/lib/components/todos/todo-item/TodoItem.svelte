@@ -79,10 +79,7 @@
 					client: createApiClient(),
 					path: { todo_id: todo.id },
 					body: {
-						item: {
-							...todo,
-							is_done: !savedTodoStatus
-						}
+						item: { is_done: !savedTodoStatus }
 					}
 				});
 				todoCategoriesStore?.updateTodo(result, draggable);

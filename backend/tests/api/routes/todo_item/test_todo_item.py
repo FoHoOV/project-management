@@ -259,5 +259,8 @@ def test_todo_item_due_date(
         update({"due_date": "2026-11-05"})["due_date"] == "2026-11-05"
     ), "due date should be updated as given"
     assert (
-        update({"due_date": "0001-01-01"})["due_date"] is None
-    ), "a year-1 date should reset the due date"
+        update({"title": "new title"})["due_date"] == "2026-11-05"
+    ), "leaving due_date out should keep it"
+    assert (
+        update({"due_date": None})["due_date"] is None
+    ), "null should clear the due date"

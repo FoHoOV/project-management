@@ -30,19 +30,16 @@ const optionalDescription = (schema: z.ZodString) =>
 		.transform((t) => (t.length > 0 ? t : '-'))
 		.pipe(schema);
 
-// The backend resets the due date when it receives one in year 1.
-export const RESET_DUE_DATE = '0001-01-01';
-
 const dueDateSchema = z
 	.string()
-	.transform((value) => (value.length > 0 ? value : undefined))
+	.transform((value) => (value.length > 0 ? value : null))
 	.pipe(
 		requiredField(TodoItemCreateSchema.shape.due_date)
 			.refine(
 				(date) => date >= toIsoDate(new Date(Date.now() - 24 * 60 * 60 * 1000)),
 				'Due date must be something in the future'
 			)
-			.optional()
+			.nullable()
 	);
 
 export const createTodoItemSchema = TodoItemCreateSchema.extend({
