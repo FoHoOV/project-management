@@ -3,7 +3,7 @@ import type { Body_login_for_access_token_OAuth } from '$lib/generated-client/zo
 
 export const schema = z.object({
 	username: z.string().min(3).max(30),
-	password: z.string().min(5).max(100)
+	password: z.string().min(5).max(72)
 });
 
 ({}) as z.infer<typeof schema> satisfies Body_login_for_access_token_OAuth;
