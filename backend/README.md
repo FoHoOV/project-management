@@ -2,22 +2,12 @@ This is the backend app for my project management app.
 
 ## Building the project
 
-First you will need to install the packages from the Pipfile:
+This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) and Python 3.14 (uv installs the right Python for you):
 
 ```bash
-pipenv install
+uv sync            # runtime + dev dependencies (linters, pytest)
+uv sync --no-dev   # runtime dependencies only
 ```
-
-If you don't have pipenv, please follow the [official pipenv instructions](https://pipenv.pypa.io/en/latest/installation.html#preferred-installation-of-pipenv) first inorder to install it.
-
-- this project requires python 3.12 or greater
-- if you want to install dev dependencies as well (which includes linters) run this command instead:
-
-```bash
-pipenv install --dev
-```
-
-instead.
 
 ## Add env variables
 
@@ -37,7 +27,7 @@ If you are using vscode you can simply use the run&debug to run the backend app 
 You can also run the app manually with:
 
 ```bash
-python -m uvicorn main:app --reload --port 8080
+uv run uvicorn main:app --reload --port 8080
 ```
 
 After running the project goto

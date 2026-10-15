@@ -4,7 +4,7 @@ Project management app (projects, todo categories, todo items, tags, comments, d
 
 | Path | What it is | Details |
 | --- | --- | --- |
-| `backend/` | FastAPI + SQLAlchemy REST API (Python 3.12, pipenv) | [`backend/AGENTS.md`](backend/AGENTS.md) |
+| `backend/` | FastAPI + SQLAlchemy REST API (Python 3.14, uv) | [`backend/AGENTS.md`](backend/AGENTS.md) |
 | `frontend/` | SvelteKit 2 + Svelte 5 app (pnpm) | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
 
 The only link between them is the HTTP API. The frontend generates its TypeScript client and Zod schemas from the backend's `/openapi.json` at build time (see `frontend/AGENTS.md`), so **the backend must be running to build the frontend**, and backend schema changes need the frontend client to be regenerated.
@@ -18,7 +18,8 @@ Other root files:
 ## Git workflow
 
 - The base branch for agent work is **`claude-base`**, created from `master`. (It is not named `claude` because git can't hold a `claude` branch next to existing `claude/*` branches.)
-- Never commit to, push to, merge into, rebase, or reset `master`. Never change repository settings, branch protection, CI config, or remotes.
+- Never commit to, push to, merge into, rebase, or reset `master`. Never change repository settings, branch protection, or remotes.
+- Don't change CI config (`.github/workflows/*`), with two exceptions the owner approved: adding lint/format/typecheck steps to `test.yml`, and updating runtime or package-manager steps in `test.yml`/`deploy-*.yml` so CI and deploys keep working after a tooling upgrade.
 - Never commit directly to `claude-base`. Every change goes on its own branch named `claude-<short-kebab-name>`, created from the latest `claude-base`.
 - Commit and push to the `claude-<name>` branch as you work.
 - Don't open a PR until the user explicitly says the change is done. Then open one PR from `claude-<name>` into `claude-base` (never `master`).
