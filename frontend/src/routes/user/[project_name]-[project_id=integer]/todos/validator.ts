@@ -11,13 +11,18 @@ import type {
 	TagAttachToTodo,
 	TodoItemAddDependency
 } from '$lib/generated-client';
+import {
+	TodoCategoryCreate as TodoCategoryCreateSchema,
+	TodoCommentCreate as TodoCommentCreateSchema,
+	TodoCommentUpdate as TodoCommentUpdateSchema,
+	TodoItemCreate as TodoItemCreateSchema
+} from '$lib/generated-client/zod/schemas';
 
-const optionalDescriptionSchema = z
-	.string()
-	.transform((t) => (t.length > 0 ? t : '-'))
-	.pipe(z.string().min(1).max(100));
-
-const titleSchema = z.string().min(1).max(100);
+const optionalDescription = (schema: z.ZodString) =>
+	z
+		.string()
+		.transform((t) => (t.length > 0 ? t : '-'))
+		.pipe(schema);
 
 const dateSchema = z.string().transform((value, ctx) => {
 	if (value.length == 0) {
@@ -39,10 +44,9 @@ const dateSchema = z.string().transform((value, ctx) => {
 	return parsedDate.data;
 });
 
-export const createTodoItemSchema = z.object({
+export const createTodoItemSchema = TodoItemCreateSchema.extend({
 	category_id: z.number({ coerce: true }).min(0),
-	title: titleSchema,
-	description: optionalDescriptionSchema,
+	description: optionalDescription(TodoItemCreateSchema.shape.description),
 	is_done: z
 		.union([z.boolean(), z.literal('true'), z.literal('false')])
 		.transform((value) => value === true || value === 'true'),
@@ -51,10 +55,9 @@ export const createTodoItemSchema = z.object({
 
 ({}) as z.infer<typeof createTodoItemSchema> satisfies TodoItemCreate;
 
-export const createTodoCategorySchema = z.object({
+export const createTodoCategorySchema = TodoCategoryCreateSchema.extend({
 	project_id: z.number({ coerce: true }),
-	title: titleSchema,
-	description: optionalDescriptionSchema
+	description: optionalDescription(TodoCategoryCreateSchema.shape.description)
 });
 
 ({}) as z.infer<typeof createTodoCategorySchema> satisfies TodoCategoryCreate;
@@ -68,8 +71,8 @@ export const attachToProjectSchema = z.object({
 
 export const editTodoCategorySchema = z.object({
 	id: z.number({ coerce: true }),
-	title: titleSchema,
-	description: optionalDescriptionSchema
+	title: TodoCategoryCreateSchema.shape.title,
+	description: optionalDescription(TodoCategoryCreateSchema.shape.description)
 });
 
 ({}) as z.infer<typeof editTodoCategorySchema> satisfies TodoCategoryUpdateItem;
@@ -77,24 +80,22 @@ export const editTodoCategorySchema = z.object({
 export const editTodoItemSchema = z.object({
 	id: z.number({ coerce: true }),
 	category_id: z.number({ coerce: true }),
-	title: titleSchema,
-	description: optionalDescriptionSchema,
+	title: TodoItemCreateSchema.shape.title,
+	description: optionalDescription(TodoItemCreateSchema.shape.description),
 	due_date: dateSchema.optional()
 });
 
 ({}) as z.infer<typeof editTodoItemSchema> satisfies TodoItemUpdateItem;
 
-export const createTodoCommentSchema = z.object({
-	todo_id: z.number({ coerce: true }),
-	message: z.string().min(1).max(50000)
+export const createTodoCommentSchema = TodoCommentCreateSchema.extend({
+	todo_id: z.number({ coerce: true })
 });
 
 ({}) as z.infer<typeof createTodoCommentSchema> satisfies TodoCommentCreate;
 
-export const editTodoCommentSchema = z.object({
+export const editTodoCommentSchema = TodoCommentUpdateSchema.extend({
 	id: z.number({ coerce: true }),
-	todo_id: z.number({ coerce: true }),
-	message: z.string().min(1).max(50000)
+	todo_id: z.number({ coerce: true })
 });
 
 ({}) as z.infer<typeof editTodoCommentSchema> satisfies TodoCommentUpdate;

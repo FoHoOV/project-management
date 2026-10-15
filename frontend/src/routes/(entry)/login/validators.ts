@@ -1,9 +1,12 @@
 import { z } from 'zod';
-import type { Body_login_for_access_token_OAuth } from '$lib/generated-client/zod/schemas';
+import {
+	UserCreate,
+	type Body_login_for_access_token_OAuth
+} from '$lib/generated-client/zod/schemas';
 
 export const schema = z.object({
-	username: z.string().min(3).max(30),
-	password: z.string().min(5).max(72)
+	username: UserCreate.shape.username,
+	password: UserCreate.shape.password
 });
 
 ({}) as z.infer<typeof schema> satisfies z.input<typeof Body_login_for_access_token_OAuth>;

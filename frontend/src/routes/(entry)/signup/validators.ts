@@ -1,15 +1,10 @@
 import { z } from 'zod';
-import type { UserCreate } from '$lib/generated-client';
+import type { UserCreate as UserCreateModel } from '$lib/generated-client';
+import { UserCreate } from '$lib/generated-client/zod/schemas';
 
-export const schema = z
-	.object({
-		username: z.string().min(3).max(30),
-		password: z.string().min(5).max(72),
-		confirm_password: z.string().min(5).max(72)
-	})
-	.refine((data) => data.confirm_password === data.password, {
-		message: "passwords don't match",
-		path: ['confirm_password']
-	});
+export const schema = UserCreate.refine((data) => data.confirm_password === data.password, {
+	message: "passwords don't match",
+	path: ['confirm_password']
+});
 
-({}) as z.infer<typeof schema> satisfies UserCreate;
+({}) as z.infer<typeof schema> satisfies UserCreateModel;

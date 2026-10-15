@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { DetachFromUserProjectsRequest } from '$lib/generated-client/apis/ProjectsApi';
-import { Permission, type ProjectUpdateUserPermissions } from '$lib/generated-client/models';
+import type { ProjectUpdateUserPermissions as ProjectUpdateUserPermissionsModel } from '$lib/generated-client/models';
+import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod/schemas';
 
 export const detachSchema = z.object({
 	userId: z.number({ coerce: true }),
@@ -9,10 +10,9 @@ export const detachSchema = z.object({
 
 ({}) as z.infer<typeof detachSchema> satisfies DetachFromUserProjectsRequest;
 
-export const updateUserPermissionsSchema = z.object({
+export const updateUserPermissionsSchema = ProjectUpdateUserPermissions.extend({
 	user_id: z.number({ coerce: true }),
-	project_id: z.number({ coerce: true }),
-	permissions: z.array(z.nativeEnum(Permission))
+	project_id: z.number({ coerce: true })
 });
 
-({}) as z.infer<typeof updateUserPermissionsSchema> satisfies ProjectUpdateUserPermissions;
+({}) as z.infer<typeof updateUserPermissionsSchema> satisfies ProjectUpdateUserPermissionsModel;
