@@ -12,6 +12,8 @@ import type {
 	TodoItemAddDependency
 } from '$lib/generated-client';
 import {
+	TagCreate as TagCreateSchema,
+	TagUpdate as TagUpdateSchema,
 	TodoCategoryCreate as TodoCategoryCreateSchema,
 	TodoCommentCreate as TodoCommentCreateSchema,
 	TodoCommentUpdate as TodoCommentUpdateSchema,
@@ -101,7 +103,7 @@ export const editTodoCommentSchema = TodoCommentUpdateSchema.extend({
 ({}) as z.infer<typeof editTodoCommentSchema> satisfies TodoCommentUpdate;
 
 export const addTagSchema = z.object({
-	name: z.string().min(1).max(30),
+	name: TagCreateSchema.shape.name,
 	todo_id: z.number({ coerce: true }),
 	project_id: z.number({ coerce: true }),
 	create_if_doesnt_exist: z.boolean().default(false)
@@ -109,9 +111,8 @@ export const addTagSchema = z.object({
 
 ({}) as z.infer<typeof addTagSchema> satisfies TagAttachToTodo;
 
-export const editTagSchema = z.object({
-	project_id: z.number({ coerce: true }),
-	name: z.string().min(1).max(30)
+export const editTagSchema = TagUpdateSchema.extend({
+	project_id: z.number({ coerce: true })
 });
 
 ({}) as z.infer<typeof editTagSchema> satisfies TagUpdate;

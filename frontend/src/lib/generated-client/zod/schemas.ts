@@ -475,7 +475,7 @@ export const search_tagsSchema = {
   alias: "search_tags",
   requestFormat: "json",
   query: z.object({
-    name: z.string(),
+    name: z.string().min(1).max(100),
     project_id: project_id,
   }),
   response: z.array(TodoItem),
