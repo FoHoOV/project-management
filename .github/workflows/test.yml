@@ -103,10 +103,17 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm exec playwright install --with-deps
 
-      - name: Build the project
+      - name: Check the committed API client is up to date
         run: |
           pnpm run generate-client
-          pnpm run build
+          git add --intent-to-add src/lib/generated-client
+          git diff --exit-code -- src/lib/generated-client || {
+            echo "::error::src/lib/generated-client is stale. Run 'pnpm run generate-client' against the current backend and commit the result."
+            exit 1
+          }
+
+      - name: Build the project
+        run: pnpm run build
 
       - name: Run frontend tests (with backend service running)
         run: |

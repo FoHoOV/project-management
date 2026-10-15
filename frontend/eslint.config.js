@@ -42,6 +42,6 @@ export default tseslint.config(
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'dist/', '.vercel', 'generated-clients']
+		ignores: ['build/', '.svelte-kit/', 'dist/', '.vercel', 'src/lib/generated-client/']
 	}
 );

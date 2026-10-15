@@ -11,7 +11,7 @@ Single SvelteKit app; all commands run from `frontend/`.
 | `src/routes/` | Pages. `(entry)/` holds login and signup. `user/` holds the authenticated area: `projects`, `search-tags`, `logout`, and `[project_name]-[project_id=integer]/{todos,settings}`. Route-local components (`CreateProject.svelte`, `EditTag.svelte`, ...) and Zod schemas (`validator.ts`) sit next to the `+page` files. |
 | `src/params/` | Route param matchers (`integer`, `name`). |
 | `src/hooks.server.ts` | Reads cookies into `event.locals` (`sharedCookies`, `token`). Drops expired tokens. |
-| `src/lib/generated-client/` | **Generated, gitignored.** `typescript-fetch` client (`apis`, `models`, `runtime`) plus `zod/schemas.ts`, produced from the backend's `openapi.json` by [`@fohoov/zod-openapi-client`](https://github.com/FoHoOV/zod-openapi-client). `zod/schemas.ts` exports Zod schemas only, no `z.infer` types: import TypeScript types from `$lib/generated-client/models`, or use `z.infer<typeof X>` / `z.input<typeof X>`. |
+| `src/lib/generated-client/` | **Generated and committed. Never edit by hand.** Marked `linguist-generated` (collapsed in GitHub diffs) and ignored by ESLint/Prettier. `typescript-fetch` client (`apis`, `models`, `runtime`) plus `zod/schemas.ts`, produced from the backend's `openapi.json` by [`@fohoov/zod-openapi-client`](https://github.com/FoHoOV/zod-openapi-client). `zod/schemas.ts` exports Zod schemas only, no `z.infer` types: import TypeScript types from `$lib/generated-client/models`, or use `z.infer<typeof X>` / `z.input<typeof X>`. |
 | `src/lib/client-wrapper/` | `clients.ts`: one factory per API (`ProjectClient({ token, fetchApi })`, ...), adding auth and timeout middleware. `wrapper.universal.ts`: `callService` maps every failure to a typed `ServiceError` (`ErrorType`). `wrapper.server.ts`: `callServiceInFormActions` for form actions. `wrapper.client.ts`: `callServiceInClient`. |
 | `src/lib/actions/` | Svelte actions: `form` (enhanced submit + Zod validator, `superFail`, `namedActionResult`, `validateFormActionRequest`), `drag-and-drop`, `class-manipulator`. |
 | `src/lib/stores/` | State as classes in `*.svelte.ts` files using runes, each with a `context.ts` (`getX`/`setX`). `context-manager/` adds a root context so stores can be set "to root". |
@@ -29,28 +29,26 @@ From `package.json`, the configs, and `.github/workflows/test.yml`:
 - Package manager: **pnpm 12** (`packageManager: pnpm@12.11.2`, `pnpm-lock.yaml`, CI via `pnpm/action-setup` reading `packageManager`, Vercel, `.vscode/launch.json`). Dependency build scripts only run when allowed in `pnpm-workspace.yaml` (`allowBuilds`); pnpm fails the install on a new unapproved one. Approve or deny it with `pnpm approve-builds <pkg>` / `'!<pkg>'`. `.npmrc` has `engine-strict=true`. `README.md`, `run-windows.cmd` and Playwright's `webServer` command still use `npm` (`npm i --legacy-peer-deps`, `npm run build-integration && npm run preview`). Use pnpm.
 - Node: CI uses 20. There is no `engines` field or `.nvmrc`.
 - `.env` (from `.env.raw`): `PUBLIC_API_URL`, `PUBLIC_API_REQUEST_TIMEOUT_MS`, `PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS`. These are read via `$env/static/public`, so they must exist at build time.
-- **Generate the API client first** (needs the backend running at `PUBLIC_API_URL`, and Java for openapi-generator 7.0.0):
-  `pnpm run generate-client`. Re-run it after any backend schema or route change. Nothing type-checks until it exists.
+- **Regenerate the API client after any backend route or schema change**, and commit it: `pnpm run generate-client` (needs the backend running at `PUBLIC_API_URL`, and Java for openapi-generator 7.0.0). CI regenerates it against the PR's backend and fails if the committed client differs.
   - The generator is pinned to zod 3 output; the app must stay on zod 3.
 - Dev: `pnpm run dev`. Build: `pnpm run build`. Preview: `pnpm run preview` (port 5174).
 - Typecheck: `pnpm run check` (`svelte-kit sync && svelte-check`).
 - Lint: `pnpm run lint` (prettier check + eslint). Format: `pnpm run format`.
   - Both scripts pass `--plugin-search-dir`, which Prettier 3 removed. Plugins are declared in `.prettierrc`.
-  - `eslint.config.js` ignores `generated-clients`, but the directory is `generated-client`.
 - Unit tests: `pnpm run test:unit` (vitest, which runs in watch mode outside CI; use `pnpm exec vitest run` for a single run).
   - `vitest.config.ts` takes precedence over the `test` block in `vite.config.ts`. They disagree on `include`. The effective pattern is `src/**/*.(test).{js,ts}` with jsdom and `vitest-setup.ts`.
 - E2E: `pnpm run test:integration` (Playwright; Chromium, Firefox and WebKit projects; CI runs Chromium only).
   - Its `webServer` builds with `--mode integration` (reads `.env.integration`) and previews on 5174.
   - It needs a running backend pointing at a throwaway DB. `README.md` says port 8090; CI uses 8080 via env vars.
   - `pnpm run test` runs integration and then unit.
-- Deploy: Vercel via the deploy workflows. The build runs on Vercel with `installCommand` (`pnpm install --frozen-lockfile`) and `buildCommand` (`pnpm run generate-client && pnpm run build`) from `vercel.json`; the dashboard has no overrides. It needs the backend reachable at `PUBLIC_API_URL` at build time. `svelte.config.js` uses `adapter-auto`; `adapter-node` and `adapter-vercel` are installed but not referenced in config.
+- Deploy: Vercel via the deploy workflows. The build runs on Vercel with `installCommand` (`pnpm install --frozen-lockfile`) and `buildCommand` (`pnpm run build`) from `vercel.json`; the dashboard has no overrides. The build uses the committed client and doesn't contact the backend. `svelte.config.js` uses `adapter-auto`; `adapter-node` and `adapter-vercel` are installed but not referenced in config.
 
 ## Conventions observed in the code
 
 - **Svelte 5 runes only**: `$props()`, `$state`, `$derived`, `$effect`, snippets and `{@render}`. No `export let`, `<slot>`, `createEventDispatcher`, or `svelte/store` usage remains. Component events are callback props (`onSubmitSucceeded`, ...). SvelteKit 2, Vite 5, TypeScript strict.
 - Components use `<script lang="ts" module>` for imports and the exported `Props` type, then `<script lang="ts">` with `const { ... }: Props = $props();`.
 - Stores: a class with private `$state` fields and a `value$` getter (e.g. `Projects` in `stores/projects/projects.svelte.ts`). Provided via `setProjects(new Projects(...))` and read via `getProjects()`, which may return `undefined`.
-- Validation: per-route Zod schemas in `validator.ts`, type-checked against the generated models with `({}) as z.infer<typeof schema> satisfies ProjectCreate;`. Generated Zod schemas (`$lib/generated-client/zod/schemas`) are passed as `errorSchema` to map backend 422s onto form fields.
+- Validation: per-route Zod schemas in `validator.ts`, type-checked against the generated models with `({}) as z.infer<typeof schema> satisfies ProjectCreate;`. Build validators on the generated Zod schemas (`X.extend({...})`, `X.shape.field`) so field limits come from the backend; only override what the form needs (number coercion, `''` → `'-'` descriptions, dates, cross-field `refine`). Exception: the generator drops `min`/`max` on optional (`str | None`) fields, so edit forms reuse the create schema's field rules. Generated Zod schemas are also passed as `errorSchema` to map backend 422s onto form fields.
 - Files: components are PascalCase `.svelte`. Everything else is kebab-case `.ts`. Each folder has an `index.ts` barrel. Rune-using modules are `*.svelte.ts`.
 - Styling: Tailwind 3 + daisyUI 4 (`light`/`dark` themes, dark mode via `[data-theme="dark"]`) + `@tailwindcss/typography`. Classes are passed in as props such as `wrapperClasses` and `inputClasses`. Dynamically built class names must be added to `safelist` in `tailwind.config.js`. Icons come from Font Awesome via `svelte-fa`.
 - Formatting (`.prettierrc`): tabs, single quotes, no trailing commas, width 100, `prettier-plugin-svelte`, `prettier-plugin-tailwindcss`.

@@ -8,7 +8,7 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-/src/lib/generated-client
+/src/lib/generated-client/.tmp
 /test-results
 /playwright-report
 
