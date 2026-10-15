@@ -55,6 +55,7 @@ From `pyproject.toml`, `.python-version`, `.pylintrc` and `.github/workflows/tes
 - Route handler names become OpenAPI operation IDs as `<function>_<tag>` (`custom_generate_unique_id`), and the frontend client method names come from those IDs. **Renaming a handler or tag changes the generated frontend API.** Some handlers shadow builtins (`filter`, `list` in `project.py`) for this reason.
 - Errors: raise `UserFriendlyError(ErrorCode.X, "message")` from crud code. It becomes `400 {"code", "message"}`. New codes go in `ErrorCode`, and the frontend picks them up via the generated client.
 - Permissions are checked inside crud functions via `db/utils/shared/permission_query.py` (`validate_item_exists_with_permissions`, `join_with_permission_query_if_required`), not in routes.
+- `TodoItem.due_date` is a `date` (no time, no timezone). Sending a date in year 1 (`0001-01-01`) on update clears it.
 - Ordering of categories and items is a per-user doubly linked list (`left_id`/`right_id`, `BaseOrderedItem`, `*_order` tables).
 - Naming: snake_case modules. Tables are snake_case singular (`todo_item`). Crud modules are `<resource>_crud.py`.
 - Inconsistencies (don't copy them):

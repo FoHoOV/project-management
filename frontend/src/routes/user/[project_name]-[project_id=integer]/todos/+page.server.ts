@@ -10,7 +10,8 @@ import {
 	editTagSchema,
 	editTodoCategorySchema,
 	editTodoCommentSchema,
-	editTodoItemSchema
+	editTodoItemSchema,
+	RESET_DUE_DATE
 } from './validator';
 import {
 	TodoItemCreate,
@@ -127,11 +128,7 @@ export const actions: Actions = {
 			return validation.failure;
 		}
 
-		if (!validation.data.due_date) {
-			const date = new Date(0);
-			date.setFullYear(1, 0, 1);
-			validation.data.due_date = date;
-		}
+		validation.data.due_date ??= RESET_DUE_DATE;
 
 		const result = await callServiceInFormActions({
 			call: async () => {

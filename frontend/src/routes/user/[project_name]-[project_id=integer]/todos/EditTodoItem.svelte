@@ -66,7 +66,7 @@
 			label="Due date (Optional)"
 			wrapperClasses="w-full"
 			type="date"
-			value={todo.due_date?.toLocaleDateString('en-CA')}
+			value={todo.due_date}
 			errors={formErrors?.errors?.due_date}
 		/>
 	{/snippet}

@@ -334,7 +334,7 @@ export const TodoItemCreate = z.object({
     description: z.string().min(1).max(100),
     is_done: z.boolean(),
     category_id: z.int(),
-    due_date: z.iso.datetime({ offset: true, local: true }).nullish()
+    due_date: z.iso.date().nullish()
 });
 
 /**
@@ -382,7 +382,7 @@ export const TodoCategoryPartialTodoItem = z.object({
     description: z.string(),
     is_done: z.boolean(),
     category_id: z.int(),
-    due_date: z.iso.datetime({ offset: true, local: true }).nullish(),
+    due_date: z.iso.date().nullish(),
     tags: z.array(TodoItemPartialTag),
     dependencies: z.array(TodoItemPartialDependency),
     order: NullableOrderedItem,
@@ -419,7 +419,7 @@ export const TodoItem = z.object({
     description: z.string().min(1).max(100),
     is_done: z.boolean(),
     category_id: z.int(),
-    due_date: z.iso.datetime({ offset: true, local: true }).nullish(),
+    due_date: z.iso.date().nullish(),
     id: z.int(),
     category: TodoItemPartialCategory,
     tags: z.array(TodoItemPartialTag),
@@ -436,7 +436,7 @@ export const TodoItemUpdateItem = z.object({
     new_category_id: z.int().nullish(),
     title: z.string().min(1).max(100).nullish(),
     description: z.string().min(1).max(100).nullish(),
-    due_date: z.iso.datetime({ offset: true, local: true }).nullish(),
+    due_date: z.iso.date().nullish(),
     is_done: z.boolean().nullish()
 });
 

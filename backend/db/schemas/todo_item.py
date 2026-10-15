@@ -18,7 +18,7 @@ class TodoItemBase(BaseModel):
     description: str = Field(min_length=1, max_length=100)
     is_done: bool
     category_id: int
-    due_date: datetime.datetime | None = Field(default=None)
+    due_date: datetime.date | None = Field(default=None)
 
 
 class TodoItemCreate(TodoItemBase):
@@ -29,7 +29,7 @@ class TodoItemUpdateItem(BaseModel):
     new_category_id: int | None = None
     title: str | None = Field(min_length=1, max_length=100, default=None)
     description: str | None = Field(min_length=1, max_length=100, default=None)
-    due_date: datetime.datetime | None = Field(default=None)
+    due_date: datetime.date | None = Field(default=None)
     is_done: bool | None = None
 
 

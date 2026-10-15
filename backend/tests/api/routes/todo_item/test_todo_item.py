@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
 import pytest
+from fastapi.testclient import TestClient
 from httpx2 import Response
 
 from api.routes.error import UserFriendlyErrorSchema
@@ -216,3 +217,47 @@ def test_todo_item_done_status_changes(
 
     # now user_a should be able to update it
     update_todo_item_done_status(user_a, todo_item.id, True)
+
+
+def test_todo_item_due_date(
+    create_project: Callable[[UserType], Project],
+    create_todo_category: Callable[[UserType, int], TodoCategory],
+    test_client: TestClient,
+    auth_header_factory: Callable[[UserType], dict[str, str]],
+    test_users: list[UserType],
+):
+    user_a = test_users[0]
+    headers = auth_header_factory(user_a)
+    category = create_todo_category(user_a, create_project(user_a).id)
+
+    def update(item: dict) -> dict:
+        response = test_client.patch(
+            f"/todo-items/{todo['id']}", headers=headers, json={"item": item}
+        )
+        assert response.status_code == 200, "updating the todo item failed"
+        return response.json()
+
+    response = test_client.post(
+        "/todo-items",
+        headers=headers,
+        json={
+            "title": "title",
+            "description": "description",
+            "is_done": False,
+            "category_id": category.id,
+            "due_date": "2026-10-20",
+        },
+    )
+    assert response.status_code == 200, "creating the todo item failed"
+    todo = response.json()
+    assert todo["due_date"] == "2026-10-20", "due date should be stored as given"
+
+    assert (
+        update({"is_done": True})["due_date"] == "2026-10-20"
+    ), "updating another field should keep the due date"
+    assert (
+        update({"due_date": "2026-11-05"})["due_date"] == "2026-11-05"
+    ), "due date should be updated as given"
+    assert (
+        update({"due_date": "0001-01-01"})["due_date"] is None
+    ), "a year-1 date should reset the due date"
