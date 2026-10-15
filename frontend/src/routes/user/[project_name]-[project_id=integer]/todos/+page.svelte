@@ -1,20 +1,20 @@
 <script lang="ts" module>
-	import AddTag from '$routes/user/[project_name]-[project_id=integer]/todos/AddTag.svelte';
-	import EditTag from '$routes/user/[project_name]-[project_id=integer]/todos/EditTag.svelte';
-	import AddTodoItemDependency from '$routes/user/[project_name]-[project_id=integer]/todos/AddTodoItemDependency.svelte';
-	import EditTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoComment.svelte';
-	import CreateTodoComment from '$routes/user/[project_name]-[project_id=integer]/todos/CreateTodoComment.svelte';
-	import EditTodoCategory from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoCategory.svelte';
-	import EditTodoItem from '$routes/user/[project_name]-[project_id=integer]/todos/EditTodoItem.svelte';
-	import AttachToProject from '$routes/user/[project_name]-[project_id=integer]/todos/AttachToProject.svelte';
-	import CircleButton from '$components/buttons/CircleButton.svelte';
+	import AddTag from './AddTag.svelte';
+	import EditTag from './EditTag.svelte';
+	import AddTodoItemDependency from './AddTodoItemDependency.svelte';
+	import EditTodoComment from './EditTodoComment.svelte';
+	import CreateTodoComment from './CreateTodoComment.svelte';
+	import EditTodoCategory from './EditTodoCategory.svelte';
+	import EditTodoItem from './EditTodoItem.svelte';
+	import AttachToProject from './AttachToProject.svelte';
+	import CircleButton from '#lib/components/buttons/CircleButton.svelte';
 	import CreateTodoCategory from './CreateTodoCategory.svelte';
-	import Empty from '$components/Empty.svelte';
-	import TodoList from '$components/todos/todo-list/TodoList.svelte';
+	import Empty from '#lib/components/Empty.svelte';
+	import TodoList from '#lib/components/todos/todo-list/TodoList.svelte';
 	import CreateTodoItem from './CreateTodoItem.svelte';
-	import NavbarItem from '$components/navbar/NavbarItem.svelte';
+	import NavbarItem from '#lib/components/navbar/NavbarItem.svelte';
 
-	import type { SnippetParams as DrawerSnippetParams } from '$components/Drawer.svelte';
+	import type { SnippetParams as DrawerSnippetParams } from '#lib/components/Drawer.svelte';
 
 	import { flip } from 'svelte/animate';
 	import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -32,11 +32,12 @@
 	import { TodoCategories, setTodoCategories } from '#lib/stores/todos/index.js';
 	import { TodoComments } from '#lib/stores/todo-comments/index.js';
 	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
+	import type { PageProps } from './$types';
 	import { getMultiStepModal, getNavbar } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">
-	const { data, form } = $props();
+	const { data, form, params }: PageProps = $props();
 
 	let componentState = $state<'loading' | 'none'>('loading');
 
@@ -62,6 +63,7 @@
 			component: CreateTodoCategory,
 			props: () => {
 				return {
+					params,
 					form: form
 				};
 			},
@@ -74,6 +76,7 @@
 			component: EditTodoCategory,
 			props: () => {
 				return {
+					params,
 					form: form,
 					category: category
 				};
@@ -87,6 +90,7 @@
 			component: AttachToProject,
 			props: () => {
 				return {
+					params,
 					form: form,
 					categoryId: category.id
 				};
@@ -100,6 +104,7 @@
 			component: EditTodoItem,
 			props: () => {
 				return {
+					params,
 					form: form,
 					todo: todo
 				};
@@ -113,6 +118,7 @@
 			component: CreateTodoItem,
 			props: () => {
 				return {
+					params,
 					form: form,
 					categoryId: category.id
 				};
@@ -126,6 +132,7 @@
 			component: CreateTodoComment,
 			props: () => {
 				return {
+					params,
 					form: form,
 					todoCommentsStore: store,
 					todoId: todoId
@@ -140,6 +147,7 @@
 			component: EditTodoComment,
 			props: () => {
 				return {
+					params,
 					form: form,
 					todoCommentsStore: store,
 					comment: comment
@@ -154,6 +162,7 @@
 			component: AddTag,
 			props: () => {
 				return {
+					params,
 					form: form,
 					todoId: todo.id
 				};
@@ -167,6 +176,7 @@
 			component: EditTag,
 			props: () => {
 				return {
+					params,
 					form: form,
 					tag: tag
 				};
@@ -180,6 +190,7 @@
 			component: AddTodoItemDependency,
 			props: () => {
 				return {
+					params,
 					form: form,
 					todo: todo
 				};
@@ -202,11 +213,7 @@
 </svelte:head>
 
 {#snippet settings({ closeDrawer }: DrawerSnippetParams[0])}
-	<NavbarItem
-		href={generateTodoListSettingsUrl(data.currentProject.title, data.currentProject.id)}
-		name=""
-		icon={faGear}
-	/>
+	<NavbarItem href={generateTodoListSettingsUrl(params)} name="" icon={faGear} />
 {/snippet}
 
 {#if componentState === 'loading'}

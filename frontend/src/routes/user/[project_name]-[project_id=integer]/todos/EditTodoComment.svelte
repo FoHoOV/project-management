@@ -1,16 +1,16 @@
 <script lang="ts" module>
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 
 	import type { ActionData } from './$types';
 	import { editTodoCommentSchema } from './validator';
-	import { page } from '$app/state';
 	import type { TodoComment } from '#lib/generated-client/index.js';
-	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
 	import { TodoComments } from '#lib/stores/todo-comments/index.js';
 
 	export type Props = {
+		params: ProjectRouteParams;
 		form: ActionData;
 		todoCommentsStore: TodoComments;
 		comment: TodoComment;
@@ -18,14 +18,11 @@
 </script>
 
 <script lang="ts">
-	const { form, todoCommentsStore, comment }: Props = $props();
+	const { params, form, todoCommentsStore, comment }: Props = $props();
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(
-		page.params.project_name!,
-		page.params.project_id!
-	)}?/editTodoComment"
+	action="{generateTodoListItemsUrl(params)}?/editTodoComment"
 	enhancerConfig={{
 		validator: { schema: editTodoCommentSchema },
 		form: form,

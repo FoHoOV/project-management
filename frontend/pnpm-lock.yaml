@@ -200,9 +200,6 @@ importers:
       '@sveltejs/kit':
         specifier: ^3.0.1
         version: 3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2(@typescript-eslint/types@8.71.2))(vite@8.3.4(jiti@1.21.6)(yaml@2.6.0)))(svelte@5.57.2(@typescript-eslint/types@8.71.2))(typescript@6.0.3)(vite@8.3.4(jiti@1.21.6)(yaml@2.6.0))
-      '@sveltejs/load-config':
-        specifier: ^0.2.2
-        version: 0.2.3
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.3.1
         version: 7.3.1(svelte@5.57.2(@typescript-eslint/types@8.71.2))(vite@8.3.4(jiti@1.21.6)(yaml@2.6.0))

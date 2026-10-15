@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
 	import { createApiClient } from '#api-client';
 	import { deleteTags, detachFromTodoTags } from '#lib/generated-client/index.js';
@@ -18,7 +18,7 @@
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialTag
 	} from '#lib/generated-client/index.js';
-	import Confirm from '$components/Confirm.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
 	import { type CommonComponentStates } from '#lib';
 	import { getTodoCategories } from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';

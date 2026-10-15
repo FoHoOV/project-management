@@ -1,7 +1,7 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
-	import Confirm from '$components/Confirm.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
 
 	import { createApiClient } from '#api-client';
 	import { removeTodoItemDependencyTodoItems } from '#lib/generated-client/index.js';

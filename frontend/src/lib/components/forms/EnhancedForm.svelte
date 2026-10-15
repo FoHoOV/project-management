@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
 	import {
 		type EnhanceOptions,
@@ -46,7 +46,6 @@
 		inputs: Snippet<
 			[{ formErrors: ReturnType<typeof getFormErrors<TFormAction>> | undefined; reset: () => void }]
 		>;
-		defaultActions?: Snippet<[{ reset: () => void }]>;
 		footer?: Snippet;
 		method?: 'post' | 'get';
 		showErrors?: boolean;

@@ -1,27 +1,27 @@
 <script lang="ts" module>
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { createTodoItemSchema } from './validator';
-	import { page } from '$app/state';
-	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
 	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
+		params: ProjectRouteParams;
 		form: ActionData;
 		categoryId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, categoryId }: Props = $props();
+	const { params, form, categoryId }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(page.params.project_name!, page.params.project_id!)}?/addTodo"
+	action="{generateTodoListItemsUrl(params)}?/addTodo"
 	enhancerConfig={{
 		validator: { schema: createTodoItemSchema },
 		form: form,

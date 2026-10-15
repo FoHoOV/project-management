@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import type { ResolvedPathname } from '$app/types';
 	import Fa from 'svelte-fa';
 	import { page } from '$app/state';
 
@@ -9,7 +10,7 @@
 
 	export type Props = {
 		name: string;
-		href: string;
+		href: ResolvedPathname;
 		icon?: IconDefinition | null;
 		setActiveClassOnClick?: boolean;
 		class?: string;

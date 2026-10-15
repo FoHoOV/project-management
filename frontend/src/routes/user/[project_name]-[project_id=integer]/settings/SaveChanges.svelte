@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	import Confirm from '$components/Confirm.svelte';
-	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import FormInput from '$components/forms/FormInput.svelte';
-	import Spinner from '$components/Spinner.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
+	import ProjectPermissions from '#lib/components/project/ProjectPermissions.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
 
-	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
-	import { updateUserPermissionsSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
+	import { generateTodoListSettingsUrl, projectRouteParams } from '#lib/utils/params/route.js';
+	import { updateUserPermissionsSchema } from './validator';
 
 	import type { ActionData, PageData } from './$types';
 	import type { PartialUserWithPermission, Permission } from '#lib';
@@ -32,8 +32,7 @@
 
 <EnhancedForm
 	action="{generateTodoListSettingsUrl(
-		data.currentProject.title,
-		data.currentProject.id
+		projectRouteParams(data.currentProject.title, data.currentProject.id)
 	)}?/updatePermissions"
 	enhancerConfig={{
 		form: form,

@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	import TodoItem from '$components/todos/todo-item/TodoItem.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import LoadingButton from '$components/buttons/LoadingButton.svelte';
-	import FormInput from '$components/forms/FormInput.svelte';
+	import TodoItem from '#lib/components/todos/todo-item/TodoItem.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import Fa from 'svelte-fa';
 
 	import type { TodoCategory, TodoItem as TodoItemModel } from '#lib/generated-client/index.js';
-	import { searchTagSchema } from '$routes/user/search-tags/validator';
+	import { searchTagSchema } from './validator';
 	import { TodoCategories } from '#lib/stores/todos/todos.svelte.js';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 	import { setTodoCategories } from '#lib/stores/index.js';

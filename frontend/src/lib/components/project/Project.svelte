@@ -1,15 +1,15 @@
 <script lang="ts" module>
-	import Alert from '$components/alerts/Alert.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 	import Fa from 'svelte-fa';
-	import Spinner from '$components/Spinner.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
 
 	import { callService } from '#lib/client-wrapper/index.js';
 	import { createApiClient } from '#api-client';
 	import { detachFromSelfProjects } from '#lib/generated-client/index.js';
 	import type { Project } from '#lib/generated-client/index.js';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
-	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
-	import Confirm from '$components/Confirm.svelte';
+	import { generateTodoListItemsUrl, projectRouteParams } from '#lib/utils/params/route.js';
+	import Confirm from '#lib/components/Confirm.svelte';
 	import { type CommonComponentStates } from '#lib';
 	import { getProjects } from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
@@ -122,7 +122,7 @@
 				</button>
 				<a
 					class="btn btn-info col-span-2 sm:col-span-1"
-					href={generateTodoListItemsUrl(project.title, project.id)}
+					href={generateTodoListItemsUrl(projectRouteParams(project.title, project.id))}
 				>
 					Show todos
 				</a>

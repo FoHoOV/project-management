@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { SnippetParams } from '$components/Drawer.svelte';
+import type { SnippetParams } from '#lib/components/Drawer.svelte';
 
 type NavbarPosition = 'start' | 'end' | 'center';
 export class Navbar {

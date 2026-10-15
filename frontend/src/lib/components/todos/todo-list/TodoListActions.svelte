@@ -1,7 +1,7 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
-	import FormInput from '$components/forms/FormInput.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
 
 	import { callService } from '#lib/client-wrapper/index.js';
 	import { createApiClient } from '#api-client';

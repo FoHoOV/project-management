@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import DropZoneHelper from '#lib/components/todos/DropZoneHelper.svelte';
 
 	import {
 		TODO_ITEM_ORDER_DROP_ZONE,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		DROP_EVENT_HANDLED_BY_TODO_ITEM
-	} from '$components/todos/constants';
-	import { generateNewOrderForTodoItem } from '$components/todos/utils';
+	} from '#lib/components/todos/constants.js';
+	import { generateNewOrderForTodoItem } from '#lib/components/todos/utils.js';
 	import {
 		dropzone,
 		draggable,

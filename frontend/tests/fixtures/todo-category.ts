@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import type { IPage } from './IPage';
-import { generateTodoListItemsUrl } from '../../src/lib/utils/params/route';
+import { todoListUrl } from '../utils/routes';
 import { ProjectsPage, test as projects } from './project';
 import { getModal, closeModal } from '../common-locators/modal';
 import { getFloatingBtn } from '../common-locators/floating-btn';
@@ -18,9 +18,7 @@ export class TodoCategoryPage implements IPage {
 	}
 
 	async goto(projectTitle: string, projectId: number, projectShouldExist = true) {
-		const response = await this.#enhancedPage.goto(
-			generateTodoListItemsUrl(projectTitle, projectId)
-		);
+		const response = await this.#enhancedPage.goto(todoListUrl(projectTitle, projectId));
 
 		expect(response, 'response should exist').toBeTruthy();
 

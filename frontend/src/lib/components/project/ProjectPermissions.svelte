@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import FormInput from '$components/forms/FormInput.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
 
 	import { Permission } from '#lib';
 	import { onMount } from 'svelte';

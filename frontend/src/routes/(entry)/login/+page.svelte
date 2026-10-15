@@ -1,7 +1,8 @@
 <script lang="ts" module>
+	import { resolve } from '$app/paths';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import FormInput from '#lib/components/forms/FormInput.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 
 	import { schema } from './validators';
 </script>
@@ -43,7 +44,7 @@
 	{#snippet footer()}
 		<span class="divider divider-vertical"></span>
 
-		<a class="flex flex-col items-start self-start" href="/signup">
+		<a class="flex flex-col items-start self-start" href={resolve('/(entry)/signup')}>
 			<h5>Don't have an account yet?</h5>
 			<span>create one here!</span>
 		</a>

@@ -1,9 +1,10 @@
 <script lang="ts" module>
+	import type { ResolvedPathname } from '$app/types';
 	import type { Snippet } from 'svelte';
 
 	export type Props = {
 		title: string;
-		titleHref: string;
+		titleHref: ResolvedPathname;
 		class?: string;
 		start?: Snippet;
 		center?: Snippet;

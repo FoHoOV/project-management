@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import Modal from '$components/popups/Modal.svelte';
+	import Modal from '#lib/components/popups/Modal.svelte';
 	import { getMultiStepModal } from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 

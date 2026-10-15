@@ -1,9 +1,10 @@
 <script lang="ts" module>
+	import { resolve } from '$app/paths';
 	import NavbarItem from '#lib/components/navbar/NavbarItem.svelte';
-	import MultiStepModal from '$components/popups/MultiStepModal.svelte';
-	import Drawer from '$components/Drawer.svelte';
-	import Toasts from '$components/popups/Toasts.svelte';
-	import ThemeSwitch from '$components/ThemeSwitch.svelte';
+	import MultiStepModal from '#lib/components/popups/MultiStepModal.svelte';
+	import Drawer from '#lib/components/Drawer.svelte';
+	import Toasts from '#lib/components/popups/Toasts.svelte';
+	import ThemeSwitch from '#lib/components/ThemeSwitch.svelte';
 
 	import '../app.css';
 
@@ -15,7 +16,7 @@
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 
-	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { generateTodoListItemsUrl, projectRouteParams } from '#lib/utils/params/route.js';
 	import { Projects, setProjects } from '#lib/stores/projects/index.js';
 	import { createRootContextManager } from '#lib/stores/context-manager/index.js';
 	import { onMount, untrack } from 'svelte';
@@ -74,15 +75,15 @@
 <Drawer
 	id="app-drawer"
 	navbarTitle="Todos"
-	navbarTitleHref="/user/projects"
+	navbarTitleHref={resolve('/user/projects')}
 	data-theme={themeManager.value$}
 >
 	{#snippet sidebar({ closeDrawer })}
-		<NavbarItem icon={faHome} href="/" name="Home" onclick={closeDrawer} />
+		<NavbarItem icon={faHome} href={resolve('/')} name="Home" onclick={closeDrawer} />
 		{#if page.data.username}
 			<NavbarItem
 				icon={faProjectDiagram}
-				href="/user/projects"
+				href={resolve('/user/projects')}
 				name="Projects"
 				onclick={closeDrawer}
 			>
@@ -90,7 +91,7 @@
 					{#each projectsStore.value$ as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
-							href={generateTodoListItemsUrl(project.title, project.id)}
+							href={generateTodoListItemsUrl(projectRouteParams(project.title, project.id))}
 							name={project.title + ' (' + '#' + project.id + ')'}
 							onclick={closeDrawer}
 						/>
@@ -99,7 +100,7 @@
 			</NavbarItem>
 			<NavbarItem
 				icon={faSearch}
-				href="/user/search-tags"
+				href={resolve('/user/search-tags')}
 				name="Search by tag"
 				onclick={closeDrawer}
 			></NavbarItem>
@@ -109,9 +110,9 @@
 	{#snippet navbarEnd()}
 		<ThemeSwitch />
 		{#if page.data.username}
-			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
+			<NavbarItem href={resolve('/user/logout')} name="logout" setActiveClassOnClick={false} />
 		{:else}
-			<NavbarItem href="/login" name="login" setActiveClassOnClick={false} />
+			<NavbarItem href={resolve('/(entry)/login')} name="login" setActiveClassOnClick={false} />
 		{/if}
 	{/snippet}
 

@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
 	import { page } from '$app/state';
 	import { superEnhance } from '#lib/actions/form/index.js';

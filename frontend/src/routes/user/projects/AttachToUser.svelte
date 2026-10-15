@@ -1,8 +1,8 @@
 <script lang="ts" module>
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import ProjectPermissions from '#lib/components/project/ProjectPermissions.svelte';
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
