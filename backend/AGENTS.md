@@ -14,12 +14,13 @@ Single FastAPI app; all commands run from `backend/`. Imports are absolute from 
 | `api/routes/<resource>/<resource>.py` | One `APIRouter` per resource (`oauth`, `user`, `project`, `permission`, `todo_category`, `todo_item`, `todo_item_comment`, `tag`). Thin handlers that delegate to `db/utils/*_crud.py`. |
 | `api/routes/error.py` | Dummy `/types/errors` endpoint that exists only to put `UserFriendlyErrorSchema` into `openapi.json`. |
 | `api/dependencies/` | `get_db` (session per request) and `get_current_user` (JWT via `joserfc`, `OAuth2PasswordBearer` at `/oauth/token`). |
-| `db/db.py`, `db/__init__.py` | Engine and session factory, created lazily on first use (`get_engine()`, `get_session_factory()`). SQLite gets `check_same_thread=False` and `PRAGMA foreign_keys=ON`. Tables are created with `Base.metadata.create_all` at startup. **There are no migrations (no Alembic).** |
+| `db/db.py`, `db/__init__.py` | Engine and session factory, created lazily on first use (`get_engine()`, `get_session_factory()`). SQLite gets `check_same_thread=False` and `PRAGMA foreign_keys=ON`. |
+| `db/migrations.py`, `migrations/`, `alembic.ini` | Alembic. `create_app()` runs `alembic upgrade head` at startup (`run_migrations()`), holding a Postgres advisory lock so concurrent cold starts migrate once. `migrations/env.py` takes the DB URL from `get_settings()` and imports every module in `db/models`. |
 | `db/models/` | SQLAlchemy 2.0 ORM models (`Mapped[...]`, `mapped_column`), one table per file. Bases are in `models/base.py`. |
 | `db/schemas/` | Pydantic v2 request/response models (`XCreate`, `XUpdate`, `X`, ...). |
 | `db/utils/*_crud.py` | Business logic and queries, as module-level functions taking `db: Session` first. `db/utils/shared/` holds the permission query helpers and the linked-list ordering (`ordered_item.py`). |
 | `error/exceptions.py` | `ErrorCode` (StrEnum) and `UserFriendlyError(code, description)`. Raise this for expected failures. |
-| `tests/` | pytest. `tests/api/routes/<resource>/test_<resource>.py` mirrors the routes. Fixtures are in `tests/api/fixtures/`. The test DB setup is in `tests/conftest.py` and `tests/api/fixtures/app.py`. |
+| `tests/` | pytest. `tests/api/routes/<resource>/test_<resource>.py` mirrors the routes. Fixtures are in `tests/api/fixtures/`. The test DB setup is in `tests/conftest.py` and `tests/api/fixtures/app.py`. `tests/db/test_migrations.py` fails if the models and migrations differ. |
 
 Dependency direction: `api/routes` → `db/utils` → `db/models` + `db/schemas` + `error`. Routes don't query the DB directly.
 
@@ -39,6 +40,11 @@ From `pyproject.toml`, `.python-version`, `.pylintrc` and `.github/workflows/tes
   - The tests go through the real `get_db` dependency (no override).
   - Fixtures are session-scoped (`test_app`, `test_client`, autouse `test_users`) and are re-exported through `tests/api/conftest.py`.
 - Lint/format: `black`, `isort`, `pylint`. Config: `.pylintrc` (docstring checks disabled), `[tool.black]` and `[tool.isort]` (`profile = "black"`) in `pyproject.toml`. Run with `uv run black .`, `uv run isort .`, `uv run pylint api db error tests`. VS Code runs black and isort on save (`.vscode/settings.json`). There is no lint command in CI and no Makefile or task runner.
+- Migrations (Alembic):
+  - After changing a model: `uv run alembic revision --autogenerate -m "<what changed>"`, then review the generated file. Autogenerate misses some changes (e.g. renames, some type changes).
+  - Apply locally: `uv run alembic upgrade head`, or just start the app.
+  - Never edit a migration that has already been deployed; add a new one.
+  - SQLite runs migrations in batch mode (`render_as_batch`) so `ALTER` works.
 - Deploy: Vercel (`vercel.json`, `@vercel/python`) from the deploy workflows. The Vercel builder installs from `uv.lock` without the dev group and picks the Python version from `.python-version`.
 
 ## Conventions observed in the code
