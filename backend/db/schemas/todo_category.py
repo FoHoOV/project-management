@@ -73,7 +73,7 @@ class TodoCategoryPartialTodoItem(BaseModel):
     description: str
     is_done: bool
     category_id: int
-    due_date: datetime.datetime | None = Field(default=None)
+    due_date: datetime.date | None = Field(default=None)
     tags: list[TodoItemPartialTag]
     dependencies: list[TodoItemPartialDependency]
     order: NullableOrderedItem
