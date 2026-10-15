@@ -49,10 +49,6 @@ def create_app():
     app.include_router(error.router)
     app.include_router(tag.router)
 
-    app.openapi_version = (
-        "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it
-    )
-
     settings = get_settings()
     app.add_middleware(
         CORSMiddleware,

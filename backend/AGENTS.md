@@ -10,7 +10,7 @@ Single FastAPI app; all commands run from `backend/`. Imports are absolute from 
 | --- | --- |
 | `main.py` | Entry point: `app = create_app()`. Used by uvicorn and Vercel (`vercel.json`). |
 | `config.py` | `Settings` (pydantic-settings) loaded from `.env`, accessed through the cached `get_settings()`. Never read settings at import time; call `get_settings()` where the value is used. |
-| `api/__init__.py` | `create_app()`: registers routers, CORS, the `UserFriendlyError` → HTTP 400 handler, and calls `init_db()`. Sets OpenAPI version to 3.0.0 for the frontend's code generator. |
+| `api/__init__.py` | `create_app()`: registers routers, CORS, the `UserFriendlyError` → HTTP 400 handler, and runs the migrations (`run_migrations()`). Publishes OpenAPI 3.1 (FastAPI's default); the frontend's generator relies on it. |
 | `api/routes/<resource>/<resource>.py` | One `APIRouter` per resource (`oauth`, `user`, `project`, `permission`, `todo_category`, `todo_item`, `todo_item_comment`, `tag`). Thin handlers that delegate to `db/utils/*_crud.py`. |
 | `api/routes/error.py` | Dummy `/types/errors` endpoint that exists only to put `UserFriendlyErrorSchema` into `openapi.json`. |
 | `api/dependencies/` | `get_db` (session per request) and `get_current_user` (JWT via `joserfc`, `OAuth2PasswordBearer` at `/oauth/token`). |
