@@ -3,7 +3,7 @@ import type { LayoutLoad } from './$types';
 
 export const load = (async ({ parent }) => {
 	const data = await parent();
-	if (data.token) {
+	if (data.username) {
 		redirect(303, '/user/logout');
 	}
 }) satisfies LayoutLoad;

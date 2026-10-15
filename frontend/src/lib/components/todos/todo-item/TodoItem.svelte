@@ -16,7 +16,7 @@
 		type TodoCategoryPartialTodoItem,
 		type CommonComponentStates,
 		type TodoCategory,
-		callServiceInClient,
+		callService,
 		ErrorType,
 		fromIsoDate
 	} from '$lib';
@@ -29,7 +29,6 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { removeTodoItems, updateTodoItems } from '$lib/generated-client';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
@@ -74,10 +73,10 @@
 	async function handleChangeDoneStatus(event: Event) {
 		componentState = 'calling-service';
 		const savedTodoStatus = todo.is_done;
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				const result = await updateTodoItems({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { todo_id: todo.id },
 					body: {
 						item: {
@@ -115,10 +114,10 @@
 
 	async function handleRemoveTodo() {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				await removeTodoItems({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { todo_id: todo.id }
 				});
 				todoCategoriesStore?.removeTodo(todo);

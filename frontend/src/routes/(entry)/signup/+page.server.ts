@@ -22,7 +22,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				await signupUsers({
-					client: createApiClient({ fetch }),
+					client: createApiClient(fetch),
 					body: validation.data
 				});
 				redirect(303, '/login');

@@ -2,10 +2,9 @@
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 
-	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { deleteTags, detachFromTodoTags } from '$lib/generated-client';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { callService } from '$lib/client-wrapper';
 	import Fa from 'svelte-fa';
 	import {
 		faEdit,
@@ -43,10 +42,10 @@
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				await detachFromTodoTags({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { tag_name: tag.name, todo_id: todo.id }
 				});
 				todoCategoriesStore?.detachTag(todo.id, tag);
@@ -62,10 +61,10 @@
 
 	async function handleDeleteTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				await deleteTags({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { tag_name: tag.name },
 					body: { project_id: tag.project_id }
 				});

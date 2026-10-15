@@ -16,7 +16,7 @@ declare global {
 		}
 
 		interface PageData {
-			token?: Token;
+			username?: string;
 		}
 		// interface Platform {}
 	}

@@ -3,8 +3,7 @@
 	import Fa from 'svelte-fa';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { page } from '$app/stores';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { callService } from '$lib/client-wrapper';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { detachFromSelfProjects } from '$lib/generated-client';
 	import type { Project } from '$lib/generated-client';
@@ -35,10 +34,10 @@
 
 	async function handleDetachProjectFromUser() {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
 				await detachFromSelfProjects({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { project_id: project.id }
 				});
 				projectsStore?.remove(project);
