@@ -62,11 +62,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.4.0
-
       - name: Setup java
         uses: actions/setup-java@v4
         with:
@@ -74,7 +69,7 @@ jobs:
           java-version: "21"
 
       - name: Install Vercel CLI
-        run: pnpm add --global vercel
+        run: npm install --global vercel
 
       - name: Set custom environment variables
         run: |

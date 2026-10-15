@@ -18,7 +18,7 @@ Single SvelteKit app; all commands run from `frontend/`.
 | `src/lib/components/` | Shared components, grouped by folder (`forms`, `popups`, `buttons`, `project`, `todos`, ...). |
 | `src/lib/utils/`, `src/lib/animations/`, `src/lib/constants/` | Helpers (token, zod key extraction, storage types, type utilities), transitions, cookie keys. |
 | `tests/` | Playwright E2E. `tests/routes/**` mirrors `src/routes/**`. `tests/fixtures/` holds page-object classes exposed as Playwright fixtures. `tests/common-locators/` holds shared locators. |
-| `generate-client.js` | Loads `.env` (without overriding existing env vars) and runs `client-generator generate` against `$PUBLIC_API_URL/openapi.json`. It writes `openapitools.json` (gitignored). |
+| `generate-client.js` | Loads `.env` (without overriding existing env vars) and runs `client-generator generate` against `$PUBLIC_API_URL/openapi.json`. The generator version is pinned in the committed `openapitools.json` (`generator-cli.version`). |
 
 Data flow: page or component → `<form>` posts to a `+page.server.ts` named action → `validateFormActionRequest(request, schema)` → `callServiceInFormActions({ call: () => XClient({ token: locals.token, fetchApi: fetch }).method(...), errorSchema })` → `namedActionResult(result, 'name')` → `EnhancedForm` callbacks (`onSubmitSucceeded`) update the store.
 
@@ -26,7 +26,7 @@ Data flow: page or component → `<form>` posts to a `+page.server.ts` named act
 
 From `package.json`, the configs, and `.github/workflows/test.yml`:
 
-- Package manager: **pnpm 9** (`packageManager: pnpm@9.4.0`, `pnpm-lock.yaml`, CI, `.vscode/launch.json`). `.npmrc` has `engine-strict=true`. `README.md`, `run-windows.cmd` and Playwright's `webServer` command still use `npm` (`npm i --legacy-peer-deps`, `npm run build-integration && npm run preview`). Use pnpm.
+- Package manager: **pnpm 12** (`packageManager: pnpm@12.11.2`, `pnpm-lock.yaml`, CI via `pnpm/action-setup` reading `packageManager`, Vercel, `.vscode/launch.json`). Dependency build scripts only run when allowed in `pnpm-workspace.yaml` (`allowBuilds`); pnpm fails the install on a new unapproved one. Approve or deny it with `pnpm approve-builds <pkg>` / `'!<pkg>'`. `.npmrc` has `engine-strict=true`. `README.md`, `run-windows.cmd` and Playwright's `webServer` command still use `npm` (`npm i --legacy-peer-deps`, `npm run build-integration && npm run preview`). Use pnpm.
 - Node: CI uses 20. There is no `engines` field or `.nvmrc`.
 - `.env` (from `.env.raw`): `PUBLIC_API_URL`, `PUBLIC_API_REQUEST_TIMEOUT_MS`, `PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS`. These are read via `$env/static/public`, so they must exist at build time.
 - **Generate the API client first** (needs the backend running at `PUBLIC_API_URL`, and Java for openapi-generator 7.0.0):
