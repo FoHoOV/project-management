@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 import { goto, invalidateAll } from '$app/navigation';
-import { PUBLIC_API_URL } from '$env/static/public';
 import { redirect } from '@sveltejs/kit';
 import type { z } from 'zod';
 import type { ErrorMessage, NumberRange } from '$lib/utils/types';
@@ -9,85 +8,6 @@ import { HTTPValidationError, UserFriendlyErrorSchema } from '$lib/generated-cli
 import { ErrorCode } from '$lib/generated-client';
 import { ApiError } from './clients';
 import { extractKeys as extractKeysFromZod } from '$lib/utils/zod';
-
-export const createRequest = (url: string, token?: string): Request => {
-	const request = new Request(url);
-	if (token) {
-		request.headers.set('Authorization', `bearer: ${token}`);
-	}
-	return request;
-};
-
-export type ErrorHandler = <TError>(error: TError) => void;
-
-export const genericGet = async <TResponse, TError = unknown>(
-	path: string,
-	parameters: Record<string, any> = {},
-	config: RequestInit = {},
-	onError: ErrorHandler | undefined = undefined
-) => {
-	const res = await fetch(`${path}?${new URLSearchParams(parameters)}`, {
-		method: 'get',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		...config
-	});
-	const json = await res.json();
-
-	if (!res.ok) {
-		if (onError) {
-			return onError(<TError>json);
-		}
-		throw Error('Some errors has occurred');
-	}
-
-	return <TResponse>json;
-};
-
-export const genericPost = async <TResponse, TError = unknown>(
-	path: string,
-	data: Record<string, any> = {},
-	config: RequestInit = {},
-	onError: ErrorHandler | undefined = undefined
-) => {
-	const res = await fetch(path, {
-		method: 'post',
-		body: JSON.stringify(data),
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		...config
-	});
-
-	const json = await res.json();
-	if (!res.ok) {
-		if (onError) {
-			return onError(<TError>json);
-		}
-		throw Error('Some errors has occurred');
-	}
-
-	return <TResponse>json;
-};
-
-export const getToExternal = async <TResponse, TError = unknown>(
-	endPoint: string,
-	data: Record<string, any> = {},
-	config: RequestInit = {},
-	onError: ErrorHandler | undefined = undefined
-) => {
-	return genericGet<TResponse, TError>(`${PUBLIC_API_URL}/${endPoint}`, data, config, onError);
-};
-
-export const postToExternal = async <TResponse, TError = unknown>(
-	endPoint: string,
-	data: Record<string, any> = {},
-	config: RequestInit = {},
-	onError: ErrorHandler | undefined = undefined
-) => {
-	return genericPost<TResponse, TError>(`${PUBLIC_API_URL}/${endPoint}`, data, config, onError);
-};
 
 export const handleUnauthenticatedUser = async () => {
 	if (browser) {
