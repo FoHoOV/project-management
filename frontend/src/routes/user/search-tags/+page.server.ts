@@ -15,12 +15,10 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await searchTags({
+				return await searchTags({
 					client: createApiClient({ token: locals.token, fetch }),
-					query: validation.data,
-					throwOnError: true
+					query: validation.data
 				});
-				return data;
 			},
 			errorSchema: searchTagSchema
 		});

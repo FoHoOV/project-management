@@ -47,8 +47,7 @@
 			call: async () => {
 				await detachFromTodoTags({
 					client: createApiClient({ token: $page.data.token }),
-					path: { tag_name: tag.name, todo_id: todo.id },
-					throwOnError: true
+					path: { tag_name: tag.name, todo_id: todo.id }
 				});
 				todoCategoriesStore?.detachTag(todo.id, tag);
 				componentState = 'none';
@@ -68,8 +67,7 @@
 				await deleteTags({
 					client: createApiClient({ token: $page.data.token }),
 					path: { tag_name: tag.name },
-					body: { project_id: tag.project_id },
-					throwOnError: true
+					body: { project_id: tag.project_id }
 				});
 				todoCategoriesStore?.deleteTag(tag);
 				componentState = 'none';

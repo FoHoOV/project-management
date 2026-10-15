@@ -24,6 +24,11 @@ type ApiClientOptions = {
 	fetch?: typeof fetch;
 };
 
+/**
+ * The generated SDK's types assume `throwOnError: true` (see `openapi-ts.config.ts`): a call
+ * resolves to the response body or rejects with an {@link ApiError}. Build one per request, never
+ * at module level: on the server, module state is shared by every user's requests.
+ */
 export function createApiClient({ token, fetch: fetchApi = fetch }: ApiClientOptions = {}): Client {
 	const client = createClient(
 		createConfig({

@@ -16,12 +16,10 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await detachFromUserProjects({
+				return await detachFromUserProjects({
 					client: createApiClient({ token: locals.token, fetch }),
-					path: validation.data,
-					throwOnError: true
+					path: validation.data
 				});
-				return data;
 			},
 			errorSchema: detachSchema
 		});
@@ -37,13 +35,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await updatePermissions({
+				return await updatePermissions({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { project_id: validation.data.project_id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: ProjectUpdateUserPermissions
 		});

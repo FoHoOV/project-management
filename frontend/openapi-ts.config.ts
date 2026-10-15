@@ -11,10 +11,12 @@ export default defineConfig({
 	input: `${apiUrl}/openapi.json`,
 	output: 'src/lib/generated-client',
 	plugins: [
-		{ name: '@hey-api/client-fetch', baseUrl: false },
+		// Makes `throwOnError: true` the SDK's type default; createApiClient sets it at runtime.
+		{ name: '@hey-api/client-fetch', baseUrl: false, throwOnError: true },
 		{ name: '@hey-api/typescript', enums: 'javascript' },
 		{ name: '@hey-api/transformers', dates: true },
-		{ name: '@hey-api/sdk', transformer: true },
+		// `client: false` makes every call pass a client instead of falling back to a module-level one.
+		{ name: '@hey-api/sdk', transformer: true, client: false, responseStyle: 'data' },
 		{
 			name: 'zod',
 			definitions: { name: '{{name}}', case: 'preserve' },

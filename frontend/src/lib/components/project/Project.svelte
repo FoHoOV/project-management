@@ -39,8 +39,7 @@
 			call: async () => {
 				await detachFromSelfProjects({
 					client: createApiClient({ token: $page.data.token }),
-					path: { project_id: project.id },
-					throwOnError: true
+					path: { project_id: project.id }
 				});
 				projectsStore?.remove(project);
 				componentState = 'none';

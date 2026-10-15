@@ -8,12 +8,10 @@ import type { PageLoad } from './$types';
 export const load = (async ({ parent, fetch, params }) => {
 	return await callService({
 		call: async () => {
-			const { data } = await searchTodoCategories({
+			return await searchTodoCategories({
 				client: createApiClient({ token: (await parent()).token, fetch }),
-				query: { project_id: Number.parseInt(params.project_id) },
-				throwOnError: true
+				query: { project_id: Number.parseInt(params.project_id) }
 			});
-			return data;
 		},
 		errorHandler: async (e) => {
 			if (e.status == 401) {

@@ -91,8 +91,7 @@
 								todoCategoriesStore.value$
 							)
 						}
-					},
-					throwOnError: true
+					}
 				});
 				todoCategoriesStore?.updateCategoriesSort(
 					event.detail.data,
@@ -124,15 +123,14 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const { data: result } = await updateTodoItems({
+				const result = await updateTodoItems({
 					client: createApiClient({ token: $page.data.token }),
 					path: { todo_id: event.detail.data.id },
 					body: {
 						item: {
 							new_category_id: category.id
 						}
-					},
-					throwOnError: true
+					}
 				});
 				todoCategoriesStore?.removeTodo(event.detail.data, false);
 				todoCategoriesStore?.addTodo(result);

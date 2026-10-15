@@ -11,11 +11,9 @@ export const load = (async ({ locals, fetch }) => {
 	if (locals.token) {
 		const projects = await callService({
 			call: async () => {
-				const { data } = await listProjects({
-					client: createApiClient({ token: locals.token, fetch }),
-					throwOnError: true
+				return await listProjects({
+					client: createApiClient({ token: locals.token, fetch })
 				});
-				return data;
 			}
 		});
 		if (!projects.success) {

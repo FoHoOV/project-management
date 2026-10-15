@@ -42,8 +42,7 @@
 			call: async () => {
 				await removeTodoItemDependencyTodoItems({
 					client: createApiClient({ token: $page.data.token }),
-					path: { todo_id: todo.id, dependent_todo_id: dependency.id },
-					throwOnError: true
+					path: { todo_id: todo.id, dependent_todo_id: dependency.id }
 				});
 				todoCategoriesStore?.removeDependency(todo.id, dependency);
 				componentState = 'none';

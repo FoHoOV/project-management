@@ -57,8 +57,7 @@
 			call: async () => {
 				await detachFromProjectTodoCategories({
 					client: createApiClient({ token: $page.data.token }),
-					path: { category_id: category.id, project_id: projectId },
-					throwOnError: true
+					path: { category_id: category.id, project_id: projectId }
 				});
 				todoCategoriesStore?.removeCategory(category);
 				componentState = 'none';

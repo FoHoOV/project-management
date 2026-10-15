@@ -22,10 +22,9 @@ export const actions: Actions = {
 
 		return await callServiceInFormActions({
 			call: async () => {
-				const { data: token } = await loginForAccessTokenOAuth({
+				const token = await loginForAccessTokenOAuth({
 					client: createApiClient({ fetch }),
-					body: validation.data,
-					throwOnError: true
+					body: validation.data
 				});
 				cookies.set(SERVER_ONLY_KEYS.token, JSON.stringify(token), {
 					secure: true,

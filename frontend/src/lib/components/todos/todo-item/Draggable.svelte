@@ -72,7 +72,7 @@
 
 		await callServiceInClient({
 			call: async () => {
-				const { data: result } = await updateTodoItems({
+				const result = await updateTodoItems({
 					client: createApiClient({ token: $page.data.token }),
 					path: { todo_id: event.detail.data.id },
 					body: {
@@ -80,8 +80,7 @@
 							new_category_id: todo.category_id,
 							...generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
 						}
-					},
-					throwOnError: true
+					}
 				});
 				todoCategoriesStore?.updateTodoSort(
 					event.detail.data,

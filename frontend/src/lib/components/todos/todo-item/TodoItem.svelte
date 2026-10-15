@@ -75,7 +75,7 @@
 		const savedTodoStatus = todo.is_done;
 		await callServiceInClient({
 			call: async () => {
-				const { data: result } = await updateTodoItems({
+				const result = await updateTodoItems({
 					client: createApiClient({ token: $page.data.token }),
 					path: { todo_id: todo.id },
 					body: {
@@ -83,8 +83,7 @@
 							...todo,
 							is_done: !savedTodoStatus
 						}
-					},
-					throwOnError: true
+					}
 				});
 				todoCategoriesStore?.updateTodo(result, draggable);
 				if (result.is_done == savedTodoStatus) {
@@ -119,8 +118,7 @@
 			call: async () => {
 				await removeTodoItems({
 					client: createApiClient({ token: $page.data.token }),
-					path: { todo_id: todo.id },
-					throwOnError: true
+					path: { todo_id: todo.id }
 				});
 				todoCategoriesStore?.removeTodo(todo);
 				apiErrorTitle = null;

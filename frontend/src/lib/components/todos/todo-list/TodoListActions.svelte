@@ -28,15 +28,14 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const { data: result } = await updateTodoCategories({
+				const result = await updateTodoCategories({
 					client: createApiClient({ token: $page.data.token }),
 					path: { category_id: category.id },
 					body: {
 						item: {
 							actions: [(event.target as HTMLInputElement).name as Action]
 						}
-					},
-					throwOnError: true
+					}
 				});
 
 				todoCategoriesStore?.updateCategory(result);

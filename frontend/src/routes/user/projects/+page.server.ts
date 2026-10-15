@@ -20,12 +20,10 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await createForUserProjects({
+				return await createForUserProjects({
 					client: createApiClient({ token: locals.token, fetch }),
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: ProjectCreate
 		});
@@ -41,13 +39,11 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await attachToUserProjects({
+				return await attachToUserProjects({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { project_id: validation.data.project_id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: ProjectAttachAssociation
 		});
@@ -63,13 +59,11 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await updateProjects({
+				return await updateProjects({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { project_id: validation.data.project_id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: ProjectUpdate
 		});

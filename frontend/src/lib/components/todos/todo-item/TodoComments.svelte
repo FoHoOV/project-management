@@ -40,10 +40,9 @@
 		componentState = 'calling-service';
 		await callServiceInClient({
 			call: async () => {
-				const { data: result } = await listTodoItemComments({
+				const result = await listTodoItemComments({
 					client: createApiClient({ token: $page.data.token }),
-					path: { todo_id: todoId },
-					throwOnError: true
+					path: { todo_id: todoId }
 				});
 
 				todoCommentsStore.set(result);
@@ -63,8 +62,7 @@
 			call: async () => {
 				await deleteTodoItemComments({
 					client: createApiClient({ token: $page.data.token }),
-					path: { todo_id: comment.todo_id, comment_id: comment.id },
-					throwOnError: true
+					path: { todo_id: comment.todo_id, comment_id: comment.id }
 				});
 				todoCommentsStore.remove(comment);
 				componentState = 'none';

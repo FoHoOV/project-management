@@ -51,12 +51,10 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await createForUserTodoItems({
+				return await createForUserTodoItems({
 					client: createApiClient({ token: locals.token, fetch }),
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TodoItemCreate
 		});
@@ -72,12 +70,10 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await createForUserTodoCategories({
+				return await createForUserTodoCategories({
 					client: createApiClient({ token: locals.token, fetch }),
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TodoCategoryCreate
 		});
@@ -93,13 +89,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await attachToProjectTodoCategories({
+				return await attachToProjectTodoCategories({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { category_id: validation.data.category_id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TodoCategoryAttachAssociation
 		});
@@ -115,13 +109,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await updateTodoCategories({
+				return await updateTodoCategories({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { category_id: validation.data.id },
-					body: { item: validation.data },
-					throwOnError: true
+					body: { item: validation.data }
 				});
-				return data;
 			},
 			errorSchema: TodoCategoryUpdateItem
 		});
@@ -143,13 +135,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await updateTodoItems({
+				return await updateTodoItems({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { todo_id: validation.data.id },
-					body: { item: validation.data },
-					throwOnError: true
+					body: { item: validation.data }
 				});
-				return data;
 			},
 			errorSchema: TodoItemUpdateItem
 		});
@@ -165,13 +155,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await createTodoItemComments({
+				return await createTodoItemComments({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { todo_id: validation.data.todo_id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TodoCommentCreate
 		});
@@ -187,13 +175,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await updateTodoItemComments({
+				return await updateTodoItemComments({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { todo_id: validation.data.todo_id, comment_id: validation.data.id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TodoCommentUpdate
 		});
@@ -209,13 +195,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await attachToTodoTags({
+				return await attachToTodoTags({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { tag_name: validation.data.name },
-					body: { ...validation.data, create_if_doesnt_exist: true },
-					throwOnError: true
+					body: { ...validation.data, create_if_doesnt_exist: true }
 				});
-				return data;
 			},
 			errorSchema: TagAttachToTodo
 		});
@@ -231,13 +215,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await updateTags({
+				return await updateTags({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { tag_name: validation.data.name },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TagUpdate
 		});
@@ -253,13 +235,11 @@ export const actions: Actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				const { data } = await addTodoItemDependencyTodoItems({
+				return await addTodoItemDependencyTodoItems({
 					client: createApiClient({ token: locals.token, fetch }),
 					path: { todo_id: validation.data.todo_id },
-					body: { ...validation.data },
-					throwOnError: true
+					body: validation.data
 				});
-				return data;
 			},
 			errorSchema: TodoItemAddDependency
 		});
