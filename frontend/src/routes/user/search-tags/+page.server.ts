@@ -1,12 +1,12 @@
 import { namedActionResult, validateFormActionRequest } from '$lib';
-import { createServerApiClient } from '$lib/client-wrapper/clients.server';
+import { createApiClient } from '$lib/client-wrapper/clients';
 import { searchTags } from '$lib/generated-client';
 import type { Actions } from './$types';
 import { searchTagSchema } from './validator';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 
 export const actions = {
-	search: async ({ request, locals, fetch }) => {
+	search: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, searchTagSchema);
 
 		if (!validation.success) {
@@ -16,7 +16,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await searchTags({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					query: validation.data
 				});
 			},

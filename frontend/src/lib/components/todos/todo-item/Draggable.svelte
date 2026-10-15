@@ -23,6 +23,7 @@
 		type DropEvent,
 		type TodoCategory
 	} from '$lib';
+	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { updateTodoItems } from '$lib/generated-client';
 	import type { Snippet } from 'svelte';
@@ -72,7 +73,7 @@
 		await callServiceInClient({
 			call: async () => {
 				const result = await updateTodoItems({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { todo_id: event.detail.data.id },
 					body: {
 						order: {

@@ -1,5 +1,5 @@
 import { validateFormActionRequest, namedActionResult } from '$lib';
-import { createServerApiClient } from '$lib/client-wrapper/clients.server';
+import { createApiClient } from '$lib/client-wrapper/clients';
 import { detachFromUserProjects, updatePermissions } from '$lib/generated-client';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod.gen';
@@ -7,7 +7,7 @@ import type { Actions } from './$types';
 import { detachSchema, updateUserPermissionsSchema } from './validator';
 
 export const actions: Actions = {
-	detach: async ({ request, locals, fetch }) => {
+	detach: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, detachSchema);
 
 		if (!validation.success) {
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await detachFromUserProjects({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: validation.data
 				});
 			},
@@ -26,7 +26,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'detach');
 	},
-	updatePermissions: async ({ request, locals, fetch }) => {
+	updatePermissions: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, updateUserPermissionsSchema);
 
 		if (!validation.success) {
@@ -36,7 +36,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updatePermissions({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

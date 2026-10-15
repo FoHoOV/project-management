@@ -29,6 +29,7 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
+	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { removeTodoItems, updateTodoItems } from '$lib/generated-client';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
@@ -76,7 +77,7 @@
 		await callServiceInClient({
 			call: async () => {
 				const result = await updateTodoItems({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { todo_id: todo.id },
 					body: {
 						item: {
@@ -117,7 +118,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await removeTodoItems({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { todo_id: todo.id }
 				});
 				todoCategoriesStore?.removeTodo(todo);

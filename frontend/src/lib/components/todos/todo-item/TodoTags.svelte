@@ -2,6 +2,7 @@
 	import Spinner from '$components/Spinner.svelte';
 	import Alert from '$components/alerts/Alert.svelte';
 
+	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { deleteTags, detachFromTodoTags } from '$lib/generated-client';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -45,7 +46,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await detachFromTodoTags({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { tag_name: tag.name, todo_id: todo.id }
 				});
 				todoCategoriesStore?.detachTag(todo.id, tag);
@@ -64,7 +65,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await deleteTags({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { tag_name: tag.name },
 					body: { project_id: tag.project_id }
 				});

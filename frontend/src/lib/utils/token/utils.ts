@@ -1,23 +1,12 @@
 import { type JWTPayload, decodeJwt } from 'jose';
-import { TokenError } from './token-errors';
 
-export async function isTokenExpirationDateValidAsync(token?: string) {
-	if (!token) {
-		return false;
-	}
+export function isTokenExpired(token: string) {
 	try {
-		const parsedToken: JWTPayload = decodeJwt(token);
-		if (!parsedToken.exp) {
-			throw new TokenError('expiration date not found in jwt');
-		}
-		if (parsedToken.exp * 1000 < Date.now()) {
-			return false;
-		}
+		const { exp } = decodeJwt(token);
+		return exp === undefined || exp * 1000 < Date.now();
 	} catch {
-		return false;
+		return true;
 	}
-
-	return true;
 }
 
 export function getUsername(token: string) {

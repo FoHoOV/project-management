@@ -4,6 +4,7 @@
 	import FormInput from '$components/forms/FormInput.svelte';
 
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { updateTodoCategories } from '$lib/generated-client';
 	import { Action, type TodoCategory } from '$lib/generated-client';
@@ -28,7 +29,7 @@
 		await callServiceInClient({
 			call: async () => {
 				const result = await updateTodoCategories({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { category_id: category.id },
 					body: {
 						item: {

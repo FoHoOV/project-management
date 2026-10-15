@@ -3,7 +3,6 @@ import { goto, invalidateAll } from '$app/navigation';
 import { redirect } from '@sveltejs/kit';
 import type { z } from 'zod';
 import type { ErrorMessage, NumberRange } from '$lib/utils/types';
-import { TokenError } from '$lib/utils/token';
 import { HTTPValidationError, UserFriendlyErrorSchema } from '$lib/generated-client/zod.gen';
 import { ErrorCode } from '$lib/generated-client';
 import { ApiError } from './clients';
@@ -254,17 +253,6 @@ async function _handleNonHttpError<
 		ServiceCallOptions<never, TErrorSchema, TErrorCallbackResult>
 	>['errorHandler']
 ) {
-	if (e.body instanceof TokenError) {
-		return await _defaultUnAuthenticatedUserHandler(errorHandler, {
-			type: ErrorType.NOT_AUTHENTICATED,
-			status: 401,
-			message: e.body.message,
-			data: { detail: 'Invalid token (client-side validations).' },
-			preventDefaultHandler: false,
-			originalError: e
-		});
-	}
-
 	const isTimeout =
 		e.body instanceof DOMException && ['AbortError', 'TimeoutError'].includes(e.body.name);
 

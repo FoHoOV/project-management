@@ -29,7 +29,7 @@ import {
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import { callService } from '$lib/client-wrapper/wrapper.universal';
 import { convertNumberToHttpStatusCode } from '$lib/utils';
-import { createServerApiClient } from '$lib/client-wrapper/clients.server';
+import { createApiClient } from '$lib/client-wrapper/clients';
 import {
 	addTodoItemDependencyTodoItems,
 	attachToProjectTodoCategories,
@@ -44,11 +44,11 @@ import {
 	updateTodoItems
 } from '$lib/generated-client';
 
-export const load = (async ({ locals, fetch, params }) => {
+export const load = (async ({ fetch, params, url }) => {
 	return await callService({
 		call: async () => {
 			return await searchTodoCategories({
-				client: createServerApiClient({ token: locals.token, fetch }),
+				client: createApiClient({ fetch, url }),
 				query: { project_id: Number.parseInt(params.project_id) }
 			});
 		},
@@ -66,7 +66,7 @@ export const load = (async ({ locals, fetch, params }) => {
 // TODO: probably should separate these to their own routes (todo/[edit|create] or category/[edit]/create, ...)
 // with the new shallow routing I can separate the associated components as well (but i'll w8 for the svelte5 for the big refactor)
 export const actions: Actions = {
-	addTodo: async ({ request, locals, fetch }) => {
+	addTodo: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, createTodoItemSchema);
 
 		if (!validation.success) {
@@ -76,7 +76,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserTodoItems({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					body: validation.data
 				});
 			},
@@ -85,7 +85,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'addTodo');
 	},
-	createCategory: async ({ request, locals, fetch }) => {
+	createCategory: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, createTodoCategorySchema);
 
 		if (!validation.success) {
@@ -95,7 +95,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserTodoCategories({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					body: validation.data
 				});
 			},
@@ -104,7 +104,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'createCategory');
 	},
-	attachToProject: async ({ request, locals, fetch }) => {
+	attachToProject: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, attachToProjectSchema);
 
 		if (!validation.success) {
@@ -114,7 +114,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToProjectTodoCategories({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { category_id: validation.data.category_id },
 					body: validation.data
 				});
@@ -124,7 +124,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'attachToProject');
 	},
-	editTodoCategory: async ({ request, locals, fetch }) => {
+	editTodoCategory: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, editTodoCategorySchema);
 
 		if (!validation.success) {
@@ -134,7 +134,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTodoCategories({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { category_id: validation.data.id },
 					body: { item: validation.data }
 				});
@@ -144,7 +144,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'editTodoCategory');
 	},
-	editTodoItem: async ({ request, locals, fetch }) => {
+	editTodoItem: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, editTodoItemSchema);
 
 		if (!validation.success) {
@@ -156,7 +156,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTodoItems({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { todo_id: validation.data.id },
 					body: { item: validation.data }
 				});
@@ -166,7 +166,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'editTodoItem');
 	},
-	createTodoComment: async ({ request, locals, fetch }) => {
+	createTodoComment: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, createTodoCommentSchema);
 
 		if (!validation.success) {
@@ -176,7 +176,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createTodoItemComments({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { todo_id: validation.data.todo_id },
 					body: validation.data
 				});
@@ -186,7 +186,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'createTodoComment');
 	},
-	editTodoComment: async ({ request, locals, fetch }) => {
+	editTodoComment: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, editTodoCommentSchema);
 
 		if (!validation.success) {
@@ -196,7 +196,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTodoItemComments({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { todo_id: validation.data.todo_id, comment_id: validation.data.id },
 					body: validation.data
 				});
@@ -206,7 +206,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'editTodoComment');
 	},
-	addTag: async ({ request, locals, fetch }) => {
+	addTag: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, addTagSchema);
 
 		if (!validation.success) {
@@ -216,7 +216,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToTodoTags({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { tag_name: validation.data.name },
 					body: { ...validation.data, create_if_doesnt_exist: true }
 				});
@@ -226,7 +226,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'addTag');
 	},
-	editTag: async ({ request, locals, fetch }) => {
+	editTag: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, editTagSchema);
 
 		if (!validation.success) {
@@ -236,7 +236,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTags({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { tag_name: validation.data.name },
 					body: validation.data
 				});
@@ -246,7 +246,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'editTag');
 	},
-	addTodoItemDependency: async ({ request, locals, fetch }) => {
+	addTodoItemDependency: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, addTodoItemDependencySchema);
 
 		if (!validation.success) {
@@ -256,7 +256,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await addTodoItemDependencyTodoItems({
-					client: createServerApiClient({ token: locals.token, fetch }),
+					client: createApiClient({ fetch, url }),
 					path: { todo_id: validation.data.todo_id },
 					body: validation.data
 				});

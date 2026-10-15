@@ -2,7 +2,7 @@ import type { Handle, HandleServerError } from '@sveltejs/kit';
 import type { Token } from '$lib/generated-client';
 import { SERVER_ONLY_KEYS } from '$lib/constants/cookie.server';
 import { sequence } from '@sveltejs/kit/hooks';
-import { isTokenExpirationDateValidAsync } from '$lib/utils/token';
+import { isTokenExpired } from '$lib/utils/token';
 import { SHARED_KEYS } from '$lib/constants/cookie';
 
 export const setSharedCookies: Handle = async ({ event, resolve }) => {
@@ -22,7 +22,7 @@ export const setAuthorizationToken: Handle = async ({ event, resolve }) => {
 
 		try {
 			parsedToken = JSON.parse(token) as Token;
-			if (!(await isTokenExpirationDateValidAsync(parsedToken.access_token))) {
+			if (isTokenExpired(parsedToken.access_token)) {
 				event.cookies.delete(SERVER_ONLY_KEYS.token, { path: '/' });
 				parsedToken = undefined;
 			}

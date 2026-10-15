@@ -3,6 +3,7 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
+	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { removeTodoItemDependencyTodoItems } from '$lib/generated-client';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -40,7 +41,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await removeTodoItemDependencyTodoItems({
-					client: createApiClient(),
+					client: createApiClient({ fetch, url: $page.url }),
 					path: { todo_id: todo.id, dependent_todo_id: dependency.id }
 				});
 				todoCategoriesStore?.removeDependency(todo.id, dependency);

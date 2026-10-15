@@ -4,7 +4,7 @@ import { validateFormActionRequest } from '$lib/actions/form';
 import { schema } from './validators';
 import { UserCreate } from '$lib/generated-client/zod.gen';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { createServerApiClient } from '$lib/client-wrapper/clients.server';
+import { createApiClient } from '$lib/client-wrapper/clients';
 import { signupUsers } from '$lib/generated-client';
 
 export const load = (async () => {
@@ -12,7 +12,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	default: async ({ request, fetch }) => {
+	default: async ({ request, fetch, url }) => {
 		const validation = await validateFormActionRequest(request, schema);
 
 		if (!validation.success) {
@@ -22,7 +22,7 @@ export const actions: Actions = {
 		return await callServiceInFormActions({
 			call: async () => {
 				await signupUsers({
-					client: createServerApiClient({ fetch }),
+					client: createApiClient({ fetch, url }),
 					body: validation.data
 				});
 				redirect(303, '/login');
