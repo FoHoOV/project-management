@@ -5,19 +5,13 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { isTokenExpirationDateValidAsync } from '$lib/utils/token';
 import { SHARED_KEYS } from '$lib/constants/cookie';
 
-// The generated API client reads these to decide how to parse a response; SvelteKit blocks
-// reading any header not listed here on responses fetched during SSR.
-const API_CLIENT_RESPONSE_HEADERS = ['content-type', 'content-length'];
-
 export const setSharedCookies: Handle = async ({ event, resolve }) => {
 	const result = {} as Record<(typeof SHARED_KEYS)[keyof typeof SHARED_KEYS], string | undefined>;
 	for (const value of Object.values(SHARED_KEYS)) {
 		result[value] = event.cookies.get(value);
 	}
 	event.locals.sharedCookies = result;
-	return await resolve(event, {
-		filterSerializedResponseHeaders: (name) => API_CLIENT_RESPONSE_HEADERS.includes(name)
-	});
+	return await resolve(event);
 };
 
 export const setAuthorizationToken: Handle = async ({ event, resolve }) => {

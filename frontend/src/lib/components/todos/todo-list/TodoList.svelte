@@ -7,7 +7,6 @@
 	import Empty from '$components/Empty.svelte';
 	import TodoListActions from './TodoListActions.svelte';
 
-	import { page } from '$app/stores';
 	import { callServiceInClient, receive, send, type CommonComponentStates } from '$lib';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { detachFromProjectTodoCategories } from '$lib/generated-client';
@@ -56,7 +55,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await detachFromProjectTodoCategories({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { category_id: category.id, project_id: projectId }
 				});
 				todoCategoriesStore?.removeCategory(category);

@@ -64,7 +64,7 @@
 			<div
 				class="collapse-title static flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
 			>
-				<UserInfo {user} token={data.token!}></UserInfo>
+				<UserInfo {user} currentUsername={data.username!}></UserInfo>
 				<div class="z-10 flex gap-2">
 					{#if showConfirmChanges[i]}
 						<SaveChanges

@@ -79,7 +79,7 @@
 >
 	{#snippet sidebar({ closeDrawer })}
 		<NavbarItem icon={faHome} href="/" name="Home" onclick={closeDrawer} />
-		{#if $page.data.token}
+		{#if $page.data.username}
 			<NavbarItem
 				icon={faProjectDiagram}
 				href="/user/projects"
@@ -108,7 +108,7 @@
 
 	{#snippet navbarEnd()}
 		<ThemeSwitch />
-		{#if $page.data.token}
+		{#if $page.data.username}
 			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
 		{:else}
 			<NavbarItem href="/login" name="login" setActiveClassOnClick={false} />

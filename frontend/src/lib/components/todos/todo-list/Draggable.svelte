@@ -2,7 +2,6 @@
 	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
 	import Spinner from '$components/Spinner.svelte';
 
-	import { page } from '$app/stores';
 	import {
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		TODO_CATEGORY_ORDER_DROP_ZONE,
@@ -79,7 +78,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await updateTodoCategories({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { category_id: event.detail.data.id },
 					body: {
 						order: {
@@ -124,7 +123,7 @@
 		await callServiceInClient({
 			call: async () => {
 				const result = await updateTodoItems({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { todo_id: event.detail.data.id },
 					body: {
 						item: {

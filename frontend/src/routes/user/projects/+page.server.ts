@@ -1,4 +1,4 @@
-import { createApiClient } from '$lib/client-wrapper/clients';
+import { createServerApiClient } from '$lib/client-wrapper/clients.server';
 import { attachToUserProjects, createForUserProjects, updateProjects } from '$lib/generated-client';
 import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
 import type { Actions } from '@sveltejs/kit';
@@ -21,7 +21,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserProjects({
-					client: createApiClient({ token: locals.token, fetch }),
+					client: createServerApiClient({ token: locals.token, fetch }),
 					body: validation.data
 				});
 			},
@@ -40,7 +40,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToUserProjects({
-					client: createApiClient({ token: locals.token, fetch }),
+					client: createServerApiClient({ token: locals.token, fetch }),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});
@@ -60,7 +60,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateProjects({
-					client: createApiClient({ token: locals.token, fetch }),
+					client: createServerApiClient({ token: locals.token, fetch }),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

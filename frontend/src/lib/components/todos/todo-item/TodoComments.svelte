@@ -3,7 +3,6 @@
 	import Alert from '$components/alerts/Alert.svelte';
 	import Confirm from '$components/Confirm.svelte';
 
-	import { page } from '$app/stores';
 	import { createApiClient } from '$lib/client-wrapper/clients';
 	import { deleteTodoItemComments, listTodoItemComments } from '$lib/generated-client';
 	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
@@ -41,7 +40,7 @@
 		await callServiceInClient({
 			call: async () => {
 				const result = await listTodoItemComments({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { todo_id: todoId }
 				});
 
@@ -61,7 +60,7 @@
 		await callServiceInClient({
 			call: async () => {
 				await deleteTodoItemComments({
-					client: createApiClient({ token: $page.data.token }),
+					client: createApiClient(),
 					path: { todo_id: comment.todo_id, comment_id: comment.id }
 				});
 				todoCommentsStore.remove(comment);

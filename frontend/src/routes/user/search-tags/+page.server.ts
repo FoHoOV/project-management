@@ -1,5 +1,5 @@
 import { namedActionResult, validateFormActionRequest } from '$lib';
-import { createApiClient } from '$lib/client-wrapper/clients';
+import { createServerApiClient } from '$lib/client-wrapper/clients.server';
 import { searchTags } from '$lib/generated-client';
 import type { Actions } from './$types';
 import { searchTagSchema } from './validator';
@@ -16,7 +16,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await searchTags({
-					client: createApiClient({ token: locals.token, fetch }),
+					client: createServerApiClient({ token: locals.token, fetch }),
 					query: validation.data
 				});
 			},
