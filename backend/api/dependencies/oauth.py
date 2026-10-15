@@ -12,6 +12,9 @@ from db.utils.oatuh import get_signing_key
 from db.utils.user_crud import get_user_by_username
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/oauth/token")
+claims_registry = jwt.JWTClaimsRegistry(
+    exp={"essential": True}, sub={"essential": True}
+)
 
 
 async def get_current_user(
@@ -25,11 +28,9 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, get_signing_key(), [settings.ALGORITHM])
+        claims_registry.validate(payload.claims)
 
-        if payload.claims.get("sub", None) is None:
-            raise credentials_exception
-
-        username: str = payload.claims.get("sub")  # type: ignore
+        username: str = payload.claims["sub"]
         token_data = TokenData(username=username)
     except errors.JoseError:
         raise credentials_exception
