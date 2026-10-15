@@ -6,4 +6,4 @@ export const schema = z.object({
 	password: z.string().min(5).max(72)
 });
 
-({}) as z.infer<typeof schema> satisfies Body_login_for_access_token_OAuth;
+({}) as z.infer<typeof schema> satisfies z.input<typeof Body_login_for_access_token_OAuth>;

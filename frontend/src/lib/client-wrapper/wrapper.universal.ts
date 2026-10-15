@@ -377,7 +377,7 @@ function _getResponseErrorCode(status: number): NumberRange<400, 600> {
 
 async function _convertHttpValidationErrorToZodError<TErrorSchema extends z.AnyZodObject>(
 	schema: TErrorSchema,
-	validationError: HTTPValidationError
+	validationError: z.infer<typeof HTTPValidationError>
 ): Promise<z.infer<TErrorSchema> | null> {
 	// if there were multiple errors in `loc` this function only return the first one
 

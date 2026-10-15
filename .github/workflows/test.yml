@@ -105,8 +105,7 @@ jobs:
 
       - name: Build the project
         run: |
-          pnpm run open-api:generate:shared
-          pnpm run open-api:zod:linux
+          pnpm run generate-client
           pnpm run build
 
       - name: Run frontend tests (with backend service running)
