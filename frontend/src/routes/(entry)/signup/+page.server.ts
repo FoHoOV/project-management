@@ -4,7 +4,7 @@ import { validateFormActionRequest } from '#lib/actions/form/index.js';
 import { schema } from './validators';
 import { UserCreate } from '#lib/generated-client/zod.gen.js';
 import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
-import { createApiClient } from '#api-client';
+import { createApiClient } from '#lib/api-client.js';
 import { signupUsers } from '#lib/generated-client/index.js';
 
 export const load = (async () => {

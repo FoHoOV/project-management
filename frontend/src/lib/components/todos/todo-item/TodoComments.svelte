@@ -3,7 +3,7 @@
 	import Alert from '#lib/components/alerts/Alert.svelte';
 	import Confirm from '#lib/components/Confirm.svelte';
 
-	import { createApiClient } from '#api-client';
+	import { createApiClient } from '#lib/api-client.js';
 	import { deleteTodoItemComments, listTodoItemComments } from '#lib/generated-client/index.js';
 	import { callService } from '#lib/client-wrapper/index.js';
 	import type { TodoComment } from '#lib/generated-client/index.js';

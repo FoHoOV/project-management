@@ -4,11 +4,11 @@
 	import Spinner from '#lib/components/Spinner.svelte';
 
 	import { callService } from '#lib/client-wrapper/index.js';
-	import { createApiClient } from '#api-client';
+	import { createApiClient } from '#lib/api-client.js';
 	import { detachFromSelfProjects } from '#lib/generated-client/index.js';
 	import type { Project } from '#lib/generated-client/index.js';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
-	import { generateTodoListItemsUrl, projectRouteParams } from '#lib/utils/params/route.js';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
 	import Confirm from '#lib/components/Confirm.svelte';
 	import { type CommonComponentStates } from '#lib';
 	import { getProjects } from '#lib/stores/index.js';
@@ -122,7 +122,7 @@
 				</button>
 				<a
 					class="btn btn-info col-span-2 sm:col-span-1"
-					href={generateTodoListItemsUrl(projectRouteParams(project.title, project.id))}
+					href={generateTodoListItemsUrl(project.title, project.id)}
 				>
 					Show todos
 				</a>

@@ -1,5 +1,5 @@
 import { namedActionResult, validateFormActionRequest } from '#lib';
-import { createApiClient } from '#api-client';
+import { createApiClient } from '#lib/api-client.js';
 import { searchTags } from '#lib/generated-client/index.js';
 import type { Actions } from './$types';
 import { searchTagSchema } from './validator';

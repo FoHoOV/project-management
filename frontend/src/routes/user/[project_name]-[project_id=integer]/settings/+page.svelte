@@ -47,7 +47,11 @@
 </svelte:head>
 
 {#snippet closeSettings()}
-	<NavbarItem href={generateTodoListItemsUrl(params)} name="" icon={faClose} />
+	<NavbarItem
+		href={generateTodoListItemsUrl(params.project_name, params.project_id)}
+		name=""
+		icon={faClose}
+	/>
 {/snippet}
 
 <div class="rounded-sm p-1">

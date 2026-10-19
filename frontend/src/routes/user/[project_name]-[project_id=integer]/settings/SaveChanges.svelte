@@ -5,7 +5,7 @@
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import Spinner from '#lib/components/Spinner.svelte';
 
-	import { generateTodoListSettingsUrl, projectRouteParams } from '#lib/utils/params/route.js';
+	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
 	import { updateUserPermissionsSchema } from './validator';
 
 	import type { ActionData, PageData } from './$types';
@@ -32,7 +32,8 @@
 
 <EnhancedForm
 	action="{generateTodoListSettingsUrl(
-		projectRouteParams(data.currentProject.title, data.currentProject.id)
+		data.currentProject.title,
+		data.currentProject.id
 	)}?/updatePermissions"
 	enhancerConfig={{
 		form: form,

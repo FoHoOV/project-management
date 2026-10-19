@@ -22,7 +22,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(params)}?/editTodoCategory"
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/editTodoCategory"
 	enhancerConfig={{
 		validator: { schema: editTodoCategorySchema },
 		form: form,

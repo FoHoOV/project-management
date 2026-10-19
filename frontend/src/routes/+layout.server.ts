@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types';
 import { callService } from '#lib/client-wrapper/index.js';
-import { createApiClient } from '#api-client';
+import { createApiClient } from '#lib/api-client.js';
 import { listProjects } from '#lib/generated-client/index.js';
 import type { Project } from '#lib/generated-client/index.js';
 import { error } from '@sveltejs/kit';

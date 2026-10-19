@@ -20,7 +20,7 @@
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(params)}?/attachToProject"
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/attachToProject"
 	enhancerConfig={{
 		validator: { schema: attachToProjectSchema },
 		form: form,
@@ -28,7 +28,7 @@
 		invalidateAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
-		await invalidate(`${generateTodoListItemsUrl(params)}`);
+		await invalidate(`${generateTodoListItemsUrl(params.project_name, params.project_id)}`);
 	}}
 	successfulMessage="Todo category is now shared with the specified project"
 >

@@ -1,5 +1,5 @@
 import { validateFormActionRequest, namedActionResult } from '#lib';
-import { createApiClient } from '#api-client';
+import { createApiClient } from '#lib/api-client.js';
 import { detachFromUserProjects, updatePermissions } from '#lib/generated-client/index.js';
 import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import { ProjectUpdateUserPermissions } from '#lib/generated-client/zod.gen.js';

@@ -16,7 +16,7 @@
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 
-	import { generateTodoListItemsUrl, projectRouteParams } from '#lib/utils/params/route.js';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
 	import { Projects, setProjects } from '#lib/stores/projects/index.js';
 	import { createRootContextManager } from '#lib/stores/context-manager/index.js';
 	import { onMount, untrack } from 'svelte';
@@ -91,7 +91,7 @@
 					{#each projectsStore.value$ as project (project.id)}
 						<NavbarItem
 							icon={faArrowRight}
-							href={generateTodoListItemsUrl(projectRouteParams(project.title, project.id))}
+							href={generateTodoListItemsUrl(project.title, project.id)}
 							name={project.title + ' (' + '#' + project.id + ')'}
 							onclick={closeDrawer}
 						/>

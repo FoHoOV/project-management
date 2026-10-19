@@ -18,7 +18,6 @@
 
 	import { flip } from 'svelte/animate';
 	import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
-	import { page } from '$app/state';
 	import { onMount, untrack } from 'svelte';
 
 	import type {
@@ -213,7 +212,11 @@
 </svelte:head>
 
 {#snippet settings({ closeDrawer }: DrawerSnippetParams[0])}
-	<NavbarItem href={generateTodoListSettingsUrl(params)} name="" icon={faGear} />
+	<NavbarItem
+		href={generateTodoListSettingsUrl(params.project_name, params.project_id)}
+		name=""
+		icon={faGear}
+	/>
 {/snippet}
 
 {#if componentState === 'loading'}
@@ -227,7 +230,7 @@
 			>
 				<TodoList
 					{category}
-					projectId={Number.parseInt(page.params.project_id!)}
+					projectId={Number.parseInt(params.project_id)}
 					onCreateTodoItem={handleCreateTodoItem}
 					onEditTodoItem={handleEditTodoItem}
 					onEditTodoCategory={handleEditTodoCategory}

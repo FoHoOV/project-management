@@ -23,7 +23,7 @@
 		type DropEvent,
 		type TodoCategory
 	} from '#lib';
-	import { createApiClient } from '#api-client';
+	import { createApiClient } from '#lib/api-client.js';
 	import { updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Snippet } from 'svelte';
 	import { getToastManager, getTodoCategories } from '#lib/stores/index.js';

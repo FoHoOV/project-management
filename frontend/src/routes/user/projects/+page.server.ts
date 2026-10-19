@@ -1,4 +1,4 @@
-import { createApiClient } from '#api-client';
+import { createApiClient } from '#lib/api-client.js';
 import {
 	attachToUserProjects,
 	createForUserProjects,

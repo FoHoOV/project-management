@@ -28,7 +28,7 @@ import {
 import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import { callService } from '#lib/client-wrapper/wrapper.universal.js';
 import { convertNumberToHttpStatusCode } from '#lib/utils/index.js';
-import { createApiClient } from '#api-client';
+import { createApiClient } from '#lib/api-client.js';
 import {
 	addTodoItemDependencyTodoItems,
 	attachToProjectTodoCategories,

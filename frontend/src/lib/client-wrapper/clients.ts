@@ -21,7 +21,7 @@ export class ApiError extends Error {
 
 /**
  * Builds a client that calls the backend through the `/api` proxy route, which adds the user's
- * token from the cookie. Import `createApiClient` from `#api-client` instead of calling this.
+ * token from the cookie. Import `createApiClient` from `#lib/api-client.js` instead of calling this.
  *
  * The generated SDK's types assume `throwOnError: true` (see `openapi-ts.config.ts`): a call
  * resolves to the response body or rejects with an {@link ApiError}.

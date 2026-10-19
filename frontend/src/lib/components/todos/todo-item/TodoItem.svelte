@@ -29,7 +29,7 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import { createApiClient } from '#api-client';
+	import { createApiClient } from '#lib/api-client.js';
 	import { removeTodoItems, updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
