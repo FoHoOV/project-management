@@ -135,7 +135,6 @@
 <div
 	class="relative mt-4"
 	{@attach dropzone({
-		model: todo,
 		names: [TODO_ITEM_ORDER_DROP_ZONE],
 		disabled: isCallingService,
 		onDropped: handleUpdateTodoItemOrder,

@@ -168,7 +168,6 @@
 
 <div
 	{@attach dropzone({
-		model: {},
 		names: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_CATEGORY_ORDER_DROP_ZONE],
 		disabled: isCallingService || disabled,
 		onDropped: handleOnDrop,

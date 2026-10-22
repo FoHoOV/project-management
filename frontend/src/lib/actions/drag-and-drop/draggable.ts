@@ -3,38 +3,33 @@ import type { DraggableOptions } from './draggable-types';
 import { generateDropZoneTargetNames } from './drop-zone';
 import { setDraggingElement } from './shared';
 
-export function draggable<Data extends object>(
-	options: DraggableOptions<Data>
-): Attachment<HTMLElement> {
+export function draggable<Data extends object>({
+	data,
+	targetDropZoneNames,
+	disabled = false
+}: DraggableOptions<Data>): Attachment<HTMLElement> {
 	return (node) => {
-		_init(node, options);
+		if (disabled) {
+			return;
+		}
 
 		function handleDragStart(e: DragEvent) {
 			if (!e.dataTransfer || e.target !== node) {
 				return;
 			}
 			setDraggingElement(node);
-			e.dataTransfer.setData('text/plain', JSON.stringify({ ...options.data }));
-			e.dataTransfer.setData(generateDropZoneTargetNames(options.targetDropZoneNames), '');
+			e.dataTransfer.setData('text/plain', JSON.stringify({ ...data }));
+			e.dataTransfer.setData(generateDropZoneTargetNames(targetDropZoneNames), '');
 		}
 
+		node.draggable = true;
+		node.classList.add('cursor-grab');
 		node.addEventListener('dragstart', handleDragStart);
 
 		return () => {
+			node.draggable = false;
+			node.classList.remove('cursor-grab');
 			node.removeEventListener('dragstart', handleDragStart);
 		};
 	};
-}
-
-function _init<Data extends object>(node: HTMLElement, options: DraggableOptions<Data>) {
-	if (options.disabled === undefined) {
-		options.disabled = false;
-	}
-
-	node.draggable = !options.disabled;
-	if (node.draggable) {
-		node.classList.add('cursor-grab');
-	} else {
-		node.classList.remove('cursor-grab');
-	}
 }

@@ -10,9 +10,9 @@ export type CustomDragEvent = {
 	node: HTMLElement;
 	originalEvent: DragEvent;
 };
-export type DropZoneOptions<Data extends object> = Partial<DataTransfer> & {
+export type DropZoneOptions = {
 	highlighClasses?: string[];
-	model: Data; // I have to w8 for svelte5 for native ts support in markup
+	dropEffect?: DataTransfer['dropEffect'];
 	names: string[];
 	disabled?: boolean;
 };
