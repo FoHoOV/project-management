@@ -15,7 +15,6 @@
 		type TodoCategoryPartialTodoItem,
 		type TodoItem,
 		type CommonComponentStates,
-		ErrorCode,
 		ErrorType,
 		callService,
 		cursorOnElementPositionY,
@@ -96,9 +95,6 @@
 						message: e.message,
 						time: 6000
 					});
-					if (e.code == ErrorCode.DEPENDENCIES_NOT_RESOLVED) {
-						todo.is_done = false;
-					}
 					return;
 				}
 
