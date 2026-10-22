@@ -6,11 +6,7 @@
 		type EnhanceOptions,
 		type StandardFormActionError,
 		type StandardFormActionNames,
-		type SubmitFailedEventType,
-		type SubmitRedirectedEventType,
-		type SubmitStartEventType,
-		type SubmitSucceededEventType,
-		type ValidatorErrorsType
+		type SubmitCallbacks
 	} from '#lib';
 	import { z } from 'zod';
 	import { getFormErrors, superEnhance } from '#lib/actions/form/index.js';
@@ -22,18 +18,7 @@
 		TFormAction extends StandardFormActionError,
 		TSchema extends z.ZodType,
 		TKey extends StandardFormActionNames<TFormAction>
-	> = {
-		onSubmitSucceeded?: (
-			event: SubmitSucceededEventType<TSchema, TFormAction, TKey>['detail']
-		) => void;
-		/**
-		 * called on both client-side and server-side errors
-		 */
-		onSubmitFailed?: (event: SubmitFailedEventType<TFormAction>['detail']) => void;
-		onSubmitStarted?: (event: SubmitStartEventType['detail']) => void;
-		onRedirected?: (event: SubmitRedirectedEventType<TSchema>['detail']) => void;
-		onClientSideValidationErrors?: (event: ValidatorErrorsType<TSchema>) => void;
-	};
+	> = Omit<SubmitCallbacks<TSchema, TFormAction, TKey>, 'onSubmitEnded'>;
 
 	export type Props<
 		TFormAction extends StandardFormActionError,
@@ -98,30 +83,28 @@
 
 <form
 	{action}
-	use:superEnhance={enhancerConfig}
-	onsubmitclienterror={(e) => {
-		onClientSideValidationErrors?.(e.detail.errors);
-	}}
-	onsubmitstarted={(e) => {
-		componentState = 'submitting';
-		onSubmitStarted?.(e.detail);
-	}}
-	onsubmitended={() => {
-		componentState = 'none';
-	}}
-	onsubmitsucceeded={async (e) => {
-		resetForm();
-		componentState = 'submit-successful';
-		onSubmitSucceeded?.(e.detail);
-	}}
-	onsubmitredirected={async (e) => {
-		onRedirected?.(e.detail);
-	}}
-	onsubmitfailed={async (e) => {
-		componentState = 'none';
-		formErrors = e.detail.error;
-		onSubmitFailed?.(e.detail);
-	}}
+	{@attach superEnhance<TSchema, TFormAction, TKey>({
+		...enhancerConfig,
+		onClientSideValidationErrors,
+		onSubmitStarted: () => {
+			componentState = 'submitting';
+			onSubmitStarted?.();
+		},
+		onSubmitEnded: () => {
+			componentState = 'none';
+		},
+		onSubmitSucceeded: (event) => {
+			resetForm();
+			componentState = 'submit-successful';
+			onSubmitSucceeded?.(event);
+		},
+		onRedirected,
+		onSubmitFailed: (event) => {
+			componentState = 'none';
+			formErrors = event.error;
+			onSubmitFailed?.(event);
+		}
+	})}
 	bind:this={formElement}
 	{method}
 	class="w-full {formWrapperClasses}"

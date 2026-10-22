@@ -19,9 +19,10 @@
 	<h2>Are sure you are gonna miss out on this?</h2>
 	<form
 		method="post"
-		use:superEnhance
-		onsubmitstarted={() => (status = 'submitting')}
-		onsubmitended={() => (status = 'none')}
+		{@attach superEnhance({
+			onSubmitStarted: () => (status = 'submitting'),
+			onSubmitEnded: () => (status = 'none')
+		})}
 	>
 		<LoadingButton
 			class="btn-warning btn-wide mt-2"
