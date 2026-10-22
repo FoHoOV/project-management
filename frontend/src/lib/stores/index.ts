@@ -1,4 +1,3 @@
-export * from './context-manager';
 export * from './multi-step-modal';
 export * from './navbar';
 export * from './persisted';

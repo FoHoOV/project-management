@@ -1,7 +1,6 @@
 <script lang="ts" module>
 	import { resolve } from '$app/paths';
 	import NavbarItem from '#lib/components/navbar/NavbarItem.svelte';
-	import MultiStepModal from '#lib/components/popups/MultiStepModal.svelte';
 	import Drawer from '#lib/components/Drawer.svelte';
 	import Toasts from '#lib/components/popups/Toasts.svelte';
 	import ThemeSwitch from '#lib/components/ThemeSwitch.svelte';
@@ -18,16 +17,13 @@
 
 	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
 	import { Projects, setProjects } from '#lib/stores/projects/index.js';
-	import { createRootContextManager } from '#lib/stores/context-manager/index.js';
 	import { onMount, untrack } from 'svelte';
 	import {
 		Navbar,
 		ToastManager,
-		setMultiStepModal,
 		setNavbar,
 		setToastManager,
 		setTheme,
-		MultiStepModal as MultiStepModalStore,
 		ThemeManager,
 		Persisted,
 		setPersistedUtils
@@ -37,8 +33,6 @@
 
 <script lang="ts">
 	const { data, children } = $props();
-
-	createRootContextManager();
 
 	const storageTypes = new StorageTypes({ initialCookies: untrack(() => data.sharedCookies) });
 	const persisted = new Persisted(storageTypes);
@@ -59,7 +53,6 @@
 			projectsStore: setProjects(new Projects([...data.projects])),
 			navbarStore: setNavbar(new Navbar()),
 			toastManagerStore: setToastManager(new ToastManager()),
-			multiStepModalStore: setMultiStepModal(new MultiStepModalStore([], false)),
 			themeManager: setTheme(new ThemeManager(persisted)),
 			persistedUtils: setPersistedUtils(persisted),
 			storageTypes: setStorageTypes(storageTypes)
@@ -127,7 +120,6 @@
 					<div class="mx-auto h-full overflow-y-auto">
 						{@render children()}
 						<Toasts></Toasts>
-						<MultiStepModal class="border border-success border-opacity-20"></MultiStepModal>
 					</div>
 				{/if}
 			</div>

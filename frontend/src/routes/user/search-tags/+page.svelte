@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import MultiStepModal from '#lib/components/popups/MultiStepModal.svelte';
 	import TodoItem from '#lib/components/todos/todo-item/TodoItem.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 	import type { EnhanceOptions } from '#lib/actions/form/index.js';
@@ -11,7 +12,11 @@
 	import { searchTagSchema } from './validator';
 	import { TodoCategories } from '#lib/stores/todos/todos.svelte.js';
 	import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-	import { setTodoCategories } from '#lib/stores/index.js';
+	import {
+		setTodoCategories,
+		setMultiStepModal,
+		MultiStepModal as MultiStepModalStore
+	} from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 </script>
 
@@ -19,6 +24,7 @@
 	let enhancedForm = $state<ComponentExports<typeof EnhancedForm> | null>(null);
 
 	const todoCategoriesStore = setTodoCategories(new TodoCategories());
+	setMultiStepModal(new MultiStepModalStore([], false));
 
 	function handleShowResults(result: TodoItemModel[]) {
 		if (result.length == 0) {
@@ -113,3 +119,5 @@
 		</div>
 	{/each}
 </div>
+
+<MultiStepModal class="border border-success border-opacity-20"></MultiStepModal>

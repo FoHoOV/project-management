@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import MultiStepModal from '#lib/components/popups/MultiStepModal.svelte';
 	import AddTag from './AddTag.svelte';
 	import EditTag from './EditTag.svelte';
 	import AddTodoItemDependency from './AddTodoItemDependency.svelte';
@@ -32,7 +33,11 @@
 	import { TodoComments } from '#lib/stores/todo-comments/index.js';
 	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
 	import type { PageProps } from './$types';
-	import { getMultiStepModal, getNavbar } from '#lib/stores/index.js';
+	import {
+		getNavbar,
+		setMultiStepModal,
+		MultiStepModal as MultiStepModalStore
+	} from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">
@@ -43,7 +48,7 @@
 	const todoCategoriesStore = setTodoCategories(
 		new TodoCategories(untrack(() => data.response) ?? [])
 	);
-	const multiStepModalStore = getMultiStepModal();
+	const multiStepModalStore = setMultiStepModal(new MultiStepModalStore([], false));
 	const navbarStore = getNavbar();
 
 	navbarStore.add('end', settings);
@@ -242,3 +247,5 @@
 		onclick={handleCreateTodoCategory}
 	/>
 {/if}
+
+<MultiStepModal class="border border-success border-opacity-20"></MultiStepModal>

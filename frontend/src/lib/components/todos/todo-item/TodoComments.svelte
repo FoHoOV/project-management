@@ -38,7 +38,7 @@
 
 	let deleteCommentConfirms = $state<ComponentExports<typeof Confirm>[]>([]);
 
-	const todoCommentsStore = setTodoComments(new TodoComments(getTodoCategories()), false);
+	const todoCommentsStore = setTodoComments(new TodoComments(getTodoCategories()));
 
 	export async function refreshComments() {
 		componentState = 'calling-service';
