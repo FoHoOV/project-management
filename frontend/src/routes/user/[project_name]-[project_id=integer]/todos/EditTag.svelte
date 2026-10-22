@@ -43,6 +43,7 @@
 			value={tag.project_id}
 			errors=""
 		/>
+		<FormInput wrapperClasses="hidden" type="hidden" name="old_name" value={tag.name} errors="" />
 		<FormInput
 			name="name"
 			type="text"

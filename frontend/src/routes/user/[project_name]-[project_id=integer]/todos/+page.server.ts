@@ -231,12 +231,14 @@ export const actions: Actions = {
 			return validation.failure;
 		}
 
+		const { old_name, ...tag } = validation.data;
+
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateTags({
 					client: createApiClient(),
-					path: { tag_name: validation.data.name },
-					body: validation.data
+					path: { tag_name: old_name },
+					body: tag
 				});
 			},
 			errorSchema: TagUpdate
