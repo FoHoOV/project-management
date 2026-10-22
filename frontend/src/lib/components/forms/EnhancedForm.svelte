@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
 	import {
 		type EnhanceOptions,
@@ -11,9 +11,9 @@
 		type SubmitStartEventType,
 		type SubmitSucceededEventType,
 		type ValidatorErrorsType
-	} from '$lib';
+	} from '#lib';
 	import { z } from 'zod';
-	import { getFormErrors, superEnhance } from '$lib/actions/form';
+	import { getFormErrors, superEnhance } from '#lib/actions/form/index.js';
 	import type { Snippet } from 'svelte';
 
 	type ComponentStates = 'submitting' | 'submit-successful' | 'none';
@@ -46,7 +46,6 @@
 		inputs: Snippet<
 			[{ formErrors: ReturnType<typeof getFormErrors<TFormAction>> | undefined; reset: () => void }]
 		>;
-		defaultActions?: Snippet<[{ reset: () => void }]>;
 		footer?: Snippet;
 		method?: 'post' | 'get';
 		showErrors?: boolean;

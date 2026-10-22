@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import { TodoCategories } from './todos.svelte';
 
 export const TODOS_CONTEXT_KEY = Symbol();

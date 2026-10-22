@@ -1,4 +1,4 @@
-import type { SubmitFunction } from '@sveltejs/kit';
+import type { SubmitFunction } from '$app/forms';
 import type { z } from 'zod';
 import type { ValidatorOptions } from './validator-types';
 import type {
@@ -18,13 +18,7 @@ export type EnhanceOptions<
 	submit?: SubmitFunction;
 	actionName?: TKey;
 	resetOnSubmit?: boolean;
-	invalidateAllAfterSubmit?: boolean;
-	/**
-	 * @param ignoreSamePageConstraint
-	 * by default if the page we are in has a different url than the action, it will not update the form and page store, and error page redirection etc ...
-	 * here is official docs for this behavior: //https://kit.svelte.dev/docs/form-actions#progressive-enhancement-customising-use-enhance
-	 */
-	ignoreSamePageConstraint?: boolean;
+	refreshAllAfterSubmit?: boolean;
 };
 
 export type FormActionResultType<
@@ -53,7 +47,6 @@ export type SubmitEvents<
 export type SubmitStartEventType = CustomEvent<void>;
 
 export type SubmitEndedEventType = CustomEvent<void>;
-
 export type SubmitRedirectedEventType<TSchema extends z.ZodType> = CustomEvent<{
 	redirectUrl: URL;
 	formData: ParsedFormData;

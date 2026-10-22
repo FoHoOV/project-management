@@ -1,18 +1,18 @@
 <script lang="ts" module>
-	import Alert from '$components/alerts/Alert.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 	import Fa from 'svelte-fa';
-	import Spinner from '$components/Spinner.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
 
-	import { callService } from '$lib/client-wrapper';
-	import { createApiClient } from '$lib/client-wrapper/clients';
-	import { detachFromSelfProjects } from '$lib/generated-client';
-	import type { Project } from '$lib/generated-client';
+	import { callService } from '#lib/client-wrapper/index.js';
+	import { createApiClient } from '#lib/api-client.js';
+	import { detachFromSelfProjects } from '#lib/generated-client/index.js';
+	import type { Project } from '#lib/generated-client/index.js';
 	import { faEdit, faTasks, faUser } from '@fortawesome/free-solid-svg-icons';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import Confirm from '$components/Confirm.svelte';
-	import { type CommonComponentStates } from '$lib';
-	import { getProjects } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import Confirm from '#lib/components/Confirm.svelte';
+	import { type CommonComponentStates } from '#lib';
+	import { getProjects } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditProject?: (project: Project) => void;

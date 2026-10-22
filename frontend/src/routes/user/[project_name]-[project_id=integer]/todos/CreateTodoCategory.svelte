@@ -1,34 +1,31 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { createTodoCategorySchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { getTodoCategories } from '$lib/stores';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
+		params: ProjectRouteParams;
 		form: ActionData;
 	};
 </script>
 
 <script lang="ts">
-	const { form }: Props = $props();
+	const { params, form }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
-	)}?/createCategory"
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/createCategory"
 	enhancerConfig={{
 		validator: { schema: createTodoCategorySchema },
 		form: form,
 		actionName: 'createCategory',
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.addCategory(event.response);
@@ -40,8 +37,8 @@
 			wrapperClasses="hidden"
 			type="hidden"
 			name="project_id"
-			value={$page.params.project_id}
-			errors={''}
+			value={params.project_id}
+			errors=""
 		/>
 		<FormInput
 			name="title"

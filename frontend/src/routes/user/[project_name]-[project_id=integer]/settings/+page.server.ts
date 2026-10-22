@@ -1,13 +1,13 @@
-import { validateFormActionRequest, namedActionResult } from '$lib';
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { detachFromUserProjects, updatePermissions } from '$lib/generated-client';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { ProjectUpdateUserPermissions } from '$lib/generated-client/zod.gen';
+import { validateFormActionRequest, namedActionResult } from '#lib';
+import { createApiClient } from '#lib/api-client.js';
+import { detachFromUserProjects, updatePermissions } from '#lib/generated-client/index.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
+import { ProjectUpdateUserPermissions } from '#lib/generated-client/zod.gen.js';
 import type { Actions } from './$types';
 import { detachSchema, updateUserPermissionsSchema } from './validator';
 
 export const actions: Actions = {
-	detach: async ({ request, fetch }) => {
+	detach: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, detachSchema);
 
 		if (!validation.success) {
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await detachFromUserProjects({
-					client: createApiClient(fetch),
+					client: createApiClient(),
 					path: validation.data
 				});
 			},
@@ -26,7 +26,7 @@ export const actions: Actions = {
 
 		return namedActionResult(result, 'detach');
 	},
-	updatePermissions: async ({ request, fetch }) => {
+	updatePermissions: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, updateUserPermissionsSchema);
 
 		if (!validation.success) {
@@ -36,7 +36,7 @@ export const actions: Actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updatePermissions({
-					client: createApiClient(fetch),
+					client: createApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

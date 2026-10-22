@@ -1,17 +1,21 @@
-import { createApiClient } from '$lib/client-wrapper/clients';
-import { attachToUserProjects, createForUserProjects, updateProjects } from '$lib/generated-client';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
+import { createApiClient } from '#lib/api-client.js';
+import {
+	attachToUserProjects,
+	createForUserProjects,
+	updateProjects
+} from '#lib/generated-client/index.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import type { Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
-import { namedActionResult, validateFormActionRequest } from '$lib';
+import { namedActionResult, validateFormActionRequest } from '#lib';
 import {
 	ProjectAttachAssociation,
 	ProjectCreate,
 	ProjectUpdate
-} from '$lib/generated-client/zod.gen';
+} from '#lib/generated-client/zod.gen.js';
 
 export const actions = {
-	create: async ({ request, fetch }) => {
+	create: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, createProjectSchema);
 
 		if (!validation.success) {
@@ -21,7 +25,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await createForUserProjects({
-					client: createApiClient(fetch),
+					client: createApiClient(),
 					body: validation.data
 				});
 			},
@@ -30,7 +34,7 @@ export const actions = {
 
 		return namedActionResult(result, 'create');
 	},
-	attach: async ({ request, fetch }) => {
+	attach: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, attachProjectSchema);
 
 		if (!validation.success) {
@@ -40,7 +44,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await attachToUserProjects({
-					client: createApiClient(fetch),
+					client: createApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});
@@ -50,7 +54,7 @@ export const actions = {
 
 		return namedActionResult(result, 'attach');
 	},
-	edit: async ({ request, fetch }) => {
+	edit: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, editProjectSchema);
 
 		if (!validation.success) {
@@ -60,7 +64,7 @@ export const actions = {
 		const result = await callServiceInFormActions({
 			call: async () => {
 				return await updateProjects({
-					client: createApiClient(fetch),
+					client: createApiClient(),
 					path: { project_id: validation.data.project_id },
 					body: validation.data
 				});

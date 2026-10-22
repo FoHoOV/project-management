@@ -1,10 +1,10 @@
 import { redirect, type Actions, type Cookies } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { SERVER_ONLY_KEYS } from '$lib/constants/cookie.server';
+import { SERVER_ONLY_KEYS } from '#lib/constants/cookie.server.js';
 
 function logout(cookies: Cookies) {
 	cookies.delete(SERVER_ONLY_KEYS.token, { path: '/' });
-	redirect(307, '/login');
+	redirect(303, '/login');
 }
 
 export const load = (async ({ cookies, url }) => {

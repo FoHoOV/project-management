@@ -1,5 +1,5 @@
-import { browser } from '$app/environment';
-import * as environment from '$app/environment';
+import { browser } from '$app/env';
+import * as environment from '$app/env';
 
 export class LocalStorage {
 	#serverSideItems = new Map<string, string>();

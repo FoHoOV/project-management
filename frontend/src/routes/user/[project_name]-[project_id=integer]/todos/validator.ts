@@ -10,7 +10,7 @@ import type {
 	TagUpdate,
 	TagAttachToTodo,
 	TodoItemAddDependency
-} from '$lib/generated-client';
+} from '#lib/generated-client/index.js';
 import {
 	TagCreate as TagCreateSchema,
 	TagUpdate as TagUpdateSchema,
@@ -20,9 +20,9 @@ import {
 	TodoCommentUpdate as TodoCommentUpdateSchema,
 	TodoItemCreate as TodoItemCreateSchema,
 	TodoItemUpdateItem as TodoItemUpdateItemSchema
-} from '$lib/generated-client/zod.gen';
-import { requiredField } from '$lib/utils/zod';
-import { toIsoDate } from '$lib/utils/date';
+} from '#lib/generated-client/zod.gen.js';
+import { requiredField } from '#lib/utils/zod/index.js';
+import { toIsoDate } from '#lib/utils/date/index.js';
 
 const optionalDescription = (schema: z.ZodString) =>
 	z

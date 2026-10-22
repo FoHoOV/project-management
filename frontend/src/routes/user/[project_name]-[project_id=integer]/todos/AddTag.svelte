@@ -1,32 +1,32 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
 
 	import type { ActionData } from './$types';
 	import { addTagSchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { getTodoCategories } from '$lib/stores';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
+		params: ProjectRouteParams;
 		form: ActionData;
 		todoId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoId }: Props = $props();
+	const { params, form, todoId }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}?/addTag"
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/addTag"
 	enhancerConfig={{
 		validator: { schema: addTagSchema },
 		form: form,
 		actionName: 'addTag',
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {
 		todoCategoriesStore?.addTag(todoId, event.response);
@@ -39,16 +39,16 @@
 			wrapperClasses="w-full"
 			hideLabel={true}
 			value={todoId}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput
 			name="project_id"
 			label="project id"
 			hideLabel={true}
-			value={$page.params.project_id}
+			value={params.project_id}
 			type="hidden"
-			errors={''}
+			errors=""
 		/>
 		<FormInput
 			name="name"

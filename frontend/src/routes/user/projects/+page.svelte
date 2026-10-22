@@ -1,13 +1,13 @@
 <script lang="ts" module>
-	import CircleButton from '$components/buttons/CircleButton.svelte';
-	import ProjectList from '$components/project/ProjectList.svelte';
-	import CreateProject from '$routes/user/projects/CreateProject.svelte';
-	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
-	import EditProject from '$routes/user/projects/EditProject.svelte';
+	import CircleButton from '#lib/components/buttons/CircleButton.svelte';
+	import ProjectList from '#lib/components/project/ProjectList.svelte';
+	import CreateProject from './CreateProject.svelte';
+	import AttachToUser from './AttachToUser.svelte';
+	import EditProject from './EditProject.svelte';
 
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import type { Project } from '$lib/generated-client';
-	import { getMultiStepModal, getProjects } from '$lib/stores';
+	import type { Project } from '#lib/generated-client/index.js';
+	import { getMultiStepModal, getProjects } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">

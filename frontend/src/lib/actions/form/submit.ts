@@ -1,7 +1,5 @@
 import type { ActionReturn } from 'svelte/action';
-import type { SubmitFunction } from '@sveltejs/kit';
-import { applyAction, enhance } from '$app/forms';
-
+import { enhance, type SubmitFunction } from '$app/forms';
 import type { z } from 'zod';
 import type {
 	SubmitEvents,
@@ -21,7 +19,6 @@ import {
 	type StandardFormActionError,
 	type StandardFormActionNames
 } from './utils';
-import { invalidateAll } from '$app/navigation';
 
 export function superEnhance(
 	node: HTMLFormElement
@@ -142,25 +139,13 @@ function _defaultSubmitHandler<
 				);
 			}
 
-			if (options?.ignoreSamePageConstraint) {
-				if (result.type === 'success') {
-					if (options.resetOnSubmit) {
-						HTMLFormElement.prototype.reset.call(node);
-					}
-					if (options.invalidateAllAfterSubmit ?? true) {
-						await invalidateAll();
-					}
-				}
-
-				if (result.type === 'redirect' || result.type === 'error') {
-					applyAction(result);
-				}
-			} else {
-				await update({
-					reset: options?.resetOnSubmit,
-					invalidateAll: options?.invalidateAllAfterSubmit ?? true
-				});
-			}
+			await update({
+				reset: options?.resetOnSubmit,
+				refreshAll: result.type === 'success' && (options?.refreshAllAfterSubmit ?? true),
+				// The results are handled through the dispatched events, so stay on the current page
+				// even when the action belongs to another route.
+				navigate: false
+			});
 		};
 	};
 }

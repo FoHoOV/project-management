@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import { TodoComments } from './todo-comments.svelte';
 
 export const TODO_COMMENTS_CONTEXT_KEY = Symbol();

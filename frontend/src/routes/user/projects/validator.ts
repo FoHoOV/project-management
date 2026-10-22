@@ -3,8 +3,8 @@ import type {
 	ProjectAttachAssociation as ProjectAttachAssociationModel,
 	ProjectCreate as ProjectCreateModel,
 	ProjectUpdate as ProjectUpdateModel
-} from '$lib/generated-client';
-import { ProjectAttachAssociation, ProjectCreate } from '$lib/generated-client/zod.gen';
+} from '#lib/generated-client/index.js';
+import { ProjectAttachAssociation, ProjectCreate } from '#lib/generated-client/zod.gen.js';
 
 const optionalDescriptionSchema = z
 	.string()

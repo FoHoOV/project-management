@@ -1,5 +1,5 @@
 import { Persisted } from '../persisted';
-import { SHARED_KEYS } from '$lib/constants/cookie';
+import { SHARED_KEYS } from '#lib/constants/cookie.js';
 
 export type Theme = 'dark' | 'light';
 

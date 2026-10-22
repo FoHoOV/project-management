@@ -1,15 +1,11 @@
-// See https://kit.svelte.dev/docs/types#app
+// See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 
-import type { Token, User } from '$lib/generated-client';
-
-import 'vitest-dom/extend-expect';
+import type { Token } from '#lib/generated-client/index.js';
+import type { SHARED_KEYS } from '#lib/constants/cookie.js';
 
 declare global {
 	namespace App {
-		interface Error {
-			data?: Record<string, any>;
-		}
 		interface Locals {
 			token?: Token;
 			sharedCookies: Record<(typeof SHARED_KEYS)[keyof typeof SHARED_KEYS], string | undefined>;

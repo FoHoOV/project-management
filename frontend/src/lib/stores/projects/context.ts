@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import { Projects } from './projects.svelte';
 
 export const PROJECTS_CONTEXT_KEY = Symbol();

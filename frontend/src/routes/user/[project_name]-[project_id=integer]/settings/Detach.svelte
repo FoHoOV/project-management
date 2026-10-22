@@ -1,15 +1,15 @@
 <script lang="ts" module>
-	import Confirm from '$components/Confirm.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import FormInput from '$components/forms/FormInput.svelte';
-	import Spinner from '$components/Spinner.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
 
-	import { generateTodoListSettingsUrl } from '$lib/utils/params/route';
-	import { detachSchema } from '$routes/user/[project_name]-[project_id=integer]/settings/validator.js';
+	import { generateTodoListSettingsUrl } from '#lib/utils/params/route.js';
+	import { detachSchema } from './validator';
 	import type { ActionData, PageData } from './$types';
-	import type { PartialUserWithPermission } from '$lib';
-	import { getToastManager } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import type { PartialUserWithPermission } from '#lib';
+	import { getToastManager } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Props = {
 		form: ActionData;

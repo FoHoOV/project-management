@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 </script>
 
 <script lang="ts">
@@ -13,9 +13,9 @@
 	<div class="hidden flex-1 md:block lg:text-center">
 		<h1 class="text-5xl font-bold text-info">Account management</h1>
 		<h2 class="pt-5 text-xl font-semibold">
-			{#if $page.url.href.endsWith('/login')}
+			{#if page.url.href.endsWith('/login')}
 				Login to your existing account
-			{:else if $page.url.href.endsWith('/signup')}
+			{:else if page.url.href.endsWith('/signup')}
 				Create a new account
 			{/if}
 		</h2>

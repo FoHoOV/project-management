@@ -1,8 +1,8 @@
 <script lang="ts" module>
 	import ProjectComponent, { type Events as ProjectEvents } from './Project.svelte';
-	import Empty from '$components/Empty.svelte';
+	import Empty from '#lib/components/Empty.svelte';
 
-	import type { Project as ProjectModel } from '$lib/generated-client';
+	import type { Project as ProjectModel } from '#lib/generated-client/index.js';
 	import { flip } from 'svelte/animate';
 
 	export type Events = ProjectEvents;
