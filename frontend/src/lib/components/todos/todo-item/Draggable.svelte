@@ -148,7 +148,7 @@
 		disabled: isCallingService || disabled
 	})}
 >
-	<Spinner visible={componentState === 'calling-service'}></Spinner>
+	<Spinner visible={isCallingService}></Spinner>
 	<DropZoneHelper
 		visible={componentState === 'drop-zone-top-activated' ||
 			componentState === 'drop-zone-bottom-activated'}

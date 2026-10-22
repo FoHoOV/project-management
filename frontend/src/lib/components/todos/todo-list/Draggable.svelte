@@ -182,7 +182,7 @@
 	})}
 	class="relative h-full"
 >
-	<Spinner visible={componentState === 'calling-service'}></Spinner>
+	<Spinner visible={isCallingService}></Spinner>
 	<DropZoneHelper
 		visible={componentState === 'drop-zone-left-activated' ||
 			componentState === 'drop-zone-right-activated'}
