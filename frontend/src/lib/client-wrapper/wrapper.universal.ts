@@ -154,10 +154,7 @@ export async function callService<
 					type: ErrorType.API_ERROR,
 					status,
 					code: ErrorCode.UNKNOWN_ERROR,
-					message:
-						e.response.status < 400
-							? 'Service response was in an unexpected format'
-							: e.response.statusText,
+					message: 'An unexpected error has occurred, please try again',
 					response: {},
 					originalError: e
 				})
@@ -175,11 +172,13 @@ export async function callService<
 			});
 		}
 
-		if (e.response.status == 422 && errorSchema) {
-			const validationErrors = await _convertHttpValidationErrorToZodError(
-				errorSchema,
-				response as z.infer<typeof HTTPValidationError>
-			);
+		if (e.response.status === 422) {
+			const validationErrors =
+				errorSchema &&
+				(await _convertHttpValidationErrorToZodError(
+					errorSchema,
+					response as z.infer<typeof HTTPValidationError>
+				));
 
 			if (!validationErrors) {
 				return {
