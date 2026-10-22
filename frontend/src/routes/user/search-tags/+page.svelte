@@ -1,6 +1,8 @@
 <script lang="ts" module>
 	import TodoItem from '#lib/components/todos/todo-item/TodoItem.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
+	import type { ActionData } from './$types';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import Fa from 'svelte-fa';
@@ -14,8 +16,6 @@
 </script>
 
 <script lang="ts">
-	const { form } = $props();
-
 	let enhancedForm = $state<ComponentExports<typeof EnhancedForm> | null>(null);
 
 	const todoCategoriesStore = setTodoCategories(new TodoCategories());
@@ -45,6 +45,12 @@
 		});
 		todoCategoriesStore.setCategories(categories);
 	}
+
+	const enhancerConfig: EnhanceOptions<typeof searchTagSchema, ActionData, 'search'> = {
+		actionName: 'search',
+		resetOnSubmit: false,
+		validator: { schema: searchTagSchema }
+	};
 </script>
 
 <svelte:head>
@@ -54,12 +60,7 @@
 <EnhancedForm
 	bind:this={enhancedForm}
 	action="/user/search-tags?/search"
-	enhancerConfig={{
-		form: form,
-		actionName: 'search',
-		resetOnSubmit: false,
-		validator: { schema: searchTagSchema }
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		handleShowResults(event.response);
 	}}

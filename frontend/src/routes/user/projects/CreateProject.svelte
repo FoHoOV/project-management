@@ -2,30 +2,26 @@
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { createProjectSchema } from './validator';
 	import { getProjects } from '#lib/stores/index.js';
-
-	export type Props = {
-		form: ActionData;
-	};
 </script>
 
 <script lang="ts">
-	const { form }: Props = $props();
-
 	const projectsStore = getProjects();
+
+	const enhancerConfig: EnhanceOptions<typeof createProjectSchema, ActionData, 'create'> = {
+		validator: { schema: createProjectSchema },
+		actionName: 'create',
+		refreshAllAfterSubmit: true
+	};
 </script>
 
 <EnhancedForm
 	action="/user/projects?/create"
-	enhancerConfig={{
-		validator: { schema: createProjectSchema },
-		form: form,
-		actionName: 'create',
-		refreshAllAfterSubmit: true
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.add(event.response);
 	}}

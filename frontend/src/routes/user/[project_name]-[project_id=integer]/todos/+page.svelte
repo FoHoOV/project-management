@@ -36,7 +36,7 @@
 </script>
 
 <script lang="ts">
-	const { data, form, params }: PageProps = $props();
+	const { data, params }: PageProps = $props();
 
 	let componentState = $state<'loading' | 'none'>('loading');
 
@@ -62,8 +62,7 @@
 			component: CreateTodoCategory,
 			props: () => {
 				return {
-					params,
-					form: form
+					params
 				};
 			},
 			title: 'Create todo categories'
@@ -76,7 +75,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					category: category
 				};
 			},
@@ -90,7 +88,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					categoryId: category.id
 				};
 			},
@@ -104,7 +101,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					todo: todo
 				};
 			},
@@ -118,7 +114,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					categoryId: category.id
 				};
 			},
@@ -132,7 +127,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					todoCommentsStore: store,
 					todoId: todoId
 				};
@@ -147,7 +141,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					todoCommentsStore: store,
 					comment: comment
 				};
@@ -162,7 +155,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					todoId: todo.id
 				};
 			},
@@ -176,7 +168,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					tag: tag
 				};
 			},
@@ -190,7 +181,6 @@
 			props: () => {
 				return {
 					params,
-					form: form,
 					todo: todo
 				};
 			},

@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import Confirm from '#lib/components/Confirm.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import Spinner from '#lib/components/Spinner.svelte';
 
@@ -12,26 +13,26 @@
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Props = {
-		form: ActionData;
 		data: PageData;
 		user: PartialUserWithPermission;
 	};
 </script>
 
 <script lang="ts">
-	const { data, form, user }: Props = $props();
+	const { data, user }: Props = $props();
 
 	let detachProjectConfirmRef = $state<ComponentExports<typeof Confirm> | null>();
 	const toastManagerStore = getToastManager();
+
+	const enhancerConfig: EnhanceOptions<typeof detachSchema, ActionData, 'detach'> = {
+		validator: { schema: detachSchema },
+		actionName: 'detach'
+	};
 </script>
 
 <EnhancedForm
 	action="{generateTodoListSettingsUrl(data.currentProject.title, data.currentProject.id)}?/detach"
-	enhancerConfig={{
-		form: form,
-		validator: { schema: detachSchema },
-		actionName: 'detach'
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={() => {
 		toastManagerStore.addToast({
 			message: 'project detached from user',

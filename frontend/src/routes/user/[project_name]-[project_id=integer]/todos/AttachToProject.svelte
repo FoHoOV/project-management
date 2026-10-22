@@ -2,6 +2,7 @@
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { attachToProjectSchema } from './validator';
@@ -9,22 +10,26 @@
 
 	export type Props = {
 		params: ProjectRouteParams;
-		form: ActionData;
 		categoryId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { params, form, categoryId }: Props = $props();
+	const { params, categoryId }: Props = $props();
+
+	const enhancerConfig: EnhanceOptions<
+		typeof attachToProjectSchema,
+		ActionData,
+		'attachToProject'
+	> = {
+		validator: { schema: attachToProjectSchema },
+		actionName: 'attachToProject'
+	};
 </script>
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/attachToProject"
-	enhancerConfig={{
-		validator: { schema: attachToProjectSchema },
-		form: form,
-		actionName: 'attachToProject'
-	}}
+	{enhancerConfig}
 	successfulMessage="Todo category is now shared with the specified project"
 >
 	{#snippet inputs({ formErrors })}

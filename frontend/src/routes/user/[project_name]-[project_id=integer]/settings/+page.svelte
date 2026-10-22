@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-	const { data, form, params }: PageProps = $props();
+	const { data, params }: PageProps = $props();
 
 	let projectPermissionsRefs = $state<ComponentExports<typeof ProjectPermissions>[]>([]);
 	const navbarStore = getNavbar();
@@ -70,13 +70,12 @@
 					{#if showConfirmChanges[i]}
 						<SaveChanges
 							{data}
-							{form}
 							{user}
 							getSelectedPermissions={projectPermissionsRefs[i].getSelectedPermissions}
 							resetSelectedPermissions={projectPermissionsRefs[i].reset}
 						></SaveChanges>
 					{:else}
-						<Detach {data} {form} {user}></Detach>
+						<Detach {data} {user}></Detach>
 					{/if}
 				</div>
 			</div>

@@ -13,7 +13,6 @@ export type EnhanceOptions<
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
-	form: TFormAction;
 	validator: ValidatorOptions<TSchema>;
 	submit?: SubmitFunction;
 	actionName?: TKey;
