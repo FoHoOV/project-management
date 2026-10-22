@@ -2,6 +2,7 @@
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import type { Project } from '#lib/generated-client/index.js';
@@ -9,25 +10,25 @@
 	import { getProjects } from '#lib/stores/index.js';
 
 	export type Props = {
-		form: ActionData;
 		project: Project;
 	};
 </script>
 
 <script lang="ts">
-	const { form, project }: Props = $props();
+	const { project }: Props = $props();
 	const projectsStore = getProjects();
+
+	const enhancerConfig: EnhanceOptions<typeof editProjectSchema, ActionData, 'edit'> = {
+		validator: { schema: editProjectSchema },
+		actionName: 'edit',
+		resetOnSubmit: false,
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
 	action="/user/projects?/edit"
-	enhancerConfig={{
-		validator: { schema: editProjectSchema },
-		form: form,
-		actionName: 'edit',
-		resetOnSubmit: false,
-		refreshAllAfterSubmit: false
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.update(event.response);
 	}}

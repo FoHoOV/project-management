@@ -2,6 +2,7 @@
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { editTodoCategorySchema } from './validator';
@@ -11,25 +12,29 @@
 
 	export type Props = {
 		params: ProjectRouteParams;
-		form: ActionData;
 		category: TodoCategory;
 	};
 </script>
 
 <script lang="ts">
-	const { params, form, category }: Props = $props();
+	const { params, category }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
+
+	const enhancerConfig: EnhanceOptions<
+		typeof editTodoCategorySchema,
+		ActionData,
+		'editTodoCategory'
+	> = {
+		validator: { schema: editTodoCategorySchema },
+		actionName: 'editTodoCategory',
+		resetOnSubmit: false,
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/editTodoCategory"
-	enhancerConfig={{
-		validator: { schema: editTodoCategorySchema },
-		form: form,
-		actionName: 'editTodoCategory',
-		resetOnSubmit: false,
-		refreshAllAfterSubmit: false
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateCategory(event.response);
 	}}

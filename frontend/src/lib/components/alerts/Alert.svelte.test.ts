@@ -1,6 +1,6 @@
 import { render, type RenderResult } from '@testing-library/svelte/svelte5';
 import Alert from './Alert.svelte';
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { tick } from 'svelte';
 
 function getAlertText(locator: RenderResult<typeof Alert>) {
@@ -66,4 +66,30 @@ test('after message is dismissed it will re-popup if the same value is passed as
 	await element.rerender({ type: 'error', message: new String('test') });
 
 	expect(getAlertText(element)).toBeVisible();
+});
+
+test('closes itself after the countdown and stops counting', async () => {
+	vi.useFakeTimers();
+	try {
+		const element = render(Alert, { type: 'error', message: 'test' });
+
+		await vi.advanceTimersByTimeAsync(90 * 99);
+		expect(getAlertText(element)).toHaveTextContent('test');
+
+		await vi.advanceTimersByTimeAsync(90);
+		expect(getAlertText(element)).toBeNull();
+		expect(vi.getTimerCount()).toBe(0);
+	} finally {
+		vi.useRealTimers();
+	}
+});
+
+test("doesn't start a countdown without a message", () => {
+	vi.useFakeTimers();
+	try {
+		render(Alert, { type: 'error', message: null });
+		expect(vi.getTimerCount()).toBe(0);
+	} finally {
+		vi.useRealTimers();
+	}
 });

@@ -1,6 +1,6 @@
 import type { SubmitFunction } from '$app/forms';
 import type { z } from 'zod';
-import type { ValidatorOptions } from './validator-types';
+import type { ValidatorErrorsType, ValidatorOptions } from './validator-types';
 import type {
 	ParsedFormData,
 	StandardFormActionError,
@@ -13,7 +13,6 @@ export type EnhanceOptions<
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
-	form: TFormAction;
 	validator: ValidatorOptions<TSchema>;
 	submit?: SubmitFunction;
 	actionName?: TKey;
@@ -30,39 +29,36 @@ export type FormActionResultType<
 		? Extract<Pick<NonNullable<TFormAction>, TKey>[TKey], { response: any }>['response']
 		: never;
 
-export type SubmitEvents<
+export type SubmitCallbacks<
 	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
 > = {
-	onsubmitstarted?: (e: SubmitStartEventType) => void;
-	onsubmitended?: (e: SubmitEndedEventType) => void;
-	onsubmitredirected?: (e: SubmitRedirectedEventType<TSchema>) => void;
-	onsubmitsucceeded?: (e: SubmitSucceededEventType<TSchema, TFormAction, TKey>) => void;
-	onsubmitfailed?: (
-		e: SubmitFailedEventType<TFormAction>
-	) => void /*** called on both client-side and server-side errors*/;
+	onSubmitStarted?: () => void;
+	onSubmitEnded?: () => void;
+	onSubmitSucceeded?: (event: SubmitSucceededEvent<TSchema, TFormAction, TKey>) => void;
+	onRedirected?: (event: SubmitRedirectedEvent) => void;
+	/** called on both client-side and server-side errors */
+	onSubmitFailed?: (event: SubmitFailedEvent<TFormAction>) => void;
+	onClientSideValidationErrors?: (errors: ValidatorErrorsType<TSchema>) => void;
 };
 
-export type SubmitStartEventType = CustomEvent<void>;
-
-export type SubmitEndedEventType = CustomEvent<void>;
-export type SubmitRedirectedEventType<TSchema extends z.ZodType> = CustomEvent<{
+export type SubmitRedirectedEvent = {
 	redirectUrl: URL;
 	formData: ParsedFormData;
-}>;
+};
 
-export type SubmitSucceededEventType<
+export type SubmitSucceededEvent<
 	TSchema extends z.ZodType,
 	TFormAction extends StandardFormActionError,
 	TKey extends StandardFormActionNames<TFormAction> = never
-> = CustomEvent<{
+> = {
 	response: FormActionResultType<TFormAction, TKey>;
 	formData: ParsedFormData;
 	parsedFormData: z.infer<TSchema>;
-}>;
+};
 
-export type SubmitFailedEventType<TFormAction extends StandardFormActionError> = CustomEvent<{
+export type SubmitFailedEvent<TFormAction extends StandardFormActionError> = {
 	formData: ParsedFormData;
 	error: ReturnType<typeof getFormErrors<TFormAction>>;
-}>;
+};

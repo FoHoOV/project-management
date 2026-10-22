@@ -2,6 +2,7 @@
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import type { TodoItemPartialTag } from '#lib/generated-client/index.js';
@@ -11,25 +12,25 @@
 
 	export type Props = {
 		params: ProjectRouteParams;
-		form: ActionData;
 		tag: TodoItemPartialTag;
 	};
 </script>
 
 <script lang="ts">
-	const { params, form, tag }: Props = $props();
+	const { params, tag }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
+
+	const enhancerConfig: EnhanceOptions<typeof editTagSchema, ActionData, 'editTag'> = {
+		validator: { schema: editTagSchema },
+		actionName: 'editTag',
+		resetOnSubmit: false,
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
 	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/editTag"
-	enhancerConfig={{
-		validator: { schema: editTagSchema },
-		form: form,
-		actionName: 'editTag',
-		resetOnSubmit: false,
-		refreshAllAfterSubmit: false
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTag(event.response);
 	}}
@@ -43,6 +44,7 @@
 			value={tag.project_id}
 			errors=""
 		/>
+		<FormInput wrapperClasses="hidden" type="hidden" name="old_name" value={tag.name} errors="" />
 		<FormInput
 			name="name"
 			type="text"

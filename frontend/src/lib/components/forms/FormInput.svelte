@@ -7,11 +7,11 @@
 		| ({
 				type?: 'text-area';
 				value?: string | number | undefined;
-		  } & Partial<Exclude<HTMLInputAttributes, 'class' | 'placeholder' | 'id'>>)
+		  } & Partial<Omit<HTMLInputAttributes, 'class' | 'placeholder'>>)
 		| ({
 				type?: HTMLInputAttributes['type'] | 'toggle';
 				value?: string | boolean | number | undefined;
-		  } & Partial<Exclude<HTMLInputAttributes, 'type' | 'class' | 'placeholder' | 'id'>>)
+		  } & Partial<Omit<HTMLInputAttributes, 'type' | 'class' | 'placeholder'>>)
 	) & {
 		name: string;
 		label?: string;

@@ -2,6 +2,7 @@
 	import Confirm from '#lib/components/Confirm.svelte';
 	import ProjectPermissions from '#lib/components/project/ProjectPermissions.svelte';
 	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 	import FormInput from '#lib/components/forms/FormInput.svelte';
 	import Spinner from '#lib/components/Spinner.svelte';
 
@@ -15,7 +16,6 @@
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Props = {
-		form: ActionData;
 		data: PageData;
 		user: PartialUserWithPermission;
 		getSelectedPermissions: () => SvelteSet<Permission>;
@@ -24,10 +24,19 @@
 </script>
 
 <script lang="ts">
-	const { data, form, user, getSelectedPermissions, resetSelectedPermissions }: Props = $props();
+	const { data, user, getSelectedPermissions, resetSelectedPermissions }: Props = $props();
 
 	let changePermissionsConfirmRef = $state<ComponentExports<typeof Confirm> | null>();
 	const toastsMangerStore = getToastManager();
+
+	const enhancerConfig: EnhanceOptions<
+		typeof updateUserPermissionsSchema,
+		ActionData,
+		'updatePermissions'
+	> = {
+		validator: { schema: updateUserPermissionsSchema },
+		actionName: 'updatePermissions'
+	};
 </script>
 
 <EnhancedForm
@@ -35,11 +44,7 @@
 		data.currentProject.title,
 		data.currentProject.id
 	)}?/updatePermissions"
-	enhancerConfig={{
-		form: form,
-		validator: { schema: updateUserPermissionsSchema },
-		actionName: 'updatePermissions'
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={() => {
 		toastsMangerStore.addToast({
 			message: 'project permissions updated',

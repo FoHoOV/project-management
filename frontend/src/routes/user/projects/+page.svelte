@@ -11,8 +11,6 @@
 </script>
 
 <script lang="ts">
-	const { form } = $props();
-
 	const projectsStore = getProjects();
 	const multiStepModalStore = getMultiStepModal();
 
@@ -24,7 +22,7 @@
 		multiStepModalStore.add({
 			component: CreateProject,
 			props: () => {
-				return { form };
+				return {};
 			},
 			title: 'Create a new project'
 		});
@@ -34,7 +32,7 @@
 		multiStepModalStore.add({
 			component: AttachToUser,
 			props: () => {
-				return { form, project };
+				return { project };
 			},
 			title: 'Share this project with another user'
 		});
@@ -44,7 +42,7 @@
 		multiStepModalStore.add({
 			component: EditProject,
 			props: () => {
-				return { form, project };
+				return { project };
 			},
 			title: 'Edit this project details'
 		});

@@ -3,7 +3,6 @@
 	import Fa from 'svelte-fa';
 	import { page } from '$app/state';
 
-	import { toggleClass } from '#lib/actions/index.js';
 	import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 	import type { Snippet } from 'svelte';
 	import type { HTMLAnchorAttributes } from 'svelte/elements';
@@ -32,12 +31,12 @@
 
 <li class="break-words-legacy max-w-full whitespace-normal break-words">
 	<a
-		class="text-xl normal-case {className}"
+		class={[
+			'text-xl normal-case',
+			className,
+			{ active: setActiveClassOnClick && page.url.href.endsWith(href) }
+		]}
 		{href}
-		use:toggleClass={{
-			classes: ['active'],
-			isActive: setActiveClassOnClick && page.url.href.endsWith(href)
-		}}
 		{...restProps}
 	>
 		{#if icon}

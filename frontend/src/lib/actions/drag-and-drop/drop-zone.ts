@@ -1,167 +1,127 @@
-import type { ActionReturn } from 'svelte/action';
-import type {
-	DropZoneOptions,
-	DropZoneEvents,
-	CustomDragEvent,
-	DropEvent
-} from './drop-zone-types';
+import type { Attachment } from 'svelte/attachments';
+import type { DropZoneCallbacks, DropZoneOptions } from './drop-zone-types';
 import { _CUSTOM_DRAGGABLE_EVENT_DATA } from './constants';
 import { getDraggingElement } from './shared';
 
-export function dropzone<Data extends object>(
-	node: HTMLElement,
-	options: DropZoneOptions<Data>
-): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
-	_setOptionsDefaults(options);
-
-	node.dataset.dropZoneNames = JSON.stringify(options.names);
-
-	function handleDragStart(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
-		}
-		_clearCustomEventData(getDraggingElement() as HTMLElement);
-	}
-
-	function handleDragEnter(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+export function dropzone<Data extends object>({
+	names,
+	disabled = false,
+	highlighClasses = ['!border', '!rounded-2xl', '!border-success'],
+	dropEffect = 'move',
+	onDropped,
+	onDragEntered,
+	onDragLeft,
+	onDragHover
+}: DropZoneOptions & DropZoneCallbacks<Data>): Attachment<HTMLElement> {
+	return (node) => {
+		if (disabled) {
 			return;
 		}
 
-		if (!node.contains(event.target as HTMLElement)) {
-			return;
+		function handleDragStart(event: DragEvent) {
+			if (!_isTargetedByDrag(event, names)) {
+				return;
+			}
+			_clearCustomEventData(getDraggingElement() as HTMLElement);
 		}
 
-		node.classList.add(...(options.highlighClasses as string[]));
-		node.dispatchEvent(
-			new CustomEvent('dragEntered', {
-				detail: {
+		function handleDragEnter(event: DragEvent) {
+			if (!_isTargetedByDrag(event, names) || !node.contains(event.target as HTMLElement)) {
+				return;
+			}
+
+			node.classList.add(...highlighClasses);
+			onDragEntered?.({
+				originalEvent: event,
+				node: node,
+				names: _getMatchingDropZoneNames(event, names)
+			});
+		}
+
+		function handleDragLeave(event: DragEvent) {
+			if (!_isTargetedByDrag(event, names)) {
+				return;
+			}
+
+			if (
+				!(event.target as HTMLElement).contains(node) &&
+				event.relatedTarget &&
+				node.contains(event.relatedTarget as HTMLElement)
+			) {
+				return;
+			}
+
+			node.classList.remove(...highlighClasses);
+			onDragLeft?.({
+				originalEvent: event,
+				node: node,
+				names: _getMatchingDropZoneNames(event, names)
+			});
+		}
+
+		function handleDragOver(event: DragEvent) {
+			if (!_isTargetedByDrag(event, names)) {
+				return;
+			}
+
+			event.preventDefault();
+			if (!event.dataTransfer) {
+				return;
+			}
+
+			event.dataTransfer.dropEffect = dropEffect;
+
+			if (node.contains(event.target as HTMLElement)) {
+				onDragHover?.({
 					originalEvent: event,
 					node: node,
-					names: _getMatchingDropZoneNames(event, options)
+					names: _getMatchingDropZoneNames(event, names)
+				});
+			}
+		}
+
+		function handleDrop(event: DragEvent) {
+			if (!_isTargetedByDrag(event, names)) {
+				return;
+			}
+
+			event.preventDefault();
+
+			if (!event.dataTransfer) {
+				return;
+			}
+
+			const data = event.dataTransfer.getData('text/plain');
+			node.classList.remove(...highlighClasses);
+			const draggingElement = getDraggingElement() as HTMLElement;
+			onDropped({
+				data: JSON.parse(data),
+				names: _getMatchingDropZoneNames(event, names),
+				originalEvent: event,
+				getCustomEventData: <T>(key: string) => {
+					return _getCustomEventData(draggingElement, key) as T | undefined;
+				},
+				addCustomEventData: (key: string, data: any) => {
+					_addCustomEventData(draggingElement, key, data);
 				}
-			}) satisfies CustomDragEvent
-		);
-	}
-
-	function handleDragLeave(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
+			});
 		}
 
-		if (
-			!(event.target as HTMLElement).contains(node) &&
-			event.relatedTarget &&
-			node.contains(event.relatedTarget as HTMLElement)
-		) {
-			return;
-		}
+		node.addEventListener('dragstart', handleDragStart);
+		node.addEventListener('dragenter', handleDragEnter);
+		node.addEventListener('dragleave', handleDragLeave);
+		node.addEventListener('dragover', handleDragOver);
+		node.addEventListener('drop', handleDrop);
 
-		node.classList.remove(...(options.highlighClasses as string[]));
-		node.dispatchEvent(
-			new CustomEvent('dragLeft', {
-				detail: {
-					originalEvent: event,
-					node: node,
-					names: _getMatchingDropZoneNames(event, options)
-				}
-			}) satisfies CustomDragEvent
-		);
-	}
-
-	function handleDragOver(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
-		}
-
-		event.preventDefault();
-		if (!event.dataTransfer) {
-			return;
-		}
-
-		event.dataTransfer.dropEffect = options.dropEffect!;
-
-		if (node.contains(event.target as HTMLElement)) {
-			onDragHover(event);
-		}
-	}
-
-	function handleDrop(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
-		}
-
-		event.preventDefault();
-
-		if (!event.dataTransfer) {
-			return;
-		}
-
-		const data = event.dataTransfer.getData('text/plain');
-		node.classList.remove(...(options.highlighClasses as string[]));
-		const draggingElement = getDraggingElement() as HTMLElement;
-		node.dispatchEvent(
-			new CustomEvent('dropped', {
-				detail: {
-					data: JSON.parse(data),
-					names: _getMatchingDropZoneNames(event, options),
-					originalEvent: event,
-					getCustomEventData: <T>(key: string) => {
-						return _getCustomEventData(draggingElement, key) as T | undefined;
-					},
-					addCustomEventData: (key: string, data: any) => {
-						_addCustomEventData(draggingElement, key, data);
-					}
-				}
-			}) satisfies DropEvent<Data>
-		);
-	}
-
-	function onDragHover(event: DragEvent) {
-		node.dispatchEvent(
-			new CustomEvent('dragHover', {
-				detail: {
-					originalEvent: event,
-					node: node,
-					names: _getMatchingDropZoneNames(event, options)
-				}
-			}) satisfies CustomDragEvent
-		);
-	}
-
-	node.addEventListener('dragstart', handleDragStart);
-	node.addEventListener('dragenter', handleDragEnter);
-	node.addEventListener('dragleave', handleDragLeave);
-	node.addEventListener('dragover', handleDragOver);
-	node.addEventListener('drop', handleDrop);
-
-	return {
-		update(newOptions) {
-			options = newOptions;
-			_setOptionsDefaults(options);
-		},
-		destroy() {
+		return () => {
 			node.removeEventListener('dragstart', handleDragStart);
 			node.removeEventListener('dragenter', handleDragEnter);
 			node.removeEventListener('dragleave', handleDragLeave);
 			node.removeEventListener('dragover', handleDragOver);
 			node.removeEventListener('drop', handleDrop);
-		}
+			node.classList.remove(...highlighClasses);
+		};
 	};
-}
-
-function _setOptionsDefaults<Data extends object>(options: DropZoneOptions<Data>) {
-	if (options.highlighClasses === undefined) {
-		options.highlighClasses = ['!border', '!rounded-2xl', '!border-success'];
-	}
-
-	if (!options.dropEffect) {
-		options.dropEffect = 'move';
-	}
-
-	if (options.disabled === undefined) {
-		options.disabled = false;
-	}
 }
 
 const _dropZoneNamePrefixUUID =
@@ -192,40 +152,22 @@ export function getDropZoneNames(event: DragEvent) {
 	return eventTargetDropZoneNames;
 }
 
-function _getMatchingDropZoneNames<Data extends object>(
-	event: DragEvent,
-	options: DropZoneOptions<Data>
-): string[] {
-	const matchingTargetZones = options.names.filter((nodeTargetZoneName) => {
+function _getMatchingDropZoneNames(event: DragEvent, names: string[]): string[] {
+	return names.filter((nodeTargetZoneName) => {
 		return (
 			getDropZoneNames(event).find(
 				(eventTargetName) => eventTargetName.toLowerCase() == nodeTargetZoneName.toLowerCase()
 			) !== undefined
 		);
 	});
-	return matchingTargetZones;
 }
 
-function _existInDropZoneTargetNames<Data extends object>(
-	event: DragEvent,
-	options: DropZoneOptions<Data>
-): boolean {
+function _isTargetedByDrag(event: DragEvent, names: string[]): boolean {
 	try {
-		return _getMatchingDropZoneNames(event, options).length > 0;
+		return _getMatchingDropZoneNames(event, names).length > 0;
 	} catch (e) {
 		return false;
 	}
-}
-
-function _checkIfIsInSameDropZoneName<Data extends object>(
-	node: HTMLElement,
-	event: DragEvent,
-	options: DropZoneOptions<Data>
-) {
-	return (
-		node.dataset.dropZoneNames === JSON.stringify(options.names) &&
-		_existInDropZoneTargetNames(event, options)
-	);
 }
 
 function _addCustomEventData(draggingElement: HTMLElement, key: string, data: any) {

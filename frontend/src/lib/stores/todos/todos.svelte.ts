@@ -79,7 +79,7 @@ export class TodoCategories {
 			this._todoCategories.forEach((value) => {
 				value.items.forEach((item) => {
 					item.dependencies = item.dependencies.filter((dependency) => {
-						return todoCategory.items.some((item) => item.id == dependency.dependant_todo_id);
+						return !todoCategory.items.some((item) => item.id === dependency.dependant_todo_id);
 					});
 				});
 			});
