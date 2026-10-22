@@ -4,5 +4,6 @@ export * from './persisted';
 export * from './projects';
 export * from './theme';
 export * from './toasts';
+export * from './todo-actions';
 export * from './todo-comments';
 export * from './todos';

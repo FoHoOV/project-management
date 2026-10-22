@@ -14,20 +14,18 @@
 		TodoItemPartialDependency
 	} from '#lib/generated-client/index.js';
 	import { type CommonComponentStates } from '#lib';
-	import { getTodoCategories } from '#lib/stores/index.js';
+	import { getTodoActions, getTodoCategories } from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
-
-	export type Events = {
-		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;
-	};
 
 	export type Props = {
 		todo: TodoCategoryPartialTodoItem;
-	} & Events;
+	};
 </script>
 
 <script lang="ts">
-	const { todo, onAddDependency }: Props = $props();
+	const { todo }: Props = $props();
+
+	const todoActions = getTodoActions();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
@@ -55,7 +53,7 @@
 	}
 
 	function handleCreateDependency() {
-		onAddDependency?.(todo);
+		todoActions?.addDependency(todo);
 	}
 </script>
 
@@ -65,14 +63,14 @@
 	<button
 		onclick={handleCreateDependency}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!onAddDependency}
+		class:hidden={!todoActions}
 	>
 		<Fa icon={faPlus} />
 		<p>add dependency</p>
 	</button>
 	{#if todo.dependencies.length == 0}
 		<div class="my-5 flex flex-row items-center gap-2">
-			{#if !onAddDependency}
+			{#if !todoActions}
 				no dependencies
 			{:else}
 				<Fa icon={faPlusCircle} />

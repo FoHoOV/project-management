@@ -20,21 +20,18 @@
 	} from '#lib/generated-client/index.js';
 	import Confirm from '#lib/components/Confirm.svelte';
 	import { type CommonComponentStates } from '#lib';
-	import { getTodoCategories } from '#lib/stores/index.js';
+	import { getTodoActions, getTodoCategories } from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
-
-	export type Events = {
-		onEditTag?: (tag: TodoItemPartialTag) => void;
-		onAddTag?: (todo: TodoCategoryPartialTodoItem) => void;
-	};
 
 	export type Props = {
 		todo: TodoCategoryPartialTodoItem;
-	} & Events;
+	};
 </script>
 
 <script lang="ts">
-	const { todo, onEditTag, onAddTag }: Props = $props();
+	const { todo }: Props = $props();
+
+	const todoActions = getTodoActions();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
@@ -87,16 +84,16 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<button
-		onclick={() => onAddTag?.(todo)}
+		onclick={() => todoActions?.addTag(todo)}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!onAddTag}
+		class:hidden={!todoActions}
 	>
 		<Fa icon={faPlus} />
 		<p>add tag</p>
 	</button>
 	{#if todo.tags.length == 0}
 		<div class="my-5 flex flex-row items-center gap-2">
-			{#if !onAddTag}
+			{#if !todoActions}
 				No tags
 			{:else}
 				<Fa icon={faPlusCircle} />
@@ -143,11 +140,14 @@
 						</div>
 
 						<div
-							class:hidden={!onEditTag}
+							class:hidden={!todoActions}
 							class="tooltip tooltip-top tooltip-left tooltip-info"
 							data-tip="edit tag name"
 						>
-							<button class="btn btn-square btn-info btn-sm" onclick={() => onEditTag?.(tag)}>
+							<button
+								class="btn btn-square btn-info btn-sm"
+								onclick={() => todoActions?.editTag(tag)}
+							>
 								<Fa icon={faEdit} class="text-info-content"></Fa>
 							</button>
 						</div>

@@ -11,7 +11,6 @@
 	import { createApiClient } from '#lib/api-client.js';
 	import { detachFromProjectTodoCategories } from '#lib/generated-client/index.js';
 	import type { TodoCategory } from '#lib/generated-client/index.js';
-	import type { Events as TodoItemEvents } from '#lib/components/todos/todo-item/TodoItem.svelte';
 	import {
 		faInfoCircle,
 		faEdit,
@@ -23,31 +22,26 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { flip } from 'svelte/animate';
-	import { getMultiStepModal, getTodoCategories } from '#lib/stores/index.js';
+	import { getMultiStepModal, getTodoActions, getTodoCategories } from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
-
-	export type Events = {
-		onEditTodoCategory?: (category: TodoCategory) => void;
-		onCreateTodoItem?: (category: TodoCategory) => void;
-		onAttachToProject?: (category: TodoCategory) => void;
-	} & TodoItemEvents;
 
 	export type Props = {
 		category: TodoCategory;
 		projectId: number;
 		draggable?: boolean;
 		class?: string;
-	} & Events;
+	};
 </script>
 
 <script lang="ts">
-	const { category, projectId, draggable = true, class: className, ...restProps }: Props = $props();
+	const { category, projectId, draggable = true, class: className }: Props = $props();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
 	let confirmDeleteTodoCategory = $state<ComponentExports<typeof Confirm> | null>();
 
 	const todoCategoriesStore = getTodoCategories();
+	const todoActions = getTodoActions();
 	const multiStepModalStore = getMultiStepModal();
 
 	async function handleDeleteCategory() {
@@ -115,9 +109,9 @@
 					</div>
 					<div class="flex gap-2">
 						<button
-							onclick={() => restProps.onEditTodoCategory?.(category)}
+							onclick={() => todoActions?.editTodoCategory(category)}
 							class="text-xl"
-							class:hidden={!restProps.onEditTodoCategory}
+							class:hidden={!todoActions}
 							data-testid="edit-category"
 						>
 							<Fa icon={faEdit} class="text-success" />
@@ -150,16 +144,16 @@
 			<div class="mt-2 grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
 				<button
 					class="btn btn-success flex-1"
-					class:hidden={!restProps.onCreateTodoItem}
-					onclick={() => restProps.onCreateTodoItem?.(category)}
+					class:hidden={!todoActions}
+					onclick={() => todoActions?.createTodoItem(category)}
 				>
 					<Fa icon={faCirclePlus} />
 					Add todo
 				</button>
 				<button
 					class="btn btn-info flex-1"
-					class:hidden={!restProps.onAttachToProject}
-					onclick={() => restProps.onAttachToProject?.(category)}
+					class:hidden={!todoActions}
+					onclick={() => todoActions?.attachToProject(category)}
 				>
 					<Fa icon={faPaperclip} />
 					Attach to project
@@ -173,7 +167,7 @@
 					out:send={{ key: todo.id }}
 					animate:flip={{ duration: 200 }}
 				>
-					<TodoItem {todo} {category} {...restProps}></TodoItem>
+					<TodoItem {todo} {category}></TodoItem>
 				</div>
 			{:else}
 				<Empty class="mt-2 w-full justify-start" text="Add your first todo!" />

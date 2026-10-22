@@ -35,6 +35,7 @@
 	import type { PageProps } from './$types';
 	import {
 		getNavbar,
+		setTodoActions,
 		setMultiStepModal,
 		MultiStepModal as MultiStepModalStore
 	} from '#lib/stores/index.js';
@@ -194,6 +195,18 @@
 		});
 	}
 
+	setTodoActions({
+		editTodoCategory: handleEditTodoCategory,
+		attachToProject: handleAttachToProject,
+		createTodoItem: handleCreateTodoItem,
+		editTodoItem: handleEditTodoItem,
+		addDependency: handleAddTodoItemDependency,
+		createComment: handleCreateComment,
+		editComment: handleEditTodoComment,
+		addTag: handleAddTag,
+		editTag: handleEditTag
+	});
+
 	onMount(() => {
 		componentState = 'none';
 		return () => {
@@ -223,19 +236,7 @@
 				class="mb-3 max-w-[27rem] shrink-0 basis-[20rem] xs:basis-[26rem] md:max-w-[28rem] md:basis-[28rem]"
 				animate:flip={{ duration: 200 }}
 			>
-				<TodoList
-					{category}
-					projectId={Number.parseInt(params.project_id)}
-					onCreateTodoItem={handleCreateTodoItem}
-					onEditTodoItem={handleEditTodoItem}
-					onEditTodoCategory={handleEditTodoCategory}
-					onAttachToProject={handleAttachToProject}
-					onEditComment={handleEditTodoComment}
-					onCreateComment={handleCreateComment}
-					onAddTag={handleAddTag}
-					onEditTag={handleEditTag}
-					onAddDependency={handleAddTodoItemDependency}
-				></TodoList>
+				<TodoList {category} projectId={Number.parseInt(params.project_id)}></TodoList>
 			</div>
 		{:else}
 			<Empty text="Create your first todo list!" />

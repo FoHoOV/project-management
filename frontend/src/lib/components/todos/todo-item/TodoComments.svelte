@@ -14,24 +14,22 @@
 		TodoComments,
 		getTodoComments,
 		setTodoComments,
-		getTodoCategories
+		getTodoCategories,
+		getTodoActions
 	} from '#lib/stores/index.js';
 	import { flip } from 'svelte/animate';
 	import { type CommonComponentStates } from '#lib';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
-	export type Events = {
-		onEditComment?: (comment: TodoComment, store: TodoComments) => void;
-		onCreateComment?: (todoId: number, store: TodoComments) => void;
-	};
-
 	export type Props = {
 		todoId: number;
-	} & Events;
+	};
 </script>
 
 <script lang="ts">
-	const { todoId, onEditComment, onCreateComment }: Props = $props();
+	const { todoId }: Props = $props();
+
+	const todoActions = getTodoActions();
 
 	let componentState = $state<CommonComponentStates>('none');
 	let apiErrorTitle = $state<string | null>(null);
@@ -88,9 +86,9 @@
 	<Spinner visible={componentState === 'calling-service'}></Spinner>
 	<Alert type="error" message={new String(apiErrorTitle)} class="mb-2" />
 	<button
-		onclick={() => onCreateComment?.(todoId, todoCommentsStore)}
+		onclick={() => todoActions?.createComment(todoId, todoCommentsStore)}
 		class="btn btn-square btn-success w-full"
-		class:hidden={!onCreateComment}
+		class:hidden={!todoActions}
 	>
 		<Fa icon={faPlus} />
 		<p>add comment</p>
@@ -118,8 +116,8 @@
 					</button>
 					<button
 						class="btn btn-square btn-info btn-sm"
-						class:hidden={!onEditComment}
-						onclick={() => onEditComment?.(comment, todoCommentsStore)}
+						class:hidden={!todoActions}
+						onclick={() => todoActions?.editComment(comment, todoCommentsStore)}
 					>
 						<Fa icon={faEdit}></Fa>
 					</button>
@@ -131,7 +129,7 @@
 		</div>
 	{:else}
 		<div class="my-5 flex flex-row items-center gap-2">
-			{#if !onCreateComment}
+			{#if !todoActions}
 				no comments
 			{:else}
 				<Fa icon={faPlusCircle} />

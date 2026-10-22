@@ -31,17 +31,13 @@
 	} from '@fortawesome/free-solid-svg-icons';
 	import { createApiClient } from '#lib/api-client.js';
 	import { removeTodoItems, updateTodoItems } from '#lib/generated-client/index.js';
-	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
-	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
-	import type { Events as TodoTagEvents } from './TodoTags.svelte';
-	import { getMultiStepModal, getToastManager, getTodoCategories } from '#lib/stores/index.js';
+	import {
+		getMultiStepModal,
+		getTodoActions,
+		getToastManager,
+		getTodoCategories
+	} from '#lib/stores/index.js';
 	import type { ComponentExports } from '#lib/utils/types/svelte.js';
-
-	export type Events = {
-		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;
-	} & TodoDependencyEvents &
-		TodoCommentEvents &
-		TodoTagEvents;
 
 	export type Props = {
 		todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
@@ -49,7 +45,7 @@
 		draggable?: boolean;
 		showProjectsInfo?: boolean;
 		showCategoryInfo?: boolean;
-	} & Events;
+	};
 </script>
 
 <script lang="ts">
@@ -58,8 +54,7 @@
 		category,
 		draggable = true,
 		showProjectsInfo = false,
-		showCategoryInfo = false,
-		...restProps
+		showCategoryInfo = false
 	}: Props = $props();
 
 	let apiErrorTitle = $state<string | null>(null);
@@ -67,6 +62,7 @@
 	let confirmDeleteTodo = $state<ComponentExports<typeof Confirm> | null>(null);
 
 	const todoCategoriesStore = getTodoCategories();
+	const todoActions = getTodoActions();
 	const toastsManagerStore = getToastManager();
 	const multiStepModalStore = getMultiStepModal();
 
@@ -133,8 +129,7 @@
 			component: TodoItemDependencies,
 			props: () => {
 				return {
-					todo: todo,
-					onAddDependency: restProps.onAddDependency
+					todo: todo
 				};
 			},
 			title: 'Manage your dependencies here'
@@ -146,9 +141,7 @@
 			component: TodoComments,
 			props: () => {
 				return {
-					todoId: todo.id,
-					onCreateComment: restProps.onCreateComment,
-					onEditComment: restProps.onEditComment
+					todoId: todo.id
 				};
 			},
 			title: 'Manage todo comments here'
@@ -160,9 +153,7 @@
 			component: TodoTags,
 			props: () => {
 				return {
-					todo: todo,
-					onAddTag: restProps.onAddTag,
-					onEditTag: restProps.onEditTag
+					todo: todo
 				};
 			},
 			title: 'Manage your todo tags here'
@@ -218,8 +209,8 @@
 						data-testid="todo-item-is-done"
 					/>
 					<button
-						onclick={() => restProps.onEditTodoItem?.(todo)}
-						class:hidden={!restProps.onEditTodoItem}
+						onclick={() => todoActions?.editTodoItem(todo)}
+						class:hidden={!todoActions}
 						data-testid="todo-item-edit"
 					>
 						<Fa icon={faEdit} class="text-success" />
