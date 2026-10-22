@@ -18,7 +18,7 @@
 
 	let enhancedForm = $state<ComponentExports<typeof EnhancedForm> | null>(null);
 
-	const todoCategoriesStore = setTodoCategories(new TodoCategories(), false);
+	const todoCategoriesStore = setTodoCategories(new TodoCategories());
 
 	function handleShowResults(result: TodoItemModel[]) {
 		if (result.length == 0) {
