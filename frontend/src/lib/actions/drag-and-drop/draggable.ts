@@ -1,29 +1,28 @@
+import type { Attachment } from 'svelte/attachments';
 import type { DraggableOptions } from './draggable-types';
 import { generateDropZoneTargetNames } from './drop-zone';
 import { setDraggingElement } from './shared';
 
-export function draggable<Data extends object>(node: HTMLElement, options: DraggableOptions<Data>) {
-	_init(node, options);
+export function draggable<Data extends object>(
+	options: DraggableOptions<Data>
+): Attachment<HTMLElement> {
+	return (node) => {
+		_init(node, options);
 
-	function handleDragStart(e: DragEvent) {
-		if (!e.dataTransfer || e.target !== node) {
-			return;
+		function handleDragStart(e: DragEvent) {
+			if (!e.dataTransfer || e.target !== node) {
+				return;
+			}
+			setDraggingElement(node);
+			e.dataTransfer.setData('text/plain', JSON.stringify({ ...options.data }));
+			e.dataTransfer.setData(generateDropZoneTargetNames(options.targetDropZoneNames), '');
 		}
-		setDraggingElement(node);
-		e.dataTransfer.setData('text/plain', JSON.stringify({ ...options.data }));
-		e.dataTransfer.setData(generateDropZoneTargetNames(options.targetDropZoneNames), '');
-	}
 
-	node.addEventListener('dragstart', handleDragStart);
+		node.addEventListener('dragstart', handleDragStart);
 
-	return {
-		update(newOptions: DraggableOptions<Data>) {
-			options = newOptions;
-			_init(node, options);
-		},
-		destroy() {
+		return () => {
 			node.removeEventListener('dragstart', handleDragStart);
-		}
+		};
 	};
 }
 

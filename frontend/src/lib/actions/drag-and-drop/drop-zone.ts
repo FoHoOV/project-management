@@ -1,152 +1,122 @@
-import type { ActionReturn } from 'svelte/action';
-import type {
-	DropZoneOptions,
-	DropZoneEvents,
-	CustomDragEvent,
-	DropEvent
-} from './drop-zone-types';
+import type { Attachment } from 'svelte/attachments';
+import type { DropZoneCallbacks, DropZoneOptions } from './drop-zone-types';
 import { _CUSTOM_DRAGGABLE_EVENT_DATA } from './constants';
 import { getDraggingElement } from './shared';
 
 export function dropzone<Data extends object>(
-	node: HTMLElement,
-	options: DropZoneOptions<Data>
-): ActionReturn<DropZoneOptions<Data>, DropZoneEvents<Data>> {
-	_setOptionsDefaults(options);
+	options: DropZoneOptions<Data> & DropZoneCallbacks<Data>
+): Attachment<HTMLElement> {
+	return (node) => {
+		_setOptionsDefaults(options);
 
-	node.dataset.dropZoneNames = JSON.stringify(options.names);
+		node.dataset.dropZoneNames = JSON.stringify(options.names);
 
-	function handleDragStart(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
-		}
-		_clearCustomEventData(getDraggingElement() as HTMLElement);
-	}
-
-	function handleDragEnter(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
+		function handleDragStart(event: DragEvent) {
+			if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+				return;
+			}
+			_clearCustomEventData(getDraggingElement() as HTMLElement);
 		}
 
-		if (!node.contains(event.target as HTMLElement)) {
-			return;
+		function handleDragEnter(event: DragEvent) {
+			if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+				return;
+			}
+
+			if (!node.contains(event.target as HTMLElement)) {
+				return;
+			}
+
+			node.classList.add(...(options.highlighClasses as string[]));
+			options.onDragEntered?.({
+				originalEvent: event,
+				node: node,
+				names: _getMatchingDropZoneNames(event, options)
+			});
 		}
 
-		node.classList.add(...(options.highlighClasses as string[]));
-		node.dispatchEvent(
-			new CustomEvent('dragEntered', {
-				detail: {
+		function handleDragLeave(event: DragEvent) {
+			if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+				return;
+			}
+
+			if (
+				!(event.target as HTMLElement).contains(node) &&
+				event.relatedTarget &&
+				node.contains(event.relatedTarget as HTMLElement)
+			) {
+				return;
+			}
+
+			node.classList.remove(...(options.highlighClasses as string[]));
+			options.onDragLeft?.({
+				originalEvent: event,
+				node: node,
+				names: _getMatchingDropZoneNames(event, options)
+			});
+		}
+
+		function handleDragOver(event: DragEvent) {
+			if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+				return;
+			}
+
+			event.preventDefault();
+			if (!event.dataTransfer) {
+				return;
+			}
+
+			event.dataTransfer.dropEffect = options.dropEffect!;
+
+			if (node.contains(event.target as HTMLElement)) {
+				options.onDragHover?.({
 					originalEvent: event,
 					node: node,
 					names: _getMatchingDropZoneNames(event, options)
+				});
+			}
+		}
+
+		function handleDrop(event: DragEvent) {
+			if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
+				return;
+			}
+
+			event.preventDefault();
+
+			if (!event.dataTransfer) {
+				return;
+			}
+
+			const data = event.dataTransfer.getData('text/plain');
+			node.classList.remove(...(options.highlighClasses as string[]));
+			const draggingElement = getDraggingElement() as HTMLElement;
+			options.onDropped({
+				data: JSON.parse(data),
+				names: _getMatchingDropZoneNames(event, options),
+				originalEvent: event,
+				getCustomEventData: <T>(key: string) => {
+					return _getCustomEventData(draggingElement, key) as T | undefined;
+				},
+				addCustomEventData: (key: string, data: any) => {
+					_addCustomEventData(draggingElement, key, data);
 				}
-			}) satisfies CustomDragEvent
-		);
-	}
-
-	function handleDragLeave(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
+			});
 		}
 
-		if (
-			!(event.target as HTMLElement).contains(node) &&
-			event.relatedTarget &&
-			node.contains(event.relatedTarget as HTMLElement)
-		) {
-			return;
-		}
+		node.addEventListener('dragstart', handleDragStart);
+		node.addEventListener('dragenter', handleDragEnter);
+		node.addEventListener('dragleave', handleDragLeave);
+		node.addEventListener('dragover', handleDragOver);
+		node.addEventListener('drop', handleDrop);
 
-		node.classList.remove(...(options.highlighClasses as string[]));
-		node.dispatchEvent(
-			new CustomEvent('dragLeft', {
-				detail: {
-					originalEvent: event,
-					node: node,
-					names: _getMatchingDropZoneNames(event, options)
-				}
-			}) satisfies CustomDragEvent
-		);
-	}
-
-	function handleDragOver(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
-		}
-
-		event.preventDefault();
-		if (!event.dataTransfer) {
-			return;
-		}
-
-		event.dataTransfer.dropEffect = options.dropEffect!;
-
-		if (node.contains(event.target as HTMLElement)) {
-			onDragHover(event);
-		}
-	}
-
-	function handleDrop(event: DragEvent) {
-		if (!_checkIfIsInSameDropZoneName(node, event, options) || options.disabled) {
-			return;
-		}
-
-		event.preventDefault();
-
-		if (!event.dataTransfer) {
-			return;
-		}
-
-		const data = event.dataTransfer.getData('text/plain');
-		node.classList.remove(...(options.highlighClasses as string[]));
-		const draggingElement = getDraggingElement() as HTMLElement;
-		node.dispatchEvent(
-			new CustomEvent('dropped', {
-				detail: {
-					data: JSON.parse(data),
-					names: _getMatchingDropZoneNames(event, options),
-					originalEvent: event,
-					getCustomEventData: <T>(key: string) => {
-						return _getCustomEventData(draggingElement, key) as T | undefined;
-					},
-					addCustomEventData: (key: string, data: any) => {
-						_addCustomEventData(draggingElement, key, data);
-					}
-				}
-			}) satisfies DropEvent<Data>
-		);
-	}
-
-	function onDragHover(event: DragEvent) {
-		node.dispatchEvent(
-			new CustomEvent('dragHover', {
-				detail: {
-					originalEvent: event,
-					node: node,
-					names: _getMatchingDropZoneNames(event, options)
-				}
-			}) satisfies CustomDragEvent
-		);
-	}
-
-	node.addEventListener('dragstart', handleDragStart);
-	node.addEventListener('dragenter', handleDragEnter);
-	node.addEventListener('dragleave', handleDragLeave);
-	node.addEventListener('dragover', handleDragOver);
-	node.addEventListener('drop', handleDrop);
-
-	return {
-		update(newOptions) {
-			options = newOptions;
-			_setOptionsDefaults(options);
-		},
-		destroy() {
+		return () => {
 			node.removeEventListener('dragstart', handleDragStart);
 			node.removeEventListener('dragenter', handleDragEnter);
 			node.removeEventListener('dragleave', handleDragLeave);
 			node.removeEventListener('dragover', handleDragOver);
 			node.removeEventListener('drop', handleDrop);
-		}
+		};
 	};
 }
 
