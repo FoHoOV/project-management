@@ -5,7 +5,6 @@
 
 	import type { ActionData } from './$types';
 	import { attachToProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
 	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
 
 	export type Props = {
@@ -24,11 +23,7 @@
 	enhancerConfig={{
 		validator: { schema: attachToProjectSchema },
 		form: form,
-		actionName: 'attachToProject',
-		invalidateAllAfterSubmit: false
-	}}
-	onSubmitSucceeded={async (event) => {
-		await invalidate(`${generateTodoListItemsUrl(params.project_name, params.project_id)}`);
+		actionName: 'attachToProject'
 	}}
 	successfulMessage="Todo category is now shared with the specified project"
 >

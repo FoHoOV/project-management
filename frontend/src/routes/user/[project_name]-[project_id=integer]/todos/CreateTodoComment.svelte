@@ -26,7 +26,7 @@
 		validator: { schema: createTodoCommentSchema },
 		form: form,
 		actionName: 'createTodoComment',
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCommentsStore.add(event.response);

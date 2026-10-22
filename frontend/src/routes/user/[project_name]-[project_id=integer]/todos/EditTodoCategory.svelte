@@ -28,7 +28,7 @@
 		form: form,
 		actionName: 'editTodoCategory',
 		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateCategory(event.response);

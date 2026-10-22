@@ -27,7 +27,7 @@
 		validator: { schema: addTodoItemDependencySchema },
 		form: form,
 		actionName: 'addTodoItemDependency',
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {
 		todoCategoriesStore?.addDependency(todo.id, event.response);

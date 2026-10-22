@@ -28,7 +28,7 @@
 		form: form,
 		actionName: 'editTodoComment',
 		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCommentsStore.update(event.response);

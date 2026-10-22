@@ -25,7 +25,7 @@
 		validator: { schema: createTodoCategorySchema },
 		form: form,
 		actionName: 'createCategory',
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.addCategory(event.response);

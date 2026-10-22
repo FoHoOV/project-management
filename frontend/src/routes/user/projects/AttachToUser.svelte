@@ -28,7 +28,7 @@
 		form: form,
 		actionName: 'attach',
 		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {

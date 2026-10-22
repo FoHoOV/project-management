@@ -28,7 +28,7 @@
 		form: form,
 		actionName: 'editTag',
 		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTag(event.response);

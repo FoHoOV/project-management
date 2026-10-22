@@ -35,8 +35,9 @@ export const setAuthorizationToken: Handle = async ({ event, resolve }) => {
 	return await resolve(event);
 };
 
-export const handleError: HandleServerError = ({ kind }) => {
+export const handleError: HandleServerError = ({ kind, error }) => {
 	if (kind === 'unknown') {
+		console.error(error);
 		return { message: 'Whoops! an unknown error has occurred, please try again later' };
 	}
 };

@@ -26,7 +26,7 @@
 		validator: { schema: addTagSchema },
 		form: form,
 		actionName: 'addTag',
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={(event) => {
 		todoCategoriesStore?.addTag(todoId, event.response);

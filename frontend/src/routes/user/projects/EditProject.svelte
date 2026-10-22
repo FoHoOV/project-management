@@ -26,7 +26,7 @@
 		form: form,
 		actionName: 'edit',
 		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
+		refreshAllAfterSubmit: false
 	}}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.update(event.response);
