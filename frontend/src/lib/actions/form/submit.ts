@@ -11,7 +11,7 @@ import type {
 	SubmitSucceededEventType,
 	SubmitFailedEventType
 } from './submit-types';
-import { validate } from './validator';
+import { getClientSideFormErrors } from './validator';
 import type { SubmitClientErrorEventType, ValidatorErrorEvents } from './validator-types';
 import {
 	convertFormDataToObject,
@@ -46,10 +46,30 @@ export function superEnhance<
 		throw new Error('form.action should end with the passed action in enhancer options');
 	}
 
-	const handleSubmit =
+	const submit =
 		options?.submit ?? _defaultSubmitHandler<TSchema, TFormAction, TKey>(node, options);
 
-	const validator = options?.validator && validate(node, options.validator);
+	const handleSubmit: SubmitFunction = async (input) => {
+		if (options?.validator) {
+			const errors = await getClientSideFormErrors<TSchema>(
+				input.formData,
+				options.validator.schema
+			);
+
+			if (Object.keys(errors).length > 0) {
+				input.cancel();
+				node.dispatchEvent(
+					new CustomEvent('submitclienterror', {
+						detail: { errors, formData: convertFormDataToObject(input.formData) }
+					}) satisfies SubmitClientErrorEventType<TSchema>
+				);
+				return;
+			}
+		}
+
+		return submit(input);
+	};
+
 	const enhancer = enhance(node, handleSubmit);
 	node.addEventListener('reset', _superResetHandler);
 
@@ -61,7 +81,6 @@ export function superEnhance<
 
 	return {
 		destroy() {
-			validator?.destroy && validator.destroy();
 			enhancer.destroy();
 			node.removeEventListener('reset', _superResetHandler);
 			node.removeEventListener('submitclienterror', _handleClientSideError);
@@ -85,10 +104,6 @@ function _defaultSubmitHandler<
 			_focusOnFirstVisibleInput(node);
 
 			if (result.type == 'success') {
-				console.debug('s-form-result');
-				console.debug(_getResultFromFormAction(result.data, options));
-				console.debug('e-form-result');
-
 				const parsedFormData = await options?.validator?.schema.safeParseAsync(
 					convertFormDataToObject(formData)
 				);
