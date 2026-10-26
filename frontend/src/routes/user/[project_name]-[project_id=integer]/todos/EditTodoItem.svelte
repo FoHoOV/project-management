@@ -1,51 +1,49 @@
 <script lang="ts" module>
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
 
 	import type { ActionData } from './$types';
 	import { editTodoItemSchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
-	import { getTodoCategories } from '$lib/stores';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
+	import type { TodoCategoryPartialTodoItem } from '#lib/generated-client/index.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
-		form: ActionData;
+		params: ProjectRouteParams;
 		todo: TodoCategoryPartialTodoItem;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todo }: Props = $props();
+	const { params, todo }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
+
+	const enhancerConfig: EnhanceOptions<typeof editTodoItemSchema, ActionData, 'editTodoItem'> = {
+		validator: { schema: editTodoItemSchema },
+		actionName: 'editTodoItem',
+		resetOnSubmit: false,
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
-	)}?/editTodoItem"
-	enhancerConfig={{
-		validator: { schema: editTodoItemSchema },
-		form: form,
-		actionName: 'editTodoItem',
-		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
-	}}
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/editTodoItem"
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.updateTodo(event.response);
 	}}
 	successfulMessage="Todo item edited"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={todo.id} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="id" value={todo.id} errors="" />
 		<FormInput
 			wrapperClasses="hidden"
 			type="hidden"
 			name="category_id"
 			value={todo.category_id}
-			errors={''}
+			errors=""
 		/>
 		<FormInput
 			name="title"
@@ -66,7 +64,7 @@
 			label="Due date (Optional)"
 			wrapperClasses="w-full"
 			type="date"
-			value={todo.due_date?.toLocaleDateString('en-CA')}
+			value={todo.due_date}
 			errors={formErrors?.errors?.due_date}
 		/>
 	{/snippet}

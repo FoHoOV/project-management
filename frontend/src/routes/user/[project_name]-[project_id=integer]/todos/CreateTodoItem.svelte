@@ -1,46 +1,47 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { createTodoItemSchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { getTodoCategories } from '$lib/stores';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
-		form: ActionData;
+		params: ProjectRouteParams;
 		categoryId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, categoryId }: Props = $props();
+	const { params, categoryId }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
+
+	const enhancerConfig: EnhanceOptions<typeof createTodoItemSchema, ActionData, 'addTodo'> = {
+		validator: { schema: createTodoItemSchema },
+		actionName: 'addTodo',
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}?/addTodo"
-	enhancerConfig={{
-		validator: { schema: createTodoItemSchema },
-		form: form,
-		actionName: 'addTodo',
-		invalidateAllAfterSubmit: false
-	}}
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/addTodo"
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		todoCategoriesStore?.addTodo(event.response);
 	}}
 	successfulMessage="Todo item created"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="is_done" value={false} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="is_done" value={false} errors="" />
 		<FormInput
 			wrapperClasses="hidden"
 			type="hidden"
 			value={categoryId}
 			name="category_id"
-			errors={''}
+			errors=""
 		/>
 		<FormInput
 			name="title"

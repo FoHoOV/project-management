@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import Alert from '$components/alerts/Alert.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
 	import type { HTMLInputAttributes, HTMLTextareaAttributes } from 'svelte/elements';
 
@@ -7,11 +7,11 @@
 		| ({
 				type?: 'text-area';
 				value?: string | number | undefined;
-		  } & Partial<Exclude<HTMLInputAttributes, 'class' | 'placeholder' | 'id'>>)
+		  } & Partial<Omit<HTMLInputAttributes, 'class' | 'placeholder'>>)
 		| ({
 				type?: HTMLInputAttributes['type'] | 'toggle';
 				value?: string | boolean | number | undefined;
-		  } & Partial<Exclude<HTMLInputAttributes, 'type' | 'class' | 'placeholder' | 'id'>>)
+		  } & Partial<Omit<HTMLInputAttributes, 'type' | 'class' | 'placeholder'>>)
 	) & {
 		name: string;
 		label?: string;
@@ -86,8 +86,7 @@
 				placeholder={label}
 				class="{defaultInputClasses} {inputClasses}"
 				value={value?.toString()}
-				{...restProps as HTMLTextareaAttributes}
-			></textarea>
+				{...restProps as HTMLTextareaAttributes}></textarea>
 		{:else}
 			<input
 				bind:this={input}

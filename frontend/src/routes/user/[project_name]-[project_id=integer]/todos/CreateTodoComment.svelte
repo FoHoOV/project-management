@@ -1,43 +1,45 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { createTodoCommentSchema } from './validator';
-	import { page } from '$app/stores';
-	import { TodoComments } from '$lib/stores/todo-comments';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
+	import { TodoComments } from '#lib/stores/todo-comments/index.js';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
 
 	export type Props = {
-		form: ActionData;
+		params: ProjectRouteParams;
 		todoCommentsStore: TodoComments;
 		todoId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todoCommentsStore, todoId }: Props = $props();
+	const { params, todoCommentsStore, todoId }: Props = $props();
+
+	const enhancerConfig: EnhanceOptions<
+		typeof createTodoCommentSchema,
+		ActionData,
+		'createTodoComment'
+	> = {
+		validator: { schema: createTodoCommentSchema },
+		actionName: 'createTodoComment',
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
-	)}?/createTodoComment"
-	enhancerConfig={{
-		validator: { schema: createTodoCommentSchema },
-		form: form,
-		actionName: 'createTodoComment',
-		invalidateAllAfterSubmit: false
-	}}
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/createTodoComment"
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		todoCommentsStore.add(event.response);
 	}}
 	successfulMessage="Todo comment created"
 >
 	{#snippet inputs({ formErrors })}
-		<FormInput wrapperClasses="hidden" type="hidden" name="todo_id" value={todoId} errors={''} />
+		<FormInput wrapperClasses="hidden" type="hidden" name="todo_id" value={todoId} errors="" />
 		<FormInput
 			name="message"
 			type="text-area"

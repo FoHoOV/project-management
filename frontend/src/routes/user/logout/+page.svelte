@@ -1,9 +1,9 @@
 <script lang="ts" module>
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
-	import { page } from '$app/stores';
-	import { superEnhance } from '$lib/actions/form';
+	import { page } from '$app/state';
+	import { superEnhance } from '#lib/actions/form/index.js';
 </script>
 
 <script lang="ts">
@@ -15,13 +15,14 @@
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center">
-	<Alert type="error" message={new String($page.error?.message)} />
+	<Alert type="error" message={new String(page.error?.message)} />
 	<h2>Are sure you are gonna miss out on this?</h2>
 	<form
 		method="post"
-		use:superEnhance
-		onsubmitstarted={() => (status = 'submitting')}
-		onsubmitended={() => (status = 'none')}
+		{@attach superEnhance({
+			onSubmitStarted: () => (status = 'submitting'),
+			onSubmitEnded: () => (status = 'none')
+		})}
 	>
 		<LoadingButton
 			class="btn-warning btn-wide mt-2"

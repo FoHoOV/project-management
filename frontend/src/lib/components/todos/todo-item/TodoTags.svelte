@@ -1,10 +1,10 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
 
-	import { page } from '$app/stores';
-	import { TagClient } from '$lib/client-wrapper/clients';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { createApiClient } from '#lib/api-client.js';
+	import { deleteTags, detachFromTodoTags } from '#lib/generated-client/index.js';
+	import { callService } from '#lib/client-wrapper/index.js';
 	import Fa from 'svelte-fa';
 	import {
 		faEdit,
@@ -14,11 +14,14 @@
 		faUnlink
 	} from '@fortawesome/free-solid-svg-icons';
 	import { flip } from 'svelte/animate';
-	import type { TodoCategoryPartialTodoItem, TodoItemPartialTag } from '$lib/generated-client';
-	import Confirm from '$components/Confirm.svelte';
-	import { type CommonComponentStates } from '$lib';
-	import { getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import type {
+		TodoCategoryPartialTodoItem,
+		TodoItemPartialTag
+	} from '#lib/generated-client/index.js';
+	import Confirm from '#lib/components/Confirm.svelte';
+	import { type CommonComponentStates } from '#lib';
+	import { getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditTag?: (tag: TodoItemPartialTag) => void;
@@ -42,9 +45,12 @@
 
 	async function handleDetachTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				await TagClient({ token: $page.data.token }).detachFromTodoTags(tag.name, todo.id);
+				await detachFromTodoTags({
+					client: createApiClient(),
+					path: { tag_name: tag.name, todo_id: todo.id }
+				});
 				todoCategoriesStore?.detachTag(todo.id, tag);
 				componentState = 'none';
 				apiErrorTitle = null;
@@ -58,10 +64,12 @@
 
 	async function handleDeleteTag(tag: TodoItemPartialTag) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				await TagClient({ token: $page.data.token }).deleteTags(tag.name, {
-					project_id: tag.project_id
+				await deleteTags({
+					client: createApiClient(),
+					path: { tag_name: tag.name },
+					body: { project_id: tag.project_id }
 				});
 				todoCategoriesStore?.deleteTag(tag);
 				componentState = 'none';

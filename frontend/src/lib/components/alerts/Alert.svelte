@@ -38,24 +38,22 @@
 
 	$effect(() => {
 		message;
-		let intervalId: number;
-
 		closed = false;
 		autoClosePercentage = 0;
 
-		intervalId = setInterval(() => {
-			autoClosePercentage += 1;
-		}, 90) as unknown as number;
-
-		return () => {
-			clearInterval(intervalId);
-		};
-	});
-
-	$effect(() => {
-		if (autoClosePercentage >= 100) {
-			closed = true;
+		if (isMessageNull) {
+			return;
 		}
+
+		const intervalId = setInterval(() => {
+			autoClosePercentage += 1;
+			if (autoClosePercentage >= 100) {
+				closed = true;
+				clearInterval(intervalId);
+			}
+		}, 90);
+
+		return () => clearInterval(intervalId);
 	});
 </script>
 

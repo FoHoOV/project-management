@@ -1,5 +1,3 @@
-import datetime
-
 from sqlalchemy.orm import Session
 
 from db.models.project import Project
@@ -71,10 +69,6 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
         db, todo.category_id, user_id, [Permission.CREATE_TODO_ITEM]
     )
 
-    todo.due_date = (
-        todo.due_date.astimezone(datetime.UTC) if todo.due_date is not None else None
-    )
-
     db_item = TodoItem(**todo.model_dump())
     db.add(db_item)
     db.flush()
@@ -104,8 +98,6 @@ def create(db: Session, todo: TodoItemCreate, user_id: int):
 
 
 def update_item(db: Session, todo_id: int, todo: TodoItemUpdateItem, user_id: int):
-    # in order to reset due_date pass a date with year=1
-
     validate_todo_item_belongs_to_user(
         db, todo_id, user_id, [Permission.UPDATE_TODO_ITEM]
     )
@@ -147,10 +139,8 @@ def update_item(db: Session, todo_id: int, todo: TodoItemUpdateItem, user_id: in
     if todo.title is not None:
         db_item.title = todo.title
 
-    if todo.due_date is not None:
-        db_item.due_date = (
-            todo.due_date.astimezone(datetime.UTC) if todo.due_date.year != 1 else None
-        )
+    if "due_date" in todo.model_fields_set:
+        db_item.due_date = todo.due_date
 
     _perform_actions(db, db_item, db_item.category_id, todo.is_done, user_id)
 

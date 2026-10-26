@@ -1,37 +1,39 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { addTodoItemDependencySchema } from './validator';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import type { TodoCategoryPartialTodoItem } from '$lib/generated-client/models';
-	import { getTodoCategories } from '$lib/stores';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
+	import type { TodoCategoryPartialTodoItem } from '#lib/generated-client/index.js';
+	import { getTodoCategories } from '#lib/stores/index.js';
 
 	export type Props = {
-		form: ActionData;
+		params: ProjectRouteParams;
 		todo: TodoCategoryPartialTodoItem;
 	};
 </script>
 
 <script lang="ts">
-	const { form, todo }: Props = $props();
+	const { params, todo }: Props = $props();
 	const todoCategoriesStore = getTodoCategories();
+
+	const enhancerConfig: EnhanceOptions<
+		typeof addTodoItemDependencySchema,
+		ActionData,
+		'addTodoItemDependency'
+	> = {
+		validator: { schema: addTodoItemDependencySchema },
+		actionName: 'addTodoItemDependency',
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
-	)}?/addTodoItemDependency"
-	enhancerConfig={{
-		validator: { schema: addTodoItemDependencySchema },
-		form: form,
-		actionName: 'addTodoItemDependency',
-		invalidateAllAfterSubmit: false
-	}}
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/addTodoItemDependency"
+	{enhancerConfig}
 	onSubmitSucceeded={(event) => {
 		todoCategoriesStore?.addDependency(todo.id, event.response);
 	}}
@@ -43,7 +45,7 @@
 			wrapperClasses="w-full"
 			hideLabel={true}
 			value={todo.id}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput

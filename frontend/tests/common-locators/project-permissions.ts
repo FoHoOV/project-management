@@ -14,7 +14,7 @@ export async function toggleAllPermissions(locator: Locator, on: boolean) {
 	const allPermissions = (
 		await Promise.all(
 			checkboxes.map(async (checkbox) =>
-				(await checkbox.getAttribute('value')) == Permission.All ? checkbox : null
+				(await checkbox.getAttribute('value')) == Permission.ALL ? checkbox : null
 			)
 		)
 	).filter((checkbox) => checkbox !== null);
@@ -27,7 +27,7 @@ export async function toggleAllPermissions(locator: Locator, on: boolean) {
 export async function setPermissions(locator: Locator, permissions: Permission[]) {
 	const checkboxes = await getCheckBoxes(locator);
 
-	if (permissions.length == 1 && permissions[0] == Permission.All) {
+	if (permissions.length == 1 && permissions[0] == Permission.ALL) {
 		await toggleAllPermissions(locator, true);
 		return;
 	}

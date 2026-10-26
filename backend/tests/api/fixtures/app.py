@@ -1,22 +1,13 @@
 import pytest
+from sqlalchemy import MetaData
 
 from api import create_app
-from api.dependencies.db import get_db
-from tests.db.test import SessionLocalTest, init_db
+from db import get_engine
 
 
 @pytest.fixture(scope="session")
 def test_app():
-    """Create and return a test FastAPI application."""
-    init_db()  # Ensure the database is initialized
-    app = create_app()
-
-    def get_test_db():
-        db = SessionLocalTest()
-        try:
-            yield db
-        finally:
-            db.close()
-
-    app.dependency_overrides[get_db] = get_test_db
-    return app
+    existing_schema = MetaData()
+    existing_schema.reflect(bind=get_engine())
+    existing_schema.drop_all(bind=get_engine())
+    return create_app()

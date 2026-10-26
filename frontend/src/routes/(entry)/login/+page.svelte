@@ -1,13 +1,18 @@
 <script lang="ts" module>
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import { resolve } from '$app/paths';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
+	import type { ActionData } from './$types';
 
 	import { schema } from './validators';
 </script>
 
 <script lang="ts">
-	const { form } = $props();
+	const enhancerConfig: EnhanceOptions<typeof schema, ActionData> = {
+		validator: { schema }
+	};
 </script>
 
 <svelte:head>
@@ -15,7 +20,7 @@
 </svelte:head>
 
 <EnhancedForm
-	enhancerConfig={{ validator: { schema }, form: form }}
+	{enhancerConfig}
 	showResetButton={false}
 	formWrapperClasses="card flex w-full flex-row items-start justify-center bg-base-300 shadow-md"
 	inputsWrapperClasses="card-body w-full items-center text-center md:flex-shrink-0 md:flex-grow-0"
@@ -43,7 +48,7 @@
 	{#snippet footer()}
 		<span class="divider divider-vertical"></span>
 
-		<a class="flex flex-col items-start self-start" href="/signup">
+		<a class="flex flex-col items-start self-start" href={resolve('/(entry)/signup')}>
 			<h5>Don't have an account yet?</h5>
 			<span>create one here!</span>
 		</a>

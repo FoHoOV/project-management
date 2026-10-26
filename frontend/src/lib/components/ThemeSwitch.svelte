@@ -2,7 +2,7 @@
 	import Fa from 'svelte-fa';
 
 	import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
-	import { getTheme } from '$lib/stores';
+	import { getTheme } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">

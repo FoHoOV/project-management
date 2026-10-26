@@ -1,13 +1,9 @@
-from fastapi import logger
-
-from db import SessionLocal
+from db import get_session_factory
 
 
 def get_db():
-    db = SessionLocal()
+    db = get_session_factory()()
     try:
         yield db
-    except Exception as ex:
-        logger.logger.error(ex)
     finally:
         db.close()

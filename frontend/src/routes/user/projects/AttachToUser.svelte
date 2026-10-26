@@ -1,35 +1,36 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
-	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
+	import ProjectPermissions from '#lib/components/project/ProjectPermissions.svelte';
 
 	import type { ActionData } from './$types';
 	import { attachProjectSchema } from './validator';
-	import { type Project } from '$lib/generated-client/models';
-	import { getProjects } from '$lib/stores';
+	import { type Project } from '#lib/generated-client/index.js';
+	import { getProjects } from '#lib/stores/index.js';
 
 	export type Props = {
-		form: ActionData;
 		project: Project;
 	};
 </script>
 
 <script lang="ts">
-	const { form, project }: Props = $props();
+	const { project }: Props = $props();
 
 	const projectsStore = getProjects();
+
+	const enhancerConfig: EnhanceOptions<typeof attachProjectSchema, ActionData, 'attach'> = {
+		validator: { schema: attachProjectSchema },
+		actionName: 'attach',
+		resetOnSubmit: false,
+		refreshAllAfterSubmit: false
+	};
 </script>
 
 <EnhancedForm
 	action="/user/projects?/attach"
-	enhancerConfig={{
-		validator: { schema: attachProjectSchema },
-		form: form,
-		actionName: 'attach',
-		resetOnSubmit: false,
-		invalidateAllAfterSubmit: false
-	}}
+	{enhancerConfig}
 	onSubmitSucceeded={async (event) => {
 		projectsStore?.addAssociation(project, {
 			username: event.parsedFormData.username,
@@ -48,7 +49,7 @@
 			wrapperClasses="w-full"
 			hideLabel={true}
 			value={project.id}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput

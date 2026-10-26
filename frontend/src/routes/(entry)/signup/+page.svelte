@@ -1,16 +1,21 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import { resolve } from '$app/paths';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
+	import type { ActionData } from './$types';
 
 	import { schema } from './validators';
-	import { getToastManager } from '$lib/stores';
+	import { getToastManager } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">
-	const { form } = $props();
-
 	const toastManagerStore = getToastManager();
+
+	const enhancerConfig: EnhanceOptions<typeof schema, ActionData> = {
+		validator: { schema }
+	};
 </script>
 
 <svelte:head>
@@ -18,7 +23,7 @@
 </svelte:head>
 
 <EnhancedForm
-	enhancerConfig={{ validator: { schema }, form: form }}
+	{enhancerConfig}
 	onRedirected={() => {
 		toastManagerStore.addToast({
 			time: 5000,
@@ -61,7 +66,7 @@
 	{#snippet footer()}
 		<span class="divider divider-vertical"></span>
 
-		<a class="flex flex-col items-start self-start" href="/login">
+		<a class="flex flex-col items-start self-start" href={resolve('/(entry)/login')}>
 			<h5>Already have an account?</h5>
 			<span>login here!</span>
 		</a>

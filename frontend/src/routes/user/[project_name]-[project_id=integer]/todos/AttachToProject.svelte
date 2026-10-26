@@ -1,40 +1,35 @@
 <script lang="ts" module>
-	import FormInput from '$lib/components/forms/FormInput.svelte';
-	import LoadingButton from '$lib/components/buttons/LoadingButton.svelte';
-	import EnhancedForm from '$components/forms/EnhancedForm.svelte';
+	import FormInput from '#lib/components/forms/FormInput.svelte';
+	import LoadingButton from '#lib/components/buttons/LoadingButton.svelte';
+	import EnhancedForm from '#lib/components/forms/EnhancedForm.svelte';
+	import type { EnhanceOptions } from '#lib/actions/form/index.js';
 
 	import type { ActionData } from './$types';
 	import { attachToProjectSchema } from './validator';
-	import { invalidate } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl, type ProjectRouteParams } from '#lib/utils/params/route.js';
 
 	export type Props = {
-		form: ActionData;
+		params: ProjectRouteParams;
 		categoryId: number;
 	};
 </script>
 
 <script lang="ts">
-	const { form, categoryId }: Props = $props();
+	const { params, categoryId }: Props = $props();
+
+	const enhancerConfig: EnhanceOptions<
+		typeof attachToProjectSchema,
+		ActionData,
+		'attachToProject'
+	> = {
+		validator: { schema: attachToProjectSchema },
+		actionName: 'attachToProject'
+	};
 </script>
 
 <EnhancedForm
-	action="{generateTodoListItemsUrl(
-		$page.params.project_name,
-		$page.params.project_id
-	)}?/attachToProject"
-	enhancerConfig={{
-		validator: { schema: attachToProjectSchema },
-		form: form,
-		actionName: 'attachToProject',
-		invalidateAllAfterSubmit: false
-	}}
-	onSubmitSucceeded={async (event) => {
-		await invalidate(
-			`${generateTodoListItemsUrl($page.params.project_name, $page.params.project_id)}`
-		);
-	}}
+	action="{generateTodoListItemsUrl(params.project_name, params.project_id)}?/attachToProject"
+	{enhancerConfig}
 	successfulMessage="Todo category is now shared with the specified project"
 >
 	{#snippet inputs({ formErrors })}
@@ -42,7 +37,7 @@
 			name="category_id"
 			wrapperClasses="hidden"
 			value={categoryId}
-			errors={''}
+			errors=""
 			type="hidden"
 		/>
 		<FormInput

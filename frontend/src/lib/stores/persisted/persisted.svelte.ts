@@ -1,5 +1,5 @@
-import { PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS } from '$env/static/public';
-import { StorageTypes } from '$lib';
+import { PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS } from '$app/env/public';
+import { StorageTypes } from '#lib';
 
 type PrimitiveStorageTypes = string | number | boolean;
 type ObjectStorageTypes = Record<string, unknown>;
@@ -75,9 +75,9 @@ export class Persisted {
 
 		$effect.root(() => {
 			$effect(() => {
-				const expirationDate = new Date(Date.now());
-				expirationDate.setSeconds(
-					expirationDate.getSeconds() + parseInt(PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS)
+				// eslint-disable-next-line svelte/prefer-svelte-reactivity -- a one-off cookie expiry, not state
+				const expirationDate = new Date(
+					Date.now() + parseInt(PUBLIC_COOKIES_EXPIRATION_SPAN_SECONDS) * 1000
 				);
 				this.#storageTypes.cookies.set(key, JSON.stringify(reactiveValue), {
 					expires: expirationDate,

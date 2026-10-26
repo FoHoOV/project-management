@@ -1,10 +1,11 @@
 <script lang="ts" module>
-	import Navbar from '$components/navbar/Navbar.svelte';
+	import type { ResolvedPathname } from '$app/types';
+	import Navbar from '#lib/components/navbar/Navbar.svelte';
 	import Fa from 'svelte-fa';
 
 	import { faBarsStaggered } from '@fortawesome/free-solid-svg-icons';
 	import type { Snippet } from 'svelte';
-	import { getNavbar } from '$lib/stores';
+	import { getNavbar } from '#lib/stores/index.js';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	export type SnippetParams = [{ closeDrawer: () => void }];
@@ -12,7 +13,7 @@
 	export type Props = {
 		id: string;
 		navbarTitle?: string;
-		navbarTitleHref?: string;
+		navbarTitleHref: ResolvedPathname;
 		navbarStart?: Snippet<SnippetParams>;
 		navbarCenter?: Snippet<SnippetParams>;
 		navbarEnd?: Snippet<SnippetParams>;
@@ -25,7 +26,7 @@
 	const {
 		id,
 		navbarTitle = '',
-		navbarTitleHref = '',
+		navbarTitleHref,
 		navbarStart,
 		navbarCenter,
 		navbarEnd,
@@ -61,7 +62,7 @@
 			{/snippet}
 
 			{#snippet end()}
-				{#each navbarStore.end$ as snippet}
+				{#each navbarStore.end$ as snippet (snippet)}
 					{@render snippet({ closeDrawer })}
 				{/each}
 				{@render navbarEnd?.({ closeDrawer })}

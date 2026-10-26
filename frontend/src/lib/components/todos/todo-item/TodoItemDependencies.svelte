@@ -1,21 +1,21 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
-	import Confirm from '$components/Confirm.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
 
-	import { page } from '$app/stores';
-	import { TodoItemClient } from '$lib/client-wrapper/clients';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
+	import { createApiClient } from '#lib/api-client.js';
+	import { removeTodoItemDependencyTodoItems } from '#lib/generated-client/index.js';
+	import { callService } from '#lib/client-wrapper/index.js';
 	import Fa from 'svelte-fa';
 	import { faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { flip } from 'svelte/animate';
 	import type {
 		TodoCategoryPartialTodoItem,
 		TodoItemPartialDependency
-	} from '$lib/generated-client';
-	import { type CommonComponentStates } from '$lib';
-	import { getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	} from '#lib/generated-client/index.js';
+	import { type CommonComponentStates } from '#lib';
+	import { getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onAddDependency?: (todo: TodoCategoryPartialTodoItem) => void;
@@ -37,12 +37,12 @@
 
 	async function handleDeleteDependency(dependency: TodoItemPartialDependency) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				await TodoItemClient({ token: $page.data.token }).removeTodoItemDependencyTodoItems(
-					todo.id,
-					dependency.id
-				);
+				await removeTodoItemDependencyTodoItems({
+					client: createApiClient(),
+					path: { todo_id: todo.id, dependent_todo_id: dependency.id }
+				});
 				todoCategoriesStore?.removeDependency(todo.id, dependency);
 				componentState = 'none';
 				apiErrorTitle = null;

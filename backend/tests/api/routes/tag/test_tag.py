@@ -1,11 +1,13 @@
 from collections.abc import Callable
 
-from httpx import Response
+import pytest
+from fastapi.testclient import TestClient
+from httpx2 import Response
 
 from db.models.todo_item import TodoItem
 from db.models.user_project_permission import Permission
 from db.schemas.project import Project
-from db.schemas.tag import Tag
+from db.schemas.tag import TAG_MAX_LENGTH, TAG_MIN_LENGTH, Tag
 from db.schemas.todo_category import TodoCategory
 from tests.api.conftest import UserType
 
@@ -117,3 +119,26 @@ def test_remove_todo_tag(
         Tag.model_validate(other_tag_response.json(), strict=True).name,
     )
     assert response.status_code == 200, "User C now should be able to remove the tag"
+
+
+@pytest.mark.parametrize(
+    "name, is_valid_length",
+    [
+        ("", False),
+        ("a" * TAG_MIN_LENGTH, True),
+        ("a" * TAG_MAX_LENGTH, True),
+        ("a" * (TAG_MAX_LENGTH + 1), False),
+    ],
+)
+def test_search_tag_name_length(
+    test_client: TestClient,
+    test_users: list[UserType],
+    auth_header_factory: Callable[[UserType], dict[str, str]],
+    name: str,
+    is_valid_length: bool,
+):
+    response = test_client.get(
+        "/tags/", params={"name": name}, headers=auth_header_factory(test_users[0])
+    )
+
+    assert (response.status_code != 422) == is_valid_length

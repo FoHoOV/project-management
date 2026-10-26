@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, func, null, select
+from sqlalchemy import Boolean, Date, ForeignKey, String, func, null, select
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, column_property, mapped_column, relationship
 
@@ -25,7 +25,7 @@ class TodoItem(BasesWithCreatedDate):
     category_id: Mapped[int] = mapped_column(
         ForeignKey("todo_category.id", ondelete="CASCADE")
     )
-    due_date: Mapped[datetime | None] = mapped_column(DateTime(), nullable=True)
+    due_date: Mapped[date | None] = mapped_column(Date(), nullable=True)
     category: Mapped["TodoCategory"] = relationship(
         back_populates="items",
         single_parent=True,

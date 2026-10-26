@@ -1,16 +1,21 @@
-import { ProjectClient } from '$lib/client-wrapper/clients';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
+import { createApiClient } from '#lib/api-client.js';
+import {
+	attachToUserProjects,
+	createForUserProjects,
+	updateProjects
+} from '#lib/generated-client/index.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
 import type { Actions } from '@sveltejs/kit';
 import { attachProjectSchema, createProjectSchema, editProjectSchema } from './validator';
-import { namedActionResult, validateFormActionRequest } from '$lib';
+import { namedActionResult, validateFormActionRequest } from '#lib';
 import {
 	ProjectAttachAssociation,
 	ProjectCreate,
 	ProjectUpdate
-} from '$lib/generated-client/zod/schemas';
+} from '#lib/generated-client/zod.gen.js';
 
 export const actions = {
-	create: async ({ request, locals, fetch }) => {
+	create: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, createProjectSchema);
 
 		if (!validation.success) {
@@ -19,11 +24,9 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).createForUserProjects({
-					...validation.data
+				return await createForUserProjects({
+					client: createApiClient(),
+					body: validation.data
 				});
 			},
 			errorSchema: ProjectCreate
@@ -31,7 +34,7 @@ export const actions = {
 
 		return namedActionResult(result, 'create');
 	},
-	attach: async ({ request, locals, fetch }) => {
+	attach: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, attachProjectSchema);
 
 		if (!validation.success) {
@@ -40,11 +43,10 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).attachToUserProjects(validation.data.project_id, {
-					...validation.data
+				return await attachToUserProjects({
+					client: createApiClient(),
+					path: { project_id: validation.data.project_id },
+					body: validation.data
 				});
 			},
 			errorSchema: ProjectAttachAssociation
@@ -52,7 +54,7 @@ export const actions = {
 
 		return namedActionResult(result, 'attach');
 	},
-	edit: async ({ request, locals, fetch }) => {
+	edit: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, editProjectSchema);
 
 		if (!validation.success) {
@@ -61,11 +63,10 @@ export const actions = {
 
 		const result = await callServiceInFormActions({
 			call: async () => {
-				return await ProjectClient({
-					token: locals.token,
-					fetchApi: fetch
-				}).updateProjects(validation.data.project_id, {
-					...validation.data
+				return await updateProjects({
+					client: createApiClient(),
+					path: { project_id: validation.data.project_id },
+					body: validation.data
 				});
 			},
 			errorSchema: ProjectUpdate

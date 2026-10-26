@@ -1,4 +1,7 @@
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+# bcrypt>=5 rejects longer passwords instead of silently truncating them
+PASSWORD_MAX_BYTES = 72
 
 
 class UserBase(BaseModel):
@@ -11,8 +14,17 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: str = Field(min_length=5, max_length=100)
-    confirm_password: str = Field(min_length=5, max_length=100, exclude=True)
+    password: str = Field(min_length=5, max_length=PASSWORD_MAX_BYTES)
+    confirm_password: str = Field(
+        min_length=5, max_length=PASSWORD_MAX_BYTES, exclude=True
+    )
+
+    @field_validator("password")
+    @classmethod
+    def check_password_byte_length(cls, password: str):
+        if len(password.encode("utf-8")) > PASSWORD_MAX_BYTES:
+            raise ValueError(f"password must be at most {PASSWORD_MAX_BYTES} bytes")
+        return password
 
     @model_validator(mode="after")
     def check_passwords_match(self):

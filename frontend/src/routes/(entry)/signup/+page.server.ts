@@ -1,17 +1,18 @@
 import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { validateFormActionRequest } from '$lib/actions/form';
+import { validateFormActionRequest } from '#lib/actions/form/index.js';
 import { schema } from './validators';
-import { UserCreate } from '$lib/generated-client/zod/schemas';
-import { callServiceInFormActions } from '$lib/client-wrapper/wrapper.server';
-import { UserClient } from '$lib/client-wrapper/clients';
+import { UserCreate } from '#lib/generated-client/zod.gen.js';
+import { callServiceInFormActions } from '#lib/client-wrapper/wrapper.server.js';
+import { createApiClient } from '#lib/api-client.js';
+import { signupUsers } from '#lib/generated-client/index.js';
 
 export const load = (async () => {
 	return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	default: async ({ request, fetch }) => {
+	default: async ({ request }) => {
 		const validation = await validateFormActionRequest(request, schema);
 
 		if (!validation.success) {
@@ -20,10 +21,10 @@ export const actions: Actions = {
 
 		return await callServiceInFormActions({
 			call: async () => {
-				await UserClient({
-					isTokenRequired: false,
-					fetchApi: fetch
-				}).signupUsers(validation.data);
+				await signupUsers({
+					client: createApiClient(),
+					body: validation.data
+				});
 				redirect(303, '/login');
 			},
 			errorSchema: UserCreate

@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import type { Persisted } from './persisted.svelte';
 
 const PERSISTED_CONTEXT_KEY = Symbol();

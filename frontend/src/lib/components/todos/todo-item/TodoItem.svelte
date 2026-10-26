@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	import Alert from '$components/alerts/Alert.svelte';
-	import Confirm from '$components/Confirm.svelte';
-	import Spinner from '$components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
 	import TodoItemDependencies from './TodoItemDependencies.svelte';
 	import TodoComments from './TodoComments.svelte';
 	import TodoTags from './TodoTags.svelte';
-	import CategoryInfo from '$components/todos/todo-item/CategoryInfo.svelte';
-	import ProjectsInfo from '$components/todos/todo-item/ProjectsInfo.svelte';
+	import CategoryInfo from '#lib/components/todos/todo-item/CategoryInfo.svelte';
+	import ProjectsInfo from '#lib/components/todos/todo-item/ProjectsInfo.svelte';
 	import Fa from 'svelte-fa';
 	import Draggable from './Draggable.svelte';
 
@@ -16,9 +16,10 @@
 		type TodoCategoryPartialTodoItem,
 		type CommonComponentStates,
 		type TodoCategory,
-		callServiceInClient,
-		ErrorType
-	} from '$lib';
+		callService,
+		ErrorType,
+		fromIsoDate
+	} from '#lib';
 	import {
 		faEdit,
 		faTrashCan,
@@ -28,13 +29,13 @@
 		faTags,
 		faSitemap
 	} from '@fortawesome/free-solid-svg-icons';
-	import { page } from '$app/stores';
-	import { TodoItemClient } from '$lib/client-wrapper/clients';
+	import { createApiClient } from '#lib/api-client.js';
+	import { removeTodoItems, updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Events as TodoDependencyEvents } from './TodoItemDependencies.svelte';
 	import type { Events as TodoCommentEvents } from './TodoComments.svelte';
 	import type { Events as TodoTagEvents } from './TodoTags.svelte';
-	import { getMultiStepModal, getToastManager, getTodoCategories } from '$lib/stores';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { getMultiStepModal, getToastManager, getTodoCategories } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditTodoItem?: (todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>) => void;
@@ -72,12 +73,13 @@
 	async function handleChangeDoneStatus(event: Event) {
 		componentState = 'calling-service';
 		const savedTodoStatus = todo.is_done;
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(todo.id, {
-					item: {
-						...todo,
-						is_done: !savedTodoStatus
+				const result = await updateTodoItems({
+					client: createApiClient(),
+					path: { todo_id: todo.id },
+					body: {
+						item: { is_done: !savedTodoStatus }
 					}
 				});
 				todoCategoriesStore?.updateTodo(result, draggable);
@@ -109,9 +111,12 @@
 
 	async function handleRemoveTodo() {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				await TodoItemClient({ token: $page.data.token }).removeTodoItems(todo.id);
+				await removeTodoItems({
+					client: createApiClient(),
+					path: { todo_id: todo.id }
+				});
 				todoCategoriesStore?.removeTodo(todo);
 				apiErrorTitle = null;
 				componentState = 'none';
@@ -169,7 +174,8 @@
 			return '';
 		}
 
-		const dueDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
+		const dueDate = fromIsoDate(date);
+		dueDate.setHours(23, 59, 59);
 
 		if (Date.now() > dueDate.getTime()) {
 			return 'text-error';
@@ -229,7 +235,9 @@
 			<div class="flex items-center gap-2 py-2">
 				<Fa icon={faCalendarCheck} class={_getDueDateClass(todo.due_date)}></Fa>
 				{#if todo.due_date}
-					<span class={_getDueDateClass(todo.due_date)}>{todo.due_date.toLocaleDateString()}</span>
+					<span class={_getDueDateClass(todo.due_date)}
+						>{fromIsoDate(todo.due_date).toLocaleDateString()}</span
+					>
 				{:else}
 					<span>-</span>
 				{/if}

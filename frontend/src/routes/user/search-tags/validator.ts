@@ -1,9 +1,11 @@
 import { z } from 'zod';
-import type { SearchTagsRequest } from '$lib/generated-client/apis/TagsApi';
+import type { SearchTagsData } from '#lib/generated-client/index.js';
+import { zSearchTagsQuery } from '#lib/generated-client/zod.gen.js';
 
-export const searchTagSchema = z.object({
-	name: z.string().min(1).max(20),
-	projectId: z.number({ coerce: true }).nullable().default(null)
+const emptyToNull = (value: unknown) => (value === '' ? null : value);
+
+export const searchTagSchema = zSearchTagsQuery.extend({
+	project_id: z.preprocess(emptyToNull, z.coerce.number().nullable()).default(null)
 });
 
-({}) as z.infer<typeof searchTagSchema> satisfies SearchTagsRequest;
+({}) as z.infer<typeof searchTagSchema> satisfies SearchTagsData['query'];

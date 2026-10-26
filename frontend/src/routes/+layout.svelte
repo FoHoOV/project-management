@@ -1,13 +1,14 @@
 <script lang="ts" module>
-	import NavbarItem from '$lib/components/navbar/NavbarItem.svelte';
-	import MultiStepModal from '$components/popups/MultiStepModal.svelte';
-	import Drawer from '$components/Drawer.svelte';
-	import Toasts from '$components/popups/Toasts.svelte';
-	import ThemeSwitch from '$components/ThemeSwitch.svelte';
+	import { resolve } from '$app/paths';
+	import NavbarItem from '#lib/components/navbar/NavbarItem.svelte';
+	import MultiStepModal from '#lib/components/popups/MultiStepModal.svelte';
+	import Drawer from '#lib/components/Drawer.svelte';
+	import Toasts from '#lib/components/popups/Toasts.svelte';
+	import ThemeSwitch from '#lib/components/ThemeSwitch.svelte';
 
 	import '../app.css';
 
-	import { navigating, page } from '$app/stores';
+	import { navigating, page } from '$app/state';
 	import {
 		faArrowRight,
 		faHome,
@@ -15,9 +16,9 @@
 		faSearch
 	} from '@fortawesome/free-solid-svg-icons';
 
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
-	import { Projects, setProjects } from '$lib/stores/projects';
-	import { createRootContextManager } from '$lib/stores/context-manager';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import { Projects, setProjects } from '#lib/stores/projects/index.js';
+	import { createRootContextManager } from '#lib/stores/context-manager/index.js';
 	import { onMount, untrack } from 'svelte';
 	import {
 		Navbar,
@@ -30,8 +31,8 @@
 		ThemeManager,
 		Persisted,
 		setPersistedUtils
-	} from '$lib/stores';
-	import { setStorageTypes, StorageTypes } from '$lib';
+	} from '#lib/stores/index.js';
+	import { setStorageTypes, StorageTypes } from '#lib';
 </script>
 
 <script lang="ts">
@@ -39,7 +40,7 @@
 
 	createRootContextManager();
 
-	const storageTypes = new StorageTypes({ initialCookies: data.sharedCookies });
+	const storageTypes = new StorageTypes({ initialCookies: untrack(() => data.sharedCookies) });
 	const persisted = new Persisted(storageTypes);
 
 	const { projectsStore, themeManager } = initializeGlobalStores();
@@ -74,15 +75,15 @@
 <Drawer
 	id="app-drawer"
 	navbarTitle="Todos"
-	navbarTitleHref="/user/projects"
+	navbarTitleHref={resolve('/user/projects')}
 	data-theme={themeManager.value$}
 >
 	{#snippet sidebar({ closeDrawer })}
-		<NavbarItem icon={faHome} href="/" name="Home" onclick={closeDrawer} />
-		{#if $page.data.token}
+		<NavbarItem icon={faHome} href={resolve('/')} name="Home" onclick={closeDrawer} />
+		{#if page.data.username}
 			<NavbarItem
 				icon={faProjectDiagram}
-				href="/user/projects"
+				href={resolve('/user/projects')}
 				name="Projects"
 				onclick={closeDrawer}
 			>
@@ -99,7 +100,7 @@
 			</NavbarItem>
 			<NavbarItem
 				icon={faSearch}
-				href="/user/search-tags"
+				href={resolve('/user/search-tags')}
 				name="Search by tag"
 				onclick={closeDrawer}
 			></NavbarItem>
@@ -108,17 +109,17 @@
 
 	{#snippet navbarEnd()}
 		<ThemeSwitch />
-		{#if $page.data.token}
-			<NavbarItem href="/user/logout" name="logout" setActiveClassOnClick={false} />
+		{#if page.data.username}
+			<NavbarItem href={resolve('/user/logout')} name="logout" setActiveClassOnClick={false} />
 		{:else}
-			<NavbarItem href="/login" name="login" setActiveClassOnClick={false} />
+			<NavbarItem href={resolve('/(entry)/login')} name="login" setActiveClassOnClick={false} />
 		{/if}
 	{/snippet}
 
 	{#snippet content()}
 		<div class="relative grid h-full overflow-hidden">
 			<div class="flex-1 overflow-auto px-6 py-4 lg:px-2 lg:py-1.5">
-				{#if $navigating}
+				{#if navigating.to}
 					<span
 						class="loading loading-ball loading-lg absolute left-[50%] top-[50%] -translate-x-1/2 -translate-y-1/2"
 					></span>

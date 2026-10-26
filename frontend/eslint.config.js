@@ -1,47 +1,45 @@
-import eslint from '@eslint/js';
 import prettier from 'eslint-config-prettier';
+import path from 'node:path';
+import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
+import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import ts from 'typescript-eslint';
 
-export default tseslint.config(
-	eslint.configs.recommended,
-	...tseslint.configs.recommended,
-	...svelte.configs['flat/recommended'],
+const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
+
+export default defineConfig(
+	includeIgnoreFile(gitignorePath),
+	{ ignores: ['src/lib/generated-client/'] },
+	js.configs.recommended,
+	ts.configs.recommended,
+	svelte.configs.recommended,
 	prettier,
-	...svelte.configs['flat/prettier'],
+	svelte.configs.prettier,
 	{
+		languageOptions: { globals: { ...globals.browser, ...globals.node } },
+		rules: {
+			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
+			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
+			'no-undef': 'off'
+		}
+	},
+	{
+		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
-			globals: {
-				...globals.browser,
-				...globals.node
+			parserOptions: {
+				projectService: true,
+				extraFileExtensions: ['.svelte'],
+				parser: ts.parser
 			}
 		}
 	},
 	{
-		files: ['**/*.svelte', '**/*.svelte.ts', '*.svelte.ts'],
-		languageOptions: {
-			parserOptions: {
-				parser: tseslint.parser,
-				svelteConfig
-			}
-		}
-	},
-	{
-		languageOptions: {
-			parserOptions: {
-				extraFileExtensions: ['.spec.ts', '.test.ts']
-			}
-		},
 		rules: {
 			'@typescript-eslint/no-unused-vars': 'warn',
 			'@typescript-eslint/no-explicit-any': 'warn',
 			'no-unused-expressions': 'off',
 			'@typescript-eslint/no-unused-expressions': 'off'
 		}
-	},
-	{
-		ignores: ['build/', '.svelte-kit/', 'dist/', '.vercel', 'generated-clients']
 	}
 );

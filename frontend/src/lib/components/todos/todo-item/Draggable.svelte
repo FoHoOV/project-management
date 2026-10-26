@@ -1,14 +1,13 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import DropZoneHelper from '$components/todos/DropZoneHelper.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import DropZoneHelper from '#lib/components/todos/DropZoneHelper.svelte';
 
-	import { page } from '$app/stores';
 	import {
 		TODO_ITEM_ORDER_DROP_ZONE,
 		TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME,
 		DROP_EVENT_HANDLED_BY_TODO_ITEM
-	} from '$components/todos/constants';
-	import { generateNewOrderForTodoItem } from '$components/todos/utils';
+	} from '#lib/components/todos/constants.js';
+	import { generateNewOrderForTodoItem } from '#lib/components/todos/utils.js';
 	import {
 		dropzone,
 		draggable,
@@ -16,22 +15,20 @@
 		type TodoCategoryPartialTodoItem,
 		type TodoItem,
 		type CommonComponentStates,
-		ErrorCode,
 		ErrorType,
-		callServiceInClient,
+		callService,
 		cursorOnElementPositionY,
 		type CustomDragEvent,
 		type DropEvent,
 		type TodoCategory
-	} from '$lib';
-	import { TodoItemClient } from '$lib/client-wrapper/clients';
+	} from '#lib';
+	import { createApiClient } from '#lib/api-client.js';
+	import { updateTodoItems } from '#lib/generated-client/index.js';
 	import type { Snippet } from 'svelte';
-	import { getToastManager, getTodoCategories } from '$lib/stores';
+	import { getToastManager, getTodoCategories } from '#lib/stores/index.js';
 
 	type ComponentStates =
-		| CommonComponentStates
-		| 'drop-zone-top-activated'
-		| 'drop-zone-bottom-activated';
+		CommonComponentStates | 'drop-zone-top-activated' | 'drop-zone-bottom-activated';
 
 	export type Events = {
 		onError?: (message: string) => void;
@@ -49,12 +46,13 @@
 	const { todo, disabled, category, onError, children }: Props = $props();
 
 	let componentState = $state<ComponentStates>();
+	const isCallingService = $derived(componentState === 'calling-service');
 
 	const todoCategoriesStore = getTodoCategories();
 	const toastManagerStore = getToastManager();
 
 	async function handleUpdateTodoItemOrder(event: DropEvent<TodoCategoryPartialTodoItem>) {
-		if (event.detail.data.id == todo.id) {
+		if (event.data.id == todo.id) {
 			componentState = 'none';
 			return;
 		}
@@ -67,23 +65,24 @@
 		const moveUp = componentState == 'drop-zone-top-activated';
 
 		componentState = 'calling-service';
-		event.detail.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
+		event.addCustomEventData(DROP_EVENT_HANDLED_BY_TODO_ITEM, true);
 
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				const result = await TodoItemClient({ token: $page.data.token }).updateTodoItems(
-					event.detail.data.id,
-					{
+				const result = await updateTodoItems({
+					client: createApiClient(),
+					path: { todo_id: event.data.id },
+					body: {
 						order: {
 							new_category_id: todo.category_id,
-							...generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
+							...generateNewOrderForTodoItem(todo, event.data, moveUp, cachedCategory)
 						}
 					}
-				);
+				});
 				todoCategoriesStore?.updateTodoSort(
-					event.detail.data,
+					event.data,
 					todo.category_id,
-					generateNewOrderForTodoItem(todo, event.detail.data, moveUp, cachedCategory)
+					generateNewOrderForTodoItem(todo, event.data, moveUp, cachedCategory)
 				);
 				todoCategoriesStore?.updateTodo(result);
 				componentState = 'none';
@@ -97,9 +96,6 @@
 						message: e.message,
 						time: 6000
 					});
-					if (e.code == ErrorCode.DependenciesNotResolved) {
-						todo.is_done = false;
-					}
 					return;
 				}
 
@@ -107,17 +103,17 @@
 			}
 		});
 
-		if (event.detail.data.category_id != todo.category_id) {
+		if (event.data.category_id != todo.category_id) {
 			// we stopPropagation cause if the category ids are not the same we've already updated the category_id for this element
-			event.detail.originalEvent.stopPropagation();
-			event.detail.originalEvent.preventDefault();
+			event.originalEvent.stopPropagation();
+			event.originalEvent.preventDefault();
 		}
 	}
 
 	function handleDragHover(event: CustomDragEvent) {
-		const position = cursorOnElementPositionY(event.detail.node, {
-			x: event.detail.originalEvent.clientX,
-			y: event.detail.originalEvent.clientY
+		const position = cursorOnElementPositionY(event.node, {
+			x: event.originalEvent.clientX,
+			y: event.originalEvent.clientY
 		});
 
 		componentState = position == 'top' ? 'drop-zone-top-activated' : 'drop-zone-bottom-activated';
@@ -138,21 +134,20 @@
 
 <div
 	class="relative mt-4"
-	use:dropzone={{
-		model: todo,
+	{@attach dropzone({
 		names: [TODO_ITEM_ORDER_DROP_ZONE],
-		disabled: componentState === 'calling-service'
-	}}
-	use:draggable={{
+		disabled: isCallingService,
+		onDropped: handleUpdateTodoItemOrder,
+		onDragHover: handleDragHover,
+		onDragLeft: handleDragLeft
+	})}
+	{@attach draggable({
 		data: todo,
 		targetDropZoneNames: [TODO_ITEM_NEW_CATEGORY_DROP_ZONE_NAME, TODO_ITEM_ORDER_DROP_ZONE],
-		disabled: componentState === 'calling-service' || disabled
-	}}
-	ondropped={handleUpdateTodoItemOrder}
-	ondragHover={handleDragHover}
-	ondragLeft={handleDragLeft}
+		disabled: isCallingService || disabled
+	})}
 >
-	<Spinner visible={componentState === 'calling-service'}></Spinner>
+	<Spinner visible={isCallingService}></Spinner>
 	<DropZoneHelper
 		visible={componentState === 'drop-zone-top-activated' ||
 			componentState === 'drop-zone-bottom-activated'}

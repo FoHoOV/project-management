@@ -78,7 +78,7 @@ def delete(
 def search(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
-    name: Annotated[str, Query()],
+    name: Annotated[str, Query(min_length=TAG_MIN_LENGTH, max_length=TAG_MAX_LENGTH)],
     project_id: Annotated[int | None, Query()] = None,
 ):
     return tag_crud.search(db, project_id, name.strip().lower(), current_user.id)

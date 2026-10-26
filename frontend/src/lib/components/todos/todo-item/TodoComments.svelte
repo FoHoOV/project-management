@@ -1,19 +1,24 @@
 <script lang="ts" module>
-	import Spinner from '$components/Spinner.svelte';
-	import Alert from '$components/alerts/Alert.svelte';
-	import Confirm from '$components/Confirm.svelte';
+	import Spinner from '#lib/components/Spinner.svelte';
+	import Alert from '#lib/components/alerts/Alert.svelte';
+	import Confirm from '#lib/components/Confirm.svelte';
 
-	import { page } from '$app/stores';
-	import { TodoItemCommentClient } from '$lib/client-wrapper/clients';
-	import { callServiceInClient } from '$lib/client-wrapper/wrapper.client';
-	import type { TodoComment } from '$lib/generated-client/zod/schemas';
+	import { createApiClient } from '#lib/api-client.js';
+	import { deleteTodoItemComments, listTodoItemComments } from '#lib/generated-client/index.js';
+	import { callService } from '#lib/client-wrapper/index.js';
+	import type { TodoComment } from '#lib/generated-client/index.js';
 	import Fa from 'svelte-fa';
 	import { faEdit, faPlus, faPlusCircle, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { TodoComments, getTodoComments, setTodoComments, getTodoCategories } from '$lib/stores';
+	import {
+		TodoComments,
+		getTodoComments,
+		setTodoComments,
+		getTodoCategories
+	} from '#lib/stores/index.js';
 	import { flip } from 'svelte/animate';
-	import { type CommonComponentStates } from '$lib';
-	import type { ComponentExports } from '$lib/utils/types/svelte';
+	import { type CommonComponentStates } from '#lib';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 
 	export type Events = {
 		onEditComment?: (comment: TodoComment, store: TodoComments) => void;
@@ -37,11 +42,12 @@
 
 	export async function refreshComments() {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				const result = await TodoItemCommentClient({
-					token: $page.data.token
-				}).listTodoItemComments(todoId);
+				const result = await listTodoItemComments({
+					client: createApiClient(),
+					path: { todo_id: todoId }
+				});
 
 				todoCommentsStore.set(result);
 				componentState = 'none';
@@ -56,12 +62,12 @@
 
 	async function handleDeleteComment(comment: TodoComment) {
 		componentState = 'calling-service';
-		await callServiceInClient({
+		await callService({
 			call: async () => {
-				await TodoItemCommentClient({ token: $page.data.token }).deleteTodoItemComments(
-					comment.todo_id,
-					comment.id
-				);
+				await deleteTodoItemComments({
+					client: createApiClient(),
+					path: { todo_id: comment.todo_id, comment_id: comment.id }
+				});
 				todoCommentsStore.remove(comment);
 				componentState = 'none';
 				apiErrorTitle = null;

@@ -1,18 +1,16 @@
 <script lang="ts" module>
-	import CircleButton from '$components/buttons/CircleButton.svelte';
-	import ProjectList from '$components/project/ProjectList.svelte';
-	import CreateProject from '$routes/user/projects/CreateProject.svelte';
-	import AttachToUser from '$routes/user/projects/AttachToUser.svelte';
-	import EditProject from '$routes/user/projects/EditProject.svelte';
+	import CircleButton from '#lib/components/buttons/CircleButton.svelte';
+	import ProjectList from '#lib/components/project/ProjectList.svelte';
+	import CreateProject from './CreateProject.svelte';
+	import AttachToUser from './AttachToUser.svelte';
+	import EditProject from './EditProject.svelte';
 
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
-	import type { Project } from '$lib/generated-client/models';
-	import { getMultiStepModal, getProjects } from '$lib/stores';
+	import type { Project } from '#lib/generated-client/index.js';
+	import { getMultiStepModal, getProjects } from '#lib/stores/index.js';
 </script>
 
 <script lang="ts">
-	const { form } = $props();
-
 	const projectsStore = getProjects();
 	const multiStepModalStore = getMultiStepModal();
 
@@ -24,7 +22,7 @@
 		multiStepModalStore.add({
 			component: CreateProject,
 			props: () => {
-				return { form };
+				return {};
 			},
 			title: 'Create a new project'
 		});
@@ -34,7 +32,7 @@
 		multiStepModalStore.add({
 			component: AttachToUser,
 			props: () => {
-				return { form, project };
+				return { project };
 			},
 			title: 'Share this project with another user'
 		});
@@ -44,7 +42,7 @@
 		multiStepModalStore.add({
 			component: EditProject,
 			props: () => {
-				return { form, project };
+				return { project };
 			},
 			title: 'Edit this project details'
 		});

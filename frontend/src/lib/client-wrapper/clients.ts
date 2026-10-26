@@ -1,121 +1,43 @@
-import { PUBLIC_API_REQUEST_TIMEOUT_MS, PUBLIC_API_URL } from '$env/static/public';
-import {
-	OAuthApi,
-	TodoItemsApi,
-	TodoCategoriesApi,
-	UsersApi,
-	ProjectsApi,
-	TodoItemCommentsApi,
-	TagsApi,
-	PermissionsApi
-} from '$lib/generated-client/apis';
+import { PUBLIC_API_REQUEST_TIMEOUT_MS } from '$app/env/public';
+import { type Client, createClient, createConfig } from '#lib/generated-client/client/index.js';
 
-import {
-	BaseAPI,
-	Configuration,
-	type ConfigurationParameters,
-	type RequestContext,
-	type FetchAPI
-} from '$lib/generated-client/runtime';
-import type { Token } from '$lib/generated-client/models';
-import { TokenError, isTokenExpirationDateValidAsync } from '$lib/utils/token';
+export const API_PROXY_PATH = '/api';
 
-const checkAccessToken = async (context: RequestContext, config?: ConfigurationOptions) => {
-	if (config?.isTokenRequired === false) {
-		return;
-	}
-
-	const headers = context.init.headers ? new Headers(context.init.headers) : new Headers();
-
-	if (!config?.token?.access_token) {
-		throw new TokenError('token required');
-	}
-
-	if (!(await isTokenExpirationDateValidAsync(config.token.access_token))) {
-		throw new TokenError('token has expired');
-	}
-
-	headers.set(
-		'Authorization',
-		`${config.token?.token_type ?? 'bearer'} ${config.token.access_token}`
-	);
-
-	context.init.headers = headers;
-};
-
-type ConfigurationOptions = Partial<Omit<ConfigurationParameters, 'accessToken'>> & {
-	token?: Token;
-	isTokenRequired?: boolean;
-};
-
-export const generateClient = <T extends typeof BaseAPI>(
-	ApiClass: T,
-	config?: ConfigurationOptions
-): InstanceType<T> => {
-	config = {
-		...config,
-		fetchApi: addTimeoutToFetchIfNotExists(
-			config?.fetchApi ?? fetch,
-			parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS)
-		)
-	};
-
-	return new ApiClass(
-		new Configuration({
-			basePath: PUBLIC_API_URL,
-			...(config ?? {})
-		})
-	).withPreMiddleware(async (context) => {
-		return await checkAccessToken(context, config);
-	}) as InstanceType<T>;
-};
-
-export const OAuthClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(OAuthApi, config);
-};
-
-export const TodoItemClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoItemsApi, config);
-};
-
-export const TodoItemCommentClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoItemCommentsApi, config);
-};
-
-export const TagClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TagsApi, config);
-};
-
-export const TodoCategoryClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(TodoCategoriesApi, config);
-};
-
-export const ProjectClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(ProjectsApi, config);
-};
-
-export const PermissionClient = (config: ConfigurationOptions = { isTokenRequired: true }) => {
-	return generateClient(PermissionsApi, config);
-};
-
-export const UserClient = (config?: ConfigurationOptions) => {
-	return generateClient(UsersApi, config);
-};
+export const REQUEST_TIMEOUT_MS = parseInt(PUBLIC_API_REQUEST_TIMEOUT_MS);
 
 /**
- *  @param timeout timeout in milliseconds
+ * Every failed request made through an API client rejects with this error.
+ * `response` is only set when the server answered with an HTTP error; otherwise `body` holds
+ * the thrown cause (e.g. a network `TypeError` or a timeout).
  */
-export const addTimeoutToFetchIfNotExists = (fetch: FetchAPI, timeout: number) => {
-	return (input: RequestInfo | URL, init?: RequestInit | undefined) => {
-		if (!init?.signal) {
-			const controller = new AbortController();
-			setTimeout(() => {
-				controller.abort();
-			}, timeout);
+export class ApiError extends Error {
+	constructor(
+		readonly body: unknown,
+		readonly response: Response | undefined
+	) {
+		super(response ? `request failed with status ${response.status}` : 'request failed');
+	}
+}
 
-			init = { ...init, signal: controller.signal };
-		}
+/**
+ * Builds a client that calls the backend through the `/api` proxy route, which adds the user's
+ * token from the cookie. Import `createApiClient` from `#lib/api-client.js` instead of calling this.
+ *
+ * The generated SDK's types assume `throwOnError: true` (see `openapi-ts.config.ts`): a call
+ * resolves to the response body or rejects with an {@link ApiError}.
+ */
+export function buildApiClient(config: { baseUrl: string; fetch?: typeof fetch }): Client {
+	const client = createClient(createConfig({ ...config, throwOnError: true }));
 
-		return fetch(input, init);
-	};
-};
+	client.interceptors.request.use((request, options) =>
+		options.signal
+			? request
+			: new Request(request, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
+	);
+
+	client.interceptors.error.use(
+		(error, response) => new ApiError(error, response?.ok === false ? response : undefined)
+	);
+
+	return client;
+}

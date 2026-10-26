@@ -1,19 +1,20 @@
 <script lang="ts" module>
-	import NavbarItem from '$components/navbar/NavbarItem.svelte';
-	import ProjectPermissions from '$components/project/ProjectPermissions.svelte';
-	import SaveChanges from '$routes/user/[project_name]-[project_id=integer]/settings/SaveChanges.svelte';
-	import Detach from '$routes/user/[project_name]-[project_id=integer]/settings/Detach.svelte';
-	import UserInfo from '$routes/user/[project_name]-[project_id=integer]/settings/UserInfo.svelte';
+	import NavbarItem from '#lib/components/navbar/NavbarItem.svelte';
+	import ProjectPermissions from '#lib/components/project/ProjectPermissions.svelte';
+	import SaveChanges from './SaveChanges.svelte';
+	import Detach from './Detach.svelte';
+	import UserInfo from './UserInfo.svelte';
 
-	import { generateTodoListItemsUrl } from '$lib/utils/params/route';
+	import { generateTodoListItemsUrl } from '#lib/utils/params/route.js';
+	import type { PageProps } from './$types';
 	import { faClose } from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
-	import { getNavbar } from '$lib/stores/index.js';
-	import type { ComponentExports } from '$lib/utils/types/svelte.js';
+	import { getNavbar } from '#lib/stores/index.js';
+	import type { ComponentExports } from '#lib/utils/types/svelte.js';
 </script>
 
 <script lang="ts">
-	const { data, form } = $props();
+	const { data, params }: PageProps = $props();
 
 	let projectPermissionsRefs = $state<ComponentExports<typeof ProjectPermissions>[]>([]);
 	const navbarStore = getNavbar();
@@ -47,7 +48,7 @@
 
 {#snippet closeSettings()}
 	<NavbarItem
-		href={generateTodoListItemsUrl(data.currentProject.title, data.currentProject.id)}
+		href={generateTodoListItemsUrl(params.project_name, params.project_id)}
 		name=""
 		icon={faClose}
 	/>
@@ -64,18 +65,17 @@
 			<div
 				class="collapse-title static flex flex-col justify-between gap-3 pe-4 sm:flex-row sm:items-center sm:gap-0"
 			>
-				<UserInfo {user} token={data.token!}></UserInfo>
+				<UserInfo {user} currentUsername={data.username!}></UserInfo>
 				<div class="z-10 flex gap-2">
 					{#if showConfirmChanges[i]}
 						<SaveChanges
 							{data}
-							{form}
 							{user}
 							getSelectedPermissions={projectPermissionsRefs[i].getSelectedPermissions}
 							resetSelectedPermissions={projectPermissionsRefs[i].reset}
 						></SaveChanges>
 					{:else}
-						<Detach {data} {form} {user}></Detach>
+						<Detach {data} {user}></Detach>
 					{/if}
 				</div>
 			</div>

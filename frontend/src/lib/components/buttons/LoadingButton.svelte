@@ -4,7 +4,7 @@
 	export type Props = {
 		text: string;
 		loading?: boolean;
-	} & Partial<Exclude<HTMLButtonAttributes, 'text'>>;
+	} & Partial<HTMLButtonAttributes>;
 </script>
 
 <script lang="ts">

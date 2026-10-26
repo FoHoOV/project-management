@@ -6,8 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 
-from config import settings
-from db import init_db
+from config import get_settings
+from db.migrations import run_migrations
 from error.exceptions import UserFriendlyError
 
 from .routes import error
@@ -49,10 +49,7 @@ def create_app():
     app.include_router(error.router)
     app.include_router(tag.router)
 
-    app.openapi_version = (
-        "3.0.0"  # TODO: bump to 3.1.0 when openapi-tools code generator supports it
-    )
-
+    settings = get_settings()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.ALLOWED_ORIGINS,
@@ -62,6 +59,6 @@ def create_app():
         allow_headers=["*"],
     )
 
-    init_db()
+    run_migrations()
 
     return app

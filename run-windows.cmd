@@ -6,8 +6,8 @@ REM moving to backend folder
 cd backend
 
 REM installing python dependencies
-python -m pip install pipenv --user
-python -m pipenv install 
+python -m pip install uv --user
+python -m uv sync
 
 REM creating the .env file
 del .env
@@ -23,7 +23,7 @@ del .env.integration
 echo SQLALCHEMY_DATABASE_URL = "sqlite:///./todos_test.db" >> .\.env.integration
 
 REM starting the backend server on port 8080
-start cmd.exe @cmd /k "python -m pipenv run uvicorn main:app --reload --port 8080"
+start cmd.exe @cmd /k "python -m uv run uvicorn main:app --reload --port 8080"
 
 REM moving to frontend folder
 cd ..
@@ -43,7 +43,7 @@ echo PUBLIC_API_URL = http://127.0.0.1:8090 > .\.env.integration
 
 REM installing dependencies
 call npm i --legacy-peer-deps
-call npm run open-api:generate:windows
+call npm run generate-client
 call npm run build
 call npm run preview
 

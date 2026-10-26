@@ -6,15 +6,15 @@ Since we need the API url of our backend in our frontend, you will need to creat
 PUBLIC_API_URL = http://127.0.0.1:<port> # port defaults to 8080 if you have followed the steps in backend/README.md file
 ```
 
-You first need to run the backend project because we use the OpenApi schema of that project to create clients/zod-schemas for this one.
-execute this to generate the clients/schemas:
+The API client and zod schemas in `src/lib/generated-client` are generated from the backend's OpenApi schema and committed, so you don't need the backend to build the frontend.
+After changing the backend's routes or schemas, run the backend and regenerate the client, then commit the result (CI fails if it's out of date):
 
 ```bash
-# create the clients and zod schemas
-npm run open-api:generate:[linux | windows] # generates the open-api clients and zod schemas from localhost:<port>/openapi.json (port defaults to 8080 if you have followed the steps in backend/README.md file)
+# generates the api client and zod schemas from $PUBLIC_API_URL/openapi.json into src/lib/generated-client
+pnpm run generate-client
 ```
 
-- OpenApiTools requires [java](https://www.oracle.com/java/technologies/downloads/) installed on your machine.
+- Generation uses [@hey-api/openapi-ts](https://heyapi.dev) (config in `openapi-ts.config.ts`) and needs Node 22.18 or newer.
 
 ## Developing (IMPORTANT)
 

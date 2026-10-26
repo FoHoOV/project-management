@@ -1,13 +1,20 @@
-from config import settings
-from db.db import get_db_params, init_database
+from functools import lru_cache
 
-params = get_db_params(
-    settings.SQLALCHEMY_DATABASE_URL, settings.IS_SQLALCHEMY_LOG_ENABLED
-)
-
-engine = params["engine"]
-SessionLocal = params["session"]
+from config import get_settings
+from db.db import DbPrams, get_db_params
 
 
-def init_db():
-    init_database(engine)
+@lru_cache
+def _get_db_params() -> DbPrams:
+    settings = get_settings()
+    return get_db_params(
+        settings.SQLALCHEMY_DATABASE_URL, settings.IS_SQLALCHEMY_LOG_ENABLED
+    )
+
+
+def get_engine():
+    return _get_db_params()["engine"]
+
+
+def get_session_factory():
+    return _get_db_params()["session"]

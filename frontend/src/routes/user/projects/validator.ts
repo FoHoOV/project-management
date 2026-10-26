@@ -1,38 +1,35 @@
 import { z } from 'zod';
-import {
-	type ProjectAttachAssociation,
-	type ProjectCreate,
-	type ProjectUpdate
-} from '$lib/generated-client';
-import { Permission } from '$lib/generated-client/zod/schemas';
+import type {
+	ProjectAttachAssociation as ProjectAttachAssociationModel,
+	ProjectCreate as ProjectCreateModel,
+	ProjectUpdate as ProjectUpdateModel
+} from '#lib/generated-client/index.js';
+import { ProjectAttachAssociation, ProjectCreate } from '#lib/generated-client/zod.gen.js';
 
 const optionalDescriptionSchema = z
 	.string()
 	.transform((t) => (t.length > 0 ? t : '-'))
-	.pipe(z.string().min(1).max(100));
+	.pipe(ProjectCreate.shape.description);
 
-export const createProjectSchema = z.object({
-	title: z
-		.string()
-		.min(2)
-		.max(100)
-		.refine((title) => !title.includes('-'), "'-' is not allowed in the project title"),
+export const createProjectSchema = ProjectCreate.extend({
+	title: ProjectCreate.shape.title.refine(
+		(title) => !title.includes('-'),
+		"'-' is not allowed in the project title"
+	),
 	description: optionalDescriptionSchema,
-	create_from_default_template: z.boolean({ coerce: true }).default(false)
+	create_from_default_template: z.coerce.boolean().default(false)
 });
 
-({}) as z.infer<typeof createProjectSchema> satisfies ProjectCreate;
+({}) as z.infer<typeof createProjectSchema> satisfies ProjectCreateModel;
 
-export const attachProjectSchema = z.object({
-	project_id: z.number({ coerce: true }),
-	username: z.string().min(3),
-	permissions: z.array(Permission)
+export const attachProjectSchema = ProjectAttachAssociation.extend({
+	project_id: z.coerce.number()
 });
 
-({}) as z.infer<typeof attachProjectSchema> satisfies ProjectAttachAssociation;
+({}) as z.infer<typeof attachProjectSchema> satisfies ProjectAttachAssociationModel;
 
 export const editProjectSchema = createProjectSchema.extend({
-	project_id: z.number({ coerce: true })
+	project_id: z.coerce.number()
 });
 
-({}) as z.infer<typeof editProjectSchema> satisfies ProjectUpdate;
+({}) as z.infer<typeof editProjectSchema> satisfies ProjectUpdateModel;

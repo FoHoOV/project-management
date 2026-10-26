@@ -1,4 +1,4 @@
-import { getContext, setContext } from '$lib/stores';
+import { getContext, setContext } from '#lib/stores/index.js';
 import { ToastManager } from './toasts.svelte';
 
 export const TOASTS_CONTEXT_KEY = Symbol();

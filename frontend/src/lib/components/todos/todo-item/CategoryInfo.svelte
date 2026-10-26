@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import type { StrictUnion } from '$lib';
-	import type { TodoItem, TodoCategoryPartialTodoItem } from '$lib/generated-client';
+	import type { StrictUnion } from '#lib';
+	import type { TodoItem, TodoCategoryPartialTodoItem } from '#lib/generated-client/index.js';
 
 	export type Props = {
 		todo: StrictUnion<TodoItem | TodoCategoryPartialTodoItem>;
